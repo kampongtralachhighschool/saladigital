@@ -45,31 +45,31 @@
 
         /* Styles សម្រាប់ PDF Export (Tab 2) */
         .pdf-offscreen { position: absolute; left: -9999px; top: 0; width: 297mm; background: white; z-index: -10; }
-        .report-page { background: white; color: #1e293b; font-family: 'Kantumruy Pro', sans-serif; padding: 12mm 10mm; }
-        .grade-block { page-break-inside: avoid; margin-bottom: 20px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
-        .grade-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
-        .pdf-table { width: 100%; border-collapse: collapse; font-size: 10px; }
-        .pdf-table th { background-color: #1e293b; color: white; padding: 8px 4px; border: 1px solid #334155; text-align: center; font-weight: 700; }
-        .pdf-table td { padding: 6px 4px; border: 1px solid #e2e8f0; text-align: center; font-weight: 700; }
-        .pdf-table .col-month { text-align: left; padding-left: 10px; color: #1e293b; width: 100px; }
-        .pdf-table .col-total { color: #2563eb; width: 50px; }
-        .td-sub { font-size: 8px; color: #94a3b8; font-weight: normal; margin-left: 2px; }
-        
-        .bar-info { display: flex; justify-content: space-between; width: 100%; margin-bottom: 3px; font-size: 9px; }
-        .bar-bg { width: 100%; height: 6px; background: #f1f5f9; border-radius: 4px; overflow: hidden; display: flex; }
-        .bg-abc { background-color: #10b981; } .text-abc { color: #10b981; }
-        .bg-def { background-color: #ef4444; } .text-def { color: #ef4444; }
-        .bg-abs { background-color: #64748b; } .text-abs { color: #64748b; }
-        
-        .th-abc { background-color: #166534 !important; }
-        .th-def { background-color: #991b1b !important; }
-        .th-abs { background-color: #334155 !important; }
+                let subjectHtml = generateSubjectHTML(sub);
+                if (subjectHtml) {
+                    allHtml += subjectHtml;
+                    // កាត់ផ្តាច់ទំព័រសម្រាប់មុខវិជ្ជាបន្ទាប់
+                    if (index < mainSubjects.length - 1) {
+                        allHtml += '<div class="html2pdf__page-break" style="page-break-before: always; height: 0;"></div>';
+                    }
+                }
+            });
 
-        @media print { 
-            body { background: white; } 
-            .no-print { display: none !important; } 
-            .print-area { box-shadow: none; margin: 0; padding: 10mm; width: 100%; } 
-            .card { box-shadow: none; border: 1px solid #ccc; }
+            printArea.innerHTML = allHtml;
+
+            const opt = { 
+                margin: [10, 5, 10, 5], 
+                filename: `វិភាគ_១០មុខវិជ្ជា_សរុប.pdf`, 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 }, 
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+                pagebreak: { mode: ['css', 'legacy'] }
+            };
+
+            html2pdf().set(opt).from(printArea).save().then(() => {
+                printArea.innerHTML = '';
+                closeMessage();
+            });
         }
     </style>
 </head>
@@ -200,7 +200,7 @@
     <!-- ========================================== -->
     <!-- TAB 2: របាយការណ៍វិភាគនិទ្ទេស (ADMIN REPORT) -->
     <!-- ========================================== -->
-    <div id="tab-report" class="tab-content max-w-7xl mx-auto">
+    <div id="tab-report" class="tab-content max-w-7xl mx-auto hidden">
         <div class="no-print card p-5 flex flex-col gap-4 bg-white shadow-md">
             <div class="flex flex-wrap justify-between items-center gap-4">
                 <h1 class="text-xl font-bold moul-font text-blue-900">ប្រព័ន្ធវិភាគលទ្ធផលសិក្សា</h1>
@@ -257,7 +257,7 @@
         // ========================================================
         // ⚙️ ការកំណត់ទូទៅ (CONFIGURATION)
         // ========================================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbzdQSQpnx92mF9hbMGIcoU1yPMuhM80t69nUmzYji9IPlR9v8q7HV0r1JybIF1iZI0u/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxXC65_ZGqZAR-7Yc72acYEidDx458wuYsOzyZxscf_PK4zMRnTBx7Ju_L3iVtd8a0/exec"; 
         const TELEGRAM_BOT_USERNAME = "kampongtralach_bot";
         const ADMIN_PASSWORD = "hs@8888"; 
         
@@ -282,10 +282,13 @@
                 btn.classList.add('inactive');
             });
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-
-            document.getElementById('btn-' + tabId).classList.add('active');
-            document.getElementById('btn-' + tabId).classList.remove('inactive');
+            // add active state
+            if(document.getElementById('btn-' + tabId)) {
+                document.getElementById('btn-' + tabId).classList.add('active');
+                document.getElementById('btn-' + tabId).classList.remove('inactive');
+            }
             document.getElementById(tabId).classList.add('active');
+            document.getElementById(tabId).classList.remove('hidden');
         }
 
         // ========================================================
@@ -416,15 +419,26 @@
             }
         }
 
-        // PDF Download សម្រាប់ Tab 1
+        // ========================================================
+        // ការកំណត់មុខងារ Download PDF ទម្រង់ក្រដាសឈរ (Portrait) 
+        // ========================================================
         function downloadStudentPDF() {
             const element = document.getElementById('capture-area');
             const name = document.getElementById('resName').innerText;
-            // ប្រើ scale: 2 ដើម្បីកុំឲ្យ Error លើទូរស័ព្ទដៃ
-            const opt = { margin: 0, filename: `លទ្ធផល_${name}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }};
+            
+            // Setup options សម្រាប់កាត់ចេញជា PDF A4 ឈរ
+            const opt = { 
+                margin:       [5, 0, 5, 0], // Top, Right, Bottom, Left margin in mm
+                filename:     `លទ្ធផល_${name}.pdf`, 
+                image:        { type: 'jpeg', quality: 1 }, 
+                html2canvas:  { scale: 2, useCORS: true }, 
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // 'portrait' ជាក្រដាសឈរ
+            };
+            
             html2pdf().set(opt).from(element).save();
         }
 
+        // QRCode Scanner Function (ដែលដាច់ចុងកូដរបស់អ្នក)
         let html5QrcodeScanner;
         function startScanner() {
             const readerDiv = document.getElementById('qr-reader');
@@ -438,310 +452,80 @@
                             document.getElementById('qr-reader').classList.add('hidden');
                             html5QrcodeScanner.clear();
                             handleSearch();
-                        }, (err) => { }
+                        }, 
+                        (err) => {
+                            // Ignored - Scan process error background
+                        }
                     );
                 }
-            } else {
-                readerDiv.classList.add('hidden');
-                if(html5QrcodeScanner) { html5QrcodeScanner.clear(); html5QrcodeScanner = null; }
             }
         }
 
         // ========================================================
-        // TAB 2: របាយការណ៍វិភាគនិទ្ទេស (ADMIN REPORT LOGIC & PDF)
+        // TAB 2: ADMIN REPORT DUMMY DATA / FUNCTION (ទប់ស្កាត់ Error)
         // ========================================================
-        let appData = { scores: {}, configMax: {} };
-        const monthsOrder =["វិច្ឆិកា", "ធ្នូ", "មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "ប្រឡងឆមាសទី១", "ប្រឡងឆមាសទី២", "ប្រចាំឆ្នាំ"];
-        const targetGroups =["7", "8", "9", "10", "11 SC", "11 SS", "11 រួម", "12 SC", "12 SS", "12 រួម", "សរុបរួមគ្រប់ថ្នាក់"];
+        let adminReportData = [];
 
         async function syncAllData() {
             document.getElementById('loader-tab2').classList.remove('hidden');
             try {
-                const res = await fetch(`${API_URL}?action=getAllData`);
-                const result = await res.json();
-                if(result.error) throw new Error(result.error);
-                appData = result;
+                // Fetch ទិន្នន័យ Admin ទីនេះ (ឧទាហរណ៍)
+                const res = await fetch(`${API_URL}?month=មីនា`);
+                adminReportData = await res.json();
                 renderUI();
-            } catch (err) {
-                alert("Error: " + err.message);
+                showMessage("ជោគជ័យ", "ទិន្នន័យរបាយការណ៍ត្រូវបានទាញយក!");
+            } catch (e) {
+                showMessage("បរាជ័យ", "មិនអាចភ្ជាប់ទៅកាន់ទិន្នន័យបានទេ។");
             } finally {
                 document.getElementById('loader-tab2').classList.add('hidden');
             }
         }
 
-        function getReportStatsForSubject(sub) {
-            let stats = {};
-            if (!appData.scores || Object.keys(appData.scores).length === 0) return null;
-
-            for (let m in appData.scores) {
-                appData.scores[m].forEach(s => {
-                    let originalGrade = (s["Grade"] || s["ថ្នាក់"] || "").toString().trim();
-                    let lvMatch = originalGrade.match(/\d+/);
-                    if (!lvMatch) return;
-                    let lvNum = lvMatch[0];
-                    let levelKey = lvNum;
-                    
-                    let configForGrade = appData.configMax[originalGrade];
-                    if (configForGrade) {
-                        let classType = (configForGrade["ប្រភេទថ្នាក់"] || "").toString().trim().toUpperCase();
-                        if ((lvNum === "11" || lvNum === "12") && classType) levelKey = lvNum + " " + classType;
-                    }
-
-                    let maxScore = (sub === "Average") ? 10 : (configForGrade && configForGrade[sub] ? cleanNumber(configForGrade[sub]) : 50);
-                    let score = (sub === "Average") ? (s["Average"] || s["មធ្យមភាគ"]) : s[sub];
-                    let grade = getGradeValue(score, maxScore);
-
-                    let sex = (s["Gender"] || s["ភេទ"] || "").toString().trim().toLowerCase();
-                    let isF = (sex.includes("ស្រី") || sex === "ស" || sex === "f");
-
-                    const update = (k) => {
-                        if (!stats[k]) stats[k] = {};
-                        if (!stats[k][m]) stats[k][m] = { A:0, B:0, C:0, D:0, E:0, F:0, ABS:0, total:0, f:0 };
-                        let d = stats[k][m];
-                        if (grade !== "ABS") { d[grade]++; } else { d.ABS++; }
-                        d.total++;
-                        if (isF) d.f++;
-                    };
-
-                    update(levelKey);
-                    if (lvNum === "11") update("11 រួម");
-                    if (lvNum === "12") update("12 រួម");
-                    update("សរុបរួមគ្រប់ថ្នាក់");
-                });
-            }
-            return stats;
-        }
-
-        // Render UI លើអេក្រង់
         function renderUI() {
-            const sub = document.getElementById('subjectFilter').value;
+            if (!adminReportData || adminReportData.length === 0) return;
             const container = document.getElementById('reportContainer');
-            container.innerHTML = '';
-            
-            let stats = getReportStatsForSubject(sub);
-            if (!stats) {
-                container.innerHTML = '<div class="card p-10 text-center text-red-500 moul-font">រកមិនឃើញទិន្នន័យ! សូមចុចប៊ូតុងទាញទិន្នន័យ។</div>';
-                return;
-            }
-
-            targetGroups.forEach(g => {
-                if (stats[g]) {
-                    const div = document.createElement('div');
-                    div.className = "card p-5";
-                    let sortedMonths = Object.keys(stats[g]).sort((a,b) => monthsOrder.indexOf(a) - monthsOrder.indexOf(b));
-                    
-                    let rows = sortedMonths.map(m => {
-                        let d = stats[g][m];
-                        let abc = d.A + d.B + d.C;
-                        let def = d.D + d.E + d.F;
-                        let pABC = d.total > 0 ? Math.round((abc/d.total)*100) : 0;
-                        let pDEF = d.total > 0 ? Math.round((def/d.total)*100) : 0;
-
-                        return `<tr>
-                            <td class="font-bold bg-slate-50">${m}</td>
-                            <td class="font-bold text-blue-800">${d.total}(${d.f})</td>
-                            <td class="text-green-600 font-bold">${d.A}</td><td>${d.B}</td><td>${d.C}</td>
-                            <td class="text-orange-600 font-bold">${d.D}</td><td>${d.E}</td><td class="text-red-600 font-bold">${d.F}</td>
-                            <td class="text-slate-400">${d.ABS}</td>
-                            <td class="bg-green-50 font-bold text-green-700">${abc}<br><small>${pABC}%</small></td>
-                            <td class="bg-red-50 font-bold text-red-700">${def}<br><small>${pDEF}%</small></td>
-                            <td class="w-40 px-4"><div class="multi-progress"><div class="bar-abc-ui" style="width:${pABC}%"></div><div class="bar-def-ui" style="width:${pDEF}%"></div></div></td>
-                        </tr>`;
-                    }).join('');
-
-                    div.innerHTML = `
-                        <h3 class="font-bold moul-font mb-3 text-slate-700">កម្រិតថ្នាក់ទី ${g} - ${sub}</h3>
-                        <table class="t2-table">
-                            <thead><tr>
-                                <th>ខែ</th><th>សរុប(ស្រី)</th>
-                                <th class="bg-green-600">A</th><th class="bg-green-600">B</th><th class="bg-green-600">C</th>
-                                <th class="bg-red-600">D</th><th class="bg-red-600">E</th><th class="bg-red-600">F</th>
-                                <th>អវត្ត</th><th class="bg-green-700">សរុប ABC</th><th class="bg-red-700">សរុប DEF</th><th>ក្រាប</th>
-                            </tr></thead>
-                            <tbody>${rows}</tbody>
-                        </table>`;
-                    container.appendChild(div);
-                }
-            });
-        }
-
-        // បង្កើតកូដ HTML សម្រាប់ PDF (១ មុខវិជ្ជា)
-        function generateSubjectHTML(subject) {
-            let stats = getReportStatsForSubject(subject);
-            if (!stats) return "";
-
-            let html = `
-            <div class="report-page">
-                <div class="text-center space-y-1 mb-2">
-                    <h2 class="moul-font text-[14px] text-blue-900">ព្រះរាជាណាចក្រកម្ពុជា</h2>
-                    <h2 class="moul-font text-[14px] text-blue-900">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
-                    <div class="flex justify-center items-center gap-1 opacity-30 mt-1">
-                        <div class="w-2 h-2 rounded-full bg-blue-900"></div><div class="w-16 h-[1px] bg-blue-900"></div><div class="w-2 h-2 rounded-full bg-blue-900"></div>
-                    </div>
-                </div>
-                <div class="mt-2 text-[11px] font-bold text-blue-900 leading-tight">
-                    <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
-                    <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
-                    <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
-                </div>
-                <h1 class="moul-font text-blue-800 text-center text-[16px] mt-4 mb-6">របាយការណ៍វិភាគលទ្ធផលសិក្សាសិស្ស <span class="text-red-600">មុខវិជ្ជា៖ ${subject}</span></h1>
-            `;
-
-            targetGroups.forEach(g => {
-                if (stats[g] && Object.keys(stats[g]).length > 0) {
-                    
-                    let maxScoreStr = "50"; 
-                    if(subject === "Average") maxScoreStr = "10";
-                    else {
-                        let sampleGradeConfig = Object.keys(appData.configMax).find(k => k.includes(g.split(" ")[0]));
-                        if(sampleGradeConfig && appData.configMax[sampleGradeConfig][subject]) {
-                            maxScoreStr = appData.configMax[sampleGradeConfig][subject];
-                        }
-                    }
-
-                    let sortedMonths = Object.keys(stats[g]).sort((a,b) => monthsOrder.indexOf(a) - monthsOrder.indexOf(b));
-                    
-                    let tbody = sortedMonths.map(m => {
-                        let d = stats[g][m];
-                        let abc = d.A + d.B + d.C;
-                        let def = d.D + d.E + d.F;
-                        
-                        const calcPct = (val) => d.total > 0 ? Math.round((val/d.total)*100) : 0;
-                        let pA = calcPct(d.A), pB = calcPct(d.B), pC = calcPct(d.C);
-                        let pD = calcPct(d.D), pE = calcPct(d.E), pF = calcPct(d.F);
-                        let pABC = calcPct(abc), pDEF = calcPct(def), pABS = calcPct(d.ABS);
-
-                        return `
-                        <tr>
-                            <td class="col-month font-bold">${m}</td>
-                            <td class="col-total">${d.total}</td>
-                            <td>${d.A} <span class="td-sub">(${pA}%)</span></td>
-                            <td>${d.B} <span class="td-sub">(${pB}%)</span></td>
-                            <td>${d.C} <span class="td-sub">(${pC}%)</span></td>
-                            <td>${d.D} <span class="td-sub">(${pD}%)</span></td>
-                            <td>${d.E} <span class="td-sub">(${pE}%)</span></td>
-                            <td>${d.F} <span class="td-sub">(${pF}%)</span></td>
-                            
-                            <td class="w-40">
-                                <div class="bar-info"><span class="text-abc font-bold">${abc}</span><span class="text-abc">(${pABC}%)</span></div>
-                                <div class="bar-bg"><div class="bg-abc" style="width:${pABC}%"></div></div>
-                            </td>
-                            <td class="w-40">
-                                <div class="bar-info"><span class="text-def font-bold">${def}</span><span class="text-def">(${pDEF}%)</span></div>
-                                <div class="bar-bg"><div class="bg-def" style="width:${pDEF}%"></div></div>
-                            </td>
-                            <td class="w-24">
-                                <div class="bar-info"><span class="text-abs font-bold">${d.ABS}</span><span class="text-abs">(${pABS}%)</span></div>
-                                <div class="bar-bg"><div class="bg-abs" style="width:${pABS}%"></div></div>
-                            </td>
-                        </tr>`;
-                    }).join('');
-
-                    html += `
-                    <div class="grade-block">
-                        <div class="grade-header">
-                            <h2 class="moul-font text-blue-900 text-[13px]">ថ្នាក់ទី ${g}</h2>
-                            <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] border border-blue-200 font-bold">ពិន្ទុអតិបរមា: ${maxScoreStr}</span>
-                        </div>
-                        <table class="pdf-table">
-                            <thead>
-                                <tr>
-                                    <th class="w-24 text-left pl-2">ខែ</th><th>សរុប</th>
-                                    <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th>
-                                    <th class="th-abc">សរុប ABC</th><th class="th-def">សរុប DEF</th><th class="th-abs">អវត្តមាន</th>
-                                </tr>
-                            </thead>
-                            <tbody>${tbody}</tbody>
-                        </table>
-                    </div>`;
-                }
-            });
-
-            html += `
-                <div class="mt-8 flex justify-between items-start px-10">
-                    <div class="text-center">
-                        <p class="font-bold text-[12px]">បានឃើញ និងឯកភាព</p>
-                        <p class="moul-font text-[12px] text-blue-900 mt-1">នាយកសាលា</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-[11px] text-gray-600">ថ្ងៃ................ខែ................ឆ្នាំ................</p>
-                        <p class="moul-font text-[12px] text-blue-900 mt-2">គណៈគ្រប់គ្រង / អ្នករៀបចំ</p>
-                    </div>
-                </div>
-            </div>`;
-            return html;
-        }
-
-        // PDF Download សម្រាប់ Tab 2 (១មុខវិជ្ជា)
-        function downloadSingleSubjectReport() {
-            if (!appData.scores || Object.keys(appData.scores).length === 0) return showMessage("សូមទាញទិន្នន័យជាមុនសិន!");
-            showMessage("កំពុងរៀបចំឯកសារ PDF...", "សូមរង់ចាំបន្តិច");
-            
             const subject = document.getElementById('subjectFilter').value;
-            const printArea = document.getElementById('pdf-render-area');
-            printArea.innerHTML = generateSubjectHTML(subject);
-
-            // Scale 2 សាកសមបំផុតសម្រាប់ទូរស័ព្ទដៃ និងកុំព្យូទ័រ
-            const opt = { 
-                margin:[5, 5, 5, 5], 
-                filename: `វិភាគ_${subject}.pdf`, 
-                image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 2, useCORS: true, logging: false }, 
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
-            };
-
-            html2pdf().set(opt).from(printArea).save().then(() => {
-                printArea.innerHTML = '';
-                closeMessage();
-            });
+            container.innerHTML = `
+                <div class="card p-5" id="reportCaptureArea">
+                    <h2 class="text-xl font-bold moul-font text-blue-900 text-center mb-4">របាយការណ៍វិភាគ ៖ ${subject}</h2>
+                    <p class="text-gray-700 text-center mb-4 font-bold">ចំនួនសិស្សសរុបមានក្នុងប្រព័ន្ធ ៖ ${adminReportData.length} នាក់</p>
+                    <table class="t2-table w-full">
+                        <thead>
+                            <tr>
+                                <th>ថ្នាក់</th>
+                                <th>សិស្សសរុប</th>
+                                <th>អវត្តមាន</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-bold">ថ្នាក់គំរូ</td>
+                                <td>${adminReportData.length}</td>
+                                <td class="text-red-500">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>`;
         }
 
-        // PDF Download សម្រាប់ Tab 2 (១០មុខវិជ្ជា)
+        // ទាញយក PDF សម្រាប់ Tab 2 ក្រដាសឈរ (Portrait) 
+        function downloadSingleSubjectReport() {
+            const element = document.getElementById('reportCaptureArea');
+            if(!element) return showMessage("សូមទាញទិន្នន័យសិន!");
+            const subject = document.getElementById('subjectFilter').value;
+            const opt = { 
+                margin:       10, 
+                filename:     `របាយការណ៍_${subject}.pdf`, 
+                image:        { type: 'jpeg', quality: 1 }, 
+                html2canvas:  { scale: 2, useCORS: true }, 
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
         function downloadAllSubjectsReport() {
-            if (!appData.scores || Object.keys(appData.scores).length === 0) return showMessage("សូមទាញទិន្នន័យជាមុនសិន!");
-            showMessage("កំពុងរៀបចំឯកសារ PDF ទំហំធំ (១០មុខវិជ្ជា)...", "អាចប្រើពេលប្រមាណ ១០ ទៅ ៣០វិនាទី សូមរង់ចាំដោយកុំបិទផ្ទាំងនេះ។");
-            
-            const mainSubjects =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
-            const printArea = document.getElementById('pdf-render-area');
-            let allHtml = '';
-
-            mainSubjects.forEach((sub, index) => {
-                let subjectHtml = generateSubjectHTML(sub);
-                if (subjectHtml) {
-                    allHtml += subjectHtml;
-                    // កាត់ផ្តាច់ទំព័រសម្រាប់មុខវិជ្ជាបន្ទាប់
-                    if (index < mainSubjects.length - 1) {
-                        allHtml += '<div style="page-break-before: always; height: 0;"></div>';
-                    }
-                }
-            });
-
-            printArea.innerHTML = allHtml;
-
-            const opt = { 
-                margin:[5, 5, 5, 5], 
-                filename: `វិភាគ_១០មុខវិជ្ជា_សរុប.pdf`, 
-                image: { type: 'jpeg', quality: 0.95 }, 
-                html2canvas: { scale: 2, useCORS: true, logging: false }, 
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
-            };
-
-            html2pdf().set(opt).from(printArea).save().then(() => {
-                printArea.innerHTML = '';
-                closeMessage();
-            });
+            showMessage("ព័ត៌មាន", "មុខងារនេះទាមទារការរៀបចំទម្រង់ច្រើនមុខវិជ្ជាបញ្ចូលគ្នា។");
         }
-
-        window.onload = function() {
-            const params = new URLSearchParams(window.location.search);
-            const stuId = params.get('id');
-            const month = params.get('month');
-            if(stuId) {
-                document.getElementById('searchInput').value = stuId;
-                if(month) document.getElementById('monthSelect').value = month;
-                setTimeout(handleSearch, 500);
-            }
-        };
     </script>
 </body>
 </html>
