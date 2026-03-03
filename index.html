@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធគ្រប់គ្រងការសិក្សា - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;700&family=Moul&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&family=Moul&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         :root { --primary-blue: #1e40af; --khmer-red: #dc2626; }
-        body { font-family: 'Kantumruy Pro', sans-serif; background: #f1f5f9; color: #1e293b; margin: 0; padding: 0; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 0; }
         .moul-font { font-family: 'Moul', serif; }
         
         .tab-btn { transition: all 0.3s ease; }
@@ -35,14 +35,6 @@
             position: relative;
         }
 
-        .report-page { 
-            width: 1122px; /* Exact A4 Landscape width */
-            background: white; 
-            color: #1e293b; 
-            padding: 40px 50px; 
-            box-sizing: border-box;
-        }
-
         /* Styles សម្រាប់ Tab 1 (លទ្ធផលសិស្ស) */
         .sketch-summary { display: flex; justify-content: space-between; align-items: center; border: 1.5px solid #e2e8f0; border-radius: 12px; margin: 15px 0; padding: 10px 0; background: #ffffff; }
         .sketch-item { flex: 1; text-align: center; position: relative; }
@@ -57,40 +49,31 @@
         .progress-bar { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
         .grade-A { color: #059669; } .grade-B { color: #2563eb; } .grade-C { color: #d97706; } .grade-D { color: #7c3aed; } .grade-E { color: #db2777; } .grade-F { color: #dc2626; }
 
-        /* Styles សម្រាប់ UI Tab 2 (របាយការណ៍) */
-        .t2-table { border-collapse: collapse; width: 100%; background: white; }
-        .t2-table th { background-color: #0f172a; color: white; border: 1px solid #334155; padding: 12px 4px; font-size: 12px; }
-        .t2-table td { border: 1px solid #e2e8f0; padding: 10px 4px; text-align: center; font-size: 12px; }
-        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 24px; overflow: hidden; }
-        .multi-progress { width: 100%; height: 12px; background: #f1f5f9; border-radius: 6px; display: flex; overflow: hidden; border: 1px solid #e2e8f0; }
-        .bar-abc-ui { height: 100%; background: #22c55e; } .bar-def-ui { height: 100%; background: #ef4444; border-left: 1px solid white; }
+        /* Styles សម្រាប់ UI Tab 2 (របាយការណ៍ - ទំនើប) */
+        .modern-card { background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid #f1f5f9; overflow: hidden; }
+        .table-modern { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .table-modern th { background: #f8fafc; color: #475569; font-weight: 600; padding: 12px 16px; text-align: center; font-size: 13px; border-bottom: 2px solid #e2e8f0; }
+        .table-modern th:first-child { text-align: left; border-top-left-radius: 12px; }
+        .table-modern th:last-child { border-top-right-radius: 12px; }
+        .table-modern td { padding: 12px 16px; text-align: center; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; }
+        .table-modern tbody tr:hover { background-color: #f8fafc; transition: all 0.2s; }
+        .table-modern td:first-child { text-align: left; font-weight: 600; color: #0f172a; }
+        
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-red { background: #fee2e2; color: #991b1b; }
+        .badge-gray { background: #f1f5f9; color: #475569; }
 
-        /* Styles សម្រាប់ PDF Export (Tab 2) */
-        .grade-block { page-break-inside: avoid; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
-        .grade-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 15px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
-        .pdf-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        .pdf-table th { background-color: #1e293b; color: white; padding: 6px 4px; border: 1px solid #334155; text-align: center; font-weight: 700; }
-        .pdf-table td { padding: 5px 4px; border: 1px solid #e2e8f0; text-align: center; font-weight: 700; }
-        .pdf-table .col-month { text-align: left; padding-left: 10px; color: #1e293b; width: 100px; }
-        .pdf-table .col-total { color: #2563eb; width: 50px; }
-        .td-sub { font-size: 9px; color: #94a3b8; font-weight: normal; margin-left: 2px; }
-        
-        .bar-info { display: flex; justify-content: space-between; width: 100%; margin-bottom: 3px; font-size: 10px; }
-        .bar-bg { width: 100%; height: 6px; background: #f1f5f9; border-radius: 4px; overflow: hidden; display: flex; }
-        .bg-abc { background-color: #10b981; } .text-abc { color: #10b981; }
-        .bg-def { background-color: #ef4444; } .text-def { color: #ef4444; }
-        .bg-abs { background-color: #64748b; } .text-abs { color: #64748b; }
-        
-        .th-abc { background-color: #166534 !important; }
-        .th-def { background-color: #991b1b !important; }
-        .th-abs { background-color: #334155 !important; }
+        .stat-bar-container { display: flex; width: 100%; height: 8px; border-radius: 4px; overflow: hidden; background: #e2e8f0; margin-top: 4px; }
+        .stat-bar-pass { background: #10b981; }
+        .stat-bar-fail { background: #ef4444; }
 
         @media print { 
             body { background: white; } 
             .no-print { display: none !important; } 
             .a4-portrait-wrapper { overflow: visible; }
             .print-area { box-shadow: none; margin: 0; padding: 0; width: 100%; max-width: none; } 
-            .card { box-shadow: none; border: 1px solid #ccc; }
+            .modern-card { box-shadow: none; border: 1px solid #cbd5e1; }
         }
     </style>
 </head>
@@ -99,12 +82,12 @@
 <!-- Main UI Wrapper -->
 <div id="main-ui" class="p-2 md:p-4">
     <!-- Tab Navigation -->
-    <div class="max-w-4xl mx-auto mb-6 flex justify-center gap-4 no-print mt-2">
-        <button onclick="switchTab('tab-student')" id="btn-tab-student" class="tab-btn active px-6 py-3 rounded-full font-bold border-2 shadow-sm flex items-center gap-2">
+    <div class="max-w-5xl mx-auto mb-6 flex justify-center gap-4 no-print mt-2">
+        <button onclick="switchTab('tab-student')" id="btn-tab-student" class="tab-btn active px-6 py-3 rounded-full font-bold border-2 shadow-sm flex items-center gap-2 text-sm md:text-base">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v7"></path></svg>
             លទ្ធផលសិស្ស (ទូទៅ)
         </button>
-        <button onclick="switchTab('tab-report')" id="btn-tab-report" class="tab-btn inactive px-6 py-3 rounded-full font-bold border-2 shadow-sm flex items-center gap-2">
+        <button onclick="switchTab('tab-report')" id="btn-tab-report" class="tab-btn inactive px-6 py-3 rounded-full font-bold border-2 shadow-sm flex items-center gap-2 text-sm md:text-base">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             របាយការណ៍ (ផ្ទៃក្នុង)
         </button>
@@ -116,15 +99,15 @@
     <div id="tab-student" class="tab-content active">
         <div class="max-w-4xl mx-auto my-6 no-print px-4">
             <div class="text-center mb-6 space-y-2">
-                <h2 class="moul-font text-blue-800 text-lg">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
+                <h2 class="moul-font text-blue-800 text-lg md:text-xl">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
                 <p class="font-bold text-gray-500">ប្រព័ន្ធត្រួតពិនិត្យលទ្ធផលសិក្សាសិស្ស</p>
             </div>
             
-            <div class="bg-white p-6 rounded-2xl shadow-xl border-t-4 border-blue-600">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-blue-600">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="space-y-1">
                         <label class="text-xs font-bold text-gray-500">ជ្រើសរើសខែ/ឆមាស</label>
-                        <select id="monthSelect" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm">
+                        <select id="monthSelect" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm focus:border-blue-500 transition-colors">
                             <option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option><option value="មីនា" selected>មីនា</option>
                             <option value="មេសា">មេសា</option><option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
                             <option value="កក្កដា">កក្កដា</option><option value="សីហា">សីហា</option><option value="កញ្ញា">កញ្ញា</option>
@@ -136,14 +119,14 @@
                     <div class="space-y-1">
                         <label class="text-xs font-bold text-gray-500">បញ្ចូលឈ្មោះ ឬ អត្តលេខ</label>
                         <div class="flex gap-2">
-                            <input type="text" id="searchInput" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm" placeholder="ស្វែងរកទីនេះ...">
-                            <button onclick="startScanner()" class="bg-gray-100 p-3 rounded-xl hover:bg-gray-200 border border-gray-200 transition-all text-blue-600">
+                            <input type="text" id="searchInput" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm focus:border-blue-500 transition-colors" placeholder="ស្វែងរកទីនេះ...">
+                            <button onclick="startScanner()" class="bg-blue-50 p-3 rounded-xl hover:bg-blue-100 border border-blue-200 transition-all text-blue-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z"/><path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z"/><path d="M7 9H2v5h5V9Zm-4 1h3v3H3v-3Zm8-6h1v1h-1V4Z"/><path d="M9 2h5v5H9V2Zm1 1v3h3V3h-3ZM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8H8Zm2 2H9V9h1v1Zm4 2h-1v1h-2v1h3v-2Zm-4 2v-1H8v1h2Z"/></svg>
                             </button>
                         </div>
                     </div>
                     <div class="flex items-end">
-                        <button onclick="handleSearch()" id="searchBtn" class="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg">
+                        <button onclick="handleSearch()" id="searchBtn" class="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-md">
                             <span>ឆែកមើលលទ្ធផល</span>
                             <div id="loader-tab1" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
                         </button>
@@ -206,31 +189,34 @@
             </div>
         </div>
 
-        <div id="action-buttons" class="no-print mt-6 border-t pt-6 hidden flex-col items-center gap-6 mb-10 max-w-4xl mx-auto">
+        <div id="action-buttons" class="no-print mt-6 border-t pt-6 hidden flex-col items-center gap-6 mb-10 max-w-4xl mx-auto px-4">
             <div class="flex justify-center gap-4 w-full flex-wrap">
-                <button onclick="downloadStudentPDF()" class="bg-emerald-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
+                <button onclick="downloadStudentPDF()" class="bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-emerald-700 transition-all flex items-center gap-2">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> ទាញយក PDF
                 </button>
-                <button onclick="window.print()" class="bg-slate-800 text-white px-10 py-3 rounded-2xl font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
+                <button onclick="window.print()" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-slate-900 transition-all flex items-center gap-2">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg> បោះពុម្ព
                 </button>
             </div>
             <div class="flex flex-col md:flex-row justify-center gap-4 w-full mt-2">
-                <button onclick="linkTelegram('Student')" class="flex-1 bg-sky-500 text-white px-6 py-3 rounded-2xl font-bold shadow-md hover:bg-sky-600 transition-all flex items-center justify-center gap-2"><svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg> ទទួលលទ្ធផលរាល់ខែ (សិស្ស)</button>
-                <button onclick="linkTelegram('Parent')" class="flex-1 bg-indigo-500 text-white px-6 py-3 rounded-2xl font-bold shadow-md hover:bg-indigo-600 transition-all flex items-center justify-center gap-2"><svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg> ទទួលលទ្ធផលរាល់ខែ (មាតាបិតា)</button>
+                <button onclick="linkTelegram('Student')" class="flex-1 bg-sky-500 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-sky-600 transition-all flex items-center justify-center gap-2"><svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg> ទទួលលទ្ធផលរាល់ខែ (សិស្ស)</button>
+                <button onclick="linkTelegram('Parent')" class="flex-1 bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-indigo-600 transition-all flex items-center justify-center gap-2"><svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg> ទទួលលទ្ធផលរាល់ខែ (មាតាបិតា)</button>
             </div>
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- TAB 2: របាយការណ៍វិភាគនិទ្ទេស (ADMIN REPORT) -->
+    <!-- TAB 2: របាយការណ៍វិភាគនិទ្ទេស (ADMIN REPORT - MODERN UI) -->
     <!-- ========================================== -->
-    <div id="tab-report" class="tab-content max-w-7xl mx-auto">
-        <div class="no-print card p-5 flex flex-col gap-4 bg-white shadow-md">
-            <div class="flex flex-wrap justify-between items-center gap-4">
-                <h1 class="text-xl font-bold moul-font text-blue-900">ប្រព័ន្ធវិភាគលទ្ធផលសិក្សា</h1>
-                <div class="flex items-center gap-3">
-                    <select id="subjectFilter" onchange="renderUI()" class="border-2 border-slate-200 p-2 rounded-lg text-sm font-bold focus:border-blue-500 outline-none min-w-[200px]">
+    <div id="tab-report" class="tab-content max-w-5xl mx-auto pb-10">
+        <div class="no-print modern-card p-6 flex flex-col gap-5 bg-white mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold moul-font text-blue-900 bg-clip-text text-transparent bg-gradient-to-r from-blue-900 to-blue-600">ប្រព័ន្ធវិភាគលទ្ធផលសិក្សា</h1>
+                    <p class="text-sm text-gray-500 mt-1 font-bold">ទិន្នន័យសម្រាប់គណៈគ្រប់គ្រងសាលា</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <select id="subjectFilter" onchange="renderAdminReport()" class="flex-1 md:flex-none border border-slate-300 p-2.5 rounded-xl text-sm font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none min-w-[200px] transition-all bg-slate-50">
                         <option value="Average">📊 មធ្យមភាគរួម (Average)</option>
                         <option value="ភាសាខ្មែរ">១. ភាសាខ្មែរ</option><option value="សីលធម៌ពលរដ្ឋ">២. សីលធម៌ពលរដ្ឋ</option>
                         <option value="ប្រវត្តិវិទ្យា">៣. ប្រវត្តិវិទ្យា</option><option value="ភូមិវិទ្យា">៤. ភូមិវិទ្យា</option>
@@ -238,28 +224,28 @@
                         <option value="គីមីវិទ្យា">៧. គីមីវិទ្យា</option><option value="ជីវវិទ្យា">៨. ជីវវិទ្យា</option>
                         <option value="ផែនដីវិទ្យា">៩. ផែនដីវិទ្យា</option><option value="ភាសាអង់គ្លេស">១០. ភាសាអង់គ្លេស</option>
                     </select>
-                    <button onclick="syncAllData()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow-sm transition-all flex gap-2 items-center">
+                    <button onclick="syncAllData()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-md transition-all flex gap-2 items-center">
                         <span>ទាញទិន្នន័យ</span>
                         <div id="loader-tab2" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
                     </button>
                 </div>
             </div>
             
-            <div class="flex flex-wrap gap-3 border-t pt-4 mt-2">
-                <button onclick="downloadSingleSubjectReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-bold shadow-sm transition-all flex gap-2 items-center text-sm">
+            <div class="flex flex-wrap gap-3 border-t border-slate-100 pt-4">
+                <button onclick="downloadAdminPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-bold shadow-sm transition-all flex gap-2 items-center text-sm">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                    របាយការណ៍មុខវិជ្ជាបច្ចុប្បន្ន (PDF)
-                </button>
-                <button onclick="downloadAllSubjectsReport()" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-bold shadow-sm transition-all flex gap-2 items-center text-sm">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                    របាយការណ៍ ១០មុខវិជ្ជា (PDF)
+                    ទាញយករបាយការណ៍បច្ចុប្បន្ន (PDF)
                 </button>
             </div>
         </div>
 
         <div id="reportContainer" class="space-y-6">
-            <div class="card p-20 text-center text-slate-400 font-bold moul-font border-dashed border-2">
-                សូមចុច "ទាញទិន្នន័យ" ដើម្បីបង្ហាញរបាយការណ៍
+            <div class="modern-card p-16 text-center border-dashed border-2 border-slate-200 bg-slate-50">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-700 moul-font mb-2">ទិន្នន័យមិនទាន់បានទាញយក</h3>
+                <p class="text-slate-500 font-medium text-sm">សូមចុចប៊ូតុង "ទាញទិន្នន័យ" នៅផ្នែកខាងលើ ដើម្បីបង្ហាញរបាយការណ៍</p>
             </div>
         </div>
     </div>
@@ -276,9 +262,9 @@
 <div id="alertModal" class="fixed inset-0 bg-black/70 z-[60] hidden flex items-center justify-center backdrop-blur-sm no-print">
     <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl transform transition-all text-center">
         <div id="loadingSpinner" class="hidden mx-auto mb-4 animate-spin h-10 w-10 border-4 border-blue-600 border-t-transparent rounded-full"></div>
-        <h3 class="text-lg leading-6 font-bold text-gray-900 mb-2" id="alertMessage">សាររំលឹក</h3>
-        <p id="alertSubMessage" class="text-sm text-gray-500 mb-4 hidden"></p>
-        <button id="btnAlertClose" onclick="closeMessage()" class="mt-4 w-full inline-flex justify-center rounded-xl px-4 py-2 bg-blue-600 text-white font-bold">យល់ព្រម</button>
+        <h3 class="text-lg leading-6 font-bold text-gray-900 mb-2 moul-font" id="alertMessage">សាររំលឹក</h3>
+        <p id="alertSubMessage" class="text-sm text-gray-500 mb-4 font-medium"></p>
+        <button id="btnAlertClose" onclick="closeMessage()" class="mt-4 w-full inline-flex justify-center rounded-xl px-4 py-3 bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors">យល់ព្រម</button>
     </div>
 </div>
 
@@ -286,10 +272,14 @@
     // ========================================================
     // ⚙️ ការកំណត់ទូទៅ (CONFIGURATION)
     // ========================================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbyBz8okdY7sypvBfDsquVws2GFmGcNXTBvxg9xwBoldLTj9oA2FKn-0HqEFqIocEAbg/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbzkZ5Zir92pRrsZkdGXz_0VnOWMVofbsa8Qvud-C2DUTzrOP3lN7lkUZJ9BVqpjkCc/exec"; 
     const TELEGRAM_BOT_USERNAME = "kampongtralach_bot";
     const ADMIN_PASSWORD = "hs@8888"; 
     
+    // Global Variables សម្រាប់ Tab 2
+    let globalAdminData = []; 
+    let globalMaxConfig = [];
+
     // ========================================================
     // LOGIC ប្តូរ TAB 
     // ========================================================
@@ -357,6 +347,7 @@
         
         document.getElementById('alertModal').classList.remove('hidden');
     }
+    
     function closeMessage() { document.getElementById('alertModal').classList.add('hidden'); }
 
     // ========================================================
@@ -423,14 +414,14 @@
                                 <td class="text-gray-400 font-normal">${displayIndex}</td>
                                 <td class="subject-col">${sub}</td>
                                 <td class="text-gray-400">${maxScore}</td>
-                                <td class="text-blue-700">${score}</td>
+                                <td class="text-blue-700 font-bold">${score}</td>
                                 <td class="px-3">
                                     <div class="flex items-center gap-2">
                                         <div class="progress-container"><div class="progress-bar" style="width: ${percent}%; background-color: ${barColor};"></div></div>
                                         <span class="text-[10px] w-8 text-left text-gray-500">${Math.round(percent)}%</span>
                                     </div>
                                 </td>
-                                <td class="grade-${grade}">${grade}</td>
+                                <td class="grade-${grade} font-bold">${grade}</td>
                             </tr>`;
                         displayIndex++;
                     }
@@ -454,358 +445,199 @@
         }
     }
 
-    // PDF Download សម្រាប់ Tab 1 (Fix ដាច់ទំព័រ)
-    function downloadStudentPDF() {
+    // ជួសជុលបញ្ហា PDF មិនចេញអក្សរខ្មែរ (ប្រើ html2canvas CORS និង រង់ចាំ Font)
+    async function downloadStudentPDF() {
         showMessage("កំពុងរៀបចំឯកសារ PDF...", "ធានាថាចេញ ១ទំព័រស្អាត! សូមរង់ចាំបន្តិច...", true);
         const element = document.getElementById('capture-area');
-        const name = document.getElementById('resName').innerText;
         
-        // កំណត់ windowWidth: 794 ដើម្បីបង្ខំឲ្យ html2canvas មើលឃើញក្នុងទំហំ A4 ជានិច្ច ទោះបើកក្នុងទូរស័ព្ទក៏ដោយ (ដោះស្រាយបញ្ហាដាច់ ២សន្លឹក)
-        const opt = { 
-            margin: 0, 
-            filename: `លទ្ធផល_${name}.pdf`, 
-            image: { type: 'jpeg', quality: 0.98 }, 
-            html2canvas: { scale: 2, useCORS: true, windowWidth: 794, scrollY: 0 }, 
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        // ដ៏សំខាន់៖ រង់ចាំឲ្យ Font ខ្មែរ Load ពេញលេញសិនមុននឹង Render PDF
+        await document.fonts.ready;
+
+        const stuName = document.getElementById('resName').innerText || "Student";
+        const month = document.getElementById('resMonth').innerText || "Result";
+
+        const opt = {
+            margin:       0,
+            filename:     `លទ្ធផលសិក្សា_${stuName}_${month}.pdf`,
+            image:        { type: 'jpeg', quality: 1.0 },
+            html2canvas:  { 
+                scale: 2,           /* គុណភាពច្បាស់ */
+                useCORS: true,      /* ដ៏សំខាន់សម្រាប់ការទាញ Font និង រូបភាពពីក្រៅ */
+                logging: false,
+                letterRendering: true
+            },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
 
-        // រង់ចាំអោយ Font Load ពេញលេញមុននឹង Capture
-        document.fonts.ready.then(() => {
-            setTimeout(() => {
-                html2pdf().set(opt).from(element).save().then(() => {
-                    closeMessage();
-                }).catch(err => {
-                    alert("មានបញ្ហាក្នុងការទាញយក PDF: " + err);
-                    closeMessage();
-                });
-            }, 300);
+        html2pdf().set(opt).from(element).save().then(() => {
+            closeMessage();
+        }).catch(err => {
+            console.error(err);
+            showMessage("មានបញ្ហាក្នុងការទាញយក PDF", "សូមសាកល្បងម្តងទៀត!");
         });
     }
 
-    let html5QrcodeScanner;
+    // QR Scanner Placeholder 
     function startScanner() {
-        const readerDiv = document.getElementById('qr-reader');
-        if (readerDiv.classList.contains('hidden')) {
-            readerDiv.classList.remove('hidden');
-            if (!html5QrcodeScanner) {
-                html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
-                html5QrcodeScanner.render(
-                    (decodedText) => {
-                        document.getElementById('searchInput').value = decodedText;
-                        document.getElementById('qr-reader').classList.add('hidden');
-                        html5QrcodeScanner.clear();
-                        handleSearch();
-                    }, (err) => { }
-                );
-            }
-        } else {
-            readerDiv.classList.add('hidden');
-            if(html5QrcodeScanner) { html5QrcodeScanner.clear(); html5QrcodeScanner = null; }
-        }
+        alert("មុខងារស្កេនកូដកំពុងស្ថិតក្នុងការអភិវឌ្ឍន៍!");
     }
 
-    // ========================================================
-    // TAB 2: របាយការណ៍វិភាគនិទ្ទេស (ADMIN REPORT LOGIC & PDF)
-    // ========================================================
-    let appData = { scores: {}, configMax: {} };
-    const monthsOrder =["វិច្ឆិកា", "ធ្នូ", "មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "ប្រឡងឆមាសទី១", "ប្រឡងឆមាសទី២", "ប្រចាំឆ្នាំ"];
-    const targetGroups =["7", "8", "9", "10", "11 SC", "11 SS", "11 រួម", "12 SC", "12 SS", "12 រួម", "សរុបរួមគ្រប់ថ្នាក់"];
 
+    // ========================================================
+    // TAB 2: របាយការណ៍វិភាគនិទ្ទេស (ADMIN REPORT - MODERN)
+    // ========================================================
+    
     async function syncAllData() {
+        const month = document.getElementById('monthSelect').value;
         document.getElementById('loader-tab2').classList.remove('hidden');
+        showMessage("កំពុងទាញទិន្នន័យសរុប...", "សូមរង់ចាំបន្តិច ប្រព័ន្ធកំពុងគណនា...", true);
+        
         try {
-            const res = await fetch(`${API_URL}?action=getAllData`);
-            const result = await res.json();
-            if(result.error) throw new Error(result.error);
-            appData = result;
-            renderUI();
-        } catch (err) {
-            alert("Error: " + err.message);
+            const[dataRes, configRes] = await Promise.all([
+                fetch(`${API_URL}?month=${encodeURIComponent(month)}`),
+                fetch(`${API_URL}?month=Config_MaxScores`)
+            ]);
+            
+            globalAdminData = await dataRes.json();
+            globalMaxConfig = await configRes.json();
+            
+            closeMessage();
+            renderAdminReport();
+        } catch(e) {
+            console.error(e);
+            showMessage("មានបញ្ហា!", "មិនអាចទាញទិន្នន័យរដ្ឋបាលបានទេ។");
         } finally {
             document.getElementById('loader-tab2').classList.add('hidden');
         }
     }
 
-    function getReportStatsForSubject(sub) {
-        let stats = {};
-        if (!appData.scores || Object.keys(appData.scores).length === 0) return null;
-
-        for (let m in appData.scores) {
-            appData.scores[m].forEach(s => {
-                let originalGrade = (s["Grade"] || s["ថ្នាក់"] || "").toString().trim();
-                let lvMatch = originalGrade.match(/\d+/);
-                if (!lvMatch) return;
-                let lvNum = lvMatch[0];
-                let levelKey = lvNum;
-                
-                let configForGrade = appData.configMax[originalGrade];
-                if (configForGrade) {
-                    let classType = (configForGrade["ប្រភេទថ្នាក់"] || "").toString().trim().toUpperCase();
-                    if ((lvNum === "11" || lvNum === "12") && classType) levelKey = lvNum + " " + classType;
-                }
-
-                let maxScore = (sub === "Average") ? 10 : (configForGrade && configForGrade[sub] ? cleanNumber(configForGrade[sub]) : 50);
-                let score = (sub === "Average") ? (s["Average"] || s["មធ្យមភាគ"]) : s[sub];
-                let grade = getGradeValue(score, maxScore);
-
-                let sex = (s["Gender"] || s["ភេទ"] || "").toString().trim().toLowerCase();
-                let isF = (sex.includes("ស្រី") || sex === "ស" || sex === "f");
-
-                const update = (k) => {
-                    if (!stats[k]) stats[k] = {};
-                    if (!stats[k][m]) stats[k][m] = { A:0, B:0, C:0, D:0, E:0, F:0, ABS:0, total:0, f:0 };
-                    let d = stats[k][m];
-                    if (grade !== "ABS") { d[grade]++; } else { d.ABS++; }
-                    d.total++;
-                    if (isF) d.f++;
-                };
-
-                update(levelKey);
-                if (lvNum === "11") update("11 រួម");
-                if (lvNum === "12") update("12 រួម");
-                update("សរុបរួមគ្រប់ថ្នាក់");
-            });
-        }
-        return stats;
-    }
-
-    // Render UI លើអេក្រង់
-    function renderUI() {
-        const sub = document.getElementById('subjectFilter').value;
+    function renderAdminReport() {
         const container = document.getElementById('reportContainer');
-        container.innerHTML = '';
-        
-        let stats = getReportStatsForSubject(sub);
-        if (!stats) {
-            container.innerHTML = '<div class="card p-10 text-center text-red-500 moul-font">រកមិនឃើញទិន្នន័យ! សូមចុចប៊ូតុងទាញទិន្នន័យ។</div>';
+        if (!globalAdminData || globalAdminData.length === 0) {
+            container.innerHTML = `<div class="modern-card p-10 text-center text-red-500 font-bold">មិនមានទិន្នន័យសម្រាប់ខែនេះទេ!</div>`;
             return;
         }
 
-        targetGroups.forEach(g => {
-            if (stats[g]) {
-                const div = document.createElement('div');
-                div.className = "card p-5";
-                let sortedMonths = Object.keys(stats[g]).sort((a,b) => monthsOrder.indexOf(a) - monthsOrder.indexOf(b));
+        const selectedSubject = document.getElementById('subjectFilter').value;
+        
+        // Group by Grade (Class)
+        const classData = {};
+        
+        globalAdminData.forEach(student => {
+            let className = student.Grade || "ផ្សេងៗ";
+            if (!classData[className]) {
+                classData[className] = { total: 0, A:0, B:0, C:0, D:0, E:0, F:0, ABS:0, totalScore: 0 };
+            }
+            
+            classData[className].total++;
+            
+            if (selectedSubject === 'Average') {
+                // គណនាតាមមធ្យមភាគ
+                let avg = cleanNumber(student.Average);
+                if (isNaN(avg)) classData[className].ABS++;
+                else {
+                    let grade = getGradeValue(avg, 10); // មធ្យមភាគពេញ 10
+                    if(classData[className][grade] !== undefined) classData[className][grade]++;
+                }
+            } else {
+                // គណនាតាមមុខវិជ្ជា
+                let score = cleanNumber(student[selectedSubject]);
+                let gradeConfig = globalMaxConfig.find(c => c["កម្រិតថ្នាក់"]?.toString().trim() === className.toString().trim());
+                let maxScore = gradeConfig && gradeConfig[selectedSubject] ? cleanNumber(gradeConfig[selectedSubject]) : 50;
                 
-                let rows = sortedMonths.map(m => {
-                    let d = stats[g][m];
-                    let abc = d.A + d.B + d.C;
-                    let def = d.D + d.E + d.F;
-                    let pABC = d.total > 0 ? Math.round((abc/d.total)*100) : 0;
-                    let pDEF = d.total > 0 ? Math.round((def/d.total)*100) : 0;
-
-                    return `<tr>
-                        <td class="font-bold bg-slate-50">${m}</td>
-                        <td class="font-bold text-blue-800">${d.total}(${d.f})</td>
-                        <td class="text-green-600 font-bold">${d.A}</td><td>${d.B}</td><td>${d.C}</td>
-                        <td class="text-orange-600 font-bold">${d.D}</td><td>${d.E}</td><td class="text-red-600 font-bold">${d.F}</td>
-                        <td class="text-slate-400">${d.ABS}</td>
-                        <td class="bg-green-50 font-bold text-green-700">${abc}<br><small>${pABC}%</small></td>
-                        <td class="bg-red-50 font-bold text-red-700">${def}<br><small>${pDEF}%</small></td>
-                        <td class="w-40 px-4"><div class="multi-progress"><div class="bar-abc-ui" style="width:${pABC}%"></div><div class="bar-def-ui" style="width:${pDEF}%"></div></div></td>
-                    </tr>`;
-                }).join('');
-
-                div.innerHTML = `
-                    <h3 class="font-bold moul-font mb-3 text-slate-700">កម្រិតថ្នាក់ទី ${g} - ${sub}</h3>
-                    <table class="t2-table">
-                        <thead><tr>
-                            <th>ខែ</th><th>សរុប(ស្រី)</th>
-                            <th class="bg-green-600">A</th><th class="bg-green-600">B</th><th class="bg-green-600">C</th>
-                            <th class="bg-red-600">D</th><th class="bg-red-600">E</th><th class="bg-red-600">F</th>
-                            <th>អវត្ត</th><th class="bg-green-700">សរុប ABC</th><th class="bg-red-700">សរុប DEF</th><th>ក្រាប</th>
-                        </tr></thead>
-                        <tbody>${rows}</tbody>
-                    </table>`;
-                container.appendChild(div);
+                if (isNaN(score)) classData[className].ABS++;
+                else {
+                    let grade = getGradeValue(score, maxScore);
+                    if(classData[className][grade] !== undefined) classData[className][grade]++;
+                }
             }
         });
-    }
 
-    // បង្កើតកូដ HTML សម្រាប់ PDF (១ មុខវិជ្ជា)
-    function generateSubjectHTML(subject) {
-        let stats = getReportStatsForSubject(subject);
-        if (!stats) return "";
-
+        // Generate HTML UI
         let html = `
-        <div class="report-page mx-auto">
-            <div class="text-center space-y-1 mb-2">
-                <h2 class="moul-font text-[15px] text-blue-900">ព្រះរាជាណាចក្រកម្ពុជា</h2>
-                <h2 class="moul-font text-[15px] text-blue-900">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
-                <div class="flex justify-center items-center gap-1 opacity-30 mt-1">
-                    <div class="w-2 h-2 rounded-full bg-blue-900"></div><div class="w-16 h-[1px] bg-blue-900"></div><div class="w-2 h-2 rounded-full bg-blue-900"></div>
-                </div>
+        <div class="modern-card p-0 overflow-x-auto">
+            <div class="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800 moul-font text-lg">
+                    របាយការណ៍៖ <span class="text-blue-600">${selectedSubject === 'Average' ? 'មធ្យមភាគរួម' : selectedSubject}</span>
+                </h3>
+                <span class="badge badge-gray text-sm px-3 py-1 border border-slate-200">សរុបថ្នាក់៖ ${Object.keys(classData).length}</span>
             </div>
-            <div class="mt-2 text-[12px] font-bold text-blue-900 leading-tight">
-                <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
-                <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
-                <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
-            </div>
-            <h1 class="moul-font text-blue-800 text-center text-[18px] mt-4 mb-6">របាយការណ៍វិភាគលទ្ធផលសិក្សាសិស្ស <span class="text-red-600">មុខវិជ្ជា៖ ${subject}</span></h1>
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th class="w-32">ថ្នាក់</th>
+                        <th>សិស្សសរុប</th>
+                        <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th>
+                        <th class="text-red-600">F</th>
+                        <th class="text-slate-400">ABS</th>
+                        <th class="w-48">អត្រាជាប់/ធ្លាក់</th>
+                    </tr>
+                </thead>
+                <tbody>
         `;
 
-        targetGroups.forEach(g => {
-            if (stats[g] && Object.keys(stats[g]).length > 0) {
-                
-                let maxScoreStr = "50"; 
-                if(subject === "Average") maxScoreStr = "10";
-                else {
-                    let sampleGradeConfig = Object.keys(appData.configMax).find(k => k.includes(g.split(" ")[0]));
-                    if(sampleGradeConfig && appData.configMax[sampleGradeConfig][subject]) {
-                        maxScoreStr = appData.configMax[sampleGradeConfig][subject];
-                    }
-                }
+        Object.keys(classData).sort().forEach(cls => {
+            let d = classData[cls];
+            let passCount = d.A + d.B + d.C + d.D + d.E;
+            let totalActive = passCount + d.F; // មិនរាប់អ្នកអវត្តមាន
+            let passPercent = totalActive > 0 ? Math.round((passCount/totalActive)*100) : 0;
+            let failPercent = totalActive > 0 ? 100 - passPercent : 0;
 
-                let sortedMonths = Object.keys(stats[g]).sort((a,b) => monthsOrder.indexOf(a) - monthsOrder.indexOf(b));
-                
-                let tbody = sortedMonths.map(m => {
-                    let d = stats[g][m];
-                    let abc = d.A + d.B + d.C;
-                    let def = d.D + d.E + d.F;
-                    
-                    const calcPct = (val) => d.total > 0 ? Math.round((val/d.total)*100) : 0;
-                    let pA = calcPct(d.A), pB = calcPct(d.B), pC = calcPct(d.C);
-                    let pD = calcPct(d.D), pE = calcPct(d.E), pF = calcPct(d.F);
-                    let pABC = calcPct(abc), pDEF = calcPct(def), pABS = calcPct(d.ABS);
-
-                    return `
-                    <tr>
-                        <td class="col-month font-bold">${m}</td>
-                        <td class="col-total">${d.total}</td>
-                        <td>${d.A} <span class="td-sub">(${pA}%)</span></td>
-                        <td>${d.B} <span class="td-sub">(${pB}%)</span></td>
-                        <td>${d.C} <span class="td-sub">(${pC}%)</span></td>
-                        <td>${d.D} <span class="td-sub">(${pD}%)</span></td>
-                        <td>${d.E} <span class="td-sub">(${pE}%)</span></td>
-                        <td>${d.F} <span class="td-sub">(${pF}%)</span></td>
-                        
-                        <td class="w-40">
-                            <div class="bar-info"><span class="text-abc font-bold">${abc}</span><span class="text-abc">(${pABC}%)</span></div>
-                            <div class="bar-bg"><div class="bg-abc" style="width:${pABC}%"></div></div>
-                        </td>
-                        <td class="w-40">
-                            <div class="bar-info"><span class="text-def font-bold">${def}</span><span class="text-def">(${pDEF}%)</span></div>
-                            <div class="bar-bg"><div class="bg-def" style="width:${pDEF}%"></div></div>
-                        </td>
-                        <td class="w-24">
-                            <div class="bar-info"><span class="text-abs font-bold">${d.ABS}</span><span class="text-abs">(${pABS}%)</span></div>
-                            <div class="bar-bg"><div class="bg-abs" style="width:${pABS}%"></div></div>
-                        </td>
-                    </tr>`;
-                }).join('');
-
-                html += `
-                <div class="grade-block">
-                    <div class="grade-header">
-                        <h2 class="moul-font text-blue-900 text-[14px]">ថ្នាក់ទី ${g}</h2>
-                        <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] border border-blue-200 font-bold">ពិន្ទុអតិបរមា: ${maxScoreStr}</span>
-                    </div>
-                    <table class="pdf-table">
-                        <thead>
-                            <tr>
-                                <th class="w-24 text-left pl-2">ខែ</th><th>សរុប</th>
-                                <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th>
-                                <th class="th-abc">សរុប ABC</th><th class="th-def">សរុប DEF</th><th class="th-abs">អវត្តមាន</th>
-                            </tr>
-                        </thead>
-                        <tbody>${tbody}</tbody>
-                    </table>
-                </div>`;
-            }
+            html += `
+                <tr>
+                    <td><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-500"></div> ${cls}</div></td>
+                    <td><span class="font-bold text-blue-700">${d.total}</span></td>
+                    <td><span class="${d.A > 0 ? 'badge badge-green' : 'text-slate-300'}">${d.A}</span></td>
+                    <td><span class="${d.B > 0 ? 'badge badge-green' : 'text-slate-300'}">${d.B}</span></td>
+                    <td><span class="${d.C > 0 ? 'font-bold text-emerald-600' : 'text-slate-300'}">${d.C}</span></td>
+                    <td><span class="${d.D > 0 ? 'font-bold text-orange-500' : 'text-slate-300'}">${d.D}</span></td>
+                    <td><span class="${d.E > 0 ? 'font-bold text-orange-400' : 'text-slate-300'}">${d.E}</span></td>
+                    <td><span class="${d.F > 0 ? 'badge badge-red' : 'text-slate-300'}">${d.F}</span></td>
+                    <td><span class="text-slate-400 text-xs">${d.ABS}</span></td>
+                    <td>
+                        <div class="flex justify-between text-[11px] font-bold mb-1">
+                            <span class="text-emerald-600">ជាប់ ${passPercent}%</span>
+                            <span class="text-red-500">ធ្លាក់ ${failPercent}%</span>
+                        </div>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar-pass" style="width: ${passPercent}%"></div>
+                            <div class="stat-bar-fail" style="width: ${failPercent}%"></div>
+                        </div>
+                    </td>
+                </tr>
+            `;
         });
 
-        html += `
-            <div class="mt-8 flex justify-between items-start px-10">
-                <div class="text-center">
-                    <p class="font-bold text-[13px]">បានឃើញ និងឯកភាព</p>
-                    <p class="moul-font text-[13px] text-blue-900 mt-1">នាយកសាលា</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-[12px] text-gray-600">ថ្ងៃ................ខែ................ឆ្នាំ................</p>
-                    <p class="moul-font text-[13px] text-blue-900 mt-2">គណៈគ្រប់គ្រង / អ្នករៀបចំ</p>
-                </div>
-            </div>
-        </div>`;
-        return html;
+        html += `</tbody></table></div>`;
+        container.innerHTML = html;
     }
 
-    // ល្បិចថ្មី៖ បិទ UI ធម្មតាចោល រួចយក UI សម្រាប់ Print មកបង្ហាញធំពេញអេក្រង់ ដើម្បីអោយទូរស័ព្ទថតចេញជា PDF បាន ១០០% (បិទក្រដាស ស)
-    function executeTab2PDF(htmlContent, filename) {
+    // PDF សម្រាប់ Admin Tab
+    async function downloadAdminPDF() {
+        const container = document.getElementById('reportContainer');
+        if(container.innerText.includes('ទិន្នន័យមិនទាន់បានទាញយក') || container.innerText.includes('មិនមានទិន្នន័យ')) {
+            return showMessage("បរាជ័យ!", "សូមទាញទិន្នន័យមុននឹងទាញយក PDF។");
+        }
+
         showMessage("កំពុងរៀបចំឯកសារ PDF...", "សូមរង់ចាំបន្តិច...", true);
+        await document.fonts.ready;
 
-        const mainUI = document.getElementById('main-ui');
-        const exportContainer = document.getElementById('pdf-export-container');
+        const subject = document.getElementById('subjectFilter').value;
+        const month = document.getElementById('monthSelect').value;
 
-        // លាក់ UI ចោល, បង្ហាញផ្ទាំង PDF អោយ Browser ឃើញផ្ទាល់ (វាស្ថិតនៅក្រោយ Modal លោតវិលៗ)
-        mainUI.style.display = 'none';
-        exportContainer.style.display = 'block';
-        exportContainer.innerHTML = htmlContent;
-
-        const opt = { 
-            margin: 0, 
-            filename: filename, 
-            image: { type: 'jpeg', quality: 0.98 }, 
-            html2canvas: { scale: 2, useCORS: true, windowWidth: 1122, scrollY: 0 }, 
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
-            pagebreak: { mode: ['css', 'legacy'] }
+        const opt = {
+            margin:       0.3,
+            filename:     `របាយការណ៍_${subject}_${month}.pdf`,
+            image:        { type: 'jpeg', quality: 1.0 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
         };
 
-        // ទុកពេល 500ms ដើម្បីអោយ Browser Render Font ខ្មែរ រួចទើប Capture
-        setTimeout(() => {
-            html2pdf().set(opt).from(exportContainer).save().then(() => {
-                // ពេលថតចប់ លុបវាចោល ហើយបង្ហាញ UI ដើមមកវិញ
-                exportContainer.innerHTML = '';
-                exportContainer.style.display = 'none';
-                mainUI.style.display = 'block'; 
-                closeMessage();
-            }).catch(err => {
-                alert("មានបញ្ហាក្នុងការទាញយក PDF: " + err);
-                exportContainer.style.display = 'none';
-                mainUI.style.display = 'block';
-                closeMessage();
-            });
-        }, 500);
-    }
-
-    // PDF Download សម្រាប់ Tab 2 (១មុខវិជ្ជា)
-    function downloadSingleSubjectReport() {
-        if (!appData.scores || Object.keys(appData.scores).length === 0) return showMessage("សូមទាញទិន្នន័យជាមុនសិន!");
-        const subject = document.getElementById('subjectFilter').value;
-        const html = generateSubjectHTML(subject);
-        executeTab2PDF(html, `វិភាគ_${subject}.pdf`);
-    }
-
-    // PDF Download សម្រាប់ Tab 2 (១០មុខវិជ្ជា)
-    function downloadAllSubjectsReport() {
-        if (!appData.scores || Object.keys(appData.scores).length === 0) return showMessage("សូមទាញទិន្នន័យជាមុនសិន!");
-        
-        const mainSubjects =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
-        let allHtml = '';
-
-        mainSubjects.forEach((sub, index) => {
-            let subjectHtml = generateSubjectHTML(sub);
-            if (subjectHtml) {
-                allHtml += subjectHtml;
-                // ដាក់សញ្ញាកាត់ទំព័រ
-                if (index < mainSubjects.length - 1) {
-                    allHtml += '<div class="html2pdf__page-break"></div>';
-                }
-            }
+        html2pdf().set(opt).from(container).save().then(() => {
+            closeMessage();
         });
-
-        executeTab2PDF(allHtml, `វិភាគ_១០មុខវិជ្ជា_សរុប.pdf`);
     }
 
-    window.onload = function() {
-        const params = new URLSearchParams(window.location.search);
-        const stuId = params.get('id');
-        const month = params.get('month');
-        if(stuId) {
-            document.getElementById('searchInput').value = stuId;
-            if(month) document.getElementById('monthSelect').value = month;
-            setTimeout(handleSearch, 500);
-        }
-    };
 </script>
 </body>
 </html>
