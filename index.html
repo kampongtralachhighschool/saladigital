@@ -3,274 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធពិនិត្យលទ្ធផលសិក្សា - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងការសិក្សា - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;700&family=Moul&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;700&family=Moul&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
-        :root {
-            --primary-blue: #1e40af;
-            --khmer-red: #dc2626;
-        }
-        body { 
-            font-family: 'Kantumruy Pro', sans-serif; 
-            background: #f1f5f9;
-            color: #1e293b;
-        }
+        :root { --primary-blue: #1e40af; --khmer-red: #dc2626; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background: #f1f5f9; color: #1e293b; }
         .moul-font { font-family: 'Moul', serif; }
-        .print-area {
-            background: white;
-            width: 210mm;
-            min-height: 297mm;
-            margin: 20px auto;
-            padding: 12mm 15mm;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            position: relative;
-        }
         
-        .sketch-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            margin: 20px 0;
-            padding: 12px 0;
-            background: #ffffff;
-        }
-        .sketch-item {
-            flex: 1;
-            text-align: center;
-            position: relative;
-        }
-        .sketch-item:not(:last-child)::after {
-            content: "";
-            position: absolute;
-            right: 0;
-            top: 10%;
-            height: 80%;
-            width: 1px;
-            background-color: #e2e8f0;
-        }
-        .sketch-label {
-            font-size: 11px;
-            color: #64748b;
-            font-weight: bold;
-            margin-bottom: 2px;
-        }
-        .sketch-value {
-            font-size: 22px;
-            font-weight: 800;
-        }
+        .tab-btn { transition: all 0.3s ease; }
+        .tab-btn.active { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); }
+        .tab-btn.inactive { background-color: white; color: #64748b; border-color: #cbd5e1; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-        th, td { border: 1px solid #cbd5e1; padding: 6px 4px; text-align: center; font-size: 12px; }
-        th { background-color: #f8fafc; color: var(--primary-blue); font-weight: 700; height: 35px; }
+        .print-area { background: white; width: 210mm; min-height: 297mm; margin: 20px auto; padding: 12mm 15mm; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; }
+        .sketch-summary { display: flex; justify-content: space-between; align-items: center; border: 1.5px solid #e2e8f0; border-radius: 12px; margin: 20px 0; padding: 12px 0; background: #ffffff; }
+        .sketch-item { flex: 1; text-align: center; position: relative; }
+        .sketch-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background-color: #e2e8f0; }
+        .sketch-label { font-size: 11px; color: #64748b; font-weight: bold; margin-bottom: 2px; }
+        .sketch-value { font-size: 22px; font-weight: 800; }
+        .t1-table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        .t1-table th, .t1-table td { border: 1px solid #cbd5e1; padding: 6px 4px; text-align: center; font-size: 12px; }
+        .t1-table th { background-color: #f8fafc; color: var(--primary-blue); font-weight: 700; height: 35px; }
         .subject-col { text-align: left; padding-left: 10px; font-weight: bold; font-size: 13px; width: 140px; }
-        
-        .progress-container {
-            width: 100%;
-            background-color: #f1f5f9;
-            border-radius: 10px;
-            height: 8px;
-            overflow: hidden;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .progress-bar {
-            height: 100%;
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
-        
-        .grade-A { color: #059669; }
-        .grade-B { color: #2563eb; }
-        .grade-C { color: #d97706; }
-        .grade-D { color: #7c3aed; }
-        .grade-E { color: #db2777; }
-        .grade-F { color: #dc2626; }
+        .progress-container { width: 100%; background-color: #f1f5f9; border-radius: 10px; height: 8px; overflow: hidden; display: inline-block; vertical-align: middle; }
+        .progress-bar { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+        .grade-A { color: #059669; } .grade-B { color: #2563eb; } .grade-C { color: #d97706; } .grade-D { color: #7c3aed; } .grade-E { color: #db2777; } .grade-F { color: #dc2626; }
 
-        @media print {
-            body { background: white; }
-            .no-print { display: none !important; }
-            .print-area { box-shadow: none; margin: 0; padding: 10mm; width: 100%; }
+        .t2-table { border-collapse: collapse; width: 100%; background: white; }
+        .t2-table th { background-color: #0f172a; color: white; border: 1px solid #334155; padding: 12px 4px; font-size: 11px; }
+        .t2-table td { border: 1px solid #e2e8f0; padding: 10px 4px; text-align: center; font-size: 12px; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 24px; overflow: hidden; }
+        .multi-progress { width: 100%; height: 12px; background: #f1f5f9; border-radius: 6px; display: flex; overflow: hidden; border: 1px solid #e2e8f0; }
+        .bar-abc { height: 100%; background: #22c55e; } .bar-def { height: 100%; background: #ef4444; border-left: 1px solid white; }
+
+        @media print { 
+            body { background: white; } 
+            .no-print { display: none !important; } 
+            .print-area { box-shadow: none; margin: 0; padding: 10mm; width: 100%; } 
+            .card { box-shadow: none; border: 1px solid #ccc; }
         }
     </style>
 </head>
-<body>
+<body class="p-2 md:p-4">
 
-    <!-- Search Section -->
-    <div class="max-w-4xl mx-auto my-6 no-print px-4">
-        <div class="text-center mb-6 space-y-2">
-            <h2 class="moul-font text-blue-800 text-lg">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
-            <p class="font-bold text-gray-500">ប្រព័ន្ធត្រួតពិនិត្យលទ្ធផលសិក្សាសិស្ស</p>
-        </div>
-        
-        <div class="bg-white p-6 rounded-2xl shadow-xl border-t-4 border-blue-600">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-gray-500">ជ្រើសរើសខែ/ឆមាស</label>
-                    <select id="monthSelect" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm">
-                        <option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option><option value="មីនា">មីនា</option>
-                        <option value="មេសា">មេសា</option><option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
-                        <option value="កក្កដា">កក្កដា</option><option value="សីហា">សីហា</option><option value="កញ្ញា">កញ្ញា</option>
-                        <option value="តុលា">តុលា</option><option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option>
-                        <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option><option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
-                        <option value="ប្រចាំឆ្នាំ">ប្រចាំឆ្នាំ</option>
-                    </select>
-                </div>
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-gray-500">បញ្ចូលឈ្មោះ ឬ អត្តលេខ</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="searchInput" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm" placeholder="ស្វែងរកទីនេះ...">
-                        <button onclick="startScanner()" class="bg-gray-100 p-3 rounded-xl hover:bg-gray-200 border border-gray-200 transition-all text-blue-600" title="ស្កេនកូដ QR">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z"/>
-                                <path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z"/>
-                                <path d="M7 9H2v5h5V9Zm-4 1h3v3H3v-3Zm8-6h1v1h-1V4Z"/>
-                                <path d="M9 2h5v5H9V2Zm1 1v3h3V3h-3ZM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8H8Zm2 2H9V9h1v1Zm4 2h-1v1h-2v1h3v-2Zm-4 2v-1H8v1h2Z"/>
-                            </svg>
+    <!-- Tab Navigation -->
+    <div class="max-w-4xl mx-auto mb-6 flex justify-center gap-4 no-print mt-4">
+        <button onclick="switchTab('tab-student')" id="btn-tab-student" class="tab-btn active px-6 py-3 rounded-full font-bold border-2 shadow-sm flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v7"></path></svg>
+            លទ្ធផលសិស្ស (ទូទៅ)
+        </button>
+        <button onclick="switchTab('tab-report')" id="btn-tab-report" class="tab-btn inactive px-6 py-3 rounded-full font-bold border-2 shadow-sm flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            របាយការណ៍ (ផ្ទៃក្នុង)
+        </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: លទ្ធផលសិស្ស -->
+    <!-- ========================================== -->
+    <div id="tab-student" class="tab-content active">
+        <div class="max-w-4xl mx-auto my-6 no-print px-4">
+            <div class="text-center mb-6 space-y-2">
+                <h2 class="moul-font text-blue-800 text-lg">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
+                <p class="font-bold text-gray-500">ប្រព័ន្ធត្រួតពិនិត្យលទ្ធផលសិក្សាសិស្ស</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-xl border-t-4 border-blue-600">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-gray-500">ជ្រើសរើសខែ/ឆមាស</label>
+                        <select id="monthSelect" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm">
+                            <option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option><option value="មីនា" selected>មីនា</option>
+                            <option value="មេសា">មេសា</option><option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
+                            <option value="កក្កដា">កក្កដា</option><option value="សីហា">សីហា</option><option value="កញ្ញា">កញ្ញា</option>
+                            <option value="តុលា">តុលា</option><option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option>
+                            <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option><option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                            <option value="ប្រចាំឆ្នាំ">ប្រចាំឆ្នាំ</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-gray-500">បញ្ចូលឈ្មោះ ឬ អត្តលេខ</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="searchInput" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm" placeholder="ស្វែងរកទីនេះ...">
+                            <button onclick="startScanner()" class="bg-gray-100 p-3 rounded-xl hover:bg-gray-200 border border-gray-200 transition-all text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z"/><path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z"/><path d="M7 9H2v5h5V9Zm-4 1h3v3H3v-3Zm8-6h1v1h-1V4Z"/><path d="M9 2h5v5H9V2Zm1 1v3h3V3h-3ZM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8H8Zm2 2H9V9h1v1Zm4 2h-1v1h-2v1h3v-2Zm-4 2v-1H8v1h2Z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="handleSearch()" id="searchBtn" class="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg">
+                            <span>ឆែកមើលលទ្ធផល</span>
+                            <div id="loader-tab1" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
                         </button>
                     </div>
                 </div>
-                <div class="flex items-end">
-                    <button onclick="handleSearch()" id="searchBtn" class="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg">
-                        <span>ឆែកមើលលទ្ធផល</span>
-                        <div id="loader" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                    </button>
+                <div id="qr-reader" class="mt-4 hidden w-full overflow-hidden rounded-xl border-2 border-dashed border-blue-400"></div>
+            </div>
+        </div>
+
+        <div id="capture-area" class="print-area hidden">
+            <!-- Header Print -->
+            <div class="text-center space-y-1">
+                <h2 class="moul-font text-[13px] text-blue-900">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+                <h2 class="moul-font text-[13px] text-blue-900">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
+                <div class="flex justify-center items-center gap-1 opacity-30 mt-1">
+                    <div class="w-2 h-2 rounded-full bg-blue-900"></div><div class="w-16 h-[1px] bg-blue-900"></div><div class="w-2 h-2 rounded-full bg-blue-900"></div>
                 </div>
             </div>
+            <div class="mt-2 text-[11px] font-bold text-blue-900 leading-tight">
+                <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
+                <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
+                <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
+            </div>
+            <h1 class="moul-font text-red-600 text-center text-xl mt-6 mb-4">តារាងលទ្ធផលសិក្សារបស់សិស្សប្រចាំ <span id="resMonth">...</span></h1>
+            
+            <div class="grid grid-cols-2 gap-y-2 text-[13px] font-bold mt-2 px-4 border-l-4 border-blue-600 py-1">
+                <p>គោត្តនាម-នាម ៖ <span id="resName" class="text-blue-800 moul-font ml-2">...</span></p>
+                <p>ភេទ ៖ <span id="resGender" class="text-blue-800 ml-2">...</span></p>
+                <p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span id="resDOB" class="text-blue-800 ml-2">...</span></p>
+                <p>ថ្នាក់ទី ៖ <span id="resGrade" class="text-blue-800 ml-2">...</span></p>
+                <p>អត្តលេខ ៖ <span id="resId" class="text-blue-800 ml-2">...</span></p>
+                <p>ឆ្នាំសិក្សា ៖ <span class="text-blue-800 ml-2">២០២៥-២០២៦</span></p>
+            </div>
 
-            <div id="qr-reader" class="mt-4 hidden w-full overflow-hidden rounded-xl border-2 border-dashed border-blue-400"></div>
-        </div>
-    </div>
+            <div class="sketch-summary shadow-sm">
+                <div class="sketch-item"><p class="sketch-label">មធ្យមភាគ</p><p id="avgScore" class="sketch-value text-blue-600">0.00</p></div>
+                <div class="sketch-item"><p class="sketch-label">ចំណាត់ថ្នាក់</p><p id="rank" class="sketch-value text-red-500">0</p></div>
+                <div class="sketch-item"><p class="sketch-label">និទ្ទេសរួម</p><p id="gradeResult" class="sketch-value text-emerald-500">-</p></div>
+            </div>
 
-    <!-- Main Content Area -->
-    <div id="capture-area" class="print-area hidden">
-        <div class="text-center space-y-1">
-            <h2 class="moul-font text-[13px] text-blue-900">ព្រះរាជាណាចក្រកម្ពុជា</h2>
-            <h2 class="moul-font text-[13px] text-blue-900">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
-            <div class="flex justify-center items-center gap-1 opacity-30 mt-1">
-                <div class="w-2 h-2 rounded-full bg-blue-900"></div>
-                <div class="w-16 h-[1px] bg-blue-900"></div>
-                <div class="w-2 h-2 rounded-full bg-blue-900"></div>
+            <table class="t1-table">
+                <thead><tr><th class="w-10">ល.រ</th><th class="w-48">មុខវិជ្ជា</th><th class="w-24">ពិន្ទុអតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-40">ក្រាបវិភាគ (%)</th><th class="w-16">និទ្ទេស</th></tr></thead>
+                <tbody id="tableBody" class="font-bold"></tbody>
+                <tfoot>
+                    <tr class="bg-blue-50/50">
+                        <td colspan="2" class="subject-col text-blue-900 uppercase">ពិន្ទុសរុប</td>
+                        <td id="totalMax" class="font-black text-center text-gray-500">0</td>
+                        <td id="totalScore" class="font-black text-center text-blue-700">0</td>
+                        <td colspan="2" class="text-right pr-4 text-[11px] text-gray-400 italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="mt-8 flex justify-between items-start px-4">
+                <div class="text-center"><p class="font-bold text-[11px]">បានឃើញ និងឯកភាព</p><p class="moul-font text-[11px] text-blue-900 mt-1">នាយកសាលា</p><div class="h-24"></div></div>
+                <div class="text-center"><p id="footerDate" class="text-[10px] text-gray-600">...</p><p id="footerLunar" class="text-[10px] text-gray-500 mb-1">...</p><p class="moul-font text-[11px] text-blue-900 mt-1">គ្រូបន្ទុកថ្នាក់</p><div class="h-24"></div></div>
             </div>
         </div>
 
-        <div class="mt-2 text-[11px] font-bold text-blue-900 leading-tight">
-            <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
-            <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
-            <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
-        </div>
-
-        <h1 class="moul-font text-red-600 text-center text-xl mt-6 mb-4">តារាងលទ្ធផលសិក្សារបស់សិស្សប្រចាំ <span id="resMonth">...</span></h1>
-
-        <div class="grid grid-cols-2 gap-y-2 text-[13px] font-bold mt-2 px-4 border-l-4 border-blue-600 py-1">
-            <p>គោត្តនាម-នាម ៖ <span id="resName" class="text-blue-800 moul-font ml-2">...</span></p>
-            <p>ភេទ ៖ <span id="resGender" class="text-blue-800 ml-2">...</span></p>
-            <p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span id="resDOB" class="text-blue-800 ml-2">...</span></p>
-            <p>ថ្នាក់ទី ៖ <span id="resGrade" class="text-blue-800 ml-2">...</span></p>
-            <p>អត្តលេខ ៖ <span id="resId" class="text-blue-800 ml-2">...</span></p>
-            <p>ឆ្នាំសិក្សា ៖ <span class="text-blue-800 ml-2">២០២៥-២០២៦</span></p>
-        </div>
-
-        <div class="sketch-summary shadow-sm">
-            <div class="sketch-item">
-                <p class="sketch-label">មធ្យមភាគ</p>
-                <p id="avgScore" class="sketch-value text-blue-600">0.00</p>
+        <div id="action-buttons" class="no-print mt-6 border-t pt-6 hidden flex-col items-center gap-6 mb-10 max-w-4xl mx-auto">
+            <div class="flex justify-center gap-4 w-full flex-wrap">
+                <button onclick="downloadPDF()" class="bg-emerald-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg hover:scale-105 transition-all">ទាញយក PDF</button>
+                <button onclick="window.print()" class="bg-slate-800 text-white px-10 py-3 rounded-2xl font-bold shadow-lg hover:scale-105 transition-all">បោះពុម្ព</button>
             </div>
-            <div class="sketch-item">
-                <p class="sketch-label">ចំណាត់ថ្នាក់</p>
-                <p id="rank" class="sketch-value text-red-500">0</p>
-            </div>
-            <div class="sketch-item">
-                <p class="sketch-label">និទ្ទេសរួម</p>
-                <p id="gradeResult" class="sketch-value text-emerald-500">-</p>
-            </div>
-        </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th class="w-10">ល.រ</th>
-                    <th class="w-48">មុខវិជ្ជា</th>
-                    <th class="w-24">ពិន្ទុអតិបរមា</th>
-                    <th class="w-24">ពិន្ទុទទួលបាន</th>
-                    <th class="w-40">ក្រាបវិភាគ (%)</th>
-                    <th class="w-16">និទ្ទេស</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody" class="font-bold"></tbody>
-            <tfoot>
-                <tr class="bg-blue-50/50">
-                    <td colspan="2" class="subject-col text-blue-900 uppercase">ពិន្ទុសរុប</td>
-                    <td id="totalMax" class="font-black text-center text-gray-500">0</td>
-                    <td id="totalScore" class="font-black text-center text-blue-700">0</td>
-                    <td colspan="2" class="text-right pr-4 text-[11px] text-gray-400 italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td>
-                </tr>
-            </tfoot>
-        </table>
-
-        <div class="mt-8 flex justify-between items-start px-4">
-            <div class="text-center">
-                <p class="font-bold text-[11px]">បានឃើញ និងឯកភាព</p>
-                <p class="moul-font text-[11px] text-blue-900 mt-1">នាយកសាលា</p>
-                <div class="h-24"></div>
-            </div>
-            <div class="text-center">
-                <p id="footerDate" class="text-[10px] text-gray-600">...</p>
-                <p id="footerLunar" class="text-[10px] text-gray-500 mb-1">...</p>
-                <p class="moul-font text-[11px] text-blue-900 mt-1">គ្រូបន្ទុកថ្នាក់</p>
-                <div class="h-24"></div>
+            <div class="flex flex-col md:flex-row justify-center gap-4 w-full mt-2">
+                <button onclick="linkTelegram('Student')" class="flex-1 bg-sky-500 text-white px-6 py-3 rounded-2xl font-bold shadow-md hover:bg-sky-600 transition-all flex items-center justify-center gap-2"><svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg> ទទួលលទ្ធផលរាល់ខែ (សិស្ស)</button>
+                <button onclick="linkTelegram('Parent')" class="flex-1 bg-indigo-500 text-white px-6 py-3 rounded-2xl font-bold shadow-md hover:bg-indigo-600 transition-all flex items-center justify-center gap-2"><svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg> ទទួលលទ្ធផលរាល់ខែ (មាតាបិតា)</button>
             </div>
         </div>
     </div>
 
-    <!-- Bottom Action Buttons -->
-    <div id="action-buttons" class="no-print mt-6 border-t pt-6 hidden flex-col items-center gap-6 mb-10">
-        <div class="flex justify-center gap-4 w-full flex-wrap">
-            <button onclick="downloadPDF()" class="bg-emerald-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg hover:scale-105 transition-all">ទាញយក PDF</button>
-            <button onclick="window.print()" class="bg-slate-800 text-white px-10 py-3 rounded-2xl font-bold shadow-lg hover:scale-105 transition-all">បោះពុម្ព</button>
+    <!-- ========================================== -->
+    <!-- TAB 2: របាយការណ៍វិភាគនិទ្ទេស (ADMIN REPORT) -->
+    <!-- ========================================== -->
+    <div id="tab-report" class="tab-content max-w-7xl mx-auto">
+        <div class="no-print card p-5 flex flex-wrap justify-between items-center gap-4 bg-white shadow-md">
+            <h1 class="text-xl font-bold moul-font text-blue-900">ប្រព័ន្ធវិភាគលទ្ធផលសិក្សា</h1>
+            <div class="flex items-center gap-3">
+                <select id="subjectFilter" onchange="renderUI()" class="border-2 border-slate-200 p-2 rounded-lg text-sm font-bold focus:border-blue-500 outline-none min-w-[200px]">
+                    <option value="Average">📊 មធ្យមភាគរួម (Average)</option>
+                    <option value="ភាសាខ្មែរ">១. ភាសាខ្មែរ</option><option value="សីលធម៌ពលរដ្ឋ">២. សីលធម៌ពលរដ្ឋ</option>
+                    <option value="ប្រវត្តិវិទ្យា">៣. ប្រវត្តិវិទ្យា</option><option value="ភូមិវិទ្យា">៤. ភូមិវិទ្យា</option>
+                    <option value="គណិតវិទ្យា">៥. គណិតវិទ្យា</option><option value="រូបវិទ្យា">៦. រូបវិទ្យា</option>
+                    <option value="គីមីវិទ្យា">៧. គីមីវិទ្យា</option><option value="ជីវវិទ្យា">៨. ជីវវិទ្យា</option>
+                    <option value="ផែនដីវិទ្យា">៩. ផែនដីវិទ្យា</option><option value="ភាសាអង់គ្លេស">១០. ភាសាអង់គ្លេស</option>
+                </select>
+                <button onclick="syncAllData()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow-sm transition-all flex gap-2 items-center">
+                    <span>ទាញទិន្នន័យ</span>
+                    <div id="loader-tab2" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                </button>
+            </div>
         </div>
-        
-        <!-- ប៊ូតុង Telegram ថ្មី ចំនួន២ សម្រាប់សិស្ស និងមាតាបិតា -->
-        <div class="flex flex-col md:flex-row justify-center gap-4 w-full mt-2">
-            <button onclick="linkTelegram('Student')" class="flex-1 bg-sky-500 text-white px-6 py-3 rounded-2xl font-bold shadow-md hover:bg-sky-600 transition-all flex items-center justify-center gap-2">
-                <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg>
-                ទទួលលទ្ធផលរាល់ខែ (សម្រាប់សិស្ស)
-            </button>
-            <button onclick="linkTelegram('Parent')" class="flex-1 bg-indigo-500 text-white px-6 py-3 rounded-2xl font-bold shadow-md hover:bg-indigo-600 transition-all flex items-center justify-center gap-2">
-                <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg>
-                ទទួលលទ្ធផលរាល់ខែ (សម្រាប់មាតាបិតា)
-            </button>
+
+        <div id="reportContainer" class="space-y-6">
+            <div class="card p-20 text-center text-slate-400 font-bold moul-font border-dashed border-2">
+                សូមចុច "ទាញទិន្នន័យ" ដើម្បីបង្ហាញរបាយការណ៍
+            </div>
         </div>
     </div>
 
-    <!-- Alert Modal -->
+    <!-- Modal Messages -->
     <div id="alertModal" class="fixed inset-0 bg-black/50 z-[60] hidden flex items-center justify-center backdrop-blur-sm no-print">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl transform transition-all">
             <div class="text-center">
                 <h3 class="text-lg leading-6 font-bold text-gray-900 mb-2" id="alertMessage">សាររំលឹក</h3>
                 <p id="alertSubMessage" class="text-sm text-gray-500 mb-4 hidden"></p>
-                <button onclick="closeMessage()" class="mt-4 w-full inline-flex justify-center rounded-xl px-4 py-2 bg-blue-600 text-white">យល់ព្រម</button>
+                <button onclick="closeMessage()" class="mt-4 w-full inline-flex justify-center rounded-xl px-4 py-2 bg-blue-600 text-white font-bold">យល់ព្រម</button>
             </div>
         </div>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzlE4HDWv186gTiYzI_6aTIeOGIprhY9yzbRVNBNkl--U_nhpo0qicNRt7lqbNpI79j/exec";
+        // ========================================================
+        // ⚙️ ការកំណត់ទូទៅ (CONFIGURATION)
+        // ========================================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbxfr5v2Oj6QkisiErT1AdimwTOAddNzM3ogyoAI-QSu26cfKpsHLbCIzbraDU3G7Zyt/exec"; 
+        const TELEGRAM_BOT_USERNAME = "kampongtralach_bot";
+        const ADMIN_PASSWORD = "123"; 
         
-        // 🔴 ត្រូវប្តូរឈ្មោះ Bot Username ខាងក្រោមនេះទៅជាឈ្មោះ Bot របស់អ្នក (មិនបាច់ដាក់សញ្ញា @ ទេ)
-        const TELEGRAM_BOT_USERNAME = "kampongtralach_bot"; 
-        
-        const SUBJECTS = ["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
+        // ========================================================
+        // LOGIC ប្តូរ TAB 
+        // ========================================================
+        let isInternalUnlocked = false;
 
-        function getGrade(percent) {
-            if (percent >= 90) return "A"; if (percent >= 80) return "B";
-            if (percent >= 70) return "C"; if (percent >= 60) return "D";
-            if (percent >= 50) return "E"; return "F";
+        function switchTab(tabId) {
+            if (tabId === 'tab-report' && !isInternalUnlocked) {
+                let pwd = prompt("🛑 ទំព័រនេះសម្រាប់តែគណៈគ្រប់គ្រងប៉ុណ្ណោះ!\nសូមបញ្ចូលលេខសម្ងាត់ ៖");
+                if (pwd === ADMIN_PASSWORD) {
+                    isInternalUnlocked = true;
+                } else {
+                    if (pwd !== null) alert("❌ លេខសម្ងាត់មិនត្រឹមត្រូវទេ!");
+                    return;
+                }
+            }
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('inactive');
+            });
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+            document.getElementById('btn-' + tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.remove('inactive');
+            document.getElementById(tabId).classList.add('active');
         }
+
+        // ========================================================
+        // Helper Functions ទូទៅ
+        // ========================================================
+        function cleanNumber(val) {
+            if (val === undefined || val === null || val === "") return NaN;
+            let str = val.toString().trim().replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]);
+            return parseFloat(str);
+        }
+
+        function getGradeValue(score, maxScore) {
+            const val = cleanNumber(score);
+            if (isNaN(val)) return "ABS";
+            const per = (val / maxScore) * 100;
+            if (per >= 90) return 'A'; if (per >= 80) return 'B'; 
+            if (per >= 70) return 'C'; if (per >= 60) return 'D'; 
+            if (per >= 50) return 'E'; return 'F';
+        }
+
         function getBarColor(percent) {
             if (percent >= 80) return "#10b981"; if (percent >= 60) return "#3b82f6"; 
             if (percent >= 50) return "#f59e0b"; return "#ef4444"; 
@@ -281,71 +271,46 @@
             if(subMsg) {
                 document.getElementById('alertSubMessage').innerText = subMsg;
                 document.getElementById('alertSubMessage').classList.remove('hidden');
-            } else {
-                document.getElementById('alertSubMessage').classList.add('hidden');
-            }
+            } else { document.getElementById('alertSubMessage').classList.add('hidden'); }
             document.getElementById('alertModal').classList.remove('hidden');
         }
         function closeMessage() { document.getElementById('alertModal').classList.add('hidden'); }
 
-        // មុខងារសម្រាប់ភ្ជាប់ Telegram ដោយអូទាញយកអត្តលេខសិស្ស
+        // ========================================================
+        // TAB 1: លទ្ធផលសិស្ស (STUDENT RESULT LOGIC)
+        // ========================================================
+        const SUBJECTS =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
+
         function linkTelegram(type) {
             const stuId = document.getElementById('resId').innerText;
-            if(!stuId || stuId === '...') {
-                showMessage("សូមស្វែងរកសិស្សជាមុនសិន!");
-                return;
-            }
-            if(TELEGRAM_BOT_USERNAME === "@kampongtralach_bot") {
-                showMessage("ជម្រាបសួរ Admin!", "សូមចូលទៅកែប្រែអថេរ TELEGRAM_BOT_USERNAME ក្នុងកូដ HTML ដាក់ឈ្មោះ Bot របស់អ្នកជាមុនសិន។");
-                return;
-            }
-            
-            // បង្កើត Deep Link (ឧទាហរណ៍: https://t.me/HSKT_Bot?start=Student_001)
-            const payload = `${type}_${stuId}`;
-            const deepLinkUrl = `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${payload}`;
-            
-            // បើក Telegram App
-            window.open(deepLinkUrl, '_blank');
+            if(!stuId || stuId === '...') return showMessage("សូមស្វែងរកសិស្សជាមុនសិន!");
+            window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}?start=${type}_${stuId}`, '_blank');
         }
 
         async function handleSearch() {
             const query = document.getElementById('searchInput').value.trim().toLowerCase();
             const month = document.getElementById('monthSelect').value;
-            if (!query) {
-                showMessage("សូមបញ្ចូលឈ្មោះ ឬអត្តលេខសិស្ស!");
-                return false;
-            }
+            if (!query) return showMessage("សូមបញ្ចូលឈ្មោះ ឬអត្តលេខសិស្ស!");
 
-            document.getElementById('loader').classList.remove('hidden');
-            document.getElementById('searchBtn').disabled = true;
+            document.getElementById('loader-tab1').classList.remove('hidden');
             
             try {
-                const dataUrl = `${API_URL}?month=${encodeURIComponent(month)}`;
-                const configUrl = `${API_URL}?month=Config_MaxScores`;
-                
-                const [dataRes, configRes] = await Promise.all([
-                    fetch(dataUrl),
-                    fetch(configUrl)
+                // ទាញយកទិន្នន័យពិន្ទុ និងការកំណត់ក្នុងពេលតែមួយ
+                const[dataRes, configRes] = await Promise.all([
+                    fetch(`${API_URL}?month=${encodeURIComponent(month)}`),
+                    fetch(`${API_URL}?month=Config_MaxScores`)
                 ]);
                 
-                const dataText = await dataRes.text();
-                const configText = await configRes.text();
-                
-                let data, config;
-                try {
-                    data = JSON.parse(dataText);
-                    config = JSON.parse(configText);
-                } catch (parseError) {
-                    console.error("កំហុសក្នុងការអានទិន្នន័យ (Not JSON):", dataText.substring(0, 100));
-                    showMessage("ប្រព័ន្ធរអាក់រអួល!", "Server មិនបានបញ្ជូនទិន្នន័យត្រឹមត្រូវមកវិញទេ។");
-                    return false;
-                }
+                const data = await dataRes.json();
+                const configList = await configRes.json();
 
                 const s = data.find(i => i.ID?.toString().toLowerCase() === query || i.Name?.toString().toLowerCase().includes(query));
 
                 if (s) {
-                    const gradeConfig = config.find(c => c["កម្រិតថ្នាក់"]?.toString().trim() === s.Grade?.toString().trim());
-                    
+                    // ស្វែងរក Config សម្រាប់ថ្នាក់សិស្ស
+                    let originalGrade = (s.Grade || "").toString().trim();
+                    let gradeConfig = configList.find(c => c["កម្រិតថ្នាក់"]?.toString().trim() === originalGrade);
+
                     document.getElementById('resName').innerText = s.Name;
                     document.getElementById('resId').innerText = s.ID;
                     document.getElementById('resGrade').innerText = s.Grade;
@@ -356,26 +321,28 @@
                     document.getElementById('totalScore').innerText = s.Total;
                     document.getElementById('avgScore').innerText = s.Average;
                     document.getElementById('rank').innerText = s.Rank;
-                    document.getElementById('gradeResult').innerText = s.Grade_Result || getGrade(parseFloat(s.Average)*2);
+                    document.getElementById('gradeResult').innerText = s.Grade_Result || getGradeValue(s.Average, 10);
                     document.getElementById('footerDate').innerText = s.DateSolar || '';
                     document.getElementById('footerLunar').innerText = s.DateLunar || '';
 
                     let tableHtml = ""; let totalMax = 0; let displayIndex = 1;
 
                     SUBJECTS.forEach((sub) => {
-                        const score = parseFloat(s[sub]);
-                        const max = gradeConfig ? parseFloat(gradeConfig[sub]) : 50;
+                        const score = cleanNumber(s[sub]);
+                        // ទាញយកពិន្ទុអតិបរមាពី Config បើអត់មានកំណត់យក ៥០
+                        const maxScore = gradeConfig && gradeConfig[sub] ? cleanNumber(gradeConfig[sub]) : 50;
+                        
                         if (!isNaN(score)) {
-                            totalMax += max;
-                            const percent = Math.min((score / max) * 100, 100);
-                            const grade = getGrade(percent);
+                            totalMax += maxScore;
+                            const percent = Math.min((score / maxScore) * 100, 100);
+                            const grade = getGradeValue(score, maxScore);
                             const barColor = getBarColor(percent);
                             
                             tableHtml += `
                                 <tr>
                                     <td class="text-gray-400 font-normal">${displayIndex}</td>
                                     <td class="subject-col">${sub}</td>
-                                    <td class="text-gray-400">${max}</td>
+                                    <td class="text-gray-400">${maxScore}</td>
                                     <td class="text-blue-700">${score}</td>
                                     <td class="px-3">
                                         <div class="flex items-center gap-2">
@@ -391,37 +358,26 @@
 
                     document.getElementById('tableBody').innerHTML = tableHtml;
                     document.getElementById('totalMax').innerText = totalMax;
-                    
                     document.getElementById('capture-area').classList.remove('hidden');
-                    const actionBtns = document.getElementById('action-buttons');
-                    actionBtns.classList.remove('hidden');
-                    actionBtns.classList.add('flex'); 
-                    
+                    document.getElementById('action-buttons').classList.remove('hidden');
+                    document.getElementById('action-buttons').classList.add('flex'); 
                     return true;
                 } else {
                     showMessage("រកមិនឃើញទិន្នន័យ!", `មិនមានលទ្ធផលសម្រាប់អត្តលេខ/ឈ្មោះ "${query}" ក្នុងខែនេះទេ។`);
                     return false;
                 }
             } catch (e) {
-                console.error("Fetch Error:", e);
-                showMessage("មានបញ្ហាភ្ជាប់ទៅកាន់ Server!", "សូមពិនិត្យមើលអុីនធឺណិត ឬ URL ដែលបានដាក់។");
+                showMessage("មានបញ្ហាភ្ជាប់ទៅកាន់ Server!", "សូមពិនិត្យមើលអុីនធឺណិត ឬ URL។");
                 return false;
             } finally {
-                document.getElementById('loader').classList.add('hidden');
-                document.getElementById('searchBtn').disabled = false;
+                document.getElementById('loader-tab1').classList.add('hidden');
             }
         }
 
         function downloadPDF() {
             const element = document.getElementById('capture-area');
             const name = document.getElementById('resName').innerText;
-            const opt = {
-                margin: 0,
-                filename: `លទ្ធផល_${name}.pdf`,
-                image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 3, useCORS: true, letterRendering: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+            const opt = { margin: 0, filename: `លទ្ធផល_${name}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 3, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }};
             html2pdf().set(opt).from(element).save();
         }
 
@@ -438,8 +394,7 @@
                             document.getElementById('qr-reader').classList.add('hidden');
                             html5QrcodeScanner.clear();
                             handleSearch();
-                        },
-                        (err) => { }
+                        }, (err) => { }
                     );
                 }
             } else {
@@ -448,46 +403,143 @@
             }
         }
 
-        function getUrlParams(callback) {
-            if (typeof google !== 'undefined' && google.script && google.script.url) {
-                google.script.url.getLocation(function(location) {
-                    callback(location.parameter);
-                });
-            } else {
-                const params = new URLSearchParams(window.location.search);
-                const paramObj = {};
-                for (const [key, value] of params.entries()) {
-                    paramObj[key] = value;
-                }
-                callback(paramObj);
+        // ========================================================
+        // TAB 2: របាយការណ៍វិភាគនិទ្ទេស (ADMIN REPORT LOGIC)
+        // ========================================================
+        let appData = { scores: {}, configMax: {} };
+        const monthsOrder =["វិច្ឆិកា", "ធ្នូ", "មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "ប្រឡងឆមាសទី១", "ប្រឡងឆមាសទី២", "ប្រចាំឆ្នាំ"];
+        const targetGroups =["7", "8", "9", "10", "11 SC", "11 SS", "11 រួម", "12 SC", "12 SS", "12 រួម", "សរុបរួមគ្រប់ថ្នាក់"];
+
+        async function syncAllData() {
+            document.getElementById('loader-tab2').classList.remove('hidden');
+            try {
+                const res = await fetch(`${API_URL}?action=getAllData`);
+                const result = await res.json();
+                if(result.error) throw new Error(result.error);
+                appData = result;
+                renderUI();
+            } catch (err) {
+                alert("Error: " + err.message);
+            } finally {
+                document.getElementById('loader-tab2').classList.add('hidden');
             }
         }
 
-        window.onload = function() {
-            getUrlParams(async function(params) {
-                const stuId = params.id;
-                const month = params.month;
-                const autoPdf = params.autoPdf;
+        function renderUI() {
+            const sub = document.getElementById('subjectFilter').value;
+            const container = document.getElementById('reportContainer');
+            container.innerHTML = '';
+            let stats = {};
 
-                if(stuId) {
-                    document.getElementById('searchInput').value = stuId;
-                    if(month) {
-                        const select = document.getElementById('monthSelect');
-                        for(let i=0; i<select.options.length; i++) {
-                            if(select.options[i].value === month) {
-                                select.selectedIndex = i;
-                                break;
-                            }
+            if (!appData.scores || Object.keys(appData.scores).length === 0) {
+                container.innerHTML = '<div class="card p-10 text-center text-red-500 moul-font">រកមិនឃើញទិន្នន័យ! សូមចុចប៊ូតុងទាញទិន្នន័យ។</div>';
+                return;
+            }
+
+            for (let m in appData.scores) {
+                appData.scores[m].forEach(s => {
+                    // ទាញយកកម្រិតថ្នាក់ពីកូឡោន Grade (ឧទាហរណ៍: "11 A")
+                    let originalGrade = (s["Grade"] || s["ថ្នាក់"] || "").toString().trim();
+                    let lvMatch = originalGrade.match(/\d+/);
+                    if (!lvMatch) return;
+                    let lvNum = lvMatch[0]; // ឧទាហរណ៍: "11"
+                    
+                    let levelKey = lvNum;
+                    
+                    // ឆែករកប្រភេទថ្នាក់ (SC/SS) ពី Config ដែលទាញបាន
+                    let configForGrade = appData.configMax[originalGrade];
+                    if (configForGrade) {
+                        let classType = (configForGrade["ប្រភេទថ្នាក់"] || "").toString().trim().toUpperCase();
+                        if ((lvNum === "11" || lvNum === "12") && classType) {
+                            levelKey = lvNum + " " + classType; // "11 SC"
                         }
                     }
-                    setTimeout(async () => {
-                        const isFound = await handleSearch();
-                        if(isFound && autoPdf === 'true') {
-                            setTimeout(() => { downloadPDF(); }, 1500);
-                        }
-                    }, 500);
+
+                    // កំណត់ពិន្ទុអតិបរមាពី Config
+                    let maxScore = 50;
+                    if (sub === "Average") {
+                        maxScore = 10;
+                    } else if (configForGrade && configForGrade[sub]) {
+                        maxScore = cleanNumber(configForGrade[sub]) || 50;
+                    }
+
+                    // ទាញយកពិន្ទុជាក់ស្តែង
+                    let score = s[sub];
+                    if (sub === "Average") score = s["Average"] || s["មធ្យមភាគ"];
+
+                    // កំណត់និទ្ទេស
+                    let grade = getGradeValue(score, maxScore);
+                    
+                    // ទាញយកភេទ
+                    let sex = (s["Gender"] || s["ភេទ"] || "").toString().trim().toLowerCase();
+                    let isF = (sex.includes("ស្រី") || sex === "ស" || sex === "f");
+
+                    const update = (k) => {
+                        if (!stats[k]) stats[k] = {};
+                        if (!stats[k][m]) stats[k][m] = { A:0, B:0, C:0, D:0, E:0, F:0, ABS:0, total:0, f:0 };
+                        let d = stats[k][m];
+                        if (grade !== "ABS") { d[grade]++; } else { d.ABS++; }
+                        d.total++;
+                        if (isF) d.f++;
+                    };
+
+                    update(levelKey);
+                    if (lvNum === "11") update("11 រួម");
+                    if (lvNum === "12") update("12 រួម");
+                    update("សរុបរួមគ្រប់ថ្នាក់");
+                });
+            }
+
+            targetGroups.forEach(g => {
+                if (stats[g]) {
+                    const div = document.createElement('div');
+                    div.className = "card p-5";
+                    let sortedMonths = Object.keys(stats[g]).sort((a,b) => monthsOrder.indexOf(a) - monthsOrder.indexOf(b));
+                    
+                    let rows = sortedMonths.map(m => {
+                        let d = stats[g][m];
+                        let abc = d.A + d.B + d.C;
+                        let def = d.D + d.E + d.F;
+                        let pABC = d.total > 0 ? Math.round((abc/d.total)*100) : 0;
+                        let pDEF = d.total > 0 ? Math.round((def/d.total)*100) : 0;
+
+                        return `<tr>
+                            <td class="font-bold bg-slate-50">${m}</td>
+                            <td class="font-bold text-blue-800">${d.total}(${d.f})</td>
+                            <td class="text-green-600 font-bold">${d.A}</td><td>${d.B}</td><td>${d.C}</td>
+                            <td class="text-orange-600 font-bold">${d.D}</td><td>${d.E}</td><td class="text-red-600 font-bold">${d.F}</td>
+                            <td class="text-slate-400">${d.ABS}</td>
+                            <td class="bg-green-50 font-bold text-green-700">${abc}<br><small>${pABC}%</small></td>
+                            <td class="bg-red-50 font-bold text-red-700">${def}<br><small>${pDEF}%</small></td>
+                            <td class="w-40 px-4"><div class="multi-progress"><div class="bar-abc" style="width:${pABC}%"></div><div class="bar-def" style="width:${pDEF}%"></div></div></td>
+                        </tr>`;
+                    }).join('');
+
+                    div.innerHTML = `
+                        <h3 class="font-bold moul-font mb-3 text-slate-700">កម្រិតថ្នាក់ទី ${g} - ${sub}</h3>
+                        <table class="t2-table">
+                            <thead><tr>
+                                <th>ខែ</th><th>សរុប(ស្រី)</th>
+                                <th class="bg-green-600">A</th><th class="bg-green-600">B</th><th class="bg-green-600">C</th>
+                                <th class="bg-red-600">D</th><th class="bg-red-600">E</th><th class="bg-red-600">F</th>
+                                <th>អវត្ត</th><th class="bg-green-700">សរុប ABC</th><th class="bg-red-700">សរុប DEF</th><th>ក្រាប</th>
+                            </tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>`;
+                    container.appendChild(div);
                 }
             });
+        }
+        
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            const stuId = params.get('id');
+            const month = params.get('month');
+            if(stuId) {
+                document.getElementById('searchInput').value = stuId;
+                if(month) document.getElementById('monthSelect').value = month;
+                setTimeout(handleSearch, 500);
+            }
         };
     </script>
 </body>
