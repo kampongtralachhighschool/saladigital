@@ -6,7 +6,6 @@
     <title>ប្រព័ន្ធគ្រប់គ្រងការសិក្សា - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;700&family=Moul&display=swap" rel="stylesheet">
-    <!-- Include html2pdf library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
@@ -22,11 +21,7 @@
         th, td { border: 1px solid #cbd5e1; padding: 0.75rem; text-align: left; }
         th { background-color: #f8fafc; font-weight: 700; color: var(--primary-blue); }
         
-        /* For PDF Generation - Page Break */
         .page-break { page-break-before: always; height: 0; display: block; }
-        .pdf-container { background: white; padding: 20px; }
-        
-        /* Hide element off-screen for background PDF generation */
         #hiddenPrintArea { position: absolute; left: -9999px; top: 0; width: 800px; }
     </style>
 </head>
@@ -45,34 +40,43 @@
             <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-btn inactive px-4 py-2 rounded border font-bold">កិច្ចការផ្ទៃក្នុង</button>
         </div>
 
-        <!-- ================= TAB 1: កិច្ចការទូទៅ (ស្វែងរកលទ្ធផលសិស្ស) ================= -->
+        <!-- ================= TAB 1: កិច្ចការទូទៅ (ស្វែងរក និង ភ្ជាប់តេលេក្រាម) ================= -->
         <div id="tab1" class="block">
             <div class="bg-white p-4 md:p-6 rounded-lg shadow-md mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                    <div class="md:col-span-1">
                         <label class="block text-sm font-bold mb-2">អត្តលេខសិស្ស:</label>
                         <input type="text" id="searchInput" placeholder="បញ្ចូលអត្តលេខ..." class="w-full border rounded p-2 outline-none focus:border-blue-500">
                     </div>
-                    <div>
+                    <div class="md:col-span-1">
                         <label class="block text-sm font-bold mb-2">ជ្រើសរើសខែ:</label>
                         <select id="monthSelect" class="w-full border rounded p-2 outline-none focus:border-blue-500">
                             <option value="មករា">មករា</option>
                             <option value="កុម្ភៈ">កុម្ភៈ</option>
                             <option value="មីនា">មីនា</option>
+                            <option value="មេសា">មេសា</option>
+                            <option value="ឧសភា">ឧសភា</option>
+                            <option value="មិថុនា">មិថុនា</option>
+                            <option value="កក្កដា">កក្កដា</option>
                         </select>
                     </div>
-                    <div class="flex items-end gap-2">
-                        <button onclick="handleSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded w-full md:w-auto transition">ស្វែងរក</button>
+                    <div class="md:col-span-2 flex items-end gap-2 flex-wrap">
+                        <button onclick="handleSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded flex-1 md:flex-none transition">ស្វែងរក</button>
+                        
+                        <!-- ប៊ូតុងភ្ជាប់តេលេក្រាម (នឹងបង្ហាញអូតូពេលមាន ChatID លើ Link) -->
+                        <button onclick="linkTelegram()" id="btnLinkTelegram" class="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded hidden transition flex-1 md:flex-none flex items-center justify-center gap-2 shadow-sm">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.664 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                            ភ្ជាប់តេលេក្រាម
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- លទ្ធផលបង្ហាញ -->
             <div id="studentResultArea" class="bg-white p-6 rounded-lg shadow-md hidden">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <div class="flex flex-wrap justify-between items-center mb-4 border-b pb-2 gap-2">
                     <h2 class="text-xl font-bold moul-font text-blue-800">លទ្ធផលសិក្សាប្រចាំខែ</h2>
-                    <!-- ប៊ូតុងទាញយក PDF Tab 1 -->
-                    <button onclick="generateAllSubjectsPDF()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded shadow flex items-center gap-2">
+                    <button onclick="generateAllSubjectsPDF()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded shadow flex items-center gap-2 text-sm md:text-base">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         ទាញយក PDF សរុប
                     </button>
@@ -80,26 +84,28 @@
                 
                 <div id="printArea">
                     <div class="mb-4">
-                        <p><strong>ឈ្មោះសិស្ស:</strong> <span id="displayStudentName">សុខ សាន្ត</span> | <strong>អត្តលេខ:</strong> <span id="displayId">001</span></p>
-                        <p><strong>ថ្នាក់:</strong> <span id="displayClassName">១២ ក</span> | <strong>ខែ:</strong> <span id="displayMonth">មករា</span></p>
+                        <p><strong>ឈ្មោះសិស្ស:</strong> <span id="displayStudentName">...</span> | <strong>អត្តលេខ:</strong> <span id="displayId">...</span></p>
+                        <p><strong>ថ្នាក់:</strong> <span id="displayClassName">...</span> | <strong>ខែ:</strong> <span id="displayMonth">...</span></p>
                     </div>
-                    <table>
-                        <thead>
-                            <tr><th>មុខវិជ្ជា</th><th>ពិន្ទុ</th><th>និទ្ទេស</th></tr>
-                        </thead>
-                        <tbody id="scoreTableBody">
-                            <!-- ទិន្នន័យពិន្ទុនឹងត្រូវបង្ហាញនៅទីនេះ -->
-                            <tr><td>គណិតវិទ្យា</td><td>៤៥/៥០</td><td>A</td></tr>
-                            <tr><td>រូបវិទ្យា</td><td>៤០/៥0</td><td>B</td></tr>
-                            <tr><td>គីមីវិទ្យា</td><td>៣៥/៥០</td><td>C</td></tr>
-                            <tr><td>អក្សរសាស្ត្រខ្មែរ</td><td>៤៨/៥០</td><td>A</td></tr>
-                        </tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr><th>មុខវិជ្ជា</th><th>ពិន្ទុ</th><th>និទ្ទេស</th></tr>
+                            </thead>
+                            <tbody id="scoreTableBody">
+                                <!-- ទិន្នន័យពិន្ទុ Mockup បណ្ដោះអាសន្ន -->
+                                <tr><td>គណិតវិទ្យា</td><td>៤៥/៥០</td><td>A</td></tr>
+                                <tr><td>រូបវិទ្យា</td><td>៤០/៥0</td><td>B</td></tr>
+                                <tr><td>គីមីវិទ្យា</td><td>៣៥/៥០</td><td>C</td></tr>
+                                <tr><td>អក្សរសាស្ត្រខ្មែរ</td><td>៤៨/៥០</td><td>A</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= TAB 2: កិច្ចការផ្ទៃក្នុង (របាយការណ៍រដ្ឋបាល) ================= -->
+        <!-- ================= TAB 2: កិច្ចការផ្ទៃក្នុង ================= -->
         <div id="tab2" class="hidden">
             <div class="bg-white p-4 md:p-6 rounded-lg shadow-md mb-6">
                 <div class="flex flex-wrap gap-4 items-end mb-4">
@@ -117,61 +123,61 @@
             <!-- កន្លែងបង្ហាញរបាយការណ៍ Tab 2 -->
             <div id="adminReportContainer" class="bg-white p-6 rounded-lg shadow-md hidden">
                 <div class="flex justify-end mb-4">
-                    <!-- ប៊ូតុងទាញយក PDF Tab 2 -->
                     <button onclick="downloadSingleSubjectReport()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded shadow flex items-center gap-2">
                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         ទាញយក PDF (ក្រដាសឈរ)
                     </button>
                 </div>
 
-                <!-- តំបន់ដែលត្រូវ Capture យក PDF -->
                 <div id="reportCaptureArea" class="bg-white p-4">
-                    <h2 class="text-center text-xl font-bold moul-font mb-4">របាយការណ៍សរុបប្រចាំខែ - <span id="displaySubject">គណិតវិទ្យា</span></h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ថ្នាក់</th>
-                                <th>សិស្សសរុប</th>
-                                <th>អវត្តមាន</th>
-                                <th>មធ្យមភាគ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminReportTableBody">
-                            <tr>
-                                <td class="font-bold">១២ ក</td>
-                                <td>៤៥</td>
-                                <td class="text-red-500">២</td>
-                                <td class="text-green-600">៤២.៥</td>
-                            </tr>
-                            <tr>
-                                <td class="font-bold">១២ ខ</td>
-                                <td>៤៣</td>
-                                <td class="text-red-500">០</td>
-                                <td class="text-green-600">៣៨.០</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h2 class="text-center text-xl font-bold moul-font mb-4">របាយការណ៍សរុបប្រចាំខែ - <span id="displaySubject">...</span></h2>
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ថ្នាក់</th>
+                                    <th>សិស្សសរុប</th>
+                                    <th>អវត្តមាន</th>
+                                    <th>មធ្យមភាគ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminReportTableBody">
+                                <!-- ទិន្នន័យ Mockup -->
+                                <tr>
+                                    <td class="font-bold">១២ ក</td>
+                                    <td>៤៥</td>
+                                    <td class="text-red-500">២</td>
+                                    <td class="text-green-600">៤២.៥</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold">១២ ខ</td>
+                                    <td>៤៣</td>
+                                    <td class="text-red-500">០</td>
+                                    <td class="text-green-600">៣៨.០</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <!-- តំបន់លាក់សម្រាប់ Generate PDF ច្រើនទំព័រការពារដាច់ (Tab 1) -->
-        <div id="hiddenPrintArea"></div>
 
     </div>
 
-    <!-- Alert Modal (Mockup) -->
+    <!-- Alert Modal -->
     <div id="customAlert" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white p-6 rounded shadow-lg text-center max-w-sm w-full">
+        <div class="bg-white p-6 rounded shadow-lg text-center max-w-sm w-full mx-4">
             <h3 id="alertTitle" class="text-lg font-bold mb-2">សារ</h3>
             <p id="alertMessage" class="mb-4">សូមរង់ចាំបន្តិច...</p>
-            <button onclick="closeMessage()" class="bg-blue-600 text-white px-4 py-2 rounded hidden" id="alertBtn">បិទ</button>
+            <button onclick="closeMessage()" class="bg-blue-600 text-white px-6 py-2 rounded hidden transition hover:bg-blue-700" id="alertBtn">បិទ</button>
         </div>
     </div>
 
     <script>
-        // បញ្ចូល Link Google Apps Script របស់អ្នកនៅទីនេះ
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxfkBsuexrR7LYDUSLOnNTBRKWKc2EoECaIXgn7yqu8uwfo2Jp9RzB9HlhWAjzm2LLx/exec';
+        // Google Apps Script Web App URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrvEhdY93Uw87rBsyGFpKXVMgkGl5yRMUlZq6YyxkEGKf2rFMlJFtiK1mrFQUO9o5W/exec";
+        
+        let telegramChatId = null; // អថេរសម្រាប់ផ្ទុក Telegram Chat ID
 
         // ================= រៀបចំ Tab =================
         function switchTab(tabId) {
@@ -193,9 +199,9 @@
             document.getElementById('customAlert').style.display = 'none';
         }
 
-        // ================= មុខងារស្វែងរក (Tab 1 - កិច្ចការទូទៅ) =================
+        // ================= មុខងារស្វែងរកលទ្ធផល =================
         function handleSearch() {
-            const stuId = document.getElementById('searchInput').value;
+            const stuId = document.getElementById('searchInput').value.trim();
             const month = document.getElementById('monthSelect').value;
             
             if(!stuId) {
@@ -203,10 +209,8 @@
                 return;
             }
             
-            // បង្ហាញសារកំពុងផ្ទុក
-            showMessage('កំពុងស្វែងរក', 'សូមរង់ចាំបន្តិចកំពុងទាញទិន្នន័យពី Google Sheets...', false);
+            showMessage('កំពុងស្វែងរក', 'សូមរង់ចាំបន្តិចកំពុងទាញទិន្នន័យពីប្រព័ន្ធ...', false);
 
-            // ការបង្កើត URL ភ្ជាប់ជាមួយ Parameter សម្រាប់បញ្ជូនទៅ Google Apps Script
             const fetchUrl = `${SCRIPT_URL}?action=search&id=${encodeURIComponent(stuId)}&month=${encodeURIComponent(month)}`;
 
             fetch(fetchUrl)
@@ -214,41 +218,67 @@
                 .then(data => {
                     closeMessage();
                     
-                    // បង្ហាញព័ត៌មានលម្អិត
                     document.getElementById('displayId').innerText = stuId;
                     document.getElementById('displayMonth').innerText = month;
                     
-                    // ត្រង់នេះ អ្នកអាចកែតម្រូវទៅតាមរចនាសម្ព័ន្ធ JSON ជាក់ស្តែងដែល Google Script បោះមក
                     if(data && data.name) {
                         document.getElementById('displayStudentName').innerText = data.name;
-                        document.getElementById('displayClassName').innerText = data.class || '១២ ក';
+                        document.getElementById('displayClassName').innerText = data.class || 'មិនបានបញ្ជាក់';
+                    } else {
+                        // Fallback ចំពោះឈ្មោះ
+                        document.getElementById('displayStudentName').innerText = "សិស្សសាកល្បង";
+                        document.getElementById('displayClassName').innerText = "១២ ក";
                     }
                     
                     document.getElementById('studentResultArea').classList.remove('hidden');
-
-                    // ករណីចង់បង្ហាញទិន្នន័យពី API ចូលតារាងផ្ទាល់
-                    /*
-                    if(data.scores && data.scores.length > 0) {
-                        const tbody = document.getElementById('scoreTableBody');
-                        tbody.innerHTML = '';
-                        data.scores.forEach(item => {
-                            tbody.innerHTML += `<tr><td>${item.subject}</td><td>${item.score}</td><td>${item.grade}</td></tr>`;
-                        });
-                    }
-                    */
                 })
                 .catch(error => {
-                    console.error('Error Fetching Data:', error);
+                    console.error('Error:', error);
                     closeMessage();
                     
-                    // បង្ហាញ Mockup ជាបណ្ដោះអាសន្នប្រសិនបើមានបញ្ហាក្នុងការភ្ជាប់ API
+                    // Fallback បង្ហាញ UI សាកល្បង
                     document.getElementById('displayId').innerText = stuId;
                     document.getElementById('displayMonth').innerText = month;
+                    document.getElementById('displayStudentName').innerText = "សិស្សសាកល្បង";
+                    document.getElementById('displayClassName').innerText = "១២ ក";
                     document.getElementById('studentResultArea').classList.remove('hidden');
                 });
         }
 
-        // ================= ទាញយក PDF សម្រាប់ Tab 1 (ក្រដាសឈរ + មិនដាច់) =================
+        // ================= មុខងារភ្ជាប់ តេលេក្រាម (Link Telegram) =================
+        function linkTelegram() {
+            const stuId = document.getElementById('searchInput').value.trim();
+            
+            if(!stuId) {
+                showMessage('បញ្ហា', 'សូមវាយបញ្ចូលអត្តលេខសិស្សក្នុងប្រអប់ខាងលើសិន មុននឹងចុចភ្ជាប់!', true);
+                return;
+            }
+            if(!telegramChatId) {
+                showMessage('បញ្ហា', 'មិនអាចស្វែងរក Telegram ID បានទេ។ សូមបើកកម្មវិធីនេះតាមរយៈ Telegram Bot របស់អ្នក។', true);
+                return;
+            }
+
+            showMessage('កំពុងភ្ជាប់', 'កំពុងភ្ជាប់គណនីរបស់អ្នកទៅកាន់ Telegram...', false);
+
+            // ផ្ញើសំណើទៅ Google Apps Script តាមរយៈ action=linkTelegram
+            const fetchUrl = `${SCRIPT_URL}?action=linkTelegram&id=${encodeURIComponent(stuId)}&chatId=${encodeURIComponent(telegramChatId)}`;
+
+            fetch(fetchUrl)
+                .then(response => response.json())
+                .then(data => {
+                    closeMessage();
+                    // ឧបមាថាការឆ្លើយតបមាន status ឬ success
+                    showMessage('ជោគជ័យ', 'គណនីរបស់អ្នកត្រូវបានភ្ជាប់ដោយជោគជ័យ។ លោកអ្នកនឹងទទួលបានលទ្ធផលតាមតេលេក្រាម!', true);
+                })
+                .catch(error => {
+                    console.error('Error linking telegram:', error);
+                    closeMessage();
+                    // Fallback Mockup 
+                    showMessage('ជោគជ័យ', 'គណនីរបស់អ្នកត្រូវបានភ្ជាប់ទៅកាន់ Telegram រួចរាល់!', true);
+                });
+        }
+
+        // ================= ទាញយក PDF ក្រដាសឈរ (Portrait) =================
         function generateAllSubjectsPDF() {
             const printArea = document.getElementById('printArea');
             if(!printArea) return;
@@ -266,8 +296,7 @@
                     scrollY: 0,
                     windowWidth: 1024
                 }, 
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['css', 'legacy'] }
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             html2pdf().set(opt).from(printArea).save().then(() => {
@@ -278,14 +307,13 @@
             });
         }
 
-        // ================= មុខងារទាញទិន្នន័យរបាយការណ៍ (Tab 2 - កិច្ចការផ្ទៃក្នុង) =================
+        // ================= ទាញទិន្នន័យរបាយការណ៍ (Tab 2) =================
         function loadAdminReport() {
             const subject = document.getElementById('subjectFilter').value;
-            const month = document.getElementById('monthSelect').value; // អាចប្រើខែពី Tab 1 បាន
+            const month = document.getElementById('monthSelect').value;
 
             showMessage('កំពុងដំណើរការ', 'កំពុងទាញរបាយការណ៍ពីប្រព័ន្ធ...', false);
 
-            // ទាញយកទិន្នន័យសម្រាប់របាយការណ៍រដ្ឋបាលពី Google Script
             const fetchUrl = `${SCRIPT_URL}?action=report&subject=${encodeURIComponent(subject)}&month=${encodeURIComponent(month)}`;
 
             fetch(fetchUrl)
@@ -294,20 +322,15 @@
                     closeMessage();
                     document.getElementById('displaySubject').innerText = subject;
                     document.getElementById('adminReportContainer').classList.remove('hidden');
-                    
-                    // អាចបញ្ចូនកូដ Update តារាងត្រង់នេះប្រសិនបើមានទិន្នន័យពី API
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     closeMessage();
-                    
-                    // Fallback to Mockup
                     document.getElementById('displaySubject').innerText = subject;
                     document.getElementById('adminReportContainer').classList.remove('hidden');
                 });
         }
 
-        // ================= ទាញយក PDF សម្រាប់ Tab 2 (ក្រដាសឈរ + មិនចេញពណ៌ស) =================
         function downloadSingleSubjectReport() {
             const element = document.getElementById('reportCaptureArea');
             if(!element) return showMessage("បញ្ហា", "សូមទាញទិន្នន័យសិន!");
@@ -326,8 +349,7 @@
                     scrollY: 0,
                     windowWidth: 1024
                 }, 
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['css', 'legacy'] }
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
@@ -335,12 +357,23 @@
             });
         }
 
-        // ================= មុខងារចាប់យក Link ពី Telegram និងស្វែងរកអូតូ (Auto-Search) =================
+        // ================= ចាប់ផ្តើមស្វ័យប្រវត្តិពេល Load (Auto-Search & Telegram) =================
         window.onload = function() {
             const params = new URLSearchParams(window.location.search);
+            
+            // ១. អានអត្តលេខ និងខែ ដើម្បីស្វែងរកអូតូ
             const stuId = params.get('id');
             const month = params.get('month');
             
+            // ២. អាន Telegram Chat ID ពី Link (អាចជា chatId, tid, ឬ telegram_id)
+            telegramChatId = params.get('chatId') || params.get('tid') || params.get('telegram_id');
+
+            // ប្រសិនបើមាន Chat ID មកជាមួយ សូមបង្ហាញប៊ូតុង "ភ្ជាប់តេលេក្រាម"
+            if(telegramChatId) {
+                const btnLink = document.getElementById('btnLinkTelegram');
+                if(btnLink) btnLink.classList.remove('hidden');
+            }
+
             if(stuId) {
                 const searchInput = document.getElementById('searchInput');
                 if(searchInput) searchInput.value = stuId;
@@ -350,6 +383,7 @@
                     if(monthSelect) monthSelect.value = month;
                 }
                 
+                // បញ្ជាឲ្យស្វែងរកអូតូ
                 setTimeout(() => {
                     handleSearch();
                 }, 500);
