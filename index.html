@@ -21,7 +21,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Styles សម្រាប់ Tab 1 (លទ្ធផលសិស្ស) */
-        .print-area { background: white; width: 210mm; min-height: 297mm; margin: 20px auto; padding: 12mm 15mm; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; }
+        .print-area { background: white; width: 210mm; margin: 20px auto; padding: 12mm 15mm; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; }
         .sketch-summary { display: flex; justify-content: space-between; align-items: center; border: 1.5px solid #e2e8f0; border-radius: 12px; margin: 20px 0; padding: 12px 0; background: #ffffff; }
         .sketch-item { flex: 1; text-align: center; position: relative; }
         .sketch-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background-color: #e2e8f0; }
@@ -40,11 +40,12 @@
         .t2-table th { background-color: #0f172a; color: white; border: 1px solid #334155; padding: 12px 4px; font-size: 11px; }
         .t2-table td { border: 1px solid #e2e8f0; padding: 10px 4px; text-align: center; font-size: 12px; }
         .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 24px; overflow: hidden; }
-        .multi-progress { width: 100%; height: 12px; background: #f1f5f9; border-radius: 6px; display: flex; overflow: hidden; border: 1px solid #e2e8f0; }
-        .bar-abc-ui { height: 100%; background: #22c55e; } .bar-def-ui { height: 100%; background: #ef4444; border-left: 1px solid white; }
-
-        /* Styles សម្រាប់ PDF Export (Tab 2) កំណត់ទំហំ A4 Portrait (210mm) */
-        .pdf-offscreen { position: absolute; left: -9999px; top: 0; width: 210mm; background: white; z-index: -10; }
+        
+        /* 💡 ការកំណត់មិនអោយដាច់ទំព័រពេល Export PDF */
+        table { page-break-inside: auto; }
+        tr, td, th { page-break-inside: avoid !important; page-break-after: auto; }
+        .page-break { page-break-before: always; }
+        .pdf-offscreen { position: absolute; left: -9999px; top: 0; width: 210mm; background: white; z-index: -10; padding: 15mm; }
     </style>
 </head>
 <body class="p-2 md:p-4">
@@ -208,7 +209,7 @@
 
         <div id="reportContainer" class="space-y-6">
             <div class="card p-20 text-center text-slate-400 font-bold moul-font border-dashed border-2">
-                សូមចុច "ទាញទិន្នន័យ" ដើម្បីបង្ហាញរបាយការណ៍
+                សូមចុច "ទាញទិន្នន័យ" ដើម្បីបង្ហាញរបាយការណ៍ជាក់ស្តែង
             </div>
         </div>
 
@@ -231,7 +232,7 @@
         // ========================================================
         // ⚙️ ការកំណត់ទូទៅ (CONFIGURATION)
         // ========================================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbwLc9GZyQ49A4wGDBlXThgkOesxSkaCGAKJwKMfYb6AlV1OvjDAq9J4bCx2s7JqRK4A/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxSy4fC2G_EcGLSjH62Cvi8x7Ovs4APhkSdaynA_2_82Sdu2F_1KwUQMevtq9c8aVIM/exec"; 
         const TELEGRAM_BOT_USERNAME = "kampongtralach_bot";
         const ADMIN_PASSWORD = "hs@8888"; 
         
@@ -239,16 +240,12 @@
         // ទាញយកអត្តលេខពី URL (តេលេក្រាម) ដើម្បីស្វែងរកស្វ័យប្រវត្តិ
         // ========================================================
         window.addEventListener('DOMContentLoaded', () => {
-            // ចាប់យកប៉ារ៉ាម៉ែត្រពី URL ឧទាហរណ៍ ?id=123 ឬ ?stuId=123
             const params = new URLSearchParams(window.location.search);
             let stuId = params.get('id') || params.get('stuId');
             
             if (stuId) {
                 document.getElementById('searchInput').value = stuId;
-                // ដំណើរការស្វែងរកស្វ័យប្រវត្តិ
-                setTimeout(() => {
-                    handleSearch();
-                }, 500); // រង់ចាំកន្លះវិនាទីដើម្បីអោយ UI រៀបចំរួចរាល់
+                setTimeout(() => { handleSearch(); }, 500); 
             }
         });
 
@@ -273,7 +270,6 @@
                 btn.classList.add('inactive');
             });
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            // add active state
             if(document.getElementById('btn-' + tabId)) {
                 document.getElementById('btn-' + tabId).classList.add('active');
                 document.getElementById('btn-' + tabId).classList.remove('inactive');
@@ -315,9 +311,6 @@
         }
         function closeMessage() { document.getElementById('alertModal').classList.add('hidden'); }
 
-        // ========================================================
-        // TAB 1: លទ្ធផលសិស្ស (STUDENT RESULT LOGIC)
-        // ========================================================
         const SUBJECTS =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
 
         function linkTelegram(type) {
@@ -326,6 +319,9 @@
             window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}?start=${type}_${stuId}`, '_blank');
         }
 
+        // ========================================================
+        // TAB 1: លទ្ធផលសិស្ស (STUDENT RESULT LOGIC)
+        // ========================================================
         async function handleSearch() {
             const query = document.getElementById('searchInput').value.trim().toLowerCase();
             const month = document.getElementById('monthSelect').value;
@@ -342,22 +338,23 @@
                 const data = await dataRes.json();
                 const configList = await configRes.json();
 
-                const s = data.find(i => i.ID?.toString().toLowerCase() === query || i.Name?.toString().toLowerCase().includes(query));
+                // រកតាម ID (ឬឈ្មោះក៏បាន បើ ID អត់ត្រូវ)
+                const s = data.find(i => (i.ID && i.ID.toString().toLowerCase() === query) || (i.Name && i.Name.toString().toLowerCase().includes(query)));
 
                 if (s) {
                     let originalGrade = (s.Grade || "").toString().trim();
                     let gradeConfig = configList.find(c => c["កម្រិតថ្នាក់"]?.toString().trim() === originalGrade);
 
-                    document.getElementById('resName').innerText = s.Name;
-                    document.getElementById('resId').innerText = s.ID;
-                    document.getElementById('resGrade').innerText = s.Grade;
+                    document.getElementById('resName').innerText = s.Name || '...';
+                    document.getElementById('resId').innerText = s.ID || '...';
+                    document.getElementById('resGrade').innerText = s.Grade || '...';
                     document.getElementById('resGender').innerText = s.Gender || '...';
                     document.getElementById('resDOB').innerText = s.DOB || '...';
                     document.getElementById('resMonth').innerText = month;
                     
-                    document.getElementById('totalScore').innerText = s.Total;
-                    document.getElementById('avgScore').innerText = s.Average;
-                    document.getElementById('rank').innerText = s.Rank;
+                    document.getElementById('totalScore').innerText = s.Total || 0;
+                    document.getElementById('avgScore').innerText = s.Average || 0;
+                    document.getElementById('rank').innerText = s.Rank || 0;
                     document.getElementById('gradeResult').innerText = s.Grade_Result || getGradeValue(s.Average, 10);
                     document.getElementById('footerDate').innerText = s.DateSolar || '';
                     document.getElementById('footerLunar').innerText = s.DateLunar || '';
@@ -410,26 +407,21 @@
             }
         }
 
-        // ========================================================
-        // ការកំណត់មុខងារ Download PDF ទម្រង់ក្រដាសឈរ (Portrait) 
-        // ========================================================
+        // ទាញយក PDF សិស្ស (ប្រើ avoid-all ដើម្បីកុំអោយដាច់តារាង)
         function downloadStudentPDF() {
             const element = document.getElementById('capture-area');
             const name = document.getElementById('resName').innerText;
-            
-            // Setup options សម្រាប់កាត់ចេញជា PDF A4 ឈរ
             const opt = { 
-                margin:       [5, 0, 5, 0], // Top, Right, Bottom, Left margin in mm
+                margin:       [10, 5, 10, 5], 
                 filename:     `លទ្ធផល_${name}.pdf`, 
                 image:        { type: 'jpeg', quality: 1 }, 
                 html2canvas:  { scale: 2, useCORS: true }, 
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // 'portrait' ជាក្រដាសឈរ
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
-            
             html2pdf().set(opt).from(element).save();
         }
 
-        // QRCode Scanner Function
         let html5QrcodeScanner;
         function startScanner() {
             const readerDiv = document.getElementById('qr-reader');
@@ -443,10 +435,7 @@
                             document.getElementById('qr-reader').classList.add('hidden');
                             html5QrcodeScanner.clear();
                             handleSearch();
-                        }, 
-                        (err) => {
-                            // Ignored - Scan process error background
-                        }
+                        }, (err) => {}
                     );
                 }
             }
@@ -456,16 +445,27 @@
         // TAB 2: ADMIN REPORT DATA / FUNCTION
         // ========================================================
         let adminReportData =[];
+        let configReportData =[];
 
         async function syncAllData() {
             document.getElementById('loader-tab2').classList.remove('hidden');
             try {
-                // Fetch ទិន្នន័យ Admin ទីនេះ 
                 const month = document.getElementById('monthSelect').value;
-                const res = await fetch(`${API_URL}?month=${encodeURIComponent(month)}`);
-                adminReportData = await res.json();
+                const [dataRes, configRes] = await Promise.all([
+                    fetch(`${API_URL}?month=${encodeURIComponent(month)}`),
+                    fetch(`${API_URL}?month=Config_MaxScores`)
+                ]);
+                
+                adminReportData = await dataRes.json();
+                configReportData = await configRes.json();
+                
+                if(!adminReportData || adminReportData.length === 0 || adminReportData.error) {
+                    showMessage("បរាជ័យ", "មិនមានទិន្នន័យក្នុងខែដែលបានជ្រើសរើសទេ ឬឈ្មោះ Sheet មិនត្រឹមត្រូវ។");
+                    return;
+                }
+
                 renderUI();
-                showMessage("ជោគជ័យ", "ទិន្នន័យរបាយការណ៍ត្រូវបានទាញយក!");
+                showMessage("ជោគជ័យ", `ទាញទិន្នន័យបានចំនួន ${adminReportData.length} នាក់!`);
             } catch (e) {
                 showMessage("បរាជ័យ", "មិនអាចភ្ជាប់ទៅកាន់ទិន្នន័យបានទេ។");
             } finally {
@@ -473,41 +473,107 @@
             }
         }
 
-        function renderUI() {
-            if (!adminReportData || adminReportData.length === 0) return;
-            const container = document.getElementById('reportContainer');
-            const subject = document.getElementById('subjectFilter').value;
+        // មុខងារបង្កើតតារាង HTML សម្រាប់មុខវិជ្ជាមួយ
+        function generateSubjectHTML(subjectName) {
+            if(!adminReportData || adminReportData.length === 0) return '';
             
-            // ទម្រង់របាយការណ៍បច្ចុប្បន្នដែលបង្ហាញលើអេក្រង់
-            container.innerHTML = `
-                <div class="card p-5" id="reportCaptureArea" style="background: white;">
+            // Group data តាមថ្នាក់ (Grade)
+            let classGroup = {};
+            adminReportData.forEach(s => {
+                let g = (s.Grade || "ផ្សេងៗ").toString().trim();
+                if(!classGroup[g]) classGroup[g] = { total: 0, absent: 0 };
+                
+                classGroup[g].total++;
+                
+                // =========================================================
+                // 💡 ឆែកមើលពិន្ទុអវត្តមាន (គ្មានពិន្ទុ ឬ ដាក់អក្សរ F, A ឬ អ)
+                // =========================================================
+                let rawVal = s[subjectName];
+                let isAbsent = false;
+
+                if (rawVal === undefined || rawVal === null || rawVal === "") {
+                    // បើគ្មានពិន្ទុសោះ (ប្រឡោះទទេ)
+                    isAbsent = true;
+                } else {
+                    // ប្រសិនបើមានបញ្ចូលអក្សរ
+                    let strVal = rawVal.toString().trim().toUpperCase();
+                    if (strVal === 'F' || strVal === 'A' || strVal === 'អ') {
+                        isAbsent = true;
+                    } else if (isNaN(cleanNumber(rawVal))) {
+                        // ករណីដាក់អក្សរផ្សេងៗដែលមិនមែនជាលេខ ក៏គិតថាអវត្តមានដែរ
+                        isAbsent = true;
+                    }
+                }
+
+                if (isAbsent) {
+                    classGroup[g].absent++;
+                }
+            });
+
+            // រៀបចំតារាងរាយបញ្ជីតាមថ្នាក់
+            let tbodyHtml = '';
+            let totalStudents = 0;
+            let totalAbsent = 0;
+
+            Object.keys(classGroup).sort().forEach(className => {
+                let info = classGroup[className];
+                totalStudents += info.total;
+                totalAbsent += info.absent;
+                let tested = info.total - info.absent;
+                
+                tbodyHtml += `
+                    <tr>
+                        <td class="font-bold text-blue-800">${className}</td>
+                        <td>${info.total}</td>
+                        <td>${tested}</td>
+                        <td class="${info.absent > 0 ? 'text-red-500 font-bold' : 'text-gray-400'}">${info.absent}</td>
+                    </tr>
+                `;
+            });
+
+            return `
+                <div class="card p-5 page-break-container" style="background: white; margin-bottom: 20px;">
                     <div class="text-center mb-4 border-b pb-4">
-                        <h2 class="text-xl font-bold moul-font text-blue-900">របាយការណ៍វិភាគ ៖ ${subject}</h2>
-                        <p class="text-gray-700 font-bold mt-2">ចំនួនសិស្សសរុបមានក្នុងប្រព័ន្ធ ៖ ${adminReportData.length} នាក់</p>
+                        <h2 class="text-xl font-bold moul-font text-blue-900">របាយការណ៍វិភាគ ៖ ${subjectName}</h2>
+                        <p class="text-gray-700 font-bold mt-2">សិស្សសរុបមានក្នុងប្រព័ន្ធ ៖ ${totalStudents} នាក់</p>
                     </div>
                     <table class="t2-table w-full">
                         <thead>
                             <tr>
                                 <th>ថ្នាក់</th>
                                 <th>សិស្សសរុប</th>
+                                <th>មកប្រឡង</th>
                                 <th>អវត្តមាន</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="font-bold">ថ្នាក់គំរូ</td>
-                                <td>${adminReportData.length}</td>
-                                <td class="text-red-500">0</td>
-                            </tr>
+                            ${tbodyHtml}
                         </tbody>
+                        <tfoot>
+                            <tr class="bg-gray-100 font-bold">
+                                <td>សរុបរួម</td>
+                                <td>${totalStudents}</td>
+                                <td>${totalStudents - totalAbsent}</td>
+                                <td class="text-red-600">${totalAbsent}</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>`;
         }
 
-        // ទាញយក PDF សម្រាប់ Tab 2 មុខវិជ្ជាទោល ក្រដាសឈរ (Portrait) 
+        function renderUI() {
+            if (!adminReportData || adminReportData.length === 0) return;
+            const container = document.getElementById('reportContainer');
+            const subject = document.getElementById('subjectFilter').value;
+            
+            // បង្ហាញរបាយការណ៍បច្ចុប្បន្នលើអេក្រង់
+            container.innerHTML = `<div id="reportCaptureArea">${generateSubjectHTML(subject)}</div>`;
+        }
+
+        // ទាញយក PDF មុខវិជ្ជាទោល
         function downloadSingleSubjectReport() {
             const element = document.getElementById('reportCaptureArea');
-            if(!element) return showMessage("សូមទាញទិន្នន័យសិន!");
+            if(!element || element.innerHTML.trim() === '') return showMessage("សូមទាញទិន្នន័យសិន!");
             
             const subject = document.getElementById('subjectFilter').value;
             const opt = { 
@@ -515,70 +581,44 @@
                 filename:     `របាយការណ៍_${subject}.pdf`, 
                 image:        { type: 'jpeg', quality: 1 }, 
                 html2canvas:  { scale: 2, useCORS: true }, 
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode:['avoid-all', 'css', 'legacy'] }
             };
             html2pdf().set(opt).from(element).save();
         }
 
-        // ទាញយក PDF សរុបទាំង១០មុខវិជ្ជា (Portrait ជាមួយនឹង Page breaks)
+        // ទាញយក PDF ទាំង១០មុខវិជ្ជា (កាត់ទំព័រស្វ័យប្រវត្តិ)
         function downloadAllSubjectsReport() {
             if(!adminReportData || adminReportData.length === 0) return showMessage("សូមទាញទិន្នន័យសិន!");
             
             const printArea = document.getElementById('pdf-render-area');
             const mainSubjects =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
             
-            let allHtml = '';
-            
+            let allHtml = '<div>';
             mainSubjects.forEach((sub, index) => {
-                // បង្កើតទម្រង់ HTML សម្រាប់មុខវិជ្ជាមួយៗ
-                let subjectHtml = `
-                <div class="card p-5" style="width: 100%; min-height: 250mm; margin: 0 auto; background: white; border: none; box-shadow: none;">
-                    <div class="text-center mb-6">
-                        <h2 class="text-xl font-bold moul-font text-blue-900">របាយការណ៍វិភាគ ៖ ${sub}</h2>
-                        <p class="text-gray-700 font-bold mt-2">ចំនួនសិស្សសរុបមានក្នុងប្រព័ន្ធ ៖ ${adminReportData.length} នាក់</p>
-                    </div>
-                    <table class="t2-table w-full">
-                        <thead>
-                            <tr>
-                                <th>ថ្នាក់</th>
-                                <th>សិស្សសរុប</th>
-                                <th>អវត្តមាន</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="font-bold">ថ្នាក់គំរូ</td>
-                                <td>${adminReportData.length}</td>
-                                <td class="text-red-500">0</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>`;
-                
-                allHtml += subjectHtml;
-                
-                // កាត់ផ្តាច់ទំព័រ (Page Break) សម្រាប់មុខវិជ្ជាបន្ទាប់
+                allHtml += generateSubjectHTML(sub);
+                // ដាក់សញ្ញាកាត់ទំព័រ (Page Break) បើមិនមែនជាមុខវិជ្ជាចុងក្រោយ
                 if (index < mainSubjects.length - 1) {
-                    allHtml += '<div class="html2pdf__page-break" style="page-break-before: always; height: 0;"></div>';
+                    allHtml += '<div class="page-break" style="page-break-before: always; height: 1px;"></div>';
                 }
             });
+            allHtml += '</div>';
 
             printArea.innerHTML = allHtml;
 
-            // កំណត់ Configuration សម្រាប់ PDF Portrait
             const opt = { 
-                margin:       [10, 5, 10, 5], 
+                margin:[10, 5, 10, 5], 
                 filename:     `វិភាគ_១០មុខវិជ្ជា_សរុប.pdf`, 
-                image:        { type: 'jpeg', quality: 0.98 }, 
+                image:        { type: 'jpeg', quality: 1 }, 
                 html2canvas:  { scale: 2, useCORS: true, logging: false }, 
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }, // បញ្ឈរ 
-                pagebreak:    { mode: ['css', 'legacy'] }
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }, 
+                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
-            showMessage("កំពុងរៀបចំ...", "សូមរង់ចាំបន្តិច ប្រព័ន្ធកំពុងចងក្រងឯកសារ PDF...");
+            showMessage("កំពុងរៀបចំ...", "សូមរង់ចាំបន្តិច ប្រព័ន្ធកំពុងចងក្រងឯកសារ PDF... វាអាចស៊ីពេល២-៣វិនាទី។");
 
             html2pdf().set(opt).from(printArea).save().then(() => {
-                printArea.innerHTML = ''; // លុបវិញបន្ទាប់ពីទាញយកចប់
+                printArea.innerHTML = ''; 
                 closeMessage();
             }).catch((err) => {
                 showMessage("មានបញ្ហា!", "ការទាញយកមានបញ្ហា សូមព្យាយាមម្តងទៀត។");
