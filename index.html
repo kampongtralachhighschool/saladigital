@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធគ្រប់គ្រងការសិក្សា - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
     
-    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;700&family=Moul&family=Battambang:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -25,7 +24,6 @@
         .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Styles សម្រាប់ Print Area */
         .print-area { background: white; width: 210mm; margin: 20px auto; padding: 8mm 12mm; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; }
         .sketch-summary { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #e2e8f0; border-radius: 12px; margin: 10px 0; padding: 8px 0; background: #ffffff; gap: 4px; flex-wrap: wrap;}
         .sketch-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; min-width: 20%; padding: 4px;}
@@ -45,7 +43,6 @@
         .grade-A { color: #059669; } .grade-B { color: #2563eb; } .grade-C { color: #d97706; } .grade-D { color: #7c3aed; } .grade-E { color: #db2777; } .grade-F { color: #dc2626; }
         .result-pass { color: #059669; font-weight: 900;} .result-fail { color: #dc2626; font-weight: 900;}
 
-        /* Monthly Trend Chart Styles */
         .trend-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 180px; border-bottom: 2px solid #cbd5e1; border-left: 2px solid #cbd5e1; margin-top: 20px; padding: 10px 5px 0 5px; position: relative; }
         .trend-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; height: 100%; justify-content: flex-end; }
         .trend-bar { width: 24px; border-radius: 4px 4px 0 0; background-color: var(--primary-blue); transition: height 0.5s ease; position: relative; z-index: 10;}
@@ -56,7 +53,6 @@
 
         .analysis-box { background: #f0fdfa; border: 1px solid #ccfbf1; border-left: 4px solid #0d9488; padding: 10px; border-radius: 6px; margin-top: 15px; font-size: 11px; line-height: 1.6; color: #0f766e; }
 
-        /* Styles សម្រាប់ Tab 2 */
         .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 1.5rem; border: 1px solid #e2e8f0; overflow: hidden; padding: 20px;}
         .table-header { background-color: #1e293b; color: white; }
         
@@ -85,10 +81,10 @@
     <!-- Navigation -->
     <div class="max-w-5xl mx-auto mb-6 flex flex-wrap justify-center gap-3 no-print mt-4">
         <button onclick="switchTab('tab-student')" id="btn-tab-student" class="tab-btn active px-4 py-2 rounded-full font-bold border-2 shadow-sm flex items-center gap-2 text-sm">
-            លទ្ធផលទូទៅ (១៥មុខ)
+            លទ្ធផលទូទៅ
         </button>
         <button onclick="switchTab('tab-bac2')" id="btn-tab-bac2" class="tab-btn inactive px-4 py-2 rounded-full font-bold border-2 shadow-sm flex items-center gap-2 text-sm text-yellow-600 border-yellow-200">
-            ស្តង់ដារបាក់ឌុប (ទី១១-១២)
+            ស្តង់ដារបាក់ឌុប
         </button>
         <button onclick="switchTab('tab-report')" id="btn-tab-report" class="tab-btn inactive px-4 py-2 rounded-full font-bold border-2 shadow-sm flex items-center gap-2 text-sm">
             របាយការណ៍រួម
@@ -98,7 +94,7 @@
         </button>
     </div>
 
-    <!-- Search Section (លាក់ពេលចូល Admin ឬ Report) -->
+    <!-- Search Section -->
     <div id="searchSection" class="max-w-4xl mx-auto my-6 no-print px-4">
         <div class="text-center mb-6 space-y-2">
             <h2 class="moul-font text-blue-800 text-lg">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
@@ -137,7 +133,7 @@
     <!-- ========================================== -->
     <div id="tab-student" class="tab-content active">
         <div id="t1-capture-area" class="print-area hidden">
-            <!-- ========== ទំព័រទី ១ ========== -->
+            <!-- ទំព័រ ១ -->
             <div id="t1-page1">
                 <div class="text-center space-y-0.5">
                     <h2 class="moul-font text-[12px] text-blue-900">ព្រះរាជាណាចក្រកម្ពុជា</h2>
@@ -160,7 +156,7 @@
 
                 <div id="t1-tableArea">
                     <table class="t1-table">
-                        <thead><tr><th class="w-10">ល.រ</th><th class="w-48">មុខវិជ្ជា</th><th class="w-24">អតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-40">ក្រាបវិភាគ (%)</th><th class="w-16">និទ្ទេស</th></tr></thead>
+                        <thead><tr><th class="w-10">ល.រ</th><th class="w-48">មុខវិជ្ជា</th><th class="w-24">អតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-40">ក្រាបភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead>
                         <tbody id="t1-tableBody" class="font-bold"></tbody>
                         <tfoot id="t1-tableFoot"></tfoot>
                     </table>
@@ -176,7 +172,7 @@
                 </div>
             </div>
 
-            <!-- ========== ទំព័រទី ២: តារាងប្រៀបធៀប ========== -->
+            <!-- ទំព័រ ២ -->
             <div class="page-break"></div>
             <div id="t1-page2" class="pt-2">
                 <div class="text-center space-y-0.5">
@@ -187,21 +183,21 @@
                     <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
                     <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
                 </div>
-                <h2 class="moul-font text-blue-800 text-center text-[14px] mt-6 mb-4">តារាងវិភាគប្រៀបធៀបលទ្ធផលសិក្សាតាមមុខវិជ្ជា</h2>
+                <h2 class="moul-font text-blue-800 text-center text-[14px] mt-6 mb-4">របាយការណ៍ប្រៀបធៀបលទ្ធផលសិក្សា</h2>
                 
                 <div class="grid grid-cols-2 gap-y-1 text-[12px] font-bold px-4 border-l-4 border-blue-600 py-1 bg-blue-50/30 mb-4">
                     <p>ឈ្មោះ ៖ <span id="t1-p2-resName" class="text-blue-800 moul-font ml-2">...</span></p>
                     <p>ថ្នាក់ទី ៖ <span id="t1-p2-resGrade" class="text-blue-800 ml-2">...</span></p>
                 </div>
 
-                <!-- ក្រាបបញ្ឈរ -->
                 <div class="border rounded-xl p-4 bg-white shadow-sm relative mb-4">
                     <p class="text-xs font-bold text-gray-500 mb-2 text-center">📈 ក្រាបបង្ហាញមធ្យមភាគប្រចាំខែគិតជាភាគរយ (%)</p>
                     <div id="t1-monthlyChart" class="trend-chart"></div>
                 </div>
 
                 <div id="t1-comparisonTableContainer"></div>
-                <div id="t1-analysisBox" class="bg-blue-50/50 border border-blue-200 p-3 rounded-lg mt-4 text-[11px] text-slate-700 leading-relaxed hidden"></div>
+                
+                <div id="t1-analysisBox" class="analysis-box hidden"></div>
                 
                 <div class="mt-8 flex justify-between items-start px-4">
                     <div class="text-center"><p class="font-bold text-[11px]">បានឃើញ និងឯកភាព</p><p class="moul-font text-[11px] text-blue-900 mt-1">នាយកសាលា</p></div>
@@ -215,22 +211,16 @@
         </div>
         
         <div id="t1-actions" class="no-print mt-6 border-t pt-6 hidden flex-col items-center gap-4 mb-10 max-w-4xl mx-auto">
-            <button onclick="downloadPDF('t1-capture-area', 'ទូទៅ')" class="bg-emerald-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg hover:bg-emerald-700">ទាញយក PDF (២ទំព័រ)</button>
+            <button onclick="downloadPDF('t1-capture-area', 'ទូទៅ')" class="bg-emerald-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg">ទាញយក PDF (២ទំព័រ)</button>
             <div class="flex flex-col md:flex-row gap-4 w-full">
-                <button onclick="linkTelegram('Student')" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-xl font-bold shadow-md flex justify-center items-center gap-2">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg> 
-                    ភ្ជាប់ Telegram សិស្ស
-                </button>
-                <button onclick="linkTelegram('Parent')" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-md flex justify-center items-center gap-2">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg> 
-                    ភ្ជាប់ Telegram អាណាព្យាបាល
-                </button>
+                <button onclick="linkTelegram('Student')" class="flex-1 bg-sky-500 text-white py-3 rounded-xl font-bold shadow-md">ភ្ជាប់ Telegram សិស្ស</button>
+                <button onclick="linkTelegram('Parent')" class="flex-1 bg-indigo-500 text-white py-3 rounded-xl font-bold shadow-md">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
             </div>
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- TAB 3: លទ្ធផលស្តង់ដារបាក់ឌុប (៧ មុខវិជ្ជា) -->
+    <!-- TAB 3: លទ្ធផលស្តង់ដារបាក់ឌុប -->
     <!-- ========================================== -->
     <div id="tab-bac2" class="tab-content hidden">
         <div id="t3-capture-area" class="print-area hidden">
@@ -239,7 +229,7 @@
                 <h2 class="moul-font text-[12px] text-blue-900">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
             </div>
             <div class="mt-2 text-[11px] font-bold text-blue-900 leading-tight">
-                <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
+                <p>មني្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
                 <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
             </div>
             <h1 class="moul-font text-red-600 text-center text-lg mt-4 mb-1">តារាងលទ្ធផលសិក្សាតាមស្តង់ដារបាក់ឌុប</h1>
@@ -252,7 +242,6 @@
                 <p>អត្តលេខ ៖ <span id="t3-resId" class="text-blue-800 ml-2">...</span></p>
             </div>
 
-            <!-- Summary dynamically injected -->
             <div id="t3-summaryArea" class="sketch-summary shadow-sm border-yellow-200 justify-center gap-6 mt-4"></div>
 
             <table class="t1-table mt-4">
@@ -261,7 +250,7 @@
             </table>
             
             <div class="mt-4 p-3 bg-slate-50 border rounded-lg text-[10px] text-slate-600">
-                <b>*សម្គាល់៖</b> មុខវិជ្ជាអង់គ្លេស ជាពិន្ទុលើកទឹកចិត្ត (ក្រោម ២៦=០, ចាប់ពី ២៦ ឡើងយកពិន្ទុដក ២៥)។ និទ្ទេសរួមបង្គត់ចុះ (Floor)។
+                <b>*សម្គាល់៖</b> មុខវិជ្ជាអង់គ្លេស ជាពិន្ទុលើកទឹកចិត្ត (ក្រោម ២៦=០, ចាប់ពី ២៦ ឡើងយកពិន្ទុដក ២៥)។ និទ្ទេសរួមគិតលើរបបពិន្ទុបង្គត់ចុះ។
             </div>
             
             <div class="mt-6 flex justify-between items-start px-4">
@@ -277,14 +266,8 @@
         <div id="t3-actions" class="no-print mt-6 hidden flex-col items-center gap-4 mb-10 max-w-4xl mx-auto">
             <button onclick="downloadPDF('t3-capture-area', 'បាក់ឌុប')" class="bg-yellow-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg hover:bg-yellow-700 text-black">ទាញយក PDF (បាក់ឌុប)</button>
             <div class="flex flex-col md:flex-row gap-4 w-full">
-                <button onclick="linkTelegram('Student')" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-xl font-bold shadow-md flex justify-center items-center gap-2">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg> 
-                    ភ្ជាប់ Telegram សិស្ស
-                </button>
-                <button onclick="linkTelegram('Parent')" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-md flex justify-center items-center gap-2">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.29-.48.79-.74 3.08-1.34 5.15-2.23 6.19-2.68 2.95-1.26 3.56-1.48 3.96-1.48.09 0 .28.02.39.09.09.06.14.15.16.25.01.07.01.16-.01.27z"/></svg> 
-                    ភ្ជាប់ Telegram អាណាព្យាបាល
-                </button>
+                <button onclick="linkTelegram('Student')" class="flex-1 bg-sky-500 text-white py-3 rounded-xl font-bold shadow-md">ភ្ជាប់ Telegram សិស្ស</button>
+                <button onclick="linkTelegram('Parent')" class="flex-1 bg-indigo-500 text-white py-3 rounded-xl font-bold shadow-md">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
             </div>
         </div>
     </div>
@@ -293,53 +276,17 @@
     <!-- TAB 2: របាយការណ៍វិភាគនិទ្ទេស (ADMIN REPORT) -->
     <!-- ========================================== -->
     <div id="tab-report" class="tab-content max-w-7xl mx-auto hidden">
-        <div id="controlPanel" class="card p-4 flex flex-col md:flex-row justify-between items-center gap-4 no-print mt-4 border-t-4 border-indigo-600">
-            <div class="flex items-center gap-3">
-                <div class="bg-indigo-600 p-2 rounded-lg text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                </div>
-                <div>
-                    <h1 class="text-lg font-black text-slate-800 moul-font">របាយការណ៍វិភាគកម្រិតសាលា</h1>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">របាយការណ៍បែងចែកតាមកម្រិតថ្នាក់</p>
-                </div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-2 items-center w-full md:w-auto">
-                <select id="reportSubjectFilter" class="border border-slate-300 px-3 py-2 rounded-lg text-sm font-bold outline-none w-full sm:w-auto">
-                    <option value="Average">មធ្យមភាគរួម (Average)</option>
-                    <option value="ភាសាខ្មែរ">១. ភាសាខ្មែរ</option>
-                    <option value="សីលធម៌ពលរដ្ឋ">២. សីលធម៌ពលរដ្ឋ</option>
-                    <option value="ប្រវត្តិវិទ្យា">៣. ប្រវត្តិវិទ្យា</option>
-                    <option value="ភូមិវិទ្យា">៤. ភូមិវិទ្យា</option>
-                    <option value="គណិតវិទ្យា">៥. គណិតវិទ្យា</option>
-                    <option value="រូបវិទ្យា">៦. រូបវិទ្យា</option>
-                    <option value="គីមីវិទ្យា">៧. គីមីវិទ្យា</option>
-                    <option value="ជីវវិទ្យា">៨. ជីវវិទ្យា</option>
-                    <option value="ផែនដីវិទ្យា">៩. ផែនដីវិទ្យា</option>
-                    <option value="ភាសាអង់គ្លេស">១០. ភាសាអង់គ្លេស</option>
-                </select>
-                <button onclick="fetchAllAdminData()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold shadow-sm">ទាញទិន្នន័យ</button>
-                <button onclick="window.print()" class="w-full sm:w-auto bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg font-bold shadow-sm">Print</button>
-            </div>
-        </div>
-
         <div id="printLetterhead" class="hidden flex-col mb-4 px-2">
             <div class="relative w-full h-[100px]">
                 <div class="absolute left-0 top-0 text-left w-[45%]">
                     <div class="mt-8 text-[11px] font-bold text-blue-900 leading-tight font-moul">
-                        <p class="mb-1">មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
-                        <p class="mb-1">ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
+                        <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
                         <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
                     </div>
                 </div>
                 <div class="absolute left-1/2 -translate-x-1/2 top-0 text-center w-[45%]">
-                    <div class="text-center space-y-1">
-                        <h2 class="font-moul text-[13px] text-blue-900">ព្រះរាជាណាចក្រកម្ពុជា</h2>
-                        <h2 class="font-moul text-[13px] text-blue-900">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
-                        <div class="flex justify-center items-center gap-1 mt-1">
-                            <div class="w-1.5 h-1.5 rounded-full bg-blue-900"></div><div class="w-20 h-[2px] bg-blue-900"></div><div class="w-1.5 h-1.5 rounded-full bg-blue-900"></div>
-                        </div>
-                    </div>
+                    <h2 class="font-moul text-[13px] text-blue-900">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+                    <h2 class="font-moul text-[13px] text-blue-900">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
                 </div>
             </div>
         </div>
@@ -349,13 +296,28 @@
             <p class="mt-2 text-sm font-bold font-moul text-slate-700" id="printSubjectTitle">មុខវិជ្ជា៖ ...</p>
         </div>
 
+        <div id="controlPanel" class="card p-4 flex flex-col md:flex-row justify-between items-center gap-4 no-print mt-4 border-t-4 border-indigo-600">
+            <div>
+                <h1 class="text-lg font-black text-slate-800 moul-font">របាយការណ៍កម្រិតសាលា</h1>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2 items-center w-full md:w-auto">
+                <select id="reportSubjectFilter" class="border border-slate-300 px-3 py-2 rounded-lg text-sm font-bold outline-none">
+                    <option value="Average">មធ្យមភាគរួម</option><option value="ភាសាខ្មែរ">ភាសាខ្មែរ</option><option value="គណិតវិទ្យា">គណិតវិទ្យា</option>
+                    <option value="សីលធម៌ពលរដ្ឋ">សីលធម៌ពលរដ្ឋ</option><option value="ប្រវត្តិវិទ្យា">ប្រវត្តិវិទ្យា</option><option value="ភូមិវិទ្យា">ភូមិវិទ្យា</option>
+                    <option value="រូបវិទ្យា">រូបវិទ្យា</option><option value="គីមីវិទ្យា">គីមីវិទ្យា</option><option value="ជីវវិទ្យា">ជីវវិទ្យា</option>
+                    <option value="ផែនដីវិទ្យា">ផែនដីវិទ្យា</option><option value="ភាសាអង់គ្លេស">ភាសាអង់គ្លេស</option>
+                </select>
+                <button onclick="fetchAllAdminData()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold">ទាញទិន្នន័យ</button>
+                <button onclick="window.print()" class="bg-slate-700 text-white px-4 py-2 rounded-lg font-bold">Print</button>
+            </div>
+        </div>
+
         <div id="analyticsContent" class="space-y-4 pb-4">
             <div class="card p-20 text-center text-slate-400 font-bold font-moul border-dashed border-2">ជ្រើសរើសមុខវិជ្ជា រួចចុច "ទាញទិន្នន័យ"</div>
         </div>
         
         <div id="footerSignature" class="hidden justify-end mt-8 mr-10 pb-10">
             <div class="text-center">
-                <p class="text-xs font-bold mb-1">ថ្ងៃ...................ខែ.............ឆ្នាំ..............ព.ស ២៥......</p>
                 <p class="text-xs font-bold mb-4">កំពង់ត្រឡាច ថ្ងៃទី..........ខែ...........ឆ្នាំ២០.......</p>
                 <h3 class="font-moul text-sm mb-16">ប្រធានក្រុមបច្ចេកទេស</h3>
             </div>
@@ -390,8 +352,9 @@
         </div>
     </div>
 
+    <!-- Scripts -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyp3nnYo3ZthfUHRRM_NAOrJnU_P00GD16TuEQyufyrhnb5xNuDaCa2-NqNzSenCE_R/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwO-DrYvK_Kr0oCArzTfvwjKl6dXwjTb6_B3nSRag-WjxetAgbNlTmE8dyyx3FXh5hu/exec"; 
         const TELEGRAM_BOT_USERNAME = "kampongtralach_bot";
         const ADMIN_PWD = "H@nm@m64"; 
         const REPORT_PWD = "hs@8888"; 
@@ -486,6 +449,7 @@
             if(p>=90) return "A"; if(p>=80) return "B"; if(p>=70) return "C";
             if(p>=60) return "D"; if(p>=50) return "E"; return "F";
         }
+        
         function getBarColor(percent) {
             if(percent>=90) return "#059669"; if(percent>=80) return "#2563eb";
             if(percent>=70) return "#d97706"; if(percent>=60) return "#7c3aed";
@@ -611,25 +575,32 @@
             const targetPeriod = document.getElementById('monthSelect').value;
             if (!query) return alert("សូមបញ្ចូលអត្តលេខសិស្ស!");
 
-            document.getElementById('loadingText').innerText = "កំពុងទាញយកទិន្នន័យ (Single Request)...";
+            document.getElementById('loadingText').innerText = "កំពុងទាញយកទិន្នន័យពី Server...";
             document.getElementById('loadingOverlay').classList.remove('hidden');
             
             document.getElementById('t1-actions').classList.add('hidden');
             document.getElementById('t3-actions').classList.add('hidden');
             
             try {
-                // Fetch Data Once
+                // Fetch API Once (Rate Limit Safe)
                 const response = await fetch(`${API_URL}?action=getAllData`);
                 const serverData = await response.json();
+                
                 if (serverData.error) throw new Error(serverData.error);
 
                 configList = Object.values(serverData.configMax || {});
                 globalClassTypeMap = {};
-                configList.forEach(c => { if(c["កម្រិតថ្នាក់"]) globalClassTypeMap[c["កម្រិតថ្នាក់"].toString().trim()] = (c["ប្រភេទថ្នាក់"] || c["ប្រភេទ"] || "").toString().toUpperCase(); });
+                configList.forEach(c => { 
+                    if(c["កម្រិតថ្នាក់"]) {
+                        globalClassTypeMap[c["កម្រិតថ្នាក់"].toString().trim()] = (c["ប្រភេទថ្នាក់"] || c["ប្រភេទ"] || "").toString().toUpperCase(); 
+                    }
+                });
 
                 let sheetsToFetch =[...semConfig.sem1, "ប្រឡងឆមាសទី១", ...semConfig.sem2, "ប្រឡងឆមាសទី២", "ប្រចាំឆ្នាំ"];
                 allMonthsData = {};
-                sheetsToFetch.forEach(m => { allMonthsData[m] = serverData.scores && serverData.scores[m] ? removeDuplicates(serverData.scores[m]) :[]; });
+                sheetsToFetch.forEach(m => {
+                    allMonthsData[m] = serverData.scores && serverData.scores[m] ? serverData.scores[m] :[];
+                });
 
                 let s = null;
                 for (let m of sheetsToFetch) {
@@ -681,7 +652,7 @@
                             <td class="grade-${grd}">${grd}</td></tr>`;
                         }
                     });
-                    document.getElementById('t1-tableArea').innerHTML = `<table class="t1-table"><thead><tr><th class="w-10">ល.រ</th><th class="w-48">មុខវិជ្ជា (ប្រឡង)</th><th class="w-24">អតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-40">ក្រាបវិភាគ (%)</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody class="font-bold">${tHtml}</tbody>
+                    document.getElementById('t1-tableArea').innerHTML = `<table class="t1-table"><thead><tr><th class="w-10">ល.រ</th><th class="w-48">មុខវិជ្ជា (ប្រឡង)</th><th class="w-24">អតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-40">ក្រាបភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody class="font-bold">${tHtml}</tbody>
                     <tfoot>
                         <tr class="bg-blue-50/80"><td colspan="3" class="subject-col text-right">ពិន្ទុសរុបប្រឡងឆមាស៖</td><td colspan="3" class="font-bold text-blue-700 text-left pl-4">${stats.examTotal}</td></tr>
                         <tr class="bg-blue-50/80"><td colspan="3" class="subject-col text-right">មធ្យមភាគប្រឡងឆមាស៖</td><td colspan="3" class="font-bold text-blue-700 text-left pl-4">${stats.examAvg.toFixed(2)}</td></tr>
@@ -742,7 +713,7 @@
                 document.getElementById('t1-p2-resName').innerText = s.Name;
                 document.getElementById('t1-p2-resGrade').innerText = sGrade;
                 
-                // Vertical Trend Chart (Monthly Averages)
+                // Vertical Trend Chart
                 let activeTrendData =[];[...semConfig.sem1, "ប្រឡងឆមាសទី១", ...semConfig.sem2, "ប្រឡងឆមាសទី២"].forEach(m => {
                     let finalScore = getStudentMetric(s.ID, sGrade, m === "ប្រឡងឆមាសទី១" ? "SEM1" : m === "ប្រឡងឆមាសទី២" ? "SEM2" : m, allMonthsData, configList);
                     if (finalScore > 0) activeTrendData.push({ month: m.replace("ប្រឡងឆមាសទី", "ឆ."), avg: finalScore });
@@ -804,7 +775,7 @@
                 document.getElementById('t1-actions').classList.add('flex');
 
                 // ===============================================
-                // បំពេញ Tab 3 (បាក់ឌុប)
+                // បំពេញ Tab 3 (បាក់ឌុប) 
                 // ===============================================
                 if (isUpper && !targetPeriod.includes("ប្រចាំឆ្នាំ") && !targetPeriod.includes("ឆមាស")) {
                     let track = globalClassTypeMap[sGrade] || "";
@@ -839,7 +810,7 @@
 
                     let grandTotal = cScore + engBonus;
                     let finalPct = cMax > 0 ? (grandTotal / cMax) * 100 : 0;
-                    let finalGrd = getGradeText(Math.floor(finalPct)); 
+                    let finalGrd = getGradeText(Math.floor(finalPct)); // Floor as requested
 
                     document.getElementById('t3-tableBody').innerHTML = t3Html;
 
