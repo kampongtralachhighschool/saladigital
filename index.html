@@ -26,14 +26,13 @@
         .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Styles សម្រាប់ Tab 1 (លទ្ធផលសិស្ស) - បង្រួមមិនឲ្យធ្លាក់ទំព័រ */
+        /* Styles សម្រាប់ Tab 1 */
         .print-area { background: white; width: 210mm; margin: 20px auto; padding: 8mm 12mm; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; }
         .sketch-summary { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #e2e8f0; border-radius: 12px; margin: 10px 0; padding: 8px 0; background: #ffffff; gap: 4px; }
         .sketch-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .sketch-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background-color: #e2e8f0; }
         .sketch-label { font-size: 11px; color: #64748b; font-weight: bold; margin-bottom: 2px; }
         .sketch-value { font-size: 20px; font-weight: 800; line-height: 1.2; }
-        /* បន្ថែម Style សម្រាប់អក្សរតូចបញ្ជាក់ចំណាត់ថ្នាក់ */
         .rank-context { font-size: 8px; color: #94a3b8; font-weight: normal; margin-top: 2px; line-height: 1.2; }
         
         .t1-table { border-collapse: collapse; width: 100%; margin-top: 8px; }
@@ -44,7 +43,7 @@
         .progress-bar { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
         .grade-A { color: #059669; } .grade-B { color: #2563eb; } .grade-C { color: #d97706; } .grade-D { color: #7c3aed; } .grade-E { color: #db2777; } .grade-F { color: #dc2626; }
 
-        /* Styles សម្រាប់ Tab 2 (របាយការណ៍ថ្មី) */
+        /* Styles សម្រាប់ Tab 2 */
         .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 1.5rem; border: 1px solid #e2e8f0; overflow: hidden; }
         .table-header { background-color: #1e293b; color: white; }
         .abc-text { color: #10b981; font-weight: bold; }
@@ -201,7 +200,6 @@
             <div class="mt-6 flex justify-between items-start px-4">
                 <div class="text-center"><p class="font-bold text-[11px]">បានឃើញ និងឯកភាព</p><p class="moul-font text-[11px] text-blue-900 mt-1">នាយកសាលា</p><div class="h-20"></div></div>
                 <div class="text-center">
-                    <!-- កាលបរិច្ឆេទ ២បន្ទាត់ សម្រាប់គ្រូបន្ទុកថ្នាក់ -->
                     <p id="footerSolar" class="text-[10px] text-gray-700 font-bold mb-1">...</p>
                     <p id="footerLunar" class="text-[10px] text-gray-700 font-bold mb-3">...</p>
                     <p class="moul-font text-[11px] text-blue-900">គ្រូបន្ទុកថ្នាក់</p>
@@ -338,7 +336,7 @@
         // ========================================================
         // ⚙️ ការកំណត់ទូទៅ (CONFIGURATION)
         // ========================================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbzfr-4H1xuIovX9rwLquCgWm3HuoLY0a5bO0931F7GjQ3n-lnDNYKzMf4g1a0WRHWCg/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbzB9g8YuVa22DEFzNcs-DFsZF89VEIPD_0xPJ706nBH3DDE3t8m9LbO5MvQ8IL-Q_Np/exec"; 
         const TELEGRAM_BOT_USERNAME = "kampongtralach_bot";
         const ADMIN_PASSWORD = "hs@8888"; 
         
@@ -348,6 +346,19 @@
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             let stuId = params.get('id') || params.get('stuId');
+            let reqMonth = params.get('month'); // ចាប់យកខែពី URL
+
+            // បើមានភ្ជាប់ខែពី Telegram Link មក នោះវានឹងរើសខែអូតូ
+            if (reqMonth) {
+                let selectObj = document.getElementById('monthSelect');
+                for (let i = 0; i < selectObj.options.length; i++) {
+                    if (selectObj.options[i].value === reqMonth) {
+                        selectObj.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
             if (stuId) {
                 document.getElementById('searchInput').value = stuId;
                 setTimeout(() => { handleSearch(); }, 500); 
@@ -396,7 +407,7 @@
             const seen = new Set();
             data.forEach(item => {
                 let cleanItem = { ...item };
-                delete cleanItem._rowIndex;
+                delete cleanItem._rowIndex; // Remove system row index
                 const str = JSON.stringify(cleanItem);
                 if (!seen.has(str)) {
                     seen.add(str);
@@ -440,7 +451,6 @@
                     fetch(`${API_URL}?month=Config_MaxScores`)
                 ]);
                 let rawDataUnfiltered = await dataRes.json();
-                // Filter out duplicates to ensure calculations are correct
                 const data = removeDuplicates(rawDataUnfiltered); 
                 const configList = await configRes.json();
                 
@@ -461,22 +471,15 @@
                     document.getElementById('avgScore').innerText = s.Average || 0;
                     
                     // --- គណនាចំណាត់ថ្នាក់ធៀបនឹងសិស្សសរុប (ក្នុងថ្នាក់ និងក្នុងសាលា) ---
-                    
-                    // 1. គណនាសម្រាប់ "ក្នុងថ្នាក់" (Class Level)
                     let studentsInClass = data.filter(item => (item.Grade || "").toString().trim() === studentGrade);
                     let classTotal = studentsInClass.length;
                     let classFemale = studentsInClass.filter(item => isFemale(item.Gender)).length;
                     
-                    // 2. គណនាសម្រាប់ "ក្នុងសាលា" (School Level) - ដោយផ្អែកលើអ្នកដែលមាននិទ្ទេសឬពិន្ទុសរុប
                     let schoolTotal = data.length;
                     let schoolFemale = data.filter(item => isFemale(item.Gender)).length;
 
-                    // Calculate rank across the school manually if "Rank" isn't reliable, 
-                    // but we will use the provided "Rank" for class rank if it exists.
-                    // Assuming "Rank" column provided by API is class rank.
                     let classRankValue = s.Rank || "?";
                     
-                    // To compute school rank based on Total score (Descending)
                     let validStudentsForRanking = data.filter(item => !isNaN(cleanNumber(item.Total)));
                     validStudentsForRanking.sort((a, b) => cleanNumber(b.Total) - cleanNumber(a.Total));
                     
@@ -494,10 +497,7 @@
                     
                     // -------------------------------------------------------------
 
-                    // ទាញយកនិទ្ទេសរួម ពីជួរ Grade_Resul ឬ Grade_Result
                     document.getElementById('gradeResult').innerText = s["Grade_Resul"] || s["Grade_Result"] || getStudentGrade(s.Average, 10);
-                    
-                    // បង្ហាញកាលបរិច្ឆេទ ២បន្ទាត់ លើគ្រូបន្ទុកថ្នាក់
                     document.getElementById('footerSolar').innerText = s.DateSolar || s["ថ្ងៃខែឆ្នាំ"] || '...........................';
                     document.getElementById('footerLunar').innerText = s.DateLunar || s["កាលបរិច្ឆេទ"] || '...........................';
 
