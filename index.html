@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធគ្រប់គ្រងការសិក្សា - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
     
-    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;700&family=Moul&family=Battambang:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -18,7 +17,6 @@
         .moul-font, .font-moul { font-family: 'Moul', serif; }
         .font-battambang { font-family: 'Battambang', cursive; }
         
-        /* Tab Styles */
         .tab-btn { transition: all 0.3s ease; }
         .tab-btn.active { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); }
         .tab-btn.inactive { background-color: white; color: #64748b; border-color: #cbd5e1; }
@@ -26,108 +24,93 @@
         .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Styles សម្រាប់ Tab 1 */
         .print-area { background: white; width: 210mm; margin: 20px auto; padding: 8mm 12mm; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; }
-        .sketch-summary { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #e2e8f0; border-radius: 12px; margin: 10px 0; padding: 8px 0; background: #ffffff; gap: 4px; }
-        .sketch-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .sketch-summary { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #e2e8f0; border-radius: 12px; margin: 10px 0; padding: 8px 0; background: #ffffff; gap: 4px; flex-wrap: wrap;}
+        .sketch-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; min-width: 22%; padding: 4px;}
         .sketch-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background-color: #e2e8f0; }
         .sketch-label { font-size: 11px; color: #64748b; font-weight: bold; margin-bottom: 2px; }
         .sketch-value { font-size: 20px; font-weight: 800; line-height: 1.2; }
-        .rank-context { font-size: 8px; color: #64748b; font-weight: normal; margin-top: 2px; line-height: 1.3; }
-        .bac2-badge { background-color: #fef08a; color: #b45309; font-size: 8px; padding: 2px 6px; border-radius: 10px; margin-bottom: 2px; font-weight: bold;}
+        .rank-context { font-size: 9px; color: #64748b; font-weight: normal; margin-top: 2px; line-height: 1.3; }
         
         .t1-table, .comp-table { border-collapse: collapse; width: 100%; margin-top: 8px; }
-        .t1-table th, .t1-table td, .comp-table th, .comp-table td { border: 1px solid #cbd5e1; padding: 4px 4px; text-align: center; font-size: 11px; }
+        .t1-table th, .t1-table td, .comp-table th, .comp-table td { border: 1px solid #cbd5e1; padding: 4px; text-align: center; font-size: 11px; }
         .t1-table th, .comp-table th { background-color: #f8fafc; color: var(--primary-blue); font-weight: 700; height: 30px; }
-        .subject-col { text-align: left; padding-left: 10px; font-weight: bold; font-size: 12px; width: 140px; }
-        
-        .progress-container { width: 100%; background-color: #f1f5f9; border-radius: 10px; height: 8px; overflow: hidden; display: inline-block; vertical-align: middle; }
-        .progress-bar { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+        .subject-col { text-align: left; padding-left: 10px; font-weight: bold; font-size: 12px; width: 130px; }
         
         .grade-A { color: #059669; } .grade-B { color: #2563eb; } .grade-C { color: #d97706; } .grade-D { color: #7c3aed; } .grade-E { color: #db2777; } .grade-F { color: #dc2626; }
+        .result-pass { color: #059669; font-weight: 900;} .result-fail { color: #dc2626; font-weight: 900;}
 
-        /* Styles សម្រាប់ Tab 2 */
-        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 1.5rem; border: 1px solid #e2e8f0; overflow: hidden; }
-        .table-header { background-color: #1e293b; color: white; }
-        
+        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 1.5rem; border: 1px solid #e2e8f0; overflow: hidden; padding: 20px;}
         .page-break { page-break-before: always; }
         .avoid-break { page-break-inside: avoid; }
-
-        .analysis-box { background: #f0fdfa; border: 1px solid #ccfbf1; border-left: 4px solid #0d9488; padding: 10px; border-radius: 6px; margin-top: 15px; font-size: 11px; line-height: 1.6; color: #0f766e; }
 
         @media print {
             @page { size: A4 portrait; margin: 8mm; }
             body { background-color: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 0; }
-            .no-print, .no-print * { display: none !important; height: 0 !important; opacity: 0 !important; visibility: hidden !important; }
+            .no-print { display: none !important; }
             .print-area { box-shadow: none; margin: 0; padding: 0; width: 100%; }
             tr { break-inside: avoid; page-break-inside: avoid; }
             .page-break { page-break-before: always; margin-top: 20px; }
-            #tab-student, #tab-bac2 { display: block !important; }
-            .hidden { display: none !important; }
         }
     </style>
 </head>
 <body class="p-2 md:p-4">
 
-    <!-- Tab Navigation -->
+    <!-- Navigation -->
     <div class="max-w-5xl mx-auto mb-6 flex flex-wrap justify-center gap-3 no-print mt-4">
         <button onclick="switchTab('tab-student')" id="btn-tab-student" class="tab-btn active px-4 py-2 rounded-full font-bold border-2 shadow-sm flex items-center gap-2 text-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path></svg>
-            លទ្ធផលទូទៅ (១៥មុខ)
+            លទ្ធផលទូទៅ
         </button>
         <button onclick="switchTab('tab-bac2')" id="btn-tab-bac2" class="tab-btn inactive px-4 py-2 rounded-full font-bold border-2 shadow-sm flex items-center gap-2 text-sm text-yellow-600 border-yellow-200">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            ស្តង់ដារបាក់ឌុប (ទី១១-១២)
+            ស្តង់ដារបាក់ឌុប
         </button>
-        <button onclick="switchTab('tab-report')" id="btn-tab-report" class="tab-btn inactive px-4 py-2 rounded-full font-bold border-2 shadow-sm flex items-center gap-2 text-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z"></path></svg>
-            របាយការណ៍រួម
+        <button onclick="switchTab('tab-admin')" id="btn-tab-admin" class="tab-btn inactive px-4 py-2 rounded-full font-bold border-2 shadow-sm flex items-center gap-2 text-sm bg-slate-800 text-white border-slate-800">
+            ⚙️ Admin
         </button>
     </div>
 
-    <!-- Search Box -->
+    <!-- Search Section -->
     <div id="searchSection" class="max-w-4xl mx-auto my-6 no-print px-4">
         <div class="text-center mb-6 space-y-2">
             <h2 class="moul-font text-blue-800 text-lg">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
-            <p class="font-bold text-gray-500">ស្វែងរកលទ្ធផលសិក្សាសិស្ស</p>
+            <p class="font-bold text-gray-500">ស្វែងរកលទ្ធផលសិក្សាសិស្សអូតូ</p>
         </div>
         <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-blue-600">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="space-y-1">
-                    <label class="text-xs font-bold text-gray-500">ជ្រើសរើសខែ/ឆមាស</label>
+                    <label class="text-xs font-bold text-gray-500">ជ្រើសរើសការវាយតម្លៃ</label>
                     <select id="monthSelect" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm">
-                        <option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option><option value="មីនា" selected>មីនា</option>
-                        <option value="មេសា">មេសា</option><option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
-                        <option value="កក្កដា">កក្កដា</option><option value="សីហា">សីហា</option><option value="កញ្ញា">កញ្ញា</option>
-                        <option value="តុលា">តុលា</option><option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option>
+                        <!-- Dynamic Options injected via JS based on Admin config -->
+                        <optgroup label="ប្រចាំខែ" id="opt-months"></optgroup>
+                        <optgroup label="ប្រឡងឆមាស" id="opt-semesters">
+                            <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option>
+                            <option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                        </optgroup>
+                        <optgroup label="ប្រចាំឆ្នាំ">
+                            <option value="ប្រចាំឆ្នាំ">ប្រចាំឆ្នាំ</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-gray-500">បញ្ចូលឈ្មោះ ឬ អត្តលេខ</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="searchInput" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm" placeholder="ស្វែងរកទីនេះ...">
-                        <button onclick="startScanner()" class="bg-gray-100 p-3 rounded-xl hover:bg-gray-200 border border-gray-200 text-blue-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z"/><path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z"/><path d="M7 9H2v5h5V9Zm-4 1h3v3H3v-3Zm8-6h1v1h-1V4Z"/><path d="M9 2h5v5H9V2Zm1 1v3h3V3h-3ZM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8H8Zm2 2H9V9h1v1Zm4 2h-1v1h-2v1h3v-2Zm-4 2v-1H8v1h2Z"/></svg>
-                        </button>
-                    </div>
+                    <input type="text" id="searchInput" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm" placeholder="ស្វែងរកទីនេះ...">
                 </div>
                 <div class="flex items-end">
-                    <button onclick="executeStudentSearch()" id="searchBtn" class="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg flex items-center justify-center gap-2">
+                    <button onclick="executeStudentSearch()" class="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg flex items-center justify-center gap-2">
                         <span>ឆែកមើលលទ្ធផល</span>
                         <div id="loader-search" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
                     </button>
                 </div>
             </div>
-            <div id="qr-reader" class="mt-4 hidden w-full overflow-hidden rounded-xl border-2 border-dashed border-blue-400"></div>
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- TAB 1 CONTENT: លទ្ធផលទូទៅ (១៥ មុខវិជ្ជា & ប្រៀបធៀប) -->
+    <!-- TAB 1: លទ្ធផលទូទៅ -->
     <!-- ========================================== -->
     <div id="tab-student" class="tab-content active">
         <div id="t1-capture-area" class="print-area hidden">
-            <!-- ========== ទំព័រទី ១: តារាងពិន្ទុទូទៅ ========== -->
+            <!-- ========== ទំព័រទី ១ ========== -->
             <div id="t1-page1">
                 <div class="text-center space-y-0.5">
                     <h2 class="moul-font text-[12px] text-blue-900">ព្រះរាជាណាចក្រកម្ពុជា</h2>
@@ -135,68 +118,40 @@
                 </div>
                 <div class="mt-2 text-[11px] font-bold text-blue-900 leading-tight">
                     <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
-                    <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
                     <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
                 </div>
-                <h1 class="moul-font text-red-600 text-center text-lg mt-4 mb-3">តារាងលទ្ធផលសិក្សារបស់សិស្សប្រចាំ <span id="t1-resMonth">...</span></h1>
+                <h1 class="moul-font text-red-600 text-center text-lg mt-4 mb-3">តារាងលទ្ធផលសិក្សារបស់សិស្ស <span id="t1-resTitle">...</span></h1>
                 
                 <div class="grid grid-cols-2 gap-y-1.5 text-[13px] font-bold mt-2 px-4 border-l-4 border-blue-600 py-1 bg-blue-50/30">
                     <p>គោត្តនាម-នាម ៖ <span id="t1-resName" class="text-blue-800 moul-font ml-2">...</span></p>
                     <p>ភេទ ៖ <span id="t1-resGender" class="text-blue-800 ml-2">...</span></p>
-                    <p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span id="t1-resDOB" class="text-blue-800 ml-2">...</span></p>
                     <p>ថ្នាក់ទី ៖ <span id="t1-resGrade" class="text-blue-800 ml-2">...</span></p>
                     <p>អត្តលេខ ៖ <span id="t1-resId" class="text-blue-800 ml-2">...</span></p>
-                    <p>ឆ្នាំសិក្សា ៖ <span class="text-blue-800 ml-2">២០២៥-២០២៦</span></p>
                 </div>
 
-                <div class="sketch-summary shadow-sm">
-                    <div class="sketch-item">
-                        <p class="sketch-label">មធ្យមភាគ</p>
-                        <p id="t1-avgScore" class="sketch-value text-blue-600">0.00</p>
-                    </div>
-                    <div class="sketch-item">
-                        <p class="sketch-label">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p>
-                        <p id="t1-classRank" class="sketch-value text-red-500">0</p>
-                        <p id="t1-classContext" class="rank-context">ក្នុងចំណោមសិស្ស ... នាក់ ស្រី ... នាក់</p>
-                    </div>
-                    <div class="sketch-item">
-                        <p class="sketch-label">ចំណាត់ថ្នាក់ក្នុងសាលា</p>
-                        <p id="t1-schoolRank" class="sketch-value text-orange-500">0</p>
-                        <p id="t1-schoolContext" class="rank-context">ក្នុងចំណោមសិស្ស ... នាក់ ស្រី ... នាក់</p>
-                    </div>
-                    <div class="sketch-item">
-                        <p class="sketch-label">និទ្ទេសរួម</p>
-                        <p id="t1-gradeResult" class="sketch-value text-emerald-500">-</p>
-                    </div>
-                </div>
+                <!-- Dynamic Summary Area (Month / Semester / Annual) -->
+                <div id="t1-summaryArea" class="sketch-summary shadow-sm"></div>
 
-                <table class="t1-table">
-                    <thead><tr><th class="w-10">ល.រ</th><th class="w-48">មុខវិជ្ជា</th><th class="w-24">ពិន្ទុអតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-40">ក្រាបវិភាគ (%)</th><th class="w-16">និទ្ទេស</th></tr></thead>
-                    <tbody id="t1-tableBody" class="font-bold"></tbody>
-                    <tfoot>
-                        <tr class="bg-blue-50/80">
-                            <td colspan="2" class="subject-col text-blue-900 uppercase">ពិន្ទុសរុប</td>
-                            <td id="t1-totalMax" class="font-black text-center text-gray-600">0</td>
-                            <td id="t1-totalScore" class="font-black text-center text-blue-700 text-sm">0</td>
-                            <td colspan="2" class="text-right pr-4 text-[10px] text-gray-500 italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td>
-                        </tr>
-                    </tfoot>
-                </table>
+                <!-- Score Table -->
+                <div id="t1-tableArea">
+                    <table class="t1-table">
+                        <thead><tr><th class="w-10">ល.រ</th><th class="w-48">មុខវិជ្ជា</th><th class="w-24">អតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-16">មេគុណ</th><th class="w-16">និទ្ទេស</th></tr></thead>
+                        <tbody id="t1-tableBody" class="font-bold"></tbody>
+                        <tfoot id="t1-tableFoot"></tfoot>
+                    </table>
+                </div>
 
                 <div class="mt-6 flex justify-between items-start px-4">
                     <div class="text-center"><p class="font-bold text-[11px]">បានឃើញ និងឯកភាព</p><p class="moul-font text-[11px] text-blue-900 mt-1">នាយកសាលា</p></div>
                     <div class="text-center">
-                        <p id="t1-footerSolar" class="text-[10px] text-gray-700 font-bold mb-1">...</p>
-                        <p id="t1-footerLunar" class="text-[10px] text-gray-700 font-bold mb-2">...</p>
-                        <p class="moul-font text-[11px] text-blue-900">គ្រូបន្ទុកថ្នាក់</p>
+                        <p class="moul-font text-[11px] text-blue-900 mt-6">គ្រូបន្ទុកថ្នាក់</p>
                     </div>
                 </div>
             </div>
 
-            <!-- ========== ទំព័រទី ២: តារាងប្រៀបធៀបគ្រប់ខែ ========== -->
+            <!-- ========== ទំព័រទី ២: តារាងប្រៀបធៀប ========== -->
             <div class="page-break"></div>
             <div id="t1-page2" class="pt-2">
-                <!-- Administrative Header for Page 2 -->
                 <div class="text-center space-y-0.5">
                     <h2 class="moul-font text-[12px] text-blue-900">ព្រះរាជាណាចក្រកម្ពុជា</h2>
                     <h2 class="moul-font text-[12px] text-blue-900">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
@@ -205,34 +160,20 @@
                     <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
                     <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
                 </div>
-
-                <h2 class="moul-font text-blue-800 text-center text-[15px] mt-6 mb-4">តារាងប្រៀបធៀបលទ្ធផលសិក្សាតាមមុខវិជ្ជាប្រចាំខែ</h2>
+                <h2 class="moul-font text-blue-800 text-center text-[14px] mt-6 mb-4">តារាងវិភាគប្រៀបធៀបលទ្ធផលសិក្សាតាមមុខវិជ្ជា</h2>
                 
-                <div class="grid grid-cols-2 gap-y-1 text-[12px] font-bold px-4 border-l-4 border-blue-600 py-1.5 bg-blue-50/30 mb-4">
+                <div class="grid grid-cols-2 gap-y-1 text-[12px] font-bold px-4 border-l-4 border-blue-600 py-1 bg-blue-50/30 mb-4">
                     <p>ឈ្មោះ ៖ <span id="t1-p2-resName" class="text-blue-800 moul-font ml-2">...</span></p>
                     <p>ថ្នាក់ទី ៖ <span id="t1-p2-resGrade" class="text-blue-800 ml-2">...</span></p>
                 </div>
 
-                <!-- តារាងប្រៀបធៀប ហៅដោយ JS -->
                 <div id="t1-comparisonTableContainer"></div>
-
-                <!-- ប្រអប់វិភាគភាពខ្លាំង/ខ្សោយ -->
-                <div id="t1-analysisBox" class="analysis-box hidden"></div>
-
-                <!-- Footer for Page 2 -->
-                <div class="mt-8 flex justify-between items-start px-4">
-                    <div class="text-center"><p class="font-bold text-[11px]">បានឃើញ និងឯកភាព</p><p class="moul-font text-[11px] text-blue-900 mt-1">នាយកសាលា</p></div>
-                    <div class="text-center">
-                        <p id="t1-p2-footerSolar" class="text-[10px] text-gray-700 font-bold mb-1">...</p>
-                        <p id="t1-p2-footerLunar" class="text-[10px] text-gray-700 font-bold mb-2">...</p>
-                        <p class="moul-font text-[11px] text-blue-900">គ្រូបន្ទុកថ្នាក់</p>
-                    </div>
-                </div>
+                <div id="t1-analysisBox" class="bg-blue-50/50 border border-blue-200 p-3 rounded-lg mt-4 text-[11px] text-slate-700 leading-relaxed hidden"></div>
             </div>
         </div>
         
         <div id="t1-actions" class="no-print mt-6 border-t pt-6 hidden flex-col items-center gap-4 mb-10 max-w-4xl mx-auto">
-            <button onclick="downloadPDF('t1-capture-area', 'លទ្ធផលទូទៅ')" class="bg-emerald-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg hover:bg-emerald-700">ទាញយក PDF (២ទំព័រ)</button>
+            <button onclick="downloadPDF('t1-capture-area', 'ទូទៅ')" class="bg-emerald-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg">ទាញយក PDF</button>
             <div class="flex gap-4 w-full">
                 <button onclick="linkTelegram('Student')" class="flex-1 bg-sky-500 text-white py-3 rounded-xl font-bold shadow-md">ភ្ជាប់ Telegram សិស្ស</button>
                 <button onclick="linkTelegram('Parent')" class="flex-1 bg-indigo-500 text-white py-3 rounded-xl font-bold shadow-md">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
@@ -241,30 +182,24 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- TAB 3: លទ្ធផលស្តង់ដារបាក់ឌុប (៧ មុខវិជ្ជា) -->
+    <!-- TAB 3: លទ្ធផលស្តង់ដារបាក់ឌុប -->
     <!-- ========================================== -->
     <div id="tab-bac2" class="tab-content hidden">
         <div id="t3-capture-area" class="print-area hidden">
+            <!-- (ស្រដៀងគ្នា តែកាត់ចោលមធ្យមភាគ) -->
             <div class="text-center space-y-0.5">
                 <h2 class="moul-font text-[12px] text-blue-900">ព្រះរាជាណាចក្រកម្ពុជា</h2>
                 <h2 class="moul-font text-[12px] text-blue-900">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
             </div>
-            <div class="mt-2 text-[11px] font-bold text-blue-900 leading-tight">
-                <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
-                <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
-            </div>
-            <h1 class="moul-font text-red-600 text-center text-lg mt-4 mb-1">តារាងលទ្ធផលសិក្សាតាមស្តង់ដារបាក់ឌុប</h1>
-            <p class="text-center text-sm font-bold text-yellow-600 mb-3">(ថ្នាក់<span id="t3-trackName">...</span> ប្រចាំ <span id="t3-resMonth">...</span>)</p>
+            <h1 class="moul-font text-red-600 text-center text-lg mt-6 mb-1">តារាងលទ្ធផលសិក្សាតាមស្តង់ដារបាក់ឌុប</h1>
+            <p class="text-center text-sm font-bold text-yellow-600 mb-4">(ថ្នាក់<span id="t3-trackName">...</span> <span id="t3-resMonth">...</span>)</p>
 
-            <div class="grid grid-cols-2 gap-y-1.5 text-[13px] font-bold mt-2 px-4 border-l-4 border-yellow-500 py-1 bg-yellow-50/30">
+            <div class="grid grid-cols-2 gap-y-1.5 text-[13px] font-bold px-4 border-l-4 border-yellow-500 py-1 bg-yellow-50/30">
                 <p>ឈ្មោះ ៖ <span id="t3-resName" class="text-blue-800 moul-font ml-2">...</span></p>
-                <p>ភេទ ៖ <span id="t3-resGender" class="text-blue-800 ml-2">...</span></p>
                 <p>ថ្នាក់ទី ៖ <span id="t3-resGrade" class="text-blue-800 ml-2">...</span></p>
-                <p>អត្តលេខ ៖ <span id="t3-resId" class="text-blue-800 ml-2">...</span></p>
             </div>
 
-            <!-- Removed Average section as requested -->
-            <div class="sketch-summary shadow-sm border-yellow-200 justify-center gap-10">
+            <div class="sketch-summary shadow-sm border-yellow-200 justify-center gap-10 mt-4">
                 <div class="sketch-item">
                     <p class="sketch-label">ពិន្ទុសរុប</p>
                     <p id="t3-totalScore" class="sketch-value text-blue-600 text-2xl">0</p>
@@ -273,131 +208,127 @@
                 <div class="sketch-item">
                     <p class="sketch-label">និទ្ទេសរួម</p>
                     <p id="t3-gradeResult" class="sketch-value text-emerald-600 font-black text-3xl">-</p>
-                    <p class="rank-context">(គិតលើរបបពិន្ទុ)</p>
+                    <p class="rank-context">(គិតលើរបបពិន្ទុបង្គត់ចុះ)</p>
                 </div>
             </div>
 
-            <table class="t1-table">
-                <thead>
-                    <tr class="bg-yellow-50 text-yellow-800">
-                        <th class="w-10">ល.រ</th><th class="w-48">មុខវិជ្ជា (គោល)</th><th class="w-24">អតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-40">ក្រាបភាគរយ</th><th class="w-16">និទ្ទេស</th>
-                    </tr>
-                </thead>
+            <table class="t1-table mt-4">
+                <thead><tr class="bg-yellow-50 text-yellow-800"><th class="w-10">ល.រ</th><th class="w-48">មុខវិជ្ជា (គោល)</th><th class="w-24">អតិបរមា</th><th class="w-24">ពិន្ទុ</th><th class="w-16">និទ្ទេស</th></tr></thead>
                 <tbody id="t3-tableBody" class="font-bold"></tbody>
             </table>
             
-            <div class="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-lg text-[10px] text-slate-600 leading-relaxed">
-                <b>*សម្គាល់ការគណនា៖</b><br>
-                - មុខវិជ្ជាគោលចំនួន ៦ បូកបញ្ចូលគ្នាជាពិន្ទុដើម។<br>
-                - <b>ភាសាអង់គ្លេស</b> ជាមុខវិជ្ជាពិន្ទុបន្ថែម (លើកទឹកចិត្ត) ក្រោម ២៦=០, ចាប់ពី ២៦ ឡើងយកពិន្ទុដកនឹង ២៥។<br>
-                - និទ្ទេសរួមត្រូវបានគណនាផ្អែកលើរបបពិន្ទុធៀបនឹងពិន្ទុអតិបរមា ដោយធ្វើការបង្គត់ចុះ (Floor)។
+            <div class="mt-4 p-3 bg-slate-50 border rounded-lg text-[10px] text-slate-600">
+                <b>*សម្គាល់៖</b> មុខវិជ្ជាអង់គ្លេស ជាពិន្ទុលើកទឹកចិត្ត (ក្រោម ២៦=០, ចាប់ពី ២៦ ឡើងយកពិន្ទុដក ២៥)។ និទ្ទេសរួមបង្គត់ចុះ (Floor)។
             </div>
-            
-            <div class="mt-6 flex justify-between items-start px-4">
-                <div class="text-center"><p class="font-bold text-[11px]">បានឃើញ និងឯកភាព</p><p class="moul-font text-[11px] text-blue-900 mt-1">នាយកសាលា</p></div>
-                <div class="text-center">
-                    <p id="t3-footerSolar" class="text-[10px] text-gray-700 font-bold mb-1">...</p>
-                    <p id="t3-footerLunar" class="text-[10px] text-gray-700 font-bold mb-2">...</p>
-                    <p class="moul-font text-[11px] text-blue-900">គ្រូបន្ទុកថ្នាក់</p>
+        </div>
+        <div id="t3-actions" class="no-print mt-6 flex-col items-center hidden mb-10">
+            <button onclick="downloadPDF('t3-capture-area', 'បាក់ឌុប')" class="bg-yellow-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg">ទាញយក PDF (បាក់ឌុប)</button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB ADMIN: ការកំណត់ឆមាស -->
+    <!-- ========================================== -->
+    <div id="tab-admin" class="tab-content hidden max-w-4xl mx-auto">
+        <div class="card p-6">
+            <h2 class="text-xl font-bold text-slate-800 moul-font mb-4 border-b pb-2">⚙️ កំណត់ខែក្នុងឆមាស (ប្រព័ន្ធគណនាអូតូ)</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Semester 1 -->
+                <div class="bg-slate-50 p-4 rounded-xl border">
+                    <h3 class="font-bold text-blue-700 mb-3">ឆមាសទី១ មានខែ៖</h3>
+                    <div id="sem1Checkboxes" class="space-y-2 text-sm font-bold text-slate-700"></div>
+                </div>
+                <!-- Semester 2 -->
+                <div class="bg-slate-50 p-4 rounded-xl border">
+                    <h3 class="font-bold text-emerald-700 mb-3">ឆមាសទី២ មានខែ៖</h3>
+                    <div id="sem2Checkboxes" class="space-y-2 text-sm font-bold text-slate-700"></div>
                 </div>
             </div>
-        </div>
-
-        <div id="t3-actions" class="no-print mt-6 border-t pt-6 hidden flex-col items-center mb-10">
-            <button onclick="downloadPDF('t3-capture-area', 'បាក់ឌុប')" class="bg-yellow-600 text-white px-10 py-3 rounded-2xl font-bold shadow-lg hover:bg-yellow-700 text-black">ទាញយក PDF (បាក់ឌុប)</button>
+            <button onclick="saveAdminConfig()" class="mt-6 w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-900">រក្សាទុកការកំណត់</button>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- TAB 2: របាយការណ៍វិភាគនិទ្ទេស (ADMIN) -->
-    <!-- ========================================== -->
-    <div id="tab-report" class="tab-content max-w-7xl mx-auto hidden">
-        <div id="controlPanel" class="card p-4 flex justify-between items-center no-print mt-2">
-            <h1 class="text-lg font-black text-slate-800 moul-font">របាយការណ៍សាលា</h1>
-            <div class="flex gap-2">
-                <select id="subjectFilter" class="border border-slate-300 px-3 py-1.5 rounded-lg text-sm font-bold outline-none">
-                    <option value="Average">មធ្យមភាគរួម</option><option value="គណិតវិទ្យា">គណិតវិទ្យា</option><option value="ភាសាខ្មែរ">ភាសាខ្មែរ</option>
-                </select>
-                <button onclick="alert('មុខងារ Admin ធម្មតា')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold text-xs">ទាញទិន្នន័យ</button>
-            </div>
-        </div>
-        <div id="analyticsContent" class="space-y-4 pb-4">
-            <div class="card p-20 text-center text-slate-400 font-bold font-moul border-dashed border-2">ទីតាំងរបាយការណ៍សាលា</div>
-        </div>
-    </div>
-
-    <!-- Loading Modal -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="text-center bg-white p-6 rounded-2xl shadow-xl">
-            <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-            <p class="text-blue-800 font-bold text-sm" id="loadingText">កំពុងស្វែងរកទិន្នន័យ...</p>
-        </div>
-    </div>
-
+    <!-- Script Logic -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyeielAr14r_X2UyMzimf5POgsnQp0K3yNQRnw06P9VlJmdXecgIVzJhvcviZXJAvcI/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxeiUke3I8ZRpgWxh42bOI-LkNUutBqOtHKIJd--VsU0UdJ94FJm-lod7q8aLGpIKuF/exec"; 
         const TELEGRAM_BOT_USERNAME = "kampongtralach_bot";
-        const ADMIN_PASSWORD = "hs@8888"; 
+        const ADMIN_PASSWORD = "H@nm@m64"; 
         
-        // មុខវិជ្ជាសម្រាប់ការប្រៀបធៀប ១០ មុខវិជ្ជា
         const SUBJECTS_10 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
-        const monthsOrder =["វិច្ឆិកា", "ធ្នូ", "មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា"];
         const SUBJECTS_15 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
+        const allPossibleMonths =["វិច្ឆិកា", "ធ្នូ", "មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា"];
         
         let allMonthsData = {};
         let configList =[];
+        let globalClassTypeMap = {};
         let isInternalUnlocked = false;
 
+        // Load Admin Config
+        let semConfig = JSON.parse(localStorage.getItem('kths_sem_config')) || {
+            sem1:['វិច្ឆិកា', 'ធ្នូ', 'មករា', 'កុម្ភៈ'], 
+            sem2:['មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា']
+        };
+
         window.addEventListener('DOMContentLoaded', () => {
+            renderMonthDropdown();
+            renderAdminCheckboxes();
             const params = new URLSearchParams(window.location.search);
             let stuId = params.get('id') || params.get('stuId');
-            let reqMonth = params.get('month');
-            if (reqMonth) {
-                let sel = document.getElementById('monthSelect');
-                for (let i=0; i<sel.options.length; i++) { if (sel.options[i].value === reqMonth) { sel.selectedIndex = i; break; } }
-            }
             if (stuId) {
                 document.getElementById('searchInput').value = stuId;
                 setTimeout(() => { executeStudentSearch(); }, 500); 
             }
         });
 
+        function renderMonthDropdown() {
+            let select = document.getElementById('opt-months');
+            select.innerHTML = '';[...semConfig.sem1, ...semConfig.sem2].forEach(m => {
+                select.innerHTML += `<option value="${m}">${m}</option>`;
+            });
+        }
+
+        function renderAdminCheckboxes() {
+            let s1Div = document.getElementById('sem1Checkboxes');
+            let s2Div = document.getElementById('sem2Checkboxes');
+            s1Div.innerHTML = ''; s2Div.innerHTML = '';
+            
+            allPossibleMonths.forEach(m => {
+                let checked1 = semConfig.sem1.includes(m) ? 'checked' : '';
+                let checked2 = semConfig.sem2.includes(m) ? 'checked' : '';
+                s1Div.innerHTML += `<label class="flex items-center gap-2"><input type="checkbox" value="${m}" ${checked1} class="w-4 h-4"> ${m}</label>`;
+                s2Div.innerHTML += `<label class="flex items-center gap-2"><input type="checkbox" value="${m}" ${checked2} class="w-4 h-4"> ${m}</label>`;
+            });
+        }
+
+        function saveAdminConfig() {
+            let sem1 = Array.from(document.getElementById('sem1Checkboxes').querySelectorAll('input:checked')).map(i => i.value);
+            let sem2 = Array.from(document.getElementById('sem2Checkboxes').querySelectorAll('input:checked')).map(i => i.value);
+            semConfig = { sem1, sem2 };
+            localStorage.setItem('kths_sem_config', JSON.stringify(semConfig));
+            renderMonthDropdown();
+            alert("រក្សាទុកជោគជ័យ! ប្រព័ន្ធនឹងទាញយកខែទាំងនេះមកគណនា។");
+        }
+
         function switchTab(tabId) {
-            if (tabId === 'tab-report' && !isInternalUnlocked) {
-                let pwd = prompt("បញ្ជាក់លេខសម្ងាត់សម្រាប់គណៈគ្រប់គ្រង៖");
+            if (tabId === 'tab-admin' && !isInternalUnlocked) {
+                let pwd = prompt("បញ្ជាក់លេខសម្ងាត់ (Admin)៖");
                 if (pwd === ADMIN_PASSWORD) isInternalUnlocked = true; else { alert("ខុសលេខសម្ងាត់!"); return; }
             }
-            
-            document.querySelectorAll('.tab-btn').forEach(btn => { btn.classList.remove('active'); btn.classList.add('inactive'); btn.classList.remove('text-yellow-600', 'border-yellow-200');});
+            document.querySelectorAll('.tab-btn').forEach(btn => { btn.classList.remove('active', 'text-yellow-600', 'border-yellow-200'); btn.classList.add('inactive');});
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            
             let actBtn = document.getElementById('btn-' + tabId);
-            if(actBtn) {
-                actBtn.classList.add('active'); actBtn.classList.remove('inactive');
-                if(tabId === 'tab-bac2') actBtn.classList.add('text-yellow-600', 'border-yellow-200');
-            }
+            if(actBtn) { actBtn.classList.add('active'); actBtn.classList.remove('inactive'); if(tabId==='tab-bac2') actBtn.classList.add('text-yellow-600', 'border-yellow-200');}
             document.getElementById(tabId).classList.add('active');
             document.getElementById(tabId).classList.remove('hidden');
-
-            if(tabId === 'tab-bac2' && document.getElementById('t3-resName').innerText !== '...') {
-                document.getElementById('searchSection').classList.remove('hidden');
-            } else if (tabId === 'tab-report') {
-                document.getElementById('searchSection').classList.add('hidden');
-            } else {
-                document.getElementById('searchSection').classList.remove('hidden');
-            }
+            
+            if(tabId === 'tab-admin') document.getElementById('searchSection').classList.add('hidden');
+            else document.getElementById('searchSection').classList.remove('hidden');
         }
 
         function cleanNumber(val) {
-            if (val === undefined || val === null || val === "") return NaN;
+            if (!val) return NaN;
             let str = val.toString().trim().replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]);
             return parseFloat(str);
-        }
-
-        function getBarColor(percent) {
-            if(percent>=90) return "#059669"; if(percent>=80) return "#2563eb";
-            if(percent>=70) return "#d97706"; if(percent>=60) return "#7c3aed";
-            if(percent>=50) return "#db2777"; return "#ef4444";
         }
 
         function getGradeText(percent) {
@@ -405,232 +336,288 @@
             if(p>=90) return "A"; if(p>=80) return "B"; if(p>=70) return "C";
             if(p>=60) return "D"; if(p>=50) return "E"; return "F";
         }
+        function isFemale(g) { return g && (g.toString().trim().toLowerCase() === 'ស្រី' || g.toString().trim().toLowerCase() === 'f'); }
+
+        // ==========================================
+        // AUTO-CALCULATION ENGINE (50 Points Scale)
+        // ==========================================
         
-        function getGradeColorClass(grade) {
-            if(grade === 'A') return "text-emerald-600";
-            if(grade === 'F') return "text-red-600";
-            return "text-gray-800";
+        // 1. Calculate base score for a single month/exam sheet
+        function calculateSheetScore(studentRecord, gradeConfig) {
+            if (!studentRecord) return null;
+            let totalS = 0; let totalMax = 0;
+            SUBJECTS_15.forEach(sub => {
+                let s = cleanNumber(studentRecord[sub]);
+                if (!isNaN(s)) {
+                    let maxS = cleanNumber(gradeConfig[sub]) || 50;
+                    totalS += s; totalMax += maxS;
+                }
+            });
+            // Convert to 50 scale: (Score/Max) * 50
+            let avg50 = totalMax > 0 ? (totalS / totalMax) * 50 : 0;
+            return { total: totalS, max: totalMax, avg50: avg50 };
         }
 
-        function isFemale(genderStr) {
-            if(!genderStr) return false;
-            let str = genderStr.toString().trim().toLowerCase();
-            return str === 'ស្រី' || str === 'f' || str === 'female';
+        // 2. Calculate Final Semester Data
+        function calcSemesterFinal(studentId, semNum, allData, gradeConfig) {
+            let months = semNum === 1 ? semConfig.sem1 : semConfig.sem2;
+            let examSheet = semNum === 1 ? "ប្រឡងឆមាសទី១" : "ប្រឡងឆមាសទី២";
+            
+            // Exam Average
+            let eData = allData[examSheet]?.find(s => s.ID == studentId);
+            let examStats = calculateSheetScore(eData, gradeConfig);
+            let examAvg = examStats ? examStats.avg50 : 0;
+
+            // Monthly Average
+            let totalMonthAvg = 0; let validM = 0;
+            months.forEach(m => {
+                let mData = allData[m]?.find(s => s.ID == studentId);
+                let mStats = calculateSheetScore(mData, gradeConfig);
+                if (mStats && mStats.avg50 > 0) { totalMonthAvg += mStats.avg50; validM++; }
+            });
+            let monthAvg = validM > 0 ? totalMonthAvg / validM : 0;
+
+            // Final Average
+            let finalAvg = 0;
+            if (examAvg > 0 && monthAvg > 0) finalAvg = (examAvg + monthAvg) / 2;
+            else if (examAvg > 0) finalAvg = examAvg;
+            else if (monthAvg > 0) finalAvg = monthAvg;
+
+            return {
+                examTotal: examStats ? examStats.total : 0,
+                examAvg: examAvg,
+                monthAvg: monthAvg,
+                finalAvg: finalAvg,
+                grade: getGradeText(finalAvg * 2) // convert back to 100 scale for grade calculation
+            };
+        }
+
+        // 3. Calculate Annual Final
+        function calcAnnualFinal(studentId, allData, gradeConfig) {
+            let sem1 = calcSemesterFinal(studentId, 1, allData, gradeConfig);
+            let sem2 = calcSemesterFinal(studentId, 2, allData, gradeConfig);
+            
+            let finalAvg = 0;
+            if (sem1.finalAvg > 0 && sem2.finalAvg > 0) finalAvg = (sem1.finalAvg + sem2.finalAvg) / 2;
+            else if (sem1.finalAvg > 0) finalAvg = sem1.finalAvg;
+            else if (sem2.finalAvg > 0) finalAvg = sem2.finalAvg;
+
+            let result = finalAvg >= 25.00 ? "ជាប់" : "ធ្លាក់";
+
+            return { s1Avg: sem1.finalAvg, s2Avg: sem2.finalAvg, finalAvg: finalAvg, grade: getGradeText(finalAvg * 2), result: result };
+        }
+
+        // Generate Ranking across class/school dynamically
+        function getDynamicRank(studentId, sGrade, targetType, allData, configList) {
+            let classList =[]; let schoolList =[];
+            
+            // Collect all unique students from the entire database
+            let allStudentsMap = new Map();
+            Object.values(allData).forEach(sheet => {
+                if(sheet) sheet.forEach(s => allStudentsMap.set(s.ID, s));
+            });
+
+            allStudentsMap.forEach((student, id) => {
+                let gConf = configList.find(c => c["កម្រិតថ្នាក់"]?.toString().trim() === String(student.Grade).trim()) || {};
+                let finalScore = 0;
+
+                if (targetType === "SEM1") finalScore = calcSemesterFinal(id, 1, allData, gConf).finalAvg;
+                else if (targetType === "SEM2") finalScore = calcSemesterFinal(id, 2, allData, gConf).finalAvg;
+                else if (targetType === "ANNUAL") finalScore = calcAnnualFinal(id, allData, gConf).finalAvg;
+                else {
+                    let mStats = calculateSheetScore(allData[targetType]?.find(x => x.ID == id), gConf);
+                    finalScore = mStats ? mStats.avg50 : 0;
+                }
+
+                let sObj = { ID: id, Grade: student.Grade, Gender: student.Gender, score: finalScore };
+                if (finalScore > 0) {
+                    schoolList.push(sObj);
+                    if (String(student.Grade).trim() === sGrade) classList.push(sObj);
+                }
+            });
+
+            classList.sort((a,b) => b.score - a.score);
+            schoolList.sort((a,b) => b.score - a.score);
+
+            let cRank = classList.findIndex(s => s.ID == studentId) + 1;
+            let sRank = schoolList.findIndex(s => s.ID == studentId) + 1;
+
+            return {
+                cRank: cRank > 0 ? cRank : "?", cTotal: classList.length, cFem: classList.filter(s=>isFemale(s.Gender)).length,
+                sRank: sRank > 0 ? sRank : "?", sTotal: schoolList.length, sFem: schoolList.filter(s=>isFemale(s.Gender)).length
+            };
         }
 
         // ========================================================
-        // Main Search Function
+        // MAIN SEARCH
         // ========================================================
         async function executeStudentSearch() {
             const query = document.getElementById('searchInput').value.trim().toLowerCase();
-            const targetMonth = document.getElementById('monthSelect').value;
+            const targetPeriod = document.getElementById('monthSelect').value;
             if (!query) return alert("សូមបញ្ចូលអត្តលេខសិស្ស!");
 
             document.getElementById('loadingOverlay').classList.remove('hidden');
-            document.getElementById('t1-actions').classList.add('hidden');
-            document.getElementById('t3-actions').classList.add('hidden');
-            document.getElementById('t1-analysisBox').classList.add('hidden');
             
             try {
-                // ១. ទាញ Config ជាមុន
+                // Fetch Data
                 const configRes = await fetch(`${API_URL}?month=Config_MaxScores`);
                 configList = await configRes.json();
+                configList.forEach(c => { if(c["កម្រិតថ្នាក់"]) globalClassTypeMap[c["កម្រិតថ្នាក់"].toString().trim()] = (c["ប្រភេទថ្នាក់"] || c["ប្រភេទ"] || "").toString().toUpperCase(); });
 
-                // ២. ទាញយកទិន្នន័យគ្រប់ខែ
-                const fetchPromises = monthsOrder.map(m => fetch(`${API_URL}?month=${encodeURIComponent(m)}`).then(r => r.json()).catch(()=>[]));
+                let sheetsToFetch =[...allPossibleMonths, "ប្រឡងឆមាសទី១", "ប្រឡងឆមាសទី២", "ប្រចាំឆ្នាំ"];
+                const fetchPromises = sheetsToFetch.map(m => fetch(`${API_URL}?month=${encodeURIComponent(m)}`).then(r => r.json()).catch(()=>[]));
                 const results = await Promise.all(fetchPromises);
                 
                 allMonthsData = {};
-                monthsOrder.forEach((m, i) => { allMonthsData[m] = results[i] && !results[i].error ? results[i] :[]; });
+                sheetsToFetch.forEach((m, i) => { allMonthsData[m] = results[i] && !results[i].error ? removeDuplicates(results[i]) :[]; });
 
-                // ៣. រកមើលសិស្សក្នុងខែដែលបានរើស
-                let currentMonthData = allMonthsData[targetMonth] ||[];
-                let s = currentMonthData.find(i => (i.ID && i.ID.toString().toLowerCase() === query) || (i.Name && i.Name.toString().toLowerCase().includes(query)));
+                // Find Base Student Info from any sheet
+                let s = null;
+                for (let m of sheetsToFetch) {
+                    s = allMonthsData[m].find(i => (i.ID && i.ID.toString().toLowerCase() === query) || (i.Name && i.Name.toString().toLowerCase().includes(query)));
+                    if (s) break;
+                }
 
                 if (!s) {
                     document.getElementById('loadingOverlay').classList.add('hidden');
-                    return alert(`រកមិនឃើញសិស្ស ${query} ក្នុងខែ ${targetMonth} ទេ!`);
+                    return alert(`រកមិនឃើញសិស្ស ${query} នៅក្នុងប្រព័ន្ធទេ!`);
                 }
 
-                let studentGrade = String(s.Grade || "").trim();
-                let gradeConfig = configList.find(c => c["កម្រិតថ្នាក់"]?.toString().trim() === studentGrade) || {};
-                let isUpper = studentGrade.includes("១១") || studentGrade.includes("11") || studentGrade.includes("១២") || studentGrade.includes("12");
+                let sGrade = String(s.Grade || "").trim();
+                let gradeConfig = configList.find(c => c["កម្រិតថ្នាក់"]?.toString().trim() === sGrade) || {};
 
-                // ================== បំពេញ Tab 1 ទំព័រ ១ (ទូទៅ ១៥មុខ) ==================
-                document.getElementById('t1-resName').innerText = s.Name || '...';
-                document.getElementById('t1-resId').innerText = s.ID || '...';
-                document.getElementById('t1-resGrade').innerText = s.Grade || '...';
-                document.getElementById('t1-resGender').innerText = s.Gender || '...';
-                document.getElementById('t1-resDOB').innerText = s.DOB || '...';
-                document.getElementById('t1-resMonth').innerText = targetMonth;
+                // Render Base Info
+                document.getElementById('t1-resName').innerText = s.Name;
+                document.getElementById('t1-resId').innerText = s.ID;
+                document.getElementById('t1-resGrade').sGrade;
+                document.getElementById('t1-resGender').innerText = s.Gender;
                 
-                document.getElementById('t1-totalScore').innerText = s.Total || 0;
-                document.getElementById('t1-avgScore').innerText = s.Average || 0;
+                let sumHTML = "";
+                let tableHTML = "";
                 
-                // គណនាចំណាត់ថ្នាក់ក្នុងថ្នាក់ និងក្នុងសាលា
-                let studentsInClass = currentMonthData.filter(item => (item.Grade || "").toString().trim() === studentGrade);
-                let classTotal = studentsInClass.length;
-                let classFemale = studentsInClass.filter(item => isFemale(item.Gender)).length;
-                
-                let schoolTotal = currentMonthData.length;
-                let schoolFemale = currentMonthData.filter(item => isFemale(item.Gender)).length;
+                // ROUTING LOGIC based on Selected Period
+                if (targetPeriod === "ប្រឡងឆមាសទី១" || targetPeriod === "ប្រឡងឆមាសទី២") {
+                    let semNum = targetPeriod === "ប្រឡងឆមាសទី១" ? 1 : 2;
+                    let stats = calcSemesterFinal(s.ID, semNum, allMonthsData, gradeConfig);
+                    let rnk = getDynamicRank(s.ID, sGrade, targetPeriod === "ប្រឡងឆមាសទី១" ? "SEM1" : "SEM2", allMonthsData, configList);
+                    
+                    document.getElementById('t1-resTitle').innerText = "ប្រចាំ " + targetPeriod;
+                    
+                    sumHTML = `
+                        <div class="sketch-item"><p class="sketch-label">មធ្យមភាគប្រចាំឆមាស</p><p class="sketch-value text-blue-600">${stats.finalAvg}</p></div>
+                        <div class="sketch-item"><p class="sketch-label">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p><p class="sketch-value text-red-500">${rnk.cRank}</p><p class="rank-context">សិស្ស ${rnk.cTotal} នាក់ (ស្រី ${rnk.cFem})</p></div>
+                        <div class="sketch-item"><p class="sketch-label">ចំណាត់ថ្នាក់ក្នុងសាលា</p><p class="sketch-value text-orange-500">${rnk.sRank}</p><p class="rank-context">សិស្ស ${rnk.sTotal} នាក់ (ស្រី ${rnk.sFem})</p></div>
+                        <div class="sketch-item"><p class="sketch-label">និទ្ទេសរួម</p><p class="sketch-value grade-${stats.grade}">${stats.grade}</p></div>
+                    `;
 
-                // ប្រើ Rank ពី Sheet សម្រាប់ថ្នាក់ (បើមាន)
-                let classRankValue = s.Rank || "?";
-                
-                // គណនាសាលាដោយរៀប Total ពីធំទៅតូច
-                let validStudentsForRanking = currentMonthData.filter(item => !isNaN(cleanNumber(item.Total)));
-                validStudentsForRanking.sort((a, b) => cleanNumber(b.Total) - cleanNumber(a.Total));
-                let schoolRankValue = "?";
-                let foundIndex = validStudentsForRanking.findIndex(item => item.ID === s.ID);
-                if (foundIndex !== -1) schoolRankValue = foundIndex + 1;
+                    let tHtml = ""; let tIdx = 1;
+                    let eData = allMonthsData[targetPeriod].find(x => x.ID == s.ID) || {};
+                    SUBJECTS_15.forEach(sub => {
+                        if(eData[sub]) {
+                            let sc = cleanNumber(eData[sub]); let ms = cleanNumber(gradeConfig[sub])||50;
+                            tHtml += `<tr><td>${tIdx++}</td><td class="subject-col">${sub}</td><td>${ms}</td><td class="text-blue-700">${sc}</td><td>${ms/50}</td><td class="grade-${getGradeText((sc/ms)*100)}">${getGradeText((sc/ms)*100)}</td></tr>`;
+                        }
+                    });
+                    document.getElementById('t1-tableBody').innerHTML = tHtml;
+                    document.getElementById('t1-tableFoot').innerHTML = `
+                        <tr class="bg-blue-50/50"><td colspan="3" class="subject-col text-right">ពិន្ទុសរុបប្រឡងឆមាស៖</td><td colspan="3" class="font-bold text-blue-700">${stats.examTotal}</td></tr>
+                        <tr class="bg-blue-50/50"><td colspan="3" class="subject-col text-right">មធ្យមភាគប្រឡងឆមាស៖</td><td colspan="3" class="font-bold text-blue-700">${stats.examAvg.toFixed(2)}</td></tr>
+                        <tr class="bg-blue-50/50"><td colspan="3" class="subject-col text-right">មធ្យមភាគខែក្នុងឆមាស៖</td><td colspan="3" class="font-bold text-blue-700">${stats.monthAvg.toFixed(2)}</td></tr>
+                    `;
 
-                document.getElementById('t1-classRank').innerText = classRankValue;
-                document.getElementById('t1-classContext').innerText = `ក្នុងចំណោមសិស្ស ${classTotal} នាក់ ស្រី ${classFemale} នាក់`;
-                document.getElementById('t1-schoolRank').innerText = schoolRankValue;
-                document.getElementById('t1-schoolContext').innerText = `ក្នុងចំណោមសិស្ស ${schoolTotal} នាក់ ស្រី ${schoolFemale} នាក់`;
-                
-                document.getElementById('t1-gradeResult').innerText = s["Grade_Resul"] || s["Grade_Result"] || getGradeText(cleanNumber(s.Average)*10);
-                
-                document.getElementById('t1-footerSolar').innerText = s.DateSolar || '.......................';
-                document.getElementById('t1-footerLunar').innerText = s.DateLunar || '.......................';
-                document.getElementById('t1-p2-footerSolar').innerText = s.DateSolar || '.......................';
-                document.getElementById('t1-p2-footerLunar').innerText = s.DateLunar || '.......................';
+                } else if (targetPeriod === "ប្រចាំឆ្នាំ") {
+                    let stats = calcAnnualFinal(s.ID, allMonthsData, gradeConfig);
+                    let rnk = getDynamicRank(s.ID, sGrade, "ANNUAL", allMonthsData, configList);
+                    document.getElementById('t1-resTitle').innerText = "ប្រចាំឆ្នាំ";
+                    
+                    sumHTML = `
+                        <div class="sketch-item"><p class="sketch-label">មធ្យមភាគប្រចាំឆ្នាំ</p><p class="sketch-value text-blue-600">${stats.finalAvg.toFixed(2)}</p></div>
+                        <div class="sketch-item"><p class="sketch-label">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p><p class="sketch-value text-red-500">${rnk.cRank}</p><p class="rank-context">សិស្ស ${rnk.cTotal} នាក់ (ស្រី ${rnk.cFem})</p></div>
+                        <div class="sketch-item"><p class="sketch-label">និទ្ទេសរួម</p><p class="sketch-value grade-${stats.grade}">${stats.grade}</p></div>
+                        <div class="sketch-item"><p class="sketch-label">លទ្ធផល</p><p class="sketch-value result-${stats.result==='ជាប់'?'pass':'fail'}">${stats.result}</p></div>
+                    `;
 
-                let t1Html = ""; let t1Max = 0; let t1Idx = 1;
-                SUBJECTS_15.forEach(sub => {
-                    if (s[sub] === undefined || s[sub] === "" || String(s[sub]).toUpperCase() === "ABS") return;
-                    let score = cleanNumber(s[sub]);
-                    let maxS = cleanNumber(gradeConfig[sub]) || 50;
-                    if(!isNaN(score)) {
-                        t1Max += maxS;
-                        let pct = Math.min((score/maxS)*100, 100);
-                        let grd = getGradeText(pct);
-                        t1Html += `<tr><td>${t1Idx++}</td><td class="subject-col">${sub}</td><td class="text-gray-400">${maxS}</td><td class="text-blue-700">${score}</td>
-                            <td class="px-2"><div class="flex items-center gap-1"><div class="progress-container"><div class="progress-bar" style="width:${pct}%; background:${getBarColor(pct)}"></div></div><span class="text-[9px] w-6 text-gray-500">${Math.round(pct)}%</span></div></td>
-                            <td class="grade-${grd}">${grd}</td></tr>`;
-                    }
-                });
-                document.getElementById('t1-tableBody').innerHTML = t1Html;
-                document.getElementById('t1-totalMax').innerText = t1Max;
+                    document.getElementById('t1-tableBody').innerHTML = `
+                        <tr><td colspan="2" class="subject-col">មធ្យមភាគឆមាសទី១</td><td colspan="4" class="font-bold text-lg text-blue-700">${stats.s1Avg.toFixed(2)}</td></tr>
+                        <tr><td colspan="2" class="subject-col">មធ្យមភាគឆមាសទី២</td><td colspan="4" class="font-bold text-lg text-blue-700">${stats.s2Avg.toFixed(2)}</td></tr>
+                    `;
+                    document.getElementById('t1-tableFoot').innerHTML = "";
+                } else {
+                    // Normal Month
+                    document.getElementById('t1-resTitle').innerText = "ប្រចាំ " + targetPeriod;
+                    let mData = allMonthsData[targetPeriod].find(x => x.ID == s.ID) || {};
+                    let stats = calculateSheetScore(mData, gradeConfig);
+                    let rnk = getDynamicRank(s.ID, sGrade, targetPeriod, allMonthsData, configList);
+                    let grd = getGradeText(stats ? (stats.avg50*2) : 0);
 
-                // ================== បំពេញ Tab 1 ទំព័រ ២ (តារាងប្រៀបធៀប ១០មុខ) ==================
+                    sumHTML = `
+                        <div class="sketch-item"><p class="sketch-label">មធ្យមភាគ</p><p class="sketch-value text-blue-600">${stats ? stats.avg50.toFixed(2) : '0.00'}</p></div>
+                        <div class="sketch-item"><p class="sketch-label">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p><p class="sketch-value text-red-500">${rnk.cRank}</p><p class="rank-context">សិស្ស ${rnk.cTotal} នាក់ (ស្រី ${rnk.cFem})</p></div>
+                        <div class="sketch-item"><p class="sketch-label">ចំណាត់ថ្នាក់ក្នុងសាលា</p><p class="sketch-value text-orange-500">${rnk.sRank}</p><p class="rank-context">សិស្ស ${rnk.sTotal} នាក់ (ស្រី ${rnk.sFem})</p></div>
+                        <div class="sketch-item"><p class="sketch-label">និទ្ទេសរួម</p><p class="sketch-value grade-${grd}">${grd}</p></div>
+                    `;
+
+                    let tHtml = ""; let tIdx = 1;
+                    SUBJECTS_15.forEach(sub => {
+                        if(mData[sub]) {
+                            let sc = cleanNumber(mData[sub]); let ms = cleanNumber(gradeConfig[sub])||50;
+                            tHtml += `<tr><td>${tIdx++}</td><td class="subject-col">${sub}</td><td>${ms}</td><td class="text-blue-700">${sc}</td><td>${ms/50}</td><td class="grade-${getGradeText((sc/ms)*100)}">${getGradeText((sc/ms)*100)}</td></tr>`;
+                        }
+                    });
+                    document.getElementById('t1-tableBody').innerHTML = tHtml;
+                    document.getElementById('t1-tableFoot').innerHTML = `
+                        <tr class="bg-blue-50/50"><td colspan="2" class="subject-col text-right">ពិន្ទុសរុប៖</td><td>${stats ? stats.max : 0}</td><td class="font-bold text-blue-700">${stats ? stats.total : 0}</td><td colspan="2"></td></tr>
+                    `;
+                }
+
+                document.getElementById('t1-summaryArea').innerHTML = sumHTML;
+
+                // ================== បំពេញ Tab 1 ទំព័រ ២ (ប្រៀបធៀប) ==================
                 document.getElementById('t1-p2-resName').innerText = s.Name;
                 document.getElementById('t1-p2-resGrade').innerText = s.Grade;
                 
-                // រកមើលខែណាខ្លះដែលសិស្សនេះមានទិន្នន័យ
-                let activeMonths = monthsOrder.filter(m => allMonthsData[m] && allMonthsData[m].some(item => item.ID === s.ID));
+                let standardCols =[...semConfig.sem1, "ប្រឡងឆមាសទី១", ...semConfig.sem2, "ប្រឡងឆមាសទី២", "ប្រចាំឆ្នាំ"];
                 
-                let compTableHtml = `<table class="comp-table"><thead><tr class="bg-blue-50/80"><th class="w-8">ល.រ</th><th class="w-32">មុខវិជ្ជា</th><th class="w-20">អតិបរមា</th>`;
-                activeMonths.forEach(m => { compTableHtml += `<th>${m}</th>`; });
+                let compTableHtml = `<table class="comp-table"><thead><tr class="bg-blue-50/80"><th class="w-8">ល.រ</th><th class="w-32">មុខវិជ្ជា</th><th class="w-16">អតិបរមា</th>`;
+                standardCols.forEach(m => { compTableHtml += `<th>${m.replace("ប្រឡងឆមាសទី", "ឆ.").replace("ប្រចាំឆ្នាំ", "ប្រចាំឆ្នាំ")}</th>`; });
                 compTableHtml += `</tr></thead><tbody>`;
 
-                let subjStats = {}; // សម្រាប់វិភាគភាពខ្លាំងខ្សោយ
-
+                let subjAnalysis = {};
                 SUBJECTS_10.forEach((sub, idx) => {
                     let maxS = cleanNumber(gradeConfig[sub]) || 50;
-                    compTableHtml += `<tr><td>${idx+1}</td><td class="text-left font-bold pl-2 text-[11px]">${sub}</td><td class="text-gray-500">${maxS}</td>`;
+                    compTableHtml += `<tr><td>${idx+1}</td><td class="text-left font-bold pl-2">${sub}</td><td class="text-gray-500">${maxS}</td>`;
+                    let totalMonthPct = 0; let mCount = 0;
 
-                    let subTotalPct = 0; let subCount = 0;
-
-                    activeMonths.forEach(m => {
-                        let mData = allMonthsData[m].find(item => item.ID === s.ID);
-                        if (mData && mData[sub] !== undefined && mData[sub] !== "" && String(mData[sub]).toUpperCase() !== "ABS") {
+                    standardCols.forEach(m => {
+                        let mData = allMonthsData[m]?.find(item => item.ID === s.ID);
+                        if (mData && mData[sub]) {
                             let score = cleanNumber(mData[sub]);
                             let pct = Math.min((score/maxS)*100, 100);
                             let grade = getGradeText(pct);
-                            let colorCls = getGradeColorClass(grade);
-                            compTableHtml += `<td class="font-bold ${colorCls}">${score} <span class="text-[9px] text-gray-400">(${grade})</span></td>`;
-                            subTotalPct += pct; subCount++;
+                            compTableHtml += `<td class="font-bold">${score} <span class="text-[9px] grade-${grade}">(${grade})</span></td>`;
+                            if(!m.includes("ឆមាស") && m !== "ប្រចាំឆ្នាំ") { totalMonthPct += pct; mCount++; }
                         } else {
                             compTableHtml += `<td class="text-gray-300">-</td>`;
                         }
                     });
                     compTableHtml += `</tr>`;
-                    if (subCount > 0) subjStats[sub] = subTotalPct / subCount;
+                    if(mCount > 0) subjAnalysis[sub] = totalMonthPct / mCount;
                 });
                 compTableHtml += `</tbody></table>`;
                 document.getElementById('t1-comparisonTableContainer').innerHTML = compTableHtml;
 
-                // វិភាគភាពខ្លាំង និងខ្សោយអូតូ
-                let sortedSubjs = Object.keys(subjStats).sort((a,b) => subjStats[b] - subjStats[a]);
-                let strengths = sortedSubjs.filter(s => subjStats[s] >= 70);
-                let weaknesses = sortedSubjs.filter(s => subjStats[s] < 60).reverse(); // យកខ្សោយបំផុតមុន
-
-                let analysisHtml = `<b>💡 ការសន្និដ្ឋានបឋម៖</b> ផ្អែកតាមទិន្នន័យប្រចាំខែ សិស្សមានភាពលេចធ្លោលើមុខវិជ្ជា <b>${strengths.length > 0 ? strengths.slice(0,3).join(", ") : "មិនទាន់មានមុខវិជ្ជាណាទទួលបានពិន្ទុល្អប្រសើរ"}</b> ។`;
-                if (weaknesses.length > 0) {
-                    analysisHtml += ` ទន្ទឹមនឹងនេះ សិស្សគប្បីខិតខំយកចិត្តទុកដាក់បន្ថែមលើមុខវិជ្ជា <b>${weaknesses.slice(0,3).join(", ")}</b> ដើម្បីទទួលបានលទ្ធផលកាន់តែប្រសើរ។`;
-                }
-                
-                let analysisBox = document.getElementById('t1-analysisBox');
-                analysisBox.innerHTML = analysisHtml;
-                analysisBox.classList.remove('hidden');
+                // AI Analysis Text
+                let sortedSubjs = Object.keys(subjAnalysis).sort((a,b) => subjAnalysis[b] - subjAnalysis[a]);
+                let str = sortedSubjs.filter(s => subjAnalysis[s] >= 70);
+                let weak = sortedSubjs.filter(s => subjAnalysis[s] < 50);
+                let analysisHtml = `<b>💡 ការសន្និដ្ឋានបឋម៖</b> ផ្អែកតាមទិន្នន័យប្រចាំខែ សិស្សមានភាពលេចធ្លោលើមុខវិជ្ជា <b>${str.length > 0 ? str.slice(0,3).join(", ") : "មិនទាន់មាន"}</b> ។`;
+                if(weak.length > 0) analysisHtml += ` ទន្ទឹមនឹងនេះ សិស្សគប្បីយកចិត្តទុកដាក់បន្ថែមលើ <b>${weak.slice(0,3).join(", ")}</b> ដើម្បីពង្រឹងលទ្ធផល។`;
+                document.getElementById('t1-analysisBox').innerHTML = analysisHtml;
+                document.getElementById('t1-analysisBox').classList.remove('hidden');
 
                 document.getElementById('t1-capture-area').classList.remove('hidden');
                 document.getElementById('t1-actions').classList.remove('hidden');
                 document.getElementById('t1-actions').classList.add('flex');
-
-                // ================== បំពេញ Tab 3 (បាក់ឌុប ៧មុខ) ==================
-                if (isUpper) {
-                    let track = (gradeConfig["ប្រភេទថ្នាក់"] || gradeConfig["ប្រភេទ"] || "").toString().toUpperCase();
-                    document.getElementById('t3-trackName').innerText = track.includes("SC") ? "វិទ្យាសាស្ត្រ" : "វិទ្យាសាស្ត្រសង្គម";
-                    document.getElementById('t3-resName').innerText = s.Name;
-                    document.getElementById('t3-resId').innerText = s.ID;
-                    document.getElementById('t3-resGrade').innerText = s.Grade;
-                    document.getElementById('t3-resGender').innerText = s.Gender;
-                    document.getElementById('t3-resMonth').innerText = targetMonth;
-                    
-                    document.getElementById('t3-footerSolar').innerText = s.DateSolar || '.......................';
-                    document.getElementById('t3-footerLunar').innerText = s.DateLunar || '.......................';
-
-                    let coreSubjs = track.includes("SC") ?["គណិតវិទ្យា", "ភាសាខ្មែរ", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ប្រវត្តិវិទ្យា"] :["ភាសាខ្មែរ", "គណិតវិទ្យា", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "ផែនដីវិទ្យា"];
-                    
-                    let t3Html = ""; let cMax = 0; let cScore = 0; let t3Idx = 1;
-                    
-                    coreSubjs.forEach(sub => {
-                        let score = cleanNumber(s[sub]);
-                        let maxS = cleanNumber(gradeConfig[sub]) || 50;
-                        if (!isNaN(score)) {
-                            cMax += maxS; cScore += score;
-                            let pct = Math.min((score/maxS)*100, 100);
-                            let grd = getGradeText(pct);
-                            t3Html += `<tr><td>${t3Idx++}</td><td class="subject-col">${sub}</td><td class="text-gray-500">${maxS}</td><td class="text-blue-700">${score}</td>
-                            <td class="px-2"><div class="flex items-center gap-1"><div class="progress-container"><div class="progress-bar" style="width:${pct}%; background:${getBarColor(pct)}"></div></div><span class="text-[9px] w-6">${Math.round(pct)}%</span></div></td>
-                            <td class="grade-${grd}">${grd}</td></tr>`;
-                        }
-                    });
-
-                    let engVal = cleanNumber(s["ភាសាអង់គ្លេស"]);
-                    let engBonus = 0; let engGrd = "F"; let engDisp = "0";
-                    if (!isNaN(engVal)) {
-                        if (engVal >= 26) engBonus = engVal - 25;
-                        engDisp = `${engVal} (+${engBonus})`;
-                        engGrd = getGradeText((engVal/50)*100);
-                        t3Html += `<tr class="bg-emerald-50 italic"><td>${t3Idx++}</td><td class="subject-col text-emerald-700">ភាសាអង់គ្លេស (Bonus)</td><td class="text-gray-500">50</td><td class="text-emerald-700">${engDisp}</td>
-                        <td class="px-2 text-[9px] text-gray-500">ពិន្ទុលើកទឹកចិត្ត</td><td class="grade-${engGrd}">${engGrd}</td></tr>`;
-                    }
-
-                    let grandTotal = cScore + engBonus;
-                    // គណនានិទ្ទេសផ្អែកលើរបបពិន្ទុ (Total / Max * 100) រួចបង្គត់ចុះ
-                    let finalPct = cMax > 0 ? (grandTotal / cMax) * 100 : 0;
-                    let finalGrd = getGradeText(Math.floor(finalPct));
-
-                    document.getElementById('t3-tableBody').innerHTML = t3Html;
-                    document.getElementById('t3-totalScore').innerText = grandTotal.toFixed(2).replace(/\.00$/,'');
-                    document.getElementById('t3-totalMaxLabel').innerText = `លើអតិបរមា ${cMax}`;
-                    document.getElementById('t3-gradeResult').innerText = finalGrd;
-                    document.getElementById('t3-gradeResult').className = `sketch-value grade-${finalGrd} font-black text-3xl`;
-
-                    document.getElementById('t3-capture-area').classList.remove('hidden');
-                    document.getElementById('t3-actions').classList.remove('hidden');
-                    document.getElementById('t3-actions').classList.add('flex');
-                    
-                    switchTab('tab-bac2'); 
-                } else {
-                    document.getElementById('t3-capture-area').classList.add('hidden');
-                    document.getElementById('t3-actions').classList.add('hidden');
-                    switchTab('tab-student');
-                }
 
                 document.getElementById('loadingOverlay').classList.add('hidden');
 
@@ -642,7 +629,7 @@
 
         function downloadPDF(divId, suffix) {
             const element = document.getElementById(divId);
-            const name = document.getElementById(divId === 't1-capture-area' ? 't1-resName' : 't3-resName').innerText;
+            const name = document.getElementById('t1-resName').innerText;
             const opt = { 
                 margin: 5, filename: `លទ្ធផល_${name}_${suffix}.pdf`, 
                 image: { type: 'jpeg', quality: 1 }, 
@@ -651,12 +638,6 @@
                 pagebreak: { mode: ['css', 'legacy'] }
             };
             html2pdf().set(opt).from(element).save();
-        }
-
-        function linkTelegram(type) {
-            const stuId = document.getElementById('searchInput').value;
-            if(!stuId) return alert("សូមស្វែងរកសិស្សសិន!");
-            window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}?start=${type}_${stuId}`, '_blank');
         }
     </script>
 </body>
