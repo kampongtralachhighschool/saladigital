@@ -207,7 +207,7 @@
         // ⚙️ ការកំណត់ (CONFIG)
         // =================================================================
         // ⚠️ ដាក់ URL ថ្មីដែលបាន Deploy As Me នៅទីនេះ
-        const API_URL = "https://script.google.com/macros/s/AKfycbzPVY0ARLp1JQE1QSemK39UUN5tRdbK-plnbsSghYsyGGQjwCFDxNmQk7pQ99J5e1h1/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycby4iNmvGRg6BWICCZ5FUVxISAW0lpDr7IMd9oTL-4y1WH-QbqnVCYMnItqYB9mvFjfM/exec"; 
         
         const TELEGRAM_BOT_USERNAME = "kampongtralach_bot";
         const INTERNAL_PWD = "H@nm@m64"; 
@@ -334,10 +334,11 @@
         // DATA FETCHING 
         // ==========================================
         async function fetchDatabase() {
-            if(Object.keys(globalData).length > 0) return true; 
+            if(Object.keys(globalData).length > 0) return true; // Cache
             showLoading("កំពុងទាញទិន្នន័យពី Server...");
             try {
-                const res = await fetch(`${API_URL}?action=getAllData`);
+                // បន្ថែម { redirect: 'follow' } ដើម្បីឱ្យ Browser អនុញ្ញាតការប្តូរទិស URL របស់ Google
+                const res = await fetch(`${API_URL}?action=getAllData`, { redirect: 'follow' });
                 const sData = await res.json();
                 
                 if(sData.error) throw new Error(sData.error);
