@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>លទ្ធផលសិក្សាទូទៅ - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
     
+    <!-- CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -14,10 +15,12 @@
         body { font-family: 'Kantumruy Pro', sans-serif; background: #f4f7f6; color: #1e293b; }
         .moul-font { font-family: 'Moul', serif; }
         
+        /* Navigation Simple */
         .nav-container { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; padding: 10px 20px;}
         .back-link { display: inline-flex; align-items: center; gap: 5px; color: #475569; font-weight: 600; transition: color 0.3s; }
         .back-link:hover { color: var(--primary-blue); }
 
+        /* Print Area */
         .print-area { background: white; margin: 25px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
         .portrait-page { width: 210mm; padding: 10mm 15mm; min-height: 297mm;}
         
@@ -134,27 +137,27 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
         const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
         
-        // 🛠️ ត្រានាយក: ផ្លាស់ប្តូរការទាញរូបភាពពី Google Drive ឲ្យដើរល្អ
-        const PRINCIPAL_STAMP_URL = "1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne"; // ដាក់តែ ID ប៉ុណ្ណោះ
-        
+        const PRINCIPAL_STAMP_URL = "1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne"; 
         const SUBJECTS_10 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
         const SUBJECTS_15 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
         const dbMap = { "ភាសាខ្មែរ":"khmer", "សីលធម៌ពលរដ្ឋ":"morality", "ប្រវត្តិវិទ្យា":"history", "ភូមិវិទ្យា":"geography", "គណិតវិទ្យា":"math", "រូបវិទ្យា":"physics", "គីមីវិទ្យា":"chemistry", "ជីវវិទ្យា":"biology", "ផែនដីវិទ្យា":"earth_science", "ភាសាអង់គ្លេស":"english", "កីឡា":"sport", "កសិកម្ម":"agriculture", "បច្ចេកវិទ្យា":"technology", "បំណិន":"skill", "សុខភាព":"health" };
 
-        let configList =[]; let teacherMap = {}; let currentStudentInfo = null;
+        let configMap = {}; let teacherMap = {}; let currentStudentInfo = null;
 
-        // 🛠️ កែប្រែអនុគមន៍កាត់ឈ្មោះថ្នាក់ ឲ្យកាត់ Space ចោលទាំងអស់ដើម្បីធានាថាវាត្រូវគ្នា ១០០%
+        // 🛠️ Formatting Utils
         const fmtCls = (str) => {
             if(!str) return "";
-            return String(str).replace(/\s+/g, '').toUpperCase();
+            let s = String(str).trim();
+            s = s.replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]);
+            s = s.replace(/[\s\-_]/g, '').toUpperCase();
+            const kmToEn = { 'ក':'A', 'ខ':'B', 'គ':'C', 'ឃ':'D', 'ង':'E', 'ច':'F', 'ឆ':'G', 'ជ':'H', 'ឈ':'I', 'ញ':'J', 'ដ':'K', 'ឋ':'L', 'ឌ':'M', 'ឍ':'N', 'ណ':'O' };
+            for (let k in kmToEn) { s = s.replace(new RegExp(k, 'g'), kmToEn[k]); }
+            return s;
         };
 
-        // 🛠️ កែប្រែអនុគមន៍ទាញរូបភាព
         const getDriveImgUrl = (urlOrId) => {
             if(!urlOrId) return '';
-            // បើជា ID សុទ្ធ
             if (!urlOrId.includes('http')) return `https://lh3.googleusercontent.com/d/${urlOrId}`;
-            // បើជា Link
             let idMatch = urlOrId.match(/(?:id=|file\/d\/)([\w-]+)/);
             if(idMatch) return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
             return urlOrId;
@@ -165,7 +168,7 @@
         const getBarCol = (pct) => pct>=90?'#059669':pct>=80?'#2563eb':pct>=70?'#d97706':pct>=60?'#7c3aed':pct>=50?'#db2777':'#ef4444';
         const getGrdCol = (g) => g==='A'?'text-red-600':g==='B'?'text-pink-600':g==='C'?'text-orange-600':g==='D'?'text-green-600':g==='E'?'text-blue-600':'text-slate-800';
 
-        function showLoading(t) { document.getElementById('loadingText') ? document.getElementById('loadingText').innerText = t : null; document.getElementById('loadingOverlay').classList.remove('hidden'); }
+        function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
 
         // Init
@@ -182,27 +185,42 @@
             });
         });
 
+        async function supaFetch(endpoint) {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, { headers });
+            const data = await res.json();
+            if (!res.ok) {
+                console.error("Supabase Error:", data);
+                throw new Error(data.message || "Network Error");
+            }
+            return data;
+        }
+
+        function mapDbToLegacy(row) {
+            let res = { ID: row.student_id, Name: row.student_name, Gender: row.gender, Grade: row.grade, DOB: row.dob||'', DateSolar: row.date_solar||'', DateLunar: row.date_lunar||'', Total: row.total_score || row.exam_total_score || 0, Average: row.average || row.semester_average || row.annual_average || 0, Rank: row.class_rank, "ចំណាត់ថ្នាក់ក្នុងសាលា": row.school_rank, Grade_Result: row.grade_result || row.final_result || 'F' };
+            SUBJECTS_15.forEach(sub => { res[sub] = row[dbMap[sub]]; });
+            return res;
+        }
+
         async function fetchInitialData() {
             try {
-                let confRes = await fetch(`${SUPABASE_URL}/rest/v1/config_max_scores?select=*`, { headers });
-                let confData = await confRes.json();
-                confData.forEach(c => {
-                    // រក្សាទុកដោយប្រើ Key ដែលកាត់ Space ចោល
-                    if(c.grade_level) {
-                        configList[fmtCls(c.grade_level)] = c;
-                    }
-                });
+                let confRes = await supaFetch(`config_max_scores?select=*`);
+                if(Array.isArray(confRes)) {
+                    confRes.forEach(c => { 
+                        if(c.grade_level) configMap[fmtCls(c.grade_level)] = c; 
+                    });
+                }
 
-                let teachRes = await fetch(`${SUPABASE_URL}/rest/v1/teacher_info?select=*`, { headers });
-                let teachData = await teachRes.json();
-                teachData.forEach(t => { 
-                    if(t.homeroom_class) {
-                        teacherMap[fmtCls(t.homeroom_class)] = { 
-                            name: t.teacher_name, 
-                            sign: getDriveImgUrl(t.signature_link) 
-                        }; 
-                    }
-                });
+                let teachRes = await supaFetch(`teacher_info?select=*`);
+                if(Array.isArray(teachRes)) {
+                    teachRes.forEach(t => { 
+                        if(t.homeroom_class) {
+                            teacherMap[fmtCls(t.homeroom_class)] = { 
+                                name: t.teacher_name, 
+                                sign: getDriveImgUrl(t.signature_link) 
+                            }; 
+                        }
+                    });
+                }
             } catch(e) { console.error("Init Error", e); }
         }
 
@@ -226,11 +244,13 @@
 
         function getStampHTML(dateSolar, dateLunar, tInfo) {
             let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
-            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: -0.5cm; left: calc(50% + 1cm); transform: translateX(-50%); width: 220px; max-width: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
+            // 🛠️ កែប្រែទីតាំងត្រា: top: -0.2cm (ចុះ 0.5cm ពីមុន -0.7cm), left: calc(50% + 1.0cm) (ឆ្វេង 0.5cm ពីមុន 1.5cm), width: 300px (+10% ពីមុន 270px)
+            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: -0.2cm; left: calc(50% + 1.0cm); transform: translateX(-50%); width: 300px; max-width: none; max-height: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
+            
             let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); height: 60px; max-width: 140px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
             
             return `
-            <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 20px;">
                 <div style="text-align: center; width: 300px; position: relative; min-height: 120px;">
                     <p style="font-weight: bold; font-size: 12px; margin-bottom: 5px;">បានឃើញ និងឯកភាព</p>
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a;">នាយកសាលា</p>
@@ -250,11 +270,12 @@
         async function executeSearch() {
             let q = document.getElementById('searchInput').value.trim();
             let period = document.getElementById('monthSelect').value;
-            if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខ ឬឈ្មោះសិស្ស!', 'warning');
+            
+            if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខ ឬឈ្មោះសិស្សជាមុនសិន!', 'warning');
             
             localStorage.setItem('kpt_last_search_id', q);
             localStorage.setItem('kpt_last_search_month', period);
-            showLoading("កំពុងទាញយកទិន្នន័យ...");
+            showLoading();
             
             let table = period.includes("ប្រចាំឆមាស") ? "semester_scores" : (period === "ប្រចាំឆ្នាំ" ? "annual_scores" : "student_scores");
             let pCol = period.includes("ប្រចាំឆមាស") ? "semester_name" : (period === "ប្រចាំឆ្នាំ" ? "academic_year" : "month_name");
@@ -262,27 +283,52 @@
 
             try {
                 // Search by ID or Name
-                let res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${pCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.%25${encodeURIComponent(q)}%25)&limit=1`, { headers });
-                let data = await res.json();
+                let data = await supaFetch(`${table}?${pCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.%25${encodeURIComponent(q)}%25)&limit=1`);
                 
-                if(!data || data.length === 0) { hideLoading(); return Swal.fire('រកមិនឃើញ!', 'មិនមានទិន្នន័យសម្រាប់ខែនេះទេ!', 'error'); }
+                if(!data || data.length === 0) {
+                    hideLoading(); return Swal.fire('រកមិនឃើញ!', `មិនមានទិន្នន័យរបស់ [${q}] សម្រាប់ ${period} ទេ!`, 'error');
+                }
 
-                let dbS = data[0]; 
-                let s = { ID: dbS.student_id, Name: dbS.student_name, Gender: dbS.gender, Grade: dbS.grade, DOB: dbS.dob||'', DateSolar: dbS.date_solar||'', DateLunar: dbS.date_lunar||'', Total: dbS.total_score || dbS.exam_total_score || 0, Average: dbS.average || dbS.semester_average || dbS.annual_average || 0, Rank: dbS.class_rank, "ចំណាត់ថ្នាក់ក្នុងសាលា": dbS.school_rank, Grade_Result: dbS.grade_result || dbS.final_result || 'F' };
-                SUBJECTS_15.forEach(sub => { s[sub] = dbS[dbMap[sub]]; });
-
+                let s = mapDbToLegacy(data[0]); 
                 currentStudentInfo = { id: s.ID, name: s.Name };
                 
-                // 🛠️ ទាញយក Config និង Teacher ដោយផ្អែកលើឈ្មោះថ្នាក់ដែលកាត់ Space ចោល
+                // 🛠️ ទាញយក Config និង Teacher ដោយប្រើ Object Map ថ្មី
                 let fGrade = fmtCls(s.Grade);
-                let gConf = configList[fGrade] || {};
-                let tInfo = teacherMap[fGrade] || {name:'មិនស្គាល់', sign:''};
+                let gConf = configMap[fGrade];
+                let tInfo = teacherMap[fGrade];
+
+                // ប្រព័ន្ធចាប់កំហុស (Debug Log) បើនៅតែអត់ស្គាល់
+                if (!gConf || !tInfo) {
+                    console.warn(`⚠️ រកមិនឃើញថ្នាក់ [${fGrade}] នៅក្នុង Config ទេ។ (ថ្នាក់ដើម: ${s.Grade})`);
+                    console.log("Config ដែលមានស្រាប់:", Object.keys(configMap));
+                    console.log("Teacher ដែលមានស្រាប់:", Object.keys(teacherMap));
+                }
+
+                gConf = gConf || {};
+                tInfo = tInfo || {name:'មិនស្គាល់', sign:''};
 
                 // P1 Build
                 document.getElementById('t1-header').innerHTML = buildPrintHeader(`តារាងលទ្ធផលសិក្សារបស់សិស្សប្រចាំ ${document.getElementById('monthSelect').value}`);
-                document.getElementById('t1-header').innerHTML += `<div class="student-info-box"><div><p>គោត្តនាម-នាម ៖ <span class="moul-font text-blue-800">${s.Name}</span></p><p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${s.DOB || '...'}</span></p><p>អត្តលេខ ៖ <span>${s.ID}</span></p></div><div><p>ភេទ ៖ <span>${s.Gender}</span></p><p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p><p>ឆ្នាំសិក្សា ៖ <span>២០២៥-២០២៦</span></p></div></div>`;
+                document.getElementById('t1-header').innerHTML += `
+                    <div class="student-info-box">
+                        <div>
+                            <p>គោត្តនាម-នាម ៖ <span class="moul-font text-blue-800" style="font-size: 14px;">${s.Name}</span></p>
+                            <p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${s.DOB || '...'}</span></p>
+                            <p>អត្តលេខ ៖ <span>${s.ID}</span></p>
+                        </div>
+                        <div>
+                            <p>ភេទ ៖ <span>${s.Gender}</span></p>
+                            <p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p>
+                            <p>ឆ្នាំសិក្សា ៖ <span>២០២៥-២០២៦</span></p>
+                        </div>
+                    </div>`;
                 
-                document.getElementById('t1-summaryArea').innerHTML = `<div class="summary-item"><p class="s-title">មធ្យមភាគ</p><p class="s-value">${s.Average}</p></div><div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p><p class="s-value text-red-600">${s.Rank||'-'}</p></div><div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងសាលា</p><p class="s-value text-orange-500">${s["ចំណាត់ថ្នាក់ក្នុងសាលា"]||'-'}</p></div><div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value ${getGrdCol(s.Grade_Result)}">${s.Grade_Result || 'F'}</p></div>`;
+                document.getElementById('t1-summaryArea').innerHTML = `
+                    <div class="summary-item"><p class="s-title">មធ្យមភាគ</p><p class="s-value">${s.Average}</p></div>
+                    <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p><p class="s-value text-red-600">${s.Rank||'-'}</p></div>
+                    <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងសាលា</p><p class="s-value text-orange-500">${s["ចំណាត់ថ្នាក់ក្នុងសាលា"]||'-'}</p></div>
+                    <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value ${getGrdCol(s.Grade_Result)}">${s.Grade_Result || 'F'}</p></div>
+                `;
 
                 let tRows = ""; let idx=1; let maxTotal = 0;
                 SUBJECTS_15.forEach(sub => {
@@ -291,9 +337,7 @@
                         
                         // 🛠️ ទាញយកពិន្ទុអតិបរមា បើរកមិនឃើញទើបដាក់ 50
                         let ms = 50;
-                        if (gConf[dbMap[sub]]) {
-                            ms = cleanNum(gConf[dbMap[sub]]);
-                        }
+                        if (gConf[dbMap[sub]]) { ms = cleanNum(gConf[dbMap[sub]]); }
                         
                         if (raw !== "") maxTotal += ms; 
                         
@@ -306,12 +350,11 @@
                     }
                 });
                 
-                // 🛠️ បិទ Icon ដែលខូចនៅក្បែរពិន្ទុសរុប
                 document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead><tr class="bg-slate-50"><th class="w-8 border-r border-slate-200">ល.រ</th><th class="col-left w-48 border-r border-slate-200">មុខវិជ្ជា</th><th class="w-20 border-r border-slate-200">អតិបរមា</th><th class="w-24 border-r border-slate-200">ពិន្ទុ</th><th class="w-32 border-r border-slate-200">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold py-2">ពិន្ទុសរុប</td><td class="font-bold">${maxTotal || '-'}</td><td class="text-blue-700 font-black text-lg">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[10px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
                 
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
                 
-                // P2 Build
+                // P2 Build (ប្រៀបធៀប)
                 let resHist = await fetch(`${SUPABASE_URL}/rest/v1/student_scores?student_id=eq.${encodeURIComponent(s.ID)}`, { headers });
                 let histData = await resHist.json();
                 
@@ -337,9 +380,7 @@
                     SUBJECTS_10.forEach((sub, i) => {
                         tb += `<tr><td class="border-r border-slate-200">${i+1}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td>`;
                         
-                        // 🛠️ ទាញយកពិន្ទុអតិបរមា សម្រាប់តារាងប្រៀបធៀប
-                        let maxS = 50;
-                        if(gConf[dbMap[sub]]) maxS = cleanNum(gConf[dbMap[sub]]);
+                        let maxS = 50; if(gConf[dbMap[sub]]) maxS = cleanNum(gConf[dbMap[sub]]);
                         tb += `<td class="text-slate-400 font-bold border-r border-slate-200">${maxS}</td>`;
                         
                         let tPct=0, c=0;
@@ -358,39 +399,4 @@
                     
                     let sortS = Object.keys(subjectAvgs).sort((a,b)=>subjectAvgs[b]-subjectAvgs[a]);
                     let str = sortS.filter(x=>subjectAvgs[x]>=70).slice(0,3); let wk = sortS.filter(x=>subjectAvgs[x]<50).slice(0,3);
-                    document.getElementById('t1-analysisBox').innerHTML = `💡 <b>ការសន្និដ្ឋានបឋម៖</b> ផ្អែកតាមទិន្នន័យមធ្យមភាគប្រចាំខែ សិស្សមានភាពលេចធ្លោលើមុខវិជ្ជា <b class="text-emerald-700">${str.length>0?str.join(", "):"មិនទាន់មាន"}</b>។ ${wk.length>0 ? `ទន្ទឹមនឹងនេះ គប្បីយកចិត្តទុកដាក់បន្ថែមលើមុខវិជ្ជា <b class="text-red-600">${wk.join(", ")}</b> ដើម្បីទទួលបានលទ្ធផលកាន់តែប្រសើរ។`:''}`;
-                }
-                document.getElementById('t1-p2-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
-
-                document.getElementById('t1-capture-area').classList.remove('hidden');
-                document.getElementById('t1-actions').classList.remove('hidden');
-                hideLoading();
-            } catch (e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
-        }
-
-        async function linkTelegram(type) {
-            if(!currentStudentInfo) return Swal.fire('បញ្ជាក់', 'សូមស្វែងរកសិស្សជាមុនសិន!', 'warning');
-            const { value: username } = await Swal.fire({ title: `ភ្ជាប់ Telegram ${type==='Student'?'សិស្ស':'អាណាព្យាបាល'}`, input: 'text', inputPlaceholder: 'ឧទាហរណ៍: @sok_123', showCancelButton: true, confirmButtonText: 'ភ្ជាប់ឥឡូវនេះ' });
-            if(!username) return;
-            showLoading("កំពុងភ្ជាប់...");
-            try {
-                let resGet = await fetch(`${SUPABASE_URL}/rest/v1/telegram_db?student_id=eq.${encodeURIComponent(currentStudentInfo.id)}`, { headers });
-                let existing = await resGet.json();
-                
-                let payload = { student_id: currentStudentInfo.id, student_name: currentStudentInfo.name };
-                if (existing.length > 0) {
-                    payload = existing[0];
-                    let currentField = type === 'Student' ? payload.telegram_student : payload.telegram_parent;
-                    if(currentField && !currentField.includes(username)) payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = currentField + ";" + username;
-                    else if(!currentField) payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = username;
-                } else { payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = username; }
-
-                let res = await fetch(`${SUPABASE_URL}/rest/v1/telegram_db?on_conflict=student_id`, { method: "POST", headers: { ...headers, "Prefer": "resolution=merge-duplicates" }, body: JSON.stringify([payload]) });
-                hideLoading();
-                if(res.ok) Swal.fire('ជោគជ័យ!', 'បានភ្ជាប់ប្រព័ន្ធ Telegram រួចរាល់!', 'success');
-                else throw new Error("Update Failed");
-            } catch(e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
-        }
-    </script>
-</body>
-</html>
+                    document.getElementById('t1-analysisBox').innerHTML = `💡 <b>ការសន្និដ្ឋានបឋម៖</b> ផ្អែកតាមទិន្នន័យមធ្យមភាគប្រចាំខែ សិស្សមានភាពលេចធ្លោលើមុខវិជ្ជា <b class="text-emerald-700">${str.length>0?str.join(", "):"មិនទាន់មាន"}</b>។ ${wk.length>0 ? `ទន្ទឹមនឹងនេះ គប្បីយកចិត្តទុកដាក់បន្ថែមលើមុខវិជ្ជា
