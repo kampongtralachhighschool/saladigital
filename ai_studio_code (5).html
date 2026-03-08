@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>របាយការណ៍សាលា - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root { --primary-blue: #1e40af; --khmer-red: #dc2626; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background: #f4f7f6; color: #1e293b; }
+        .moul-font { font-family: 'Moul', serif; }
+        
+        /* Navigation */
+        .nav-bar { background-color: #003399; border-bottom: 4px solid #cc0000; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 50;}
+        .nav-link { padding: 16px 24px; font-weight: 700; color: white; transition: background 0.3s; display: inline-block; font-size: 15px;}
+        .nav-link:hover { background-color: #002266; }
+        .nav-link.active { background-color: #cc0000; }
+
+        /* Print Area */
+        .print-area { background: white; margin: 25px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; padding: 20px; overflow: hidden; }
+        .portrait-page { width: 210mm; min-height: 297mm; }
+        
+        /* Table Styles for Analytics */
+        .c-table { border-collapse: collapse; width: 100%; font-size: 11px; margin-bottom: 20px; }
+        .c-table th { padding: 10px 6px; text-align: center; color: white; background-color: #1e293b; border: 1px solid #475569; font-weight: 900; }
+        .c-table td { padding: 8px 6px; text-align: center; border: 1px solid #cbd5e1; font-weight: 700; }
+        .c-table tbody tr:nth-child(even) { background-color: #f8fafc; }
+        .c-table tbody tr:hover { background-color: #f1f5f9; }
+        .col-left { text-align: left !important; padding-left: 15px !important; }
+
+        .progress-bar-bg { width: 100%; background-color: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 4px; }
+        .progress-bar-fill { height: 100%; border-radius: 4px; }
+
+        /* Grade Colors */
+        .text-a { color: #dc2626; } /* Red */
+        .text-b { color: #db2777; } /* Pink */
+        .text-c { color: #ea580c; } /* Orange */
+        .text-d { color: #16a34a; } /* Green */
+        .text-e { color: #2563eb; } /* Blue */
+        .text-f { color: #475569; } /* Slate */
+
+        @media print {
+            @page { size: A4 portrait; margin: 8mm; }
+            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print, .nav-bar { display: none !important; }
+            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; padding: 0 !important; width: 100% !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav-bar no-print">
+        <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center">
+            <a href="index.html" class="nav-link moul-font">ទំព័រដើម</a>
+            <a href="student.html" class="nav-link">លទ្ធផលទូទៅ</a>
+            <a href="bac2.html" class="nav-link">ស្តង់ដារបាក់ឌុប</a>
+            <a href="admin.html" class="nav-link">កិច្ចការរដ្ឋបាល</a>
+            <a href="report.html" class="nav-link active">របាយការណ៍សាលា</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="tab-report" class="max-w-6xl mx-auto px-2 mt-8">
+        
+        <!-- Controls Panel -->
+        <div class="bg-white p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-6 no-print shadow-lg border-t-4 border-slate-800">
+            <div class="flex items-center gap-3">
+                <span class="text-4xl">📊</span>
+                <div>
+                    <h1 class="text-2xl font-black text-slate-800 moul-font">របាយការណ៍ស្ថិតិ និងការវិភាគ</h1>
+                    <p class="text-sm text-gray-500 font-bold mt-1">ប្រព័ន្ធវិភាគចំណាត់ថ្នាក់ និងនិទ្ទេសសិស្ស</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <!-- Month Selection -->
+                <select id="monthSelect" class="border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold bg-white outline-none focus:ring-2 focus:ring-blue-200">
+                    <option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option><option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option>
+                    <option value="មីនា">មីនា</option><option value="មេសា">មេសា</option><option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
+                    <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option><option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                    <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option><option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២</option>
+                </select>
+
+                <!-- Mode Selection -->
+                <select id="reportMode" onchange="toggleReportMode()" class="border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold bg-blue-50 outline-none text-blue-800">
+                    <option value="subject">វិភាគតាមមុខវិជ្ជា (ប្រៀបធៀបថ្នាក់)</option>
+                    <option value="class">វិភាគតាមថ្នាក់ (ប្រៀបធៀបមុខវិជ្ជា)</option>
+                </select>
+
+                <!-- Dynamic Filters -->
+                <select id="reportSubjectFilter" class="border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold bg-white outline-none">
+                    <option value="Average">មធ្យមភាគរួម</option>
+                    <option value="ភាសាខ្មែរ">ភាសាខ្មែរ</option><option value="គណិតវិទ្យា">គណិតវិទ្យា</option>
+                    <option value="រូបវិទ្យា">រូបវិទ្យា</option><option value="គីមីវិទ្យា">គីមីវិទ្យា</option>
+                    <option value="ជីវវិទ្យា">ជីវវិទ្យា</option><option value="ប្រវត្តិវិទ្យា">ប្រវត្តិវិទ្យា</option>
+                    <option value="ភូមិវិទ្យា">ភូមិវិទ្យា</option><option value="សីលធម៌ពលរដ្ឋ">សីលធម៌ពលរដ្ឋ</option>
+                    <option value="ផែនដីវិទ្យា">ផែនដីវិទ្យា</option><option value="ភាសាអង់គ្លេស">ភាសាអង់គ្លេស</option>
+                </select>
+                <select id="reportClassFilter" class="border border-slate-300 px-4 py-2.5 rounded-lg text-sm font-bold bg-white outline-none hidden"></select>
+                
+                <button onclick="executeAdminReport()" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-lg font-black transition shadow-md flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> ទាញយក
+                </button>
+            </div>
+        </div>
+
+        <div id="report-actions" class="no-print mt-6 hidden text-center">
+            <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-3 rounded-xl font-black shadow-lg transition">🖨️ បោះពុម្ពរបាយការណ៍</button>
+        </div>
+
+        <!-- Render Area -->
+        <div id="adminPrintArea" class="print-area portrait-page hidden mt-6">
+            <div id="reportHeader" class="mb-8 border-b-2 border-slate-800 pb-4"></div>
+            <div id="analyticsContent" class="space-y-8 pb-6"></div>
+            <div id="reportSignatures" class="mt-12 pb-10 flex justify-between px-10">
+                <div class="text-center">
+                    <p class="font-bold text-[12px] mb-20">បានឃើញ និងឯកភាព</p>
+                    <p class="moul-font text-[12px] text-blue-900">នាយកសាលា</p>
+                </div>
+                <div class="text-center">
+                    <p class="font-bold text-[12px] text-gray-700 mb-2">ធ្វើនៅ កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...</p>
+                    <p class="font-bold text-[12px] mb-16">អ្នករៀបចំរបាយការណ៍</p>
+                    <p class="moul-font text-[12px] text-blue-900">ការិយាល័យសិក្សាធិការ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-[100] transition-opacity">
+        <div class="text-center bg-white p-8 rounded-3xl max-w-sm w-full mx-4 shadow-2xl">
+            <div class="w-14 h-14 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto mb-5"></div>
+            <p class="text-blue-900 font-black text-lg">កំពុងវិភាគទិន្នន័យសាលា...</p>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
+        const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+        
+        const REPORT_PWD = "hs@8888"; 
+        let isReportUnlocked = false;
+
+        const SUBJECTS_10 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
+   
