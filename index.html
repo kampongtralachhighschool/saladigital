@@ -107,8 +107,8 @@
                     </select>
                 </div>
                 <div class="space-y-2" id="inputContainer">
-                    <label class="text-xs font-black text-slate-500">អត្តលេខសិស្ស</label>
-                    <input type="text" id="searchInput" class="w-full p-3.5 rounded-xl bg-slate-50 border outline-none font-bold text-sm" placeholder="ឧ. 424000123">
+                    <label class="text-xs font-black text-slate-500">អត្តលេខ ឬឈ្មោះសិស្ស</label>
+                    <input type="text" id="searchInput" class="w-full p-3.5 rounded-xl bg-slate-50 border outline-none font-bold text-sm" placeholder="ឧ. 424000123 ឬ សុខ សាន្ត">
                 </div>
                 <div class="space-y-2 hidden" id="classSelectContainer">
                     <label class="text-xs font-black text-slate-500">ជ្រើសរើសថ្នាក់រៀន</label>
@@ -197,7 +197,10 @@
         const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
         
-        const INTERNAL_PWD = "H@nm@m64"; const REPORT_PWD = "H@nm@m64"; 
+        // 🔑 កំណត់លេខសម្ងាត់ថ្មីតាមការស្នើសុំ
+        const INTERNAL_PWD = "H@nm@m64"; 
+        const REPORT_PWD = "hs@8888"; 
+
         const PRINCIPAL_STAMP_URL = "https://drive.google.com/uc?export=view&id=1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne"; 
 
         const SUBJECTS_10 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
@@ -209,8 +212,14 @@
 
         const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
 
-        // 🛠️ Function កាត់ឃ្លា (Space) ទីកន្លែងដែលវាយខុសក្នុង Database
-        const fmtCls = (str) => String(str || "").replace(/\s+/g, '').toUpperCase();
+        // 🛠️ Function កាត់ឃ្លា (Space) និងបម្លែងលេខខ្មែរទៅលេខអង់គ្លេស ដើម្បីអោយផ្ទៀងផ្ទាត់ត្រូវ ១០០%
+        const fmtCls = (str) => {
+            if(!str) return "";
+            return String(str)
+                .replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)])
+                .replace(/\s+/g, '')
+                .toUpperCase();
+        };
 
         window.addEventListener('DOMContentLoaded', () => {
             fetchInitialSetupData().then(() => {
@@ -239,7 +248,10 @@
         async function fetchInitialSetupData() {
             try {
                 let confData = await supaFetch(`config_max_scores?select=*`);
-                confData.forEach(c => { configList.push(c); if(c.grade_level) classTypeMap[fmtCls(c.grade_level)] = String(c.class_type || "").toUpperCase(); });
+                confData.forEach(c => { 
+                    configList.push(c); 
+                    if(c.grade_level) classTypeMap[fmtCls(c.grade_level)] = String(c.class_type || "").toUpperCase(); 
+                });
 
                 let teachData = await supaFetch(`teacher_info?select=*`);
                 teachData.forEach(t => {
@@ -250,7 +262,6 @@
                     }
                 });
                 
-                // រៀបចំបញ្ជីថ្នាក់តាមលំដាប់អក្សរ
                 allClassNames =[...new Set(allClassNames)].sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
                 let clsOptions = allClassNames.map(c => `<option value="${c}">${c}</option>`).join('');
                 document.getElementById('classSelect').innerHTML = clsOptions;
@@ -298,7 +309,7 @@
         }
 
         // ==========================================
-        // MAIN SEARCH
+        // MAIN SEARCH (អត្តលេខ ឬ ឈ្មោះ)
         // ==========================================
         async function executeSearch() {
             let activeTab = document.querySelector('.tab-content.active').id;
@@ -307,7 +318,7 @@
             let q = document.getElementById('searchInput').value.trim();
             let period = document.getElementById('monthSelect').value;
             
-            if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខសិស្សជាមុនសិន!', 'warning');
+            if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខ ឬឈ្មោះសិស្សជាមុនសិន!', 'warning');
             
             showLoading("កំពុងទាញយកទិន្នន័យ...");
             let table = "student_scores"; let periodCol = "month_name";
@@ -315,18 +326,20 @@
             else if (period === "ប្រចាំឆ្នាំ") { table = "annual_scores"; periodCol = "academic_year"; period = new Date().getFullYear().toString(); }
 
             try {
-                let data = await supaFetch(`${table}?${periodCol}=eq.${encodeURIComponent(period)}&student_id=eq.${encodeURIComponent(q)}`);
+                // 🔍 អាចរកតាម ID ឬ តាមឈ្មោះ (ilike ស្វែងរកពាក្យស្រដៀង)
+                let queryUrl = `${table}?${periodCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.*${encodeURIComponent(q)}*)&limit=10`;
+                let data = await supaFetch(queryUrl);
+                
                 if(!data || data.length === 0) {
-                    hideLoading(); return Swal.fire('រកមិនឃើញ!', `មិនមានទិន្នន័យរបស់សិស្សលេខ [${q}] សម្រាប់ ${period} ទេ!`, 'error');
+                    hideLoading(); return Swal.fire('រកមិនឃើញ!', `មិនមានទិន្នន័យរបស់ [${q}] សម្រាប់ ${period} ទេ!`, 'error');
                 }
 
                 let s = mapDbToLegacy(data[0]); 
                 currentStudentInfo = { id: s.ID, name: s.Name };
 
-                // ប្រើប្រាស់ fmtCls ដើម្បីដោះស្រាយបញ្ហាដកឃ្លាក្នុងឈ្មោះថ្នាក់
                 let formattedGrade = fmtCls(s.Grade);
                 let gConf = configList.find(c => fmtCls(c.grade_level) === formattedGrade) || {};
-                let isUpper = formattedGrade.includes("១១") || formattedGrade.includes("11") || formattedGrade.includes("១២") || formattedGrade.includes("12");
+                let isUpper = formattedGrade.includes("11") || formattedGrade.includes("12");
                 let track = classTypeMap[formattedGrade] || "";
                 let tInfo = teacherMap[formattedGrade] || {name:'មិនស្គាល់', sign:''};
 
@@ -357,7 +370,9 @@
                 SUBJECTS_15.forEach(sub => {
                     if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
                         let raw = String(s[sub]).trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
-                        if(raw.toUpperCase() !== "ABS" && raw !== "ម.ថ" && !isNaN(cleanNum(raw))) maxTotal += ms;
+                        
+                        // បូកពិន្ទុអតិបរមាសរុប (ទោះសិស្សអវត្តមានក៏ដោយ ឲ្យតែមានក្នុងតារាង)
+                        maxTotal += ms;
 
                         if(raw.toUpperCase() === "ABS" || raw.toUpperCase() === "ម.ថ" || isNaN(cleanNum(raw))) {
                             tRows += `<tr><td>${idx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="text-red-500 font-bold">${raw}</td><td colspan="2" class="text-gray-400">-</td></tr>`;
@@ -491,31 +506,6 @@
         }
 
         // ==========================================
-        // LINK TELEGRAM
-        // ==========================================
-        async function linkTelegram(type) {
-            if(!currentStudentInfo) return Swal.fire('បញ្ជាក់', 'សូមស្វែងរកសិស្សជាមុនសិន!', 'warning');
-            const { value: username } = await Swal.fire({ title: `ភ្ជាប់ Telegram ${type==='Student'?'សិស្ស':'អាណាព្យាបាល'}`, input: 'text', inputPlaceholder: 'ឧទាហរណ៍: @sok_123', showCancelButton: true, confirmButtonText: 'ភ្ជាប់ឥឡូវនេះ' });
-            if(!username) return;
-            showLoading("កំពុងភ្ជាប់...");
-            try {
-                let existing = await supaFetch(`telegram_db?student_id=eq.${encodeURIComponent(currentStudentInfo.id)}`);
-                let payload = { student_id: currentStudentInfo.id, student_name: currentStudentInfo.name };
-                if (existing.length > 0) {
-                    payload = existing[0];
-                    let currentField = type === 'Student' ? payload.telegram_student : payload.telegram_parent;
-                    if(currentField && !currentField.includes(username)) payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = currentField + ";" + username;
-                    else if(!currentField) payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = username;
-                } else { payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = username; }
-
-                let res = await fetch(`${SUPABASE_URL}/rest/v1/telegram_db?on_conflict=student_id`, { method: "POST", headers: { ...headers, "Prefer": "resolution=merge-duplicates" }, body: JSON.stringify([payload]) });
-                hideLoading();
-                if(res.ok) Swal.fire('ជោគជ័យ!', 'បានភ្ជាប់ប្រព័ន្ធ Telegram រួចរាល់!', 'success');
-                else throw new Error("Update Failed");
-            } catch(e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
-        }
-
-        // ==========================================
         // TAB 2: INTERNAL ADMIN & TRACKING BOOK
         // ==========================================
         async function generateInternalReport(type) {
@@ -529,8 +519,9 @@
                 if (period.includes("ប្រចាំឆមាស")) { table = "semester_scores"; periodCol = "semester_name"; }
                 else if (period === "ប្រចាំឆ្នាំ") { table = "annual_scores"; periodCol = "academic_year"; period = new Date().getFullYear().toString(); }
 
-                let dbData = await supaFetch(`${table}?${periodCol}=eq.${encodeURIComponent(period)}&grade=eq.${encodeURIComponent(cls)}`);
-                let cData = dbData.map(r => mapDbToLegacy(r));
+                // ប្រើ limit=5000 ដើម្បីកុំឲ្យបាត់ទិន្នន័យពេលសិស្សច្រើន ហើយ Filter កាត់ Space ដោយ JavaScript 
+                let dbData = await supaFetch(`${table}?${periodCol}=eq.${encodeURIComponent(period)}&limit=5000`);
+                let cData = dbData.map(r => mapDbToLegacy(r)).filter(s => fmtCls(s.Grade) === fmtCls(cls));
 
                 if(cData.length === 0) { hideLoading(); return Swal.fire('ទទេ!', 'គ្មានទិន្នន័យសម្រាប់ថ្នាក់នេះទេ!', 'info'); }
 
@@ -587,8 +578,8 @@
             
             showLoading("កំពុងរៀបចំសៀវភៅតាមដាន... អាចចំណាយពេលបន្តិច!");
             try {
-                let dbData = await supaFetch(`student_scores?month_name=eq.${encodeURIComponent(period)}&grade=eq.${encodeURIComponent(cls)}`);
-                let cData = dbData.map(r => mapDbToLegacy(r));
+                let dbData = await supaFetch(`student_scores?month_name=eq.${encodeURIComponent(period)}&limit=5000`);
+                let cData = dbData.map(r => mapDbToLegacy(r)).filter(s => fmtCls(s.Grade) === fmtCls(cls));
                 
                 if(cData.length === 0) { hideLoading(); return Swal.fire('ទទេ!', 'គ្មានទិន្នន័យសម្រាប់ថ្នាក់នេះទេ!', 'info'); }
 
@@ -650,7 +641,7 @@
                 if (period.includes("ប្រចាំឆមាស")) { table = "semester_scores"; periodCol = "semester_name"; }
                 else if (period === "ប្រចាំឆ្នាំ") { table = "annual_scores"; periodCol = "academic_year"; period = new Date().getFullYear().toString(); }
 
-                let dbData = await supaFetch(`${table}?${periodCol}=eq.${encodeURIComponent(period)}`);
+                let dbData = await supaFetch(`${table}?${periodCol}=eq.${encodeURIComponent(period)}&limit=5000`);
                 let cData = dbData.map(r => mapDbToLegacy(r));
 
                 const mode = document.getElementById('reportMode').value;
@@ -709,15 +700,15 @@
         }
 
         // ==========================================
-        // UTILS
+        // UTILS & EVENTS
         // ==========================================
         async function switchTab(tabId) {
             if (tabId === 'tab-internal' && !isInternalUnlocked) {
-                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់រដ្ឋបាល', input: 'password', confirmButtonText: 'បញ្ជាក់', customClass: { title: 'swal2-title', htmlContainer: 'swal2-html-container'} });
+                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់រដ្ឋបាល', input: 'password', confirmButtonText: 'បញ្ជាក់', customClass: { title: 'swal2-title'} });
                 if (pwd === INTERNAL_PWD) isInternalUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
             }
             if (tabId === 'tab-report' && !isReportUnlocked) {
-                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់របាយការណ៍', input: 'password', confirmButtonText: 'បញ្ជាក់' });
+                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់របាយការណ៍', input: 'password', confirmButtonText: 'បញ្ជាក់', customClass: { title: 'swal2-title'} });
                 if (pwd === REPORT_PWD) isReportUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
             }
             
