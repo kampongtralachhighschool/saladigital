@@ -21,49 +21,44 @@
         .tab-content.active { display: block; animation: fadeSlideUp 0.5s ease-out forwards; }
         @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Print Area - រៀបចំឲ្យណែនល្អ មិនធ្លាយទំព័រ */
+        /* Print Area */
         .print-area { background: white; margin: 25px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
-        .portrait-page { width: 210mm; padding: 10mm 12mm; min-height: 297mm; }
-        .landscape-page { width: 297mm; padding: 10mm 12mm; min-height: 210mm; }
+        .portrait-page { width: 210mm; padding: 10mm 15mm; }
+        .landscape-page { width: 297mm; padding: 10mm 15mm; }
         
-        /* ព័ត៌មានសិស្ស */
-        .student-info-box { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 12px; margin-bottom: 12px; line-height: 1.8;}
+        .student-info-box { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 12px; margin-bottom: 12px; line-height: 1.8;}
         .student-info-box span { color: #0f172a; margin-left: 5px; font-weight: 900;}
 
-        /* ប្រអប់សរុបលទ្ធផល */
-        .summary-box { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px 0; margin-bottom: 12px;}
+        .summary-box { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 0; margin-bottom: 15px;}
         .summary-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .summary-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 15%; height: 70%; width: 1.5px; background-color: #e2e8f0; }
-        .s-title { font-size: 10px; color: #64748b; font-weight: 700; margin-bottom: 4px;}
-        .s-value { font-size: 20px; font-weight: 900; color: #2563eb; line-height: 1; }
+        .s-title { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 4px;}
+        .s-value { font-size: 22px; font-weight: 900; color: #2563eb; line-height: 1; }
         
-        /* តារាងពិន្ទុ */
-        .c-table { border-collapse: collapse; width: 100%; font-size: 11px; }
+        .c-table { border-collapse: collapse; width: 100%; font-size: 12px; }
         .c-table th { padding: 6px 4px; text-align: center; color: #1e3a8a; border-bottom: 2px solid #cbd5e1; border-top: 2px solid #cbd5e1; font-weight: 900; }
-        .c-table td { padding: 4px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; font-weight: 700;}
+        .c-table td { padding: 5px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; font-weight: 700;}
         .c-table tbody tr:nth-child(even) { background-color: #f8fafc; }
         .col-left { text-align: left !important; padding-left: 12px !important; }
         
-        /* Progress Bar */
         .bar-bg { width: 100%; background-color: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; }
-        .bar-fill { height: 100%; border-radius: 3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .bar-fill { height: 100%; border-radius: 3px; transition: width 1s; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
-        /* Chart */
         .trend-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 150px; border-bottom: 2px solid #cbd5e1; margin-top: 10px; padding: 10px 0 0 0; position: relative; }
         .trend-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; height: 100%; justify-content: flex-end;}
         .trend-bar { width: 22px; border-radius: 4px 4px 0 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
         
-        /* ហត្ថលេខា និង ត្រា */
-        .signatures { display: flex; justify-content: space-between; margin-top: 15px; padding: 0 10px; }
+        /* Signatures */
+        .signatures { display: flex; justify-content: space-between; margin-top: 20px; padding: 0 10px; }
         .sig-box { text-align: center; position: relative; min-height: 100px; }
-        .stamp-img { position: absolute; top: 25px; left: 50%; transform: translateX(-50%); max-height: 85px; max-width: 85px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;}
+        .stamp-img { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); max-height: 85px; max-width: 85px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;}
         .sig-img { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); max-height: 45px; max-width: 120px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;}
 
         @media print {
             @page { size: A4 portrait; margin: 0; }
             body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
-            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; padding: 10mm 12mm !important; width: 100% !important; page-break-after: always; }
+            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; padding: 10mm 15mm !important; width: 100% !important; page-break-inside: avoid; page-break-after: always; }
             .print-area:last-child { page-break-after: auto; }
             .landscape-page { size: A4 landscape; }
         }
@@ -107,7 +102,7 @@
                     <select id="classSelect" class="w-full p-3.5 rounded-xl bg-slate-50 border outline-none font-bold text-sm text-slate-700"></select>
                 </div>
                 <div>
-                    <button onclick="executeSearch()" class="w-full bg-blue-600 text-white p-3.5 rounded-xl font-black text-sm shadow-md">ស្វែងរកលទ្ធផល</button>
+                    <button onclick="executeSearch()" class="w-full bg-blue-600 text-white p-3.5 rounded-xl font-black text-sm shadow-md hover:bg-blue-700 transition">ស្វែងរកលទ្ធផល</button>
                 </div>
             </div>
         </div>
@@ -116,9 +111,9 @@
     <!-- UI View Areas -->
     <div id="tab-student" class="tab-content active">
         <div id="t1-actions" class="no-print mt-4 mb-6 hidden flex-wrap justify-center gap-4 max-w-4xl mx-auto">
-            <button onclick="window.print()" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-bold shadow-md">🖨️ Print លទ្ធផល</button>
-            <button onclick="linkTelegram('Student')" class="bg-sky-500 text-white px-6 py-3 rounded-xl font-bold shadow-md">ភ្ជាប់ Telegram សិស្ស</button>
-            <button onclick="linkTelegram('Parent')" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-md">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
+            <button onclick="window.print()" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition">🖨️ Print លទ្ធផល</button>
+            <button onclick="linkTelegram('Student')" class="bg-sky-500 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition">ភ្ជាប់ Telegram សិស្ស</button>
+            <button onclick="linkTelegram('Parent')" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
         </div>
 
         <div id="t1-capture-area" class="print-area portrait-page hidden">
@@ -140,7 +135,7 @@
 
     <div id="tab-bac2" class="tab-content hidden">
         <div id="t3-actions" class="no-print mt-4 mb-6 hidden flex justify-center max-w-4xl mx-auto">
-            <button onclick="window.print()" class="bg-yellow-600 text-white px-10 py-3 rounded-xl font-bold shadow-md">🖨️ Print របាយការណ៍បាក់ឌុប</button>
+            <button onclick="window.print()" class="bg-yellow-600 text-white px-10 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition">🖨️ Print របាយការណ៍បាក់ឌុប</button>
         </div>
         <div id="t3-capture-area" class="print-area portrait-page hidden">
             <div id="t3-header"></div>
@@ -160,9 +155,9 @@
         <div class="bg-white rounded-3xl shadow-xl border overflow-hidden mt-2">
             <div class="bg-purple-800 p-8 text-white text-center"><h2 class="moul-font text-xl mb-2">ប្រព័ន្ធទាញយកឯកសាររដ្ឋបាល</h2><p class="text-sm font-bold bg-white/10 inline-block px-4 py-1.5 rounded-full">សូមជ្រើសរើស ខែ និង ថ្នាក់</p></div>
             <div class="p-6 grid md:grid-cols-3 gap-6 text-center bg-slate-50">
-                <div class="space-y-4 p-6 border rounded-2xl bg-white"><button onclick="generateInternalReport('honor')" class="w-full bg-yellow-500 text-black py-2.5 rounded-xl font-black">🏆 តារាងកិត្តិយស</button></div>
-                <div class="space-y-4 p-6 border rounded-2xl bg-white"><button onclick="generateInternalReport('ranking')" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-black">📊 តារាងចំណាត់ថ្នាក់</button></div>
-                <div class="space-y-4 p-6 border rounded-2xl bg-white"><button onclick="generateTrackingBook()" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-black">📄 សៀវភៅតាមដាន</button></div>
+                <div class="space-y-4 p-6 border rounded-2xl bg-white hover:shadow-md transition"><button onclick="generateInternalReport('honor')" class="w-full bg-yellow-500 text-black py-2.5 rounded-xl font-black">🏆 តារាងកិត្តិយស</button></div>
+                <div class="space-y-4 p-6 border rounded-2xl bg-white hover:shadow-md transition"><button onclick="generateInternalReport('ranking')" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-black">📊 តារាងចំណាត់ថ្នាក់</button></div>
+                <div class="space-y-4 p-6 border rounded-2xl bg-white hover:shadow-md transition"><button onclick="generateTrackingBook()" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-black">📄 សៀវភៅតាមដាន</button></div>
             </div>
         </div>
         <div id="internal-actions" class="no-print mt-6 hidden text-center"><button onclick="window.print()" class="bg-slate-800 text-white px-10 py-3 rounded-xl font-black shadow-lg">🖨️ Print ឯកសារនេះ</button></div>
@@ -176,7 +171,7 @@
                 <select id="reportMode" onchange="toggleReportMode()" class="border px-4 py-2.5 rounded-xl text-sm font-bold bg-slate-50 outline-none"><option value="subject">មើលតាមមុខវិជ្ជា</option><option value="class">មើលតាមថ្នាក់</option></select>
                 <select id="reportSubjectFilter" class="border px-4 py-2.5 rounded-xl text-sm font-bold bg-white outline-none"><option value="Average">មធ្យមភាគរួម</option><option value="ភាសាខ្មែរ">ភាសាខ្មែរ</option><option value="គណិតវិទ្យា">គណិតវិទ្យា</option></select>
                 <select id="reportClassFilter" class="border px-4 py-2.5 rounded-xl text-sm font-bold bg-white outline-none hidden"></select>
-                <button onclick="executeAdminReport()" class="bg-slate-800 text-white px-8 py-2.5 rounded-xl font-black shadow-md">ទាញទិន្នន័យ</button>
+                <button onclick="executeAdminReport()" class="bg-slate-800 text-white px-8 py-2.5 rounded-xl font-black shadow-md hover:bg-slate-900 transition">ទាញទិន្នន័យ</button>
             </div>
         </div>
         <div id="report-actions" class="no-print mt-6 hidden text-center"><button onclick="window.print()" class="bg-emerald-600 text-white px-10 py-3 rounded-xl font-black shadow-lg">🖨️ Print ស្ថិតិសាលា</button></div>
@@ -189,7 +184,7 @@
         const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
         
-        // 🔑 កំណត់លេខសម្ងាត់ថ្មីតាមការស្នើសុំ
+        // 🔑 លេខសម្ងាត់
         const INTERNAL_PWD = "H@nm@m64"; 
         const REPORT_PWD = "hs@8888"; 
 
@@ -204,16 +199,16 @@
 
         const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
 
-        // 🛠️ Function កាត់ឃ្លា (Space) និងបម្លែងលេខខ្មែរទៅលេខអង់គ្លេស ដើម្បីអោយផ្ទៀងផ្ទាត់ត្រូវ ១០០% ទោះបញ្ចូលខុសក៏ដោយ
+        // 🛠️ Function កាត់ឃ្លា និងបម្លែងអក្សរខ្មែរទៅអង់គ្លេស (ការពារការវាយខុសក្នុង Excel)
         const fmtCls = (str) => {
             if(!str) return "";
-            return String(str)
-                .replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)])
-                .replace(/\s+/g, '')
-                .toUpperCase();
+            let s = String(str).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]).replace(/\s+/g, '').toUpperCase();
+            const kmToEn = { 'ក':'A', 'ខ':'B', 'គ':'C', 'ឃ':'D', 'ង':'E', 'ច':'F', 'ឆ':'G', 'ជ':'H', 'ឈ':'I', 'ញ':'J', 'ដ':'K', 'ឋ':'L', 'ឌ':'M', 'ឍ':'N', 'ណ':'O' };
+            for (let k in kmToEn) { s = s.replace(new RegExp(k, 'g'), kmToEn[k]); }
+            return s;
         };
 
-        // 🛠️ Function បម្លែង Link Google Drive អោយចេញរូបភាព
+        // 🛠️ Function បម្លែង Link Google Drive ឲ្យក្លាយជារូបភាពដែលអាចបញ្ចាំងបាន
         const getDriveImgUrl = (url) => {
             if(!url) return '';
             let idMatch = url.match(/id=([^&]+)/);
@@ -247,10 +242,15 @@
 
         async function fetchInitialSetupData() {
             try {
+                let allClassNamesSet = new Set();
+                
                 let confData = await supaFetch(`config_max_scores?select=*`);
                 confData.forEach(c => { 
                     configList.push(c); 
-                    if(c.grade_level) classTypeMap[fmtCls(c.grade_level)] = String(c.class_type || "").toUpperCase(); 
+                    if(c.grade_level) {
+                        classTypeMap[fmtCls(c.grade_level)] = String(c.class_type || "").toUpperCase(); 
+                        allClassNamesSet.add(c.grade_level.trim());
+                    }
                 });
 
                 let teachData = await supaFetch(`teacher_info?select=*`);
@@ -258,11 +258,12 @@
                     let rawCls = String(t.homeroom_class || "").trim();
                     if(rawCls) { 
                         teacherMap[fmtCls(rawCls)] = { name: t.teacher_name, sign: getDriveImgUrl(t.signature_link) }; 
-                        allClassNames.push(rawCls); 
+                        allClassNamesSet.add(rawCls); 
                     }
                 });
                 
-                allClassNames =[...new Set(allClassNames)].sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+                // រៀបចំឈ្មោះថ្នាក់ក្នុង Dropdown
+                allClassNames = Array.from(allClassNamesSet).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
                 let clsOptions = allClassNames.map(c => `<option value="${c}">${c}</option>`).join('');
                 document.getElementById('classSelect').innerHTML = clsOptions;
                 document.getElementById('reportClassFilter').innerHTML = clsOptions;
@@ -274,14 +275,14 @@
         // ==========================================
         function buildPrintHeader(title) {
             return `
-                <div style="position: relative; width: 100%; min-height: 80px; margin-bottom: 5px;">
+                <div style="position: relative; width: 100%; min-height: 90px; margin-bottom: 10px;">
                     <!-- កណ្តាលលើគេបង្អស់ -->
                     <div style="position: absolute; width: 100%; text-align: center; top: 0;">
                         <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a; margin-bottom: 5px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
                         <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
                     </div>
-                    <!-- ឆ្វេងរុញចុះក្រោមបន្តិច -->
-                    <div style="position: absolute; left: 0; top: 25px; text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6;">
+                    <!-- ឆ្វេងរុញចុះក្រោម (មន្ទីរអប់រំ) -->
+                    <div style="position: absolute; left: 0; top: 35px; text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6;">
                         <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
                         <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
                         <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
@@ -304,7 +305,7 @@
                     ${pImg}
                 </div>
                 <div class="sig-box" style="width: 250px;">
-                    <p class="font-bold text-[11px] text-gray-700 mb-1">${dateLunar || '...................................................'}</p>
+                    <p class="font-bold text-[11px] text-gray-700 mb-1">${dateLunar || 'ថ្ងៃ.......................................................'}</p>
                     <p class="font-bold text-[11px] text-gray-700 mb-3">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
                     <p class="moul-font text-[12px] text-blue-900">គ្រូបន្ទុកថ្នាក់</p>
                     ${tImg}
@@ -330,8 +331,8 @@
             else if (period === "ប្រចាំឆ្នាំ") { table = "annual_scores"; periodCol = "academic_year"; period = new Date().getFullYear().toString(); }
 
             try {
-                // 🔍 អាចរកតាម ID ឬ តាមឈ្មោះ (ilike)
-                let queryUrl = `${table}?${periodCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.%25${encodeURIComponent(q)}%25)&limit=1`;
+                // 🔍 រកតាម ID ឬ តាមឈ្មោះ (ilike)
+                let queryUrl = `${table}?${periodCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.*${encodeURIComponent(q)}*)&limit=1`;
                 let data = await supaFetch(queryUrl);
                 
                 if(!data || data.length === 0) {
@@ -374,19 +375,21 @@
                 SUBJECTS_15.forEach(sub => {
                     if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
                         let raw = String(s[sub]).trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
-                        maxTotal += ms; // គណនាពិន្ទុអតិបរមាសរុប
+                        
+                        // បូកពិន្ទុអតិបរមាសរុប
+                        if (raw !== "") maxTotal += ms; 
 
                         if(raw.toUpperCase() === "ABS" || raw.toUpperCase() === "ម.ថ" || isNaN(cleanNum(raw))) {
-                            tRows += `<tr><td>${idx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="text-red-500 font-bold">${raw}</td><td colspan="2" class="text-gray-400">-</td></tr>`;
+                            tRows += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-red-500 font-bold border-r border-slate-200">${raw}</td><td colspan="2" class="text-gray-400">-</td></tr>`;
                         } else {
                             let sc = cleanNum(raw); let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
-                            tRows += `<tr><td>${idx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="text-blue-700 font-bold text-[12px]">${sc}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-bold text-[12px] ${getGrdCol(g)}">${g}</td></tr>`;
+                            tRows += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-bold text-[13px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-bold text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
                         }
                     }
                 });
 
-                document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead><tr><th class="w-8">ល.រ</th><th class="col-left w-48">មុខវិជ្ជា</th><th class="w-20">ពិន្ទុអតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-32">ក្រាបភាគរយ (%)</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody>
-                    <tfoot><tr class="bg-slate-100"><td colspan="2" class="col-left text-right font-bold text-[12px] py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-500">${maxTotal || '-'}</td><td class="font-black text-blue-700 text-[14px]">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[11px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
+                document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead><tr class="bg-slate-50"><th class="w-8 border-r border-slate-200">ល.រ</th><th class="col-left w-48 border-r border-slate-200">មុខវិជ្ជា</th><th class="w-20 border-r border-slate-200">អតិបរមា</th><th class="w-24 border-r border-slate-200">ពិន្ទុ</th><th class="w-32 border-r border-slate-200">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody>
+                    <tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold text-[12px] py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-500">${maxTotal || '-'}</td><td class="font-black text-blue-700 text-[14px]">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[11px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
                 
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign);
                 
@@ -412,7 +415,7 @@
                         let val = cleanNum(histMap[m].Average);
                         if(!isNaN(val)) {
                             let pct = (val / 50) * 100; if (pct > 100) pct = 100;
-                            cHtml += `<div class="trend-bar-wrapper"><div class="trend-val">${val.toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div class="trend-lbl">${m.substring(0,6)}</div></div>`;
+                            cHtml += `<div class="trend-bar-wrapper"><div class="trend-val" style="font-size:10px; font-weight:bold; color:#475569; margin-bottom:2px;">${val.toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div class="trend-lbl" style="font-size:10px; font-weight:bold; color:#1e293b; margin-top:5px;">${m.substring(0,6)}</div></div>`;
                         }
                     });
                     document.getElementById('t1-chartArea').innerHTML = `<div class="border border-slate-200 rounded-xl p-4 pb-0 bg-white"><p class="text-[11px] font-black text-slate-500 mb-2 text-center uppercase tracking-widest">📈 ក្រាបប្រៀបធៀបមធ្យមភាគប្រចាំខែ</p><div class="trend-chart">${cHtml}</div></div>`;
@@ -468,11 +471,11 @@
                     cSubjs.forEach(sub => {
                         let raw = String(s[sub]||"").trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
                         if(isNaN(cleanNum(raw)) || raw==="ABS" || raw==="ម.ថ" || !raw) {
-                            trRows += `<tr><td class="border-r border-slate-200">${ixx++}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-red-500 font-bold border-r border-slate-200">${raw||'ម.ថ'}</td><td colspan="2">-</td></tr>`;
+                            trRows += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${ixx++}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-red-500 font-bold border-r border-slate-200">${raw||'ម.ថ'}</td><td colspan="2">-</td></tr>`;
                         } else {
                             let sc = cleanNum(raw); bTotal+=sc; bMax+=ms; vC++;
                             let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
-                            trRows += `<tr><td class="border-r border-slate-200">${ixx++}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-black text-[13px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-black text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
+                            trRows += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${ixx++}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-black text-[13px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-black text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
                         }
                     });
                     
@@ -564,7 +567,7 @@
                         let rank = parseInt(s.Rank);
                         html += `<tr class="${rank===1?'bg-yellow-50 text-blue-900 border-b-2 border-yellow-200':'text-slate-800 border-b border-slate-200'}"><td class="border-r border-slate-200 text-lg">${rank===1?'🥇':(rank===2?'🥈':(rank===3?'🥉':rank))}</td><td class="col-left border-r border-slate-200">${s.Name}</td><td class="border-r border-slate-200">${s.Gender}</td>`;
                         SUBJECTS_10.forEach(sub => html += `<td class="border-r border-slate-200">${s[sub] || 'ម.ថ'}</td>`);
-                        html += `<td class="text-blue-700 font-black border-r border-slate-200">${s.Average||0}</td><td class="font-black text-[13px] ${getGrdCol(s.Grade_Result)}">${s.Grade_Result||'F'}</td></tr>`;
+                        html += `<td class="text-blue-700 font-black border-r border-slate-200">${s.Average||0}</td><td class="font-black text-lg ${getGrdCol(s.Grade_Result)}">${s.Grade_Result||'F'}</td></tr>`;
                     });
                     html += `</tbody></table></div>`;
                     renderArea.innerHTML = html;
@@ -613,7 +616,7 @@
                     let maxTotal = 0;
                     SUBJECTS_15.forEach(sub => {
                         let raw = String(s[sub]||"").trim();
-                        if(raw.toUpperCase() !== "ABS" && raw !== "ម.ថ" && !isNaN(cleanNum(raw))) maxTotal += (cleanNum(gConf[dbMap[sub]])||50);
+                        if(raw !== "") maxTotal += (cleanNum(gConf[dbMap[sub]])||50);
                     });
 
                     html += `<div class="print-area portrait-page ${index > 0 ? 'page-break' : ''}">
@@ -633,11 +636,11 @@
                     SUBJECTS_15.forEach(sub => {
                         if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
                             let raw = String(s[sub]).trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
-                            if(isNaN(cleanNum(raw)) || !raw) {
+                            if(isNaN(cleanNum(raw)) || !raw || raw.toUpperCase() === "ABS" || raw.toUpperCase() === "ម.ថ") {
                                 html += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-red-500 font-bold border-r border-slate-200">${raw||'ម.ថ'}</td><td colspan="2">-</td></tr>`;
                             } else {
                                 let sc = cleanNum(raw); let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
-                                html += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-black text-[12px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-black text-[12px] ${getGrdCol(g)}">${g}</td></tr>`;
+                                html += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-black text-[13px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-black text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
                             }
                         }
                     });
@@ -689,7 +692,7 @@
                     
                     let row = `<tr class="text-center text-[11px] border-b hover:bg-slate-50 transition">
                         <td class="col-left font-black w-[15%] text-slate-800 border-r border-slate-200">${title}</td>
-                        <td class="font-black text-indigo-700 border-r border-slate-200 text-[13px]">${stats.count}</td>
+                        <td class="font-black text-indigo-700 border-r border-slate-200 text-sm">${stats.count}</td>
                         <td class="text-red-600 font-bold border-r border-slate-200">${stats.A} <span class="text-[9px] text-slate-400">(${pG(stats.A)}%)</span></td>
                         <td class="text-pink-600 font-bold border-r border-slate-200">${stats.B} <span class="text-[9px] text-slate-400">(${pG(stats.B)}%)</span></td>
                         <td class="text-orange-600 font-bold border-r border-slate-200">${stats.C} <span class="text-[9px] text-slate-400">(${pG(stats.C)}%)</span></td>
@@ -725,11 +728,11 @@
         async function switchTab(tabId) {
             if (tabId === 'tab-internal' && !isInternalUnlocked) {
                 const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់រដ្ឋបាល', input: 'password', confirmButtonText: 'ចូលប្រើប្រាស់' });
-                if (pwd === INTERNAL_PWD) isInternalUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
+                if (pwd && pwd.trim() === INTERNAL_PWD) isInternalUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
             }
             if (tabId === 'tab-report' && !isReportUnlocked) {
                 const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់របាយការណ៍', input: 'password', confirmButtonText: 'ចូលប្រើប្រាស់' });
-                if (pwd === REPORT_PWD) isReportUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
+                if (pwd && pwd.trim() === REPORT_PWD) isReportUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
             }
             
             document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.classList.add('inactive'); });
