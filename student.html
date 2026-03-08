@@ -11,22 +11,33 @@
     
     <style>
         :root { --primary-blue: #1e40af; --khmer-red: #dc2626; }
-        body { font-family: 'Kantumruy Pro', sans-serif; background: #f4f7f6; color: #1e293b; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background: #e2e8f0; color: #1e293b; }
         .moul-font { font-family: 'Moul', serif; }
         
         .nav-container { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; padding: 10px 20px;}
         .back-link { display: inline-flex; align-items: center; gap: 5px; color: #475569; font-weight: 600; transition: color 0.3s; }
         .back-link:hover { color: var(--primary-blue); }
 
-        /* Print Area - Added margin-bottom to separate pages on screen */
-        .print-area { background: white; margin: 25px auto 40px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
-        .portrait-page { width: 210mm; max-width: 100%; padding: 10mm 15mm; min-height: 297mm;}
+        /* Container allowing scrolling on mobile instead of crushing the A4 format */
+        .print-container-wrapper { width: 100%; overflow-x: auto; padding-bottom: 20px;}
+        
+        .print-area { 
+            background: white; 
+            margin: 20px auto; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            position: relative; 
+            /* Fixed A4 sizes for screen display to avoid crushing */
+            width: 210mm; 
+            min-height: 297mm;
+            padding: 10mm 15mm;
+            box-sizing: border-box;
+        }
         
         .student-info-box { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 12px; margin-bottom: 12px; line-height: 1.8;}
         .student-info-box span { color: #0f172a; margin-left: 5px; font-weight: 900;}
 
         .summary-box { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 0; margin-bottom: 15px;}
-        .summary-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .summary-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 5px;}
         .summary-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 15%; height: 70%; width: 1.5px; background-color: #e2e8f0; }
         .s-title { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 4px;}
         .s-value { font-size: 22px; font-weight: 900; color: #2563eb; line-height: 1; }
@@ -44,18 +55,25 @@
         .trend-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; height: 100%; justify-content: flex-end;}
         .trend-bar { width: 22px; border-radius: 4px 4px 0 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
         
+        /* Updated Signatures */
+        .signatures-area { display: flex; justify-content: space-between; margin-top: 30px; width: 100%; padding: 0 10px;}
+        .sig-block { width: 45%; text-align: center; position: relative; min-height: 140px;}
+        .stamp-main { position: absolute; top: 35px; left: 50%; transform: translateX(-50%); width: 150px; opacity: 0.9; mix-blend-mode: multiply; pointer-events: none;}
+        .sig-main { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); height: 50px; mix-blend-mode: multiply; pointer-events: none;}
+
         @media print {
             @page { size: A4 portrait; margin: 0; }
-            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: visible;}
             .no-print { display: none !important; }
-            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; padding: 10mm 15mm !important; width: 100% !important; page-break-inside: avoid; page-break-after: always; }
+            .print-container-wrapper { padding: 0 !important; overflow: visible !important; width: 100% !important;}
+            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; padding: 10mm 15mm !important; width: 210mm !important; height: 297mm !important; min-height: 297mm !important; page-break-inside: avoid; page-break-after: always; overflow: hidden;}
             .print-area:last-child { page-break-after: auto; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Navigation -->
+    <!-- Simple Navigation -->
     <nav class="nav-container no-print">
         <div class="max-w-6xl mx-auto">
             <a href="index.html" class="back-link">
@@ -76,7 +94,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-end">
                 <div class="space-y-2">
                     <label class="text-xs font-black text-slate-500">ការវាយតម្លៃ (ខែ/ឆមាស)</label>
-                    <select id="monthSelect" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-blue-500 font-bold text-sm text-slate-700">
+                    <select id="monthSelect" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-blue-500 font-bold text-sm text-slate-700">
                         <option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option><option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option>
                         <option value="មីនា">មីនា</option><option value="មេសា">មេសា</option><option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
                         <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option><option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
@@ -86,27 +104,27 @@
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs font-black text-slate-500">អត្តលេខ ឬឈ្មោះសិស្ស</label>
-                    <input type="text" id="searchInput" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-blue-500 font-bold text-sm" placeholder="ឧ. 024025026 ឬ ហុន ម៉ុម">
+                    <input type="text" id="searchInput" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-blue-500 font-bold text-sm" placeholder="ឧ. 024025026 ឬ ហុន ម៉ុម">
                 </div>
                 <div>
-                    <button onclick="executeSearch()" class="w-full bg-blue-600 text-white p-3 rounded-xl font-black text-sm shadow-md hover:bg-blue-700 transition">ស្វែងរកលទ្ធផល</button>
+                    <button onclick="executeSearch()" class="w-full bg-blue-600 text-white p-3.5 rounded-xl font-black text-sm shadow-md hover:bg-blue-700 transition">ស្វែងរកលទ្ធផល</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Output Actions (Mobile Friendly Layout) -->
+    <!-- Output Actions (Mobile Friendly) -->
     <div id="t1-actions" class="no-print mt-4 mb-6 hidden flex-col md:flex-row justify-center gap-3 max-w-4xl mx-auto px-4">
-        <button onclick="window.print()" class="w-full md:w-auto bg-slate-800 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition flex justify-center items-center gap-2">
+        <button onclick="window.print()" class="w-full md:w-auto bg-slate-800 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-slate-900 transition flex justify-center items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
             Print លទ្ធផល
         </button>
-        <button onclick="linkTelegram('Student')" class="w-full md:w-auto bg-sky-500 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition">ភ្ជាប់ Telegram សិស្ស</button>
-        <button onclick="linkTelegram('Parent')" class="w-full md:w-auto bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
+        <button onclick="linkTelegram('Student')" class="w-full md:w-auto bg-sky-500 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-sky-600 transition">ភ្ជាប់ Telegram សិស្ស</button>
+        <button onclick="linkTelegram('Parent')" class="w-full md:w-auto bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-indigo-700 transition">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
     </div>
 
-    <!-- Container for both pages to ensure spacing -->
-    <div id="results-container" class="hidden">
+    <!-- Results Area (Wrapped for mobile horizontal scroll) -->
+    <div id="results-container" class="print-container-wrapper hidden">
         <!-- ទំព័រទី ១ -->
         <div id="t1-page1" class="print-area portrait-page">
             <div id="t1-header"></div>
@@ -116,12 +134,12 @@
         </div>
 
         <!-- ទំព័រទី ២ (ប្រៀបធៀប) -->
-        <div id="t1-page2" class="print-area portrait-page pt-4">
+        <div id="t1-page2" class="print-area portrait-page">
             <div id="t1-p2-header"></div>
             <div id="t1-chartArea" class="mb-4"></div>
             <div id="t1-comparisonTableContainer"></div>
             <div id="t1-analysisBox" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mt-4 text-[11px] leading-relaxed text-blue-900 font-bold"></div>
-            <div id="t1-p2-signatures" style="margin-top: 20px;"></div>
+            <div id="t1-p2-signatures"></div>
         </div>
     </div>
 
@@ -145,16 +163,14 @@
 
         let configMap = {}; let teacherMap = {}; let currentStudentInfo = null;
 
-        // 🛠️ Formatting Utils (Improved for absolute match)
-        const fmtCls = (str) => {
+        // 🛠️ The Ultimate String Cleaner for Map Matching
+        const cleanKey = (str) => {
             if(!str) return "";
-            // Replace Khmer numerals, remove spaces, dashes, underscores, make uppercase
-            let s = String(str).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]);
-            s = s.replace(/[\s\-_]/g, '').toUpperCase();
-            // Translate Khmer characters to English for class letters
-            const kmToEn = { 'ក':'A', 'ខ':'B', 'គ':'C', 'ឃ':'D', 'ង':'E', 'ច':'F', 'ឆ':'G', 'ជ':'H', 'ឈ':'I', 'ញ':'J', 'ដ':'K', 'ឋ':'L', 'ឌ':'M', 'ឍ':'N', 'ណ':'O' };
-            for (let k in kmToEn) { s = s.replace(new RegExp(k, 'g'), kmToEn[k]); }
-            return s.trim();
+            return String(str)
+                .replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]) // Convert Khmer Numbers
+                .replace(/[\s\-_]/g, '') // Remove all spaces and dashes
+                .trim()
+                .toUpperCase(); // Make uppercase (e.g. "10 A" -> "10A")
         };
 
         const getDriveImgUrl = (urlOrId) => {
@@ -193,13 +209,13 @@
             return data;
         }
 
-        // 🛠️ ទាញយកទិន្នន័យគ្រូ និង Config ឲ្យត្រូវរចនាសម្ព័ន្ធ
+        // 🛠️ Fetch and Map Initial Data Perfectly
         async function fetchInitialData() {
             try {
                 let confRes = await supaFetch(`config_max_scores?select=*`);
                 if(Array.isArray(confRes)) {
                     confRes.forEach(c => { 
-                        if(c.grade_level) configMap[fmtCls(c.grade_level)] = c; 
+                        if(c.grade_level) configMap[cleanKey(c.grade_level)] = c; 
                     });
                 }
 
@@ -207,59 +223,63 @@
                 if(Array.isArray(teachRes)) {
                     teachRes.forEach(t => { 
                         if(t.homeroom_class) {
-                            teacherMap[fmtCls(t.homeroom_class)] = { 
+                            teacherMap[cleanKey(t.homeroom_class)] = { 
                                 name: t.teacher_name, 
                                 sign: getDriveImgUrl(t.signature_link) 
                             }; 
                         }
                     });
                 }
+                
             } catch(e) { console.error("Init Error", e); }
         }
 
-        // HTML Builders
+        function mapDbToLegacy(row) {
+            let res = { ID: row.student_id, Name: row.student_name, Gender: row.gender, Grade: row.grade, DOB: row.dob||'', DateSolar: row.date_solar||'', DateLunar: row.date_lunar||'', Total: row.total_score || row.exam_total_score || 0, Average: row.average || row.semester_average || row.annual_average || 0, Rank: row.class_rank, "ចំណាត់ថ្នាក់ក្នុងសាលា": row.school_rank, Grade_Result: row.grade_result || row.final_result || 'F' };
+            SUBJECTS_15.forEach(sub => { res[sub] = row[dbMap[sub]]; });
+            return res;
+        }
+
         function buildPrintHeader(title) {
             return `
-                <div style="width: 100%; position: relative; height: 60px;">
+                <div style="width: 100%; position: relative; height: 60px; margin-bottom: 10px;">
                     <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center;">
-                        <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a; margin-bottom: 4px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
-                        <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
+                        <h2 class="moul-font" style="font-size: 14px; color: #1e3a8a; margin-bottom: 4px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+                        <h2 class="moul-font" style="font-size: 14px; color: #1e3a8a;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
                     </div>
-                    <div style="position: absolute; top: 25px; left: 0; text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6;">
+                    <div style="position: absolute; top: 20px; left: 0; text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6;">
                         <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
                         <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
                         <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
                     </div>
                 </div>
-                <h1 class="moul-font text-red-600 text-center" style="font-size: 18px; margin: 15px 0 10px 0;">${title}</h1>
+                <h1 class="moul-font text-red-600 text-center" style="font-size: 17px; margin: 15px 0 10px 0;">${title}</h1>
             `;
         }
 
+        // 🛠️ Fixed Stamp and Signature Positions to prevent overflow
         function getStampHTML(dateSolar, dateLunar, tInfo) {
             let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
-            // 🛠️ កែប្រែត្រា: ឡើងលើ 0.5cm (top: -0.5cm), បង្រួមទំហំ -5% (width: 255px)
-            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: -0.5cm; left: calc(50% + 1.0cm); transform: translateX(-50%); width: 255px; max-width: none; max-height: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
-            
-            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); height: 60px; max-width: 140px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
+            let pImg = pImgUrl ? `<img src="${pImgUrl}" class="stamp-main" onerror="this.style.display='none'">` : '';
+            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" class="sig-main" onerror="this.style.display='none'">` : '';
             
             return `
-            <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 20px;">
-                <div style="text-align: center; width: 300px; position: relative; min-height: 120px;">
+            <div class="signatures-area">
+                <div class="sig-block">
                     <p style="font-weight: bold; font-size: 12px; margin-bottom: 5px;">បានឃើញ និងឯកភាព</p>
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a;">នាយកសាលា</p>
                     ${pImg}
                 </div>
-                <div style="text-align: center; width: 300px; position: relative; min-height: 120px;">
+                <div class="sig-block">
                     <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 2px;">${dateLunar || 'ថ្ងៃ.......................................................'}</p>
                     <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 15px;">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a;">គ្រូបន្ទុកថ្នាក់</p>
                     ${tImg}
-                    <p class="moul-font" style="font-size: 12px; color: #1e3a8a; position: absolute; bottom: 0; width: 100%; text-align: center;">${tInfo.name}</p>
+                    <p class="moul-font" style="font-size: 12px; color: #1e3a8a; position: absolute; bottom: 0; width: 100%; text-align: center; margin:0;">${tInfo.name}</p>
                 </div>
             </div>`;
         }
 
-        // Main Logic
         async function executeSearch() {
             let q = document.getElementById('searchInput').value.trim();
             let period = document.getElementById('monthSelect').value;
@@ -283,15 +303,17 @@
                 }
 
                 let dbS = data[0];
-                let s = { ID: dbS.student_id, Name: dbS.student_name, Gender: dbS.gender, Grade: dbS.grade, DOB: dbS.dob||'', DateSolar: dbS.date_solar||'', DateLunar: dbS.date_lunar||'', Total: dbS.total_score || dbS.exam_total_score || 0, Average: dbS.average || dbS.semester_average || dbS.annual_average || 0, Rank: dbS.class_rank, "ចំណាត់ថ្នាក់ក្នុងសាលា": dbS.school_rank, Grade_Result: dbS.grade_result || dbS.final_result || 'F' };
-                SUBJECTS_15.forEach(sub => { s[sub] = dbS[dbMap[sub]]; });
-                
+                let s = mapDbToLegacy(dbS);
                 currentStudentInfo = { id: s.ID, name: s.Name };
                 
-                // 🛠️ Map Data Properly
-                let fGrade = fmtCls(s.Grade);
-                let gConf = configMap[fGrade] || {};
-                let tInfo = teacherMap[fGrade] || {name:'មិនស្គាល់', sign:''};
+                // 🛠️ Grab Config and Teacher using the strictly cleaned Grade Key
+                let targetKey = cleanKey(s.Grade);
+                let gConf = configMap[targetKey] || {};
+                let tInfo = teacherMap[targetKey] || {name:'មិនស្គាល់', sign:''};
+
+                // Console logging for verification
+                console.log("Found Grade:", s.Grade, "-> Cleaned Key:", targetKey);
+                console.log("Matched Teacher:", tInfo.name);
 
                 // P1 Build
                 document.getElementById('t1-header').innerHTML = buildPrintHeader(`តារាងលទ្ធផលសិក្សារបស់សិស្សប្រចាំ ${document.getElementById('monthSelect').value}`);
@@ -302,7 +324,7 @@
                             <p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${s.DOB || '...'}</span></p>
                             <p>អត្តលេខ ៖ <span>${s.ID}</span></p>
                         </div>
-                        <div>
+                        <div style="text-align:right;">
                             <p>ភេទ ៖ <span>${s.Gender}</span></p>
                             <p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p>
                             <p>ឆ្នាំសិក្សា ៖ <span>២០២៥-២០២៦</span></p>
@@ -321,9 +343,9 @@
                     if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
                         let raw = String(s[sub]).trim(); 
                         
+                        // 🛠️ Calculate Max Score correctly based on db map
                         let ms = 50;
                         if (gConf[dbMap[sub]]) { ms = cleanNum(gConf[dbMap[sub]]); }
-                        
                         if (raw !== "") maxTotal += ms; 
                         
                         if(raw.toUpperCase() === "ABS" || raw.toUpperCase() === "ម.ថ" || isNaN(cleanNum(raw))) {
@@ -337,6 +359,7 @@
                 
                 document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead><tr class="bg-slate-50"><th class="w-8 border-r border-slate-200">ល.រ</th><th class="col-left w-48 border-r border-slate-200">មុខវិជ្ជា</th><th class="w-20 border-r border-slate-200">អតិបរមា</th><th class="w-24 border-r border-slate-200">ពិន្ទុ</th><th class="w-32 border-r border-slate-200">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold py-2">ពិន្ទុសរុប</td><td class="font-bold">${maxTotal || '-'}</td><td class="text-blue-700 font-black text-lg">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[10px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
                 
+                // 🛠️ Render Stamps
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
                 
                 // P2 Build (ប្រៀបធៀប)
@@ -366,6 +389,7 @@
                     SUBJECTS_10.forEach((sub, i) => {
                         tb += `<tr><td class="border-r border-slate-200">${i+1}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td>`;
                         
+                        // Grab Max Score
                         let maxS = 50; if(gConf[dbMap[sub]]) maxS = cleanNum(gConf[dbMap[sub]]);
                         tb += `<td class="text-slate-400 font-bold border-r border-slate-200">${maxS}</td>`;
                         
@@ -387,11 +411,11 @@
                     let str = sortS.filter(x=>subjectAvgs[x]>=70).slice(0,3); let wk = sortS.filter(x=>subjectAvgs[x]<50).slice(0,3);
                     document.getElementById('t1-analysisBox').innerHTML = `💡 <b>ការសន្និដ្ឋានបឋម៖</b> ផ្អែកតាមទិន្នន័យមធ្យមភាគប្រចាំខែ សិស្សមានភាពលេចធ្លោលើមុខវិជ្ជា <b class="text-emerald-700">${str.length>0?str.join(", "):"មិនទាន់មាន"}</b>។ ${wk.length>0 ? `ទន្ទឹមនឹងនេះ គប្បីយកចិត្តទុកដាក់បន្ថែមលើមុខវិជ្ជា <b class="text-red-600">${wk.join(", ")}</b> ដើម្បីទទួលបានលទ្ធផលកាន់តែប្រសើរ។`:''}`;
                 }
+                
                 document.getElementById('t1-p2-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
 
                 document.getElementById('results-container').classList.remove('hidden');
                 document.getElementById('t1-actions').classList.remove('hidden');
-                document.getElementById('t1-actions').classList.add('flex');
                 hideLoading();
             } catch (e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
         }
