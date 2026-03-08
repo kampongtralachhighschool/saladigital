@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>លទ្ធផលសិក្សា - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { font-family: 'Kantumruy Pro', sans-serif; background: #f4f7f6; color: #1e293b; }
+        .moul-font { font-family: 'Moul', serif; }
+        
+        /* Navigation Menu */
+        .nav-container { background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 50; }
+        .nav-link { padding: 12px 20px; font-weight: bold; color: #64748b; transition: all 0.3s; border-bottom: 3px solid transparent; }
+        .nav-link:hover { color: #1e40af; background: #f8fafc; }
+        .nav-link.active { color: #1e40af; border-bottom-color: #1e40af; }
+
+        /* Print Styles */
+        .print-area { background: white; margin: 20px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
+        .portrait-page { width: 210mm; padding: 10mm 15mm; min-height: 297mm; }
+        
+        /* Table & Layout Styles (Simplified from before) */
+        .student-info-box { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 12px; margin-bottom: 12px; line-height: 1.8;}
+        .student-info-box span { color: #0f172a; margin-left: 5px; font-weight: 900;}
+        .summary-box { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 0; margin-bottom: 15px;}
+        .summary-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; }
+        .summary-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 15%; height: 70%; width: 1.5px; background-color: #e2e8f0; }
+        .s-title { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 4px;}
+        .s-value { font-size: 22px; font-weight: 900; color: #2563eb; }
+        
+        .c-table { border-collapse: collapse; width: 100%; font-size: 12px; }
+        .c-table th { padding: 6px 4px; text-align: center; color: #1e3a8a; border-bottom: 2px solid #cbd5e1; border-top: 2px solid #cbd5e1; font-weight: 900; }
+        .c-table td { padding: 5px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; font-weight: 700;}
+        .col-left { text-align: left !important; padding-left: 12px !important; }
+        
+        .bar-bg { width: 100%; background-color: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; }
+        .bar-fill { height: 100%; border-radius: 3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .trend-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 150px; border-bottom: 2px solid #cbd5e1; margin-top: 10px; padding: 10px 0 0 0; }
+        .trend-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; height: 100%; justify-content: flex-end;}
+        .trend-bar { width: 22px; border-radius: 4px 4px 0 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+        
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none !important; }
+            .nav-container { display: none !important; }
+            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; padding: 10mm 15mm !important; width: 100% !important; page-break-after: always; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Global Navigation -->
+    <nav class="nav-container no-print">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-center sm:justify-start">
+            <a href="index.html" class="nav-link active">១. លទ្ធផលទូទៅ</a>
+            <a href="bac2.html" class="nav-link text-yellow-600">២. ស្តង់ដារបាក់ឌុប</a>
+            <a href="admin.html" class="nav-link">៣. កិច្ចការរដ្ឋបាល</a>
+            <a href="report.html" class="nav-link">៤. របាយការណ៍សាលា</a>
+        </div>
+    </nav>
+
+    <!-- Search Section -->
+    <div id="searchSection" class="max-w-4xl mx-auto my-8 no-print px-4">
+        <div class="text-center mb-6 space-y-2">
+            <h2 class="moul-font text-blue-900 text-2xl">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
+            <p class="font-bold text-gray-500 bg-white inline-block px-4 py-1 rounded-full shadow-sm border">ស្វែងរកលទ្ធផលសិក្សា (ទូទៅ)</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-blue-600 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div class="space-y-1">
+                <label class="text-xs font-black text-slate-500">ការវាយតម្លៃ (ខែ/ឆមាស)</label>
+                <select id="monthSelect" class="w-full p-3 rounded-xl bg-slate-50 border outline-none font-bold text-sm">
+                    <option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option><option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option>
+                    <option value="មីនា">មីនា</option><option value="មេសា">មេសា</option><option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
+                    <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option><option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                    <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option><option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២</option>
+                    <option value="ប្រចាំឆ្នាំ">ប្រចាំឆ្នាំ</option>
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs font-black text-slate-500">អត្តលេខ ឬឈ្មោះសិស្ស</label>
+                <input type="text" id="searchInput" class="w-full p-3 rounded-xl bg-slate-50 border outline-none font-bold text-sm" placeholder="ឧ. 024025026 ឬ ហុន ម៉ុម">
+            </div>
+            <div>
+                <button onclick="executeSearch()" class="w-full bg-blue-600 text-white p-3 rounded-xl font-black text-sm shadow-md hover:bg-blue-700">ស្វែងរកលទ្ធផល</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions & Print Area -->
+    <div id="t1-actions" class="no-print mt-4 mb-6 hidden flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+        <button onclick="window.print()" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:scale-105">🖨️ Print លទ្ធផល</button>
+        <button onclick="linkTelegram('Student')" class="bg-sky-500 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105">ភ្ជាប់ Telegram សិស្ស</button>
+        <button onclick="linkTelegram('Parent')" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
+    </div>
+
+    <div id="t1-capture-area" class="print-area portrait-page hidden">
+        <!-- Page 1: Main Table -->
+        <div id="t1-page1">
+            <div id="t1-header"></div>
+            <div id="t1-summaryArea" class="summary-box"></div>
+            <div id="t1-tableArea"></div>
+            <div id="t1-signatures"></div>
+        </div>
+
+        <!-- Page 2: Analytics -->
+        <div id="t1-page2" style="page-break-before: always; padding-top: 15px;">
+            <div id="t1-p2-header"></div>
+            <div id="t1-chartArea" class="mb-4"></div>
+            <div id="t1-comparisonTableContainer"></div>
+            <div id="t1-analysisBox" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mt-4 text-[11px] leading-relaxed text-blue-900 font-bold"></div>
+            <div id="t1-p2-signatures" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center hidden z-[100]">
+        <div class="text-center bg-white p-8 rounded-3xl"><div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div><p class="font-bold text-blue-900">កំពុងដំណើរការ...</p></div>
+    </div>
+
+    <script>
+        // Supabase Setup
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
+        const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+        
+        const PRINCIPAL_STAMP_URL = "https://drive.google.com/uc?export=view&id=1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne"; 
+        const SUBJECTS_10 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
+        const SUBJECTS_15 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
+        const dbMap = { "ភាសាខ្មែរ":"khmer", "សីលធម៌ពលរដ្ឋ":"morality", "ប្រវត្តិវិទ្យា":"history", "ភូមិវិទ្យា":"geography", "គណិតវិទ្យា":"math", "រូបវិទ្យា":"physics", "គីមីវិទ្យា":"chemistry", "ជីវវិទ្យា":"biology", "ផែនដីវិទ្យា":"earth_science", "ភាសាអង់គ្លេស":"english", "កីឡា":"sport", "កសិកម្ម":"agriculture", "បច្ចេកវិទ្យា":"technology", "បំណិន":"skill", "សុខភាព":"health" };
+
+        let configList =[]; let teacherMap = {}; let currentStudentInfo = null;
+
+        // Utilities
+        const fmtCls = (str) => {
+            if(!str) return "";
+            let s = String(str).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]).replace(/\s+/g, '').toUpperCase();
+            const kmToEn = { 'ក':'A', 'ខ':'B', 'គ':'C', 'ឃ':'D', 'ង':'E', 'ច':'F', 'ឆ':'G', 'ជ':'H', 'ឈ':'I', 'ញ':'J', 'ដ':'K', 'ឋ':'L', 'ឌ':'M', 'ឍ':'N', 'ណ':'O' };
+            for (let k in kmToEn) { s = s.replace(new RegExp(k, 'g'), kmToEn[k]); }
+            return s;
+        };
+        const getDriveImgUrl = (url) => url ? url.replace('export=view', 'export=download') : ''; // Better loading for print
+        const cleanNum = (val) => isNaN(parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]))) ? NaN : parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]));
+        const getGrd = (p) => { let x=Math.floor(p); return x>=90?'A':x>=80?'B':x>=70?'C':x>=60?'D':x>=50?'E':'F'; };
+        const getBarCol = (pct) => pct>=90?'#059669':pct>=80?'#2563eb':pct>=70?'#d97706':pct>=60?'#7c3aed':pct>=50?'#db2777':'#ef4444';
+        const getGrdCol = (g) => g==='A'?'text-red-600':g==='B'?'text-pink-600':g==='C'?'text-orange-600':g==='D'?'text-green-600':g==='E'?'text-blue-600':'text-slate-800';
+
+        function showLoading(t) { document.getElementById('loadingText').innerText = t; document.getElementById('loadingOverlay').classList.remove('hidden'); }
+        function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+
+        // Init
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchInitialData().then(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                let sid = urlParams.get('id') || localStorage.getItem('kpt_last_search_id');
+                let smonth = urlParams.get('month') || localStorage.getItem('kpt_last_search_month');
+                if (sid) { document.getElementById('searchInput').value = sid; if(smonth) document.getElementById('monthSelect').value = smonth; executeSearch(); }
+            });
+        });
+
+        async function fetchInitialData() {
+            try {
+                let confRes = await fetch(`${SUPABASE_URL}/rest/v1/config_max_scores?select=*`, { headers });
+                configList = await confRes.json();
+                let teachRes = await fetch(`${SUPABASE_URL}/rest/v1/teacher_info?select=*`, { headers });
+                let teachData = await teachRes.json();
+                teachData.forEach(t => { if(t.homeroom_class) teacherMap[fmtCls(t.homeroom_class)] = { name: t.teacher_name, sign: getDriveImgUrl(t.signature_link) }; });
+            } catch(e) { console.error("Init Error", e); }
+        }
+
+        // Builders
+        function buildPrintHeader(title) {
+            return `
+                <div style="width: 100%; position: relative; height: 60px;">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center;">
+                        <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a; margin-bottom: 4px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+                        <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
+                    </div>
+                    <div style="position: absolute; top: 25px; left: 0; text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6;">
+                        <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
+                        <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
+                        <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
+                    </div>
+                </div>
+                <h1 class="moul-font text-red-600 text-center" style="font-size: 18px; margin: 15px 0 10px 0;">${title}</h1>
+            `;
+        }
+
+        function getStampHTML(dateSolar, dateLunar, tInfo) {
+            let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
+            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: -0.7cm; left: calc(50% + 1.5cm); transform: translateX(-50%); width: 270px; max-width: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;">` : '';
+            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); height: 60px; max-width: 140px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;">` : '';
+            
+            return `
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+                <div style="text-align: center; width: 300px; position: relative; min-height: 120px;">
+                    <p style="font-weight: bold; font-size: 12px; margin-bottom: 5px;">បានឃើញ និងឯកភាព</p>
+                    <p class="moul-font" style="font-size: 12px; color: #1e3a8a;">នាយកសាលា</p>
+                    ${pImg}
+                </div>
+                <div style="text-align: center; width: 300px; position: relative; min-height: 120px;">
+                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 2px;">${dateLunar || 'ថ្ងៃ.......................................................'}</p>
+                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 15px;">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
+                    <p class="moul-font" style="font-size: 12px; color: #1e3a8a;">គ្រូបន្ទុកថ្នាក់</p>
+                    ${tImg}
+                    <p class="moul-font" style="font-size: 12px; color: #1e3a8a; position: absolute; bottom: 0; width: 100%; text-align: center;">${tInfo.name}</p>
+                </div>
+            </div>`;
+        }
+
+        // Main Logic
+        async function executeSearch() {
+            let q = document.getElementById('searchInput').value.trim();
+            let period = document.getElementById('monthSelect').value;
+            if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខ ឬឈ្មោះសិស្ស!', 'warning');
+            
+            localStorage.setItem('kpt_last_search_id', q);
+            localStorage.setItem('kpt_last_search_month', period);
+            showLoading("កំពុងទាញយកទិន្នន័យ...");
+            
+            let table = period.includes("ប្រចាំឆមាស") ? "semester_scores" : (period === "ប្រចាំឆ្នាំ" ? "annual_scores" : "student_scores");
+            let pCol = period.includes("ប្រចាំឆមាស") ? "semester_name" : (period === "ប្រចាំឆ្នាំ" ? "academic_year" : "month_name");
+            if(period === "ប្រចាំឆ្នាំ") period = new Date().getFullYear().toString();
+
+            try {
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${pCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.%25${encodeURIComponent(q)}%25)&limit=1`, { headers });
+                let data = await res.json();
+                
+                if(!data || data.length === 0) { hideLoading(); return Swal.fire('រកមិនឃើញ!', 'មិនមានទិន្នន័យសម្រាប់ខែនេះទេ!', 'error'); }
+
+                let dbS = data[0]; 
+                let s = { ID: dbS.student_id, Name: dbS.student_name, Gender: dbS.gender, Grade: dbS.grade, DOB: dbS.dob||'', DateSolar: dbS.date_solar||'', DateLunar: dbS.date_lunar||'', Total: dbS.total_score || dbS.exam_total_score || 0, Average: dbS.average || dbS.semester_average || dbS.annual_average || 0, Rank: dbS.class_rank, "ចំណាត់ថ្នាក់ក្នុងសាលា": dbS.school_rank, Grade_Result: dbS.grade_result || dbS.final_result || 'F' };
+                SUBJECTS_15.forEach(sub => { s[sub] = dbS[dbMap[sub]]; });
+
+                currentStudentInfo = { id: s.ID, name: s.Name };
+                let gConf = configList.find(c => fmtCls(c.grade_level) === fmtCls(s.Grade)) || {};
+                let tInfo = teacherMap[fmtCls(s.Grade)] || {name:'មិនស្គាល់', sign:''};
+
+                // P1 Build
+                document.getElementById('t1-header').innerHTML = buildPrintHeader(`តារាងលទ្ធផលសិក្សារបស់សិស្សប្រចាំ ${document.getElementById('monthSelect').value}`);
+                document.getElementById('t1-header').innerHTML += `<div class="student-info-box"><div><p>គោត្តនាម-នាម ៖ <span class="moul-font text-blue-800">${s.Name}</span></p><p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${s.DOB || '...'}</span></p><p>អត្តលេខ ៖ <span>${s.ID}</span></p></div><div><p>ភេទ ៖ <span>${s.Gender}</span></p><p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p><p>ឆ្នាំសិក្សា ៖ <span>២០២៥-២០២៦</span></p></div></div>`;
+                
+                document.getElementById('t1-summaryArea').innerHTML = `<div class="summary-item"><p class="s-title">មធ្យមភាគ</p><p class="s-value">${s.Average}</p></div><div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p><p class="s-value text-red-600">${s.Rank||'-'}</p></div><div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងសាលា</p><p class="s-value text-orange-500">${s["ចំណាត់ថ្នាក់ក្នុងសាលា"]||'-'}</p></div><div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value ${getGrdCol(s.Grade_Result)}">${s.Grade_Result || 'F'}</p></div>`;
+
+                let tRows = ""; let idx=1; let maxTotal = 0;
+                SUBJECTS_15.forEach(sub => {
+                    if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
+                        let raw = String(s[sub]).trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
+                        if (raw !== "") maxTotal += ms; 
+                        if(raw.toUpperCase() === "ABS" || raw.toUpperCase() === "ម.ថ" || isNaN(cleanNum(raw))) {
+                            tRows += `<tr><td>${idx++}</td><td class="col-left font-bold">${sub}</td><td>${ms}</td><td class="text-red-500">${raw}</td><td colspan="2">-</td></tr>`;
+                        } else {
+                            let sc = cleanNum(raw); let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
+                            tRows += `<tr><td>${idx++}</td><td class="col-left font-bold">${sub}</td><td>${ms}</td><td class="text-blue-700">${sc}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="${getGrdCol(g)}">${g}</td></tr>`;
+                        }
+                    }
+                });
+                document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead><tr class="bg-slate-50"><th class="w-8 border-r border-slate-200">ល.រ</th><th class="col-left w-48 border-r border-slate-200">មុខវិជ្ជា</th><th class="w-20 border-r border-slate-200">អតិបរមា</th><th class="w-24 border-r border-slate-200">ពិន្ទុ</th><th class="w-32 border-r border-slate-200">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right">ពិន្ទុសរុប</td><td>${maxTotal || '-'}</td><td class="text-blue-700 text-lg">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[10px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
+                document.getElementById('t1-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
+                
+                // P2 Build
+                let resHist = await fetch(`${SUPABASE_URL}/rest/v1/student_scores?student_id=eq.${encodeURIComponent(s.ID)}`, { headers });
+                let histData = await resHist.json();
+                
+                document.getElementById('t1-p2-header').innerHTML = buildPrintHeader(`តារាងប្រៀបធៀបលទ្ធផលសិក្សាតាមមុខវិជ្ជាប្រចាំខែ`);
+                document.getElementById('t1-p2-header').innerHTML += `<div class="student-info-box" style="border-left-color:#eab308; background: linear-gradient(90deg, #fefce8 0%, transparent 100%);"><div><p>ឈ្មោះ ៖ <span class="moul-font text-blue-800" style="font-size:13px;">${s.Name}</span></p></div><div><p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p></div></div>`;
+
+                let availableMonths =["វិច្ឆិកា", "ធ្នូ", "មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា"].filter(m => histData.some(d => d.month_name === m));
+
+                if (availableMonths.length === 0) {
+                    document.getElementById('t1-chartArea').innerHTML = `<div class="text-center p-10 border-2 border-dashed rounded-xl"><p class="text-slate-500 font-bold">មិនទាន់មានទិន្នន័យប្រចាំខែ សម្រាប់ធ្វើការប្រៀបធៀបទេ!</p></div>`;
+                    document.getElementById('t1-comparisonTableContainer').innerHTML = ""; document.getElementById('t1-analysisBox').innerHTML = "";
+                } else {
+                    let histMap = {}; histData.forEach(r => { if(availableMonths.includes(r.month_name)) { let tRes = { Average: r.average||0 }; SUBJECTS_10.forEach(sub => { tRes[sub] = r[dbMap[sub]]; }); histMap[r.month_name] = tRes; } });
+                    
+                    let cHtml = ""; availableMonths.forEach(m => { let pct = Math.min((cleanNum(histMap[m].Average) / 50) * 100, 100); cHtml += `<div class="trend-bar-wrapper"><div style="font-size:9px; font-weight:bold; color:#475569; margin-bottom:2px;">${cleanNum(histMap[m].Average).toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div style="font-size:9px; font-weight:bold; color:#1e293b; margin-top:5px;">${m.substring(0,6)}</div></div>`; });
+                    document.getElementById('t1-chartArea').innerHTML = `<div class="border border-slate-200 rounded-xl p-4 pb-0 bg-white"><p class="text-[11px] font-black text-slate-500 mb-2 text-center uppercase">📈 ក្រាបប្រៀបធៀបមធ្យមភាគប្រចាំខែ</p><div class="trend-chart">${cHtml}</div></div>`;
+
+                    let tb = `<table class="c-table mt-4 border border-slate-300"><thead><tr class="bg-slate-100"><th class="w-8 border-r border-slate-300">ល.រ</th><th class="col-left w-32 border-r border-slate-300">មុខវិជ្ជា (គោល)</th><th class="w-16 border-r border-slate-300">អតិបរមា</th>`;
+                    availableMonths.forEach(m => tb+=`<th class="border-r border-slate-300">${m.substring(0,8)}</th>`);
+                    tb += `</tr></thead><tbody>`;
+                    
+                    let subjectAvgs = {};
+                    SUBJECTS_10.forEach((sub, i) => {
+                        tb += `<tr><td class="border-r border-slate-200">${i+1}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td>`;
+                        let maxS = cleanNum(gConf[dbMap[sub]])||50; tb += `<td class="text-slate-400 font-bold border-r border-slate-200">${maxS}</td>`;
+                        let tPct=0, c=0;
+                        availableMonths.forEach(m => {
+                            let d = histMap[m];
+                            if(d && d[sub] && !isNaN(cleanNum(d[sub]))) {
+                                let sc = cleanNum(d[sub]); let pct = Math.min((sc/maxS)*100, 100); let g = getGrd(pct);
+                                tb += `<td class="font-black border-r border-slate-200 ${getGrdCol(g)}">${sc} <span class="text-[9px] text-slate-400 font-bold">(${g})</span></td>`;
+                                tPct+=pct; c++;
+                            } else tb += `<td class="text-slate-300 border-r border-slate-200">-</td>`;
+                        });
+                        tb += `</tr>`; if(c>0) subjectAvgs[sub] = tPct/c;
+                    });
+                    tb += `</tbody></table>`;
+                    document.getElementById('t1-comparisonTableContainer').innerHTML = tb;
+                    
+                    let sortS = Object.keys(subjectAvgs).sort((a,b)=>subjectAvgs[b]-subjectAvgs[a]);
+                    let str = sortS.filter(x=>subjectAvgs[x]>=70).slice(0,3); let wk = sortS.filter(x=>subjectAvgs[x]<50).slice(0,3);
+                    document.getElementById('t1-analysisBox').innerHTML = `💡 <b>ការសន្និដ្ឋានបឋម៖</b> ផ្អែកតាមទិន្នន័យមធ្យមភាគប្រចាំខែ សិស្សមានភាពលេចធ្លោលើមុខវិជ្ជា <b class="text-emerald-700">${str.length>0?str.join(", "):"មិនទាន់មាន"}</b>។ ${wk.length>0 ? `ទន្ទឹមនឹងនេះ គប្បីយកចិត្តទុកដាក់បន្ថែមលើមុខវិជ្ជា <b class="text-red-600">${wk.join(", ")}</b> ដើម្បីទទួលបានលទ្ធផលកាន់តែប្រសើរ។`:''}`;
+                }
+                document.getElementById('t1-p2-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
+
+                document.getElementById('t1-capture-area').classList.remove('hidden');
+                document.getElementById('t1-actions').classList.remove('hidden');
+                document.getElementById('t1-actions').classList.add('flex');
+                hideLoading();
+            } catch (e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
+        }
+
+        async function linkTelegram(type) {
+            if(!currentStudentInfo) return Swal.fire('បញ្ជាក់', 'សូមស្វែងរកសិស្សជាមុនសិន!', 'warning');
+            const { value: username } = await Swal.fire({ title: `ភ្ជាប់ Telegram ${type==='Student'?'សិស្ស':'អាណាព្យាបាល'}`, input: 'text', inputPlaceholder: 'ឧទាហរណ៍: @sok_123', showCancelButton: true, confirmButtonText: 'ភ្ជាប់ឥឡូវនេះ' });
+            if(!username) return;
+            showLoading("កំពុងភ្ជាប់...");
+            try {
+                let resGet = await fetch(`${SUPABASE_URL}/rest/v1/telegram_db?student_id=eq.${encodeURIComponent(currentStudentInfo.id)}`, { headers });
+                let existing = await resGet.json();
+                
+                let payload = { student_id: currentStudentInfo.id, student_name: currentStudentInfo.name };
+                if (existing.length > 0) {
+                    payload = existing[0];
+                    let currentField = type === 'Student' ? payload.telegram_student : payload.telegram_parent;
+                    if(currentField && !currentField.includes(username)) payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = currentField + ";" + username;
+                    else if(!currentField) payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = username;
+                } else { payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = username; }
+
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/telegram_db?on_conflict=student_id`, { method: "POST", headers: { ...headers, "Prefer": "resolution=merge-duplicates" }, body: JSON.stringify([payload]) });
+                hideLoading();
+                if(res.ok) Swal.fire('ជោគជ័យ!', 'បានភ្ជាប់ប្រព័ន្ធ Telegram រួចរាល់!', 'success');
+                else throw new Error("Update Failed");
+            } catch(e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
+        }
+    </script>
+</body>
+</html>
