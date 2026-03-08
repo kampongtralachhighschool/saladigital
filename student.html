@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>លទ្ធផលសិក្សាទូទៅ - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
     
-    <!-- CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -15,12 +14,10 @@
         body { font-family: 'Kantumruy Pro', sans-serif; background: #f4f7f6; color: #1e293b; }
         .moul-font { font-family: 'Moul', serif; }
         
-        /* Navigation Simple */
         .nav-container { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; padding: 10px 20px;}
-        .back-link { display: inline-flex; items-center; gap: 5px; color: #475569; font-weight: 600; transition: color 0.3s; }
+        .back-link { display: inline-flex; align-items: center; gap: 5px; color: #475569; font-weight: 600; transition: color 0.3s; }
         .back-link:hover { color: var(--primary-blue); }
 
-        /* Print Area */
         .print-area { background: white; margin: 25px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
         .portrait-page { width: 210mm; padding: 10mm 15mm; min-height: 297mm;}
         
@@ -137,22 +134,32 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
         const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
         
-        const PRINCIPAL_STAMP_URL = "https://drive.google.com/uc?export=view&id=1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne"; 
+        // 🛠️ ត្រានាយក: ផ្លាស់ប្តូរការទាញរូបភាពពី Google Drive ឲ្យដើរល្អ
+        const PRINCIPAL_STAMP_URL = "1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne"; // ដាក់តែ ID ប៉ុណ្ណោះ
+        
         const SUBJECTS_10 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
         const SUBJECTS_15 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
         const dbMap = { "ភាសាខ្មែរ":"khmer", "សីលធម៌ពលរដ្ឋ":"morality", "ប្រវត្តិវិទ្យា":"history", "ភូមិវិទ្យា":"geography", "គណិតវិទ្យា":"math", "រូបវិទ្យា":"physics", "គីមីវិទ្យា":"chemistry", "ជីវវិទ្យា":"biology", "ផែនដីវិទ្យា":"earth_science", "ភាសាអង់គ្លេស":"english", "កីឡា":"sport", "កសិកម្ម":"agriculture", "បច្ចេកវិទ្យា":"technology", "បំណិន":"skill", "សុខភាព":"health" };
 
         let configList =[]; let teacherMap = {}; let currentStudentInfo = null;
 
-        // Utilities
+        // 🛠️ កែប្រែអនុគមន៍កាត់ឈ្មោះថ្នាក់ ឲ្យកាត់ Space ចោលទាំងអស់ដើម្បីធានាថាវាត្រូវគ្នា ១០០%
         const fmtCls = (str) => {
             if(!str) return "";
-            let s = String(str).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]).replace(/\s+/g, '').toUpperCase();
-            const kmToEn = { 'ក':'A', 'ខ':'B', 'គ':'C', 'ឃ':'D', 'ង':'E', 'ច':'F', 'ឆ':'G', 'ជ':'H', 'ឈ':'I', 'ញ':'J', 'ដ':'K', 'ឋ':'L', 'ឌ':'M', 'ឍ':'N', 'ណ':'O' };
-            for (let k in kmToEn) { s = s.replace(new RegExp(k, 'g'), kmToEn[k]); }
-            return s;
+            return String(str).replace(/\s+/g, '').toUpperCase();
         };
-        const getDriveImgUrl = (url) => url ? url.replace('export=view', 'export=download') : '';
+
+        // 🛠️ កែប្រែអនុគមន៍ទាញរូបភាព
+        const getDriveImgUrl = (urlOrId) => {
+            if(!urlOrId) return '';
+            // បើជា ID សុទ្ធ
+            if (!urlOrId.includes('http')) return `https://lh3.googleusercontent.com/d/${urlOrId}`;
+            // បើជា Link
+            let idMatch = urlOrId.match(/(?:id=|file\/d\/)([\w-]+)/);
+            if(idMatch) return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
+            return urlOrId;
+        };
+
         const cleanNum = (val) => isNaN(parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]))) ? NaN : parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]));
         const getGrd = (p) => { let x=Math.floor(p); return x>=90?'A':x>=80?'B':x>=70?'C':x>=60?'D':x>=50?'E':'F'; };
         const getBarCol = (pct) => pct>=90?'#059669':pct>=80?'#2563eb':pct>=70?'#d97706':pct>=60?'#7c3aed':pct>=50?'#db2777':'#ef4444';
@@ -161,7 +168,7 @@
         function showLoading(t) { document.getElementById('loadingText') ? document.getElementById('loadingText').innerText = t : null; document.getElementById('loadingOverlay').classList.remove('hidden'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
 
-        // Fetch Init Data
+        // Init
         window.addEventListener('DOMContentLoaded', () => {
             fetchInitialData().then(() => {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -178,10 +185,24 @@
         async function fetchInitialData() {
             try {
                 let confRes = await fetch(`${SUPABASE_URL}/rest/v1/config_max_scores?select=*`, { headers });
-                configList = await confRes.json();
+                let confData = await confRes.json();
+                confData.forEach(c => {
+                    // រក្សាទុកដោយប្រើ Key ដែលកាត់ Space ចោល
+                    if(c.grade_level) {
+                        configList[fmtCls(c.grade_level)] = c;
+                    }
+                });
+
                 let teachRes = await fetch(`${SUPABASE_URL}/rest/v1/teacher_info?select=*`, { headers });
                 let teachData = await teachRes.json();
-                teachData.forEach(t => { if(t.homeroom_class) teacherMap[fmtCls(t.homeroom_class)] = { name: t.teacher_name, sign: getDriveImgUrl(t.signature_link) }; });
+                teachData.forEach(t => { 
+                    if(t.homeroom_class) {
+                        teacherMap[fmtCls(t.homeroom_class)] = { 
+                            name: t.teacher_name, 
+                            sign: getDriveImgUrl(t.signature_link) 
+                        }; 
+                    }
+                });
             } catch(e) { console.error("Init Error", e); }
         }
 
@@ -205,11 +226,11 @@
 
         function getStampHTML(dateSolar, dateLunar, tInfo) {
             let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
-            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: -0.7cm; left: calc(50% + 1.5cm); transform: translateX(-50%); width: 270px; max-width: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;">` : '';
-            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); height: 60px; max-width: 140px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;">` : '';
+            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: -0.5cm; left: calc(50% + 1cm); transform: translateX(-50%); width: 220px; max-width: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
+            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); height: 60px; max-width: 140px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
             
             return `
-            <div style="display: flex; justify-content: space-between; width: 100%;">
+            <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 15px;">
                 <div style="text-align: center; width: 300px; position: relative; min-height: 120px;">
                     <p style="font-weight: bold; font-size: 12px; margin-bottom: 5px;">បានឃើញ និងឯកភាព</p>
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a;">នាយកសាលា</p>
@@ -240,6 +261,7 @@
             if(period === "ប្រចាំឆ្នាំ") period = new Date().getFullYear().toString();
 
             try {
+                // Search by ID or Name
                 let res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${pCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.%25${encodeURIComponent(q)}%25)&limit=1`, { headers });
                 let data = await res.json();
                 
@@ -250,10 +272,13 @@
                 SUBJECTS_15.forEach(sub => { s[sub] = dbS[dbMap[sub]]; });
 
                 currentStudentInfo = { id: s.ID, name: s.Name };
-                let gConf = configList.find(c => fmtCls(c.grade_level) === fmtCls(s.Grade)) || {};
-                let tInfo = teacherMap[fmtCls(s.Grade)] || {name:'មិនស្គាល់', sign:''};
+                
+                // 🛠️ ទាញយក Config និង Teacher ដោយផ្អែកលើឈ្មោះថ្នាក់ដែលកាត់ Space ចោល
+                let fGrade = fmtCls(s.Grade);
+                let gConf = configList[fGrade] || {};
+                let tInfo = teacherMap[fGrade] || {name:'មិនស្គាល់', sign:''};
 
-                // Build Page 1
+                // P1 Build
                 document.getElementById('t1-header').innerHTML = buildPrintHeader(`តារាងលទ្ធផលសិក្សារបស់សិស្សប្រចាំ ${document.getElementById('monthSelect').value}`);
                 document.getElementById('t1-header').innerHTML += `<div class="student-info-box"><div><p>គោត្តនាម-នាម ៖ <span class="moul-font text-blue-800">${s.Name}</span></p><p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${s.DOB || '...'}</span></p><p>អត្តលេខ ៖ <span>${s.ID}</span></p></div><div><p>ភេទ ៖ <span>${s.Gender}</span></p><p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p><p>ឆ្នាំសិក្សា ៖ <span>២០២៥-២០២៦</span></p></div></div>`;
                 
@@ -262,20 +287,31 @@
                 let tRows = ""; let idx=1; let maxTotal = 0;
                 SUBJECTS_15.forEach(sub => {
                     if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
-                        let raw = String(s[sub]).trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
+                        let raw = String(s[sub]).trim(); 
+                        
+                        // 🛠️ ទាញយកពិន្ទុអតិបរមា បើរកមិនឃើញទើបដាក់ 50
+                        let ms = 50;
+                        if (gConf[dbMap[sub]]) {
+                            ms = cleanNum(gConf[dbMap[sub]]);
+                        }
+                        
                         if (raw !== "") maxTotal += ms; 
+                        
                         if(raw.toUpperCase() === "ABS" || raw.toUpperCase() === "ម.ថ" || isNaN(cleanNum(raw))) {
-                            tRows += `<tr><td>${idx++}</td><td class="col-left font-bold">${sub}</td><td>${ms}</td><td class="text-red-500 font-bold">${raw}</td><td colspan="2">-</td></tr>`;
+                            tRows += `<tr><td>${idx++}</td><td class="col-left font-bold">${sub}</td><td>${ms}</td><td class="text-red-500">${raw}</td><td colspan="2">-</td></tr>`;
                         } else {
                             let sc = cleanNum(raw); let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
                             tRows += `<tr><td>${idx++}</td><td class="col-left font-bold">${sub}</td><td>${ms}</td><td class="text-blue-700 font-bold">${sc}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-bold ${getGrdCol(g)}">${g}</td></tr>`;
                         }
                     }
                 });
+                
+                // 🛠️ បិទ Icon ដែលខូចនៅក្បែរពិន្ទុសរុប
                 document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead><tr class="bg-slate-50"><th class="w-8 border-r border-slate-200">ល.រ</th><th class="col-left w-48 border-r border-slate-200">មុខវិជ្ជា</th><th class="w-20 border-r border-slate-200">អតិបរមា</th><th class="w-24 border-r border-slate-200">ពិន្ទុ</th><th class="w-32 border-r border-slate-200">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold py-2">ពិន្ទុសរុប</td><td class="font-bold">${maxTotal || '-'}</td><td class="text-blue-700 font-black text-lg">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[10px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
+                
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
                 
-                // Build Page 2
+                // P2 Build
                 let resHist = await fetch(`${SUPABASE_URL}/rest/v1/student_scores?student_id=eq.${encodeURIComponent(s.ID)}`, { headers });
                 let histData = await resHist.json();
                 
@@ -300,7 +336,12 @@
                     let subjectAvgs = {};
                     SUBJECTS_10.forEach((sub, i) => {
                         tb += `<tr><td class="border-r border-slate-200">${i+1}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td>`;
-                        let maxS = cleanNum(gConf[dbMap[sub]])||50; tb += `<td class="text-slate-400 font-bold border-r border-slate-200">${maxS}</td>`;
+                        
+                        // 🛠️ ទាញយកពិន្ទុអតិបរមា សម្រាប់តារាងប្រៀបធៀប
+                        let maxS = 50;
+                        if(gConf[dbMap[sub]]) maxS = cleanNum(gConf[dbMap[sub]]);
+                        tb += `<td class="text-slate-400 font-bold border-r border-slate-200">${maxS}</td>`;
+                        
                         let tPct=0, c=0;
                         availableMonths.forEach(m => {
                             let d = histMap[m];
