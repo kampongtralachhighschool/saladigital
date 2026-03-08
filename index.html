@@ -21,6 +21,7 @@
         .tab-content.active { display: block; animation: fadeSlideUp 0.5s ease-out forwards; }
         @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Print Area Setup */
         .print-area { background: white; margin: 25px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
         .portrait-page { width: 210mm; padding: 10mm 15mm; }
         .landscape-page { width: 297mm; padding: 10mm 15mm; }
@@ -47,10 +48,6 @@
         .trend-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; height: 100%; justify-content: flex-end;}
         .trend-bar { width: 22px; border-radius: 4px 4px 0 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
         
-        /* Signatures Container Layout - Updated Base Layout */
-        .signatures-container { margin-top: 20px; padding: 0 10px; }
-        
-        /* Print Styles */
         @media print {
             @page { size: A4 portrait; margin: 0; }
             body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -118,14 +115,14 @@
                 <div id="t1-header"></div>
                 <div id="t1-summaryArea" class="summary-box"></div>
                 <div id="t1-tableArea"></div>
-                <div id="t1-signatures" class="signatures-container"></div>
+                <div id="t1-signatures"></div>
             </div>
             <div id="t1-page2" style="page-break-before: always; padding-top: 15px;">
                 <div id="t1-p2-header"></div>
                 <div id="t1-chartArea" class="mb-4"></div>
                 <div id="t1-comparisonTableContainer"></div>
                 <div id="t1-analysisBox" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mt-4 text-[11px] leading-relaxed text-blue-900 font-bold"></div>
-                <div id="t1-p2-signatures" class="signatures-container mt-8"></div>
+                <div id="t1-p2-signatures" class="mt-8"></div>
             </div>
         </div>
     </div>
@@ -144,7 +141,7 @@
                 - ភាសាអង់គ្លេស ជាមុខវិជ្ជាពិន្ទុបន្ថែម (លើកទឹកចិត្ត) ក្រោម ២៦=០, ចាប់ពី ២៦ ឡើងយកពិន្ទុដកនឹង ២៥។<br>
                 - និទ្ទេសរួមត្រូវបានគណនាផ្អែកលើពិន្ទុសរុបធៀបនឹងអតិបរមា ដោយធ្វើការបង្គត់ចុះ (Floor)។
             </div>
-            <div id="t3-signatures" class="signatures-container mt-10"></div>
+            <div id="t3-signatures" class="mt-10"></div>
         </div>
     </div>
 
@@ -172,10 +169,11 @@
             </div>
         </div>
         <div id="report-actions" class="no-print mt-6 hidden text-center"><button onclick="window.print()" class="bg-emerald-600 text-white px-10 py-3 rounded-xl font-black shadow-lg">🖨️ Print ស្ថិតិសាលា</button></div>
-        <div id="adminPrintArea" class="print-area portrait-page bg-white hidden mt-6"><div id="reportHeader" class="mb-6"></div><div id="analyticsContent" class="space-y-6 pb-6"></div><div id="reportSignatures" class="signatures-container mt-10 pb-10"></div></div>
+        <div id="adminPrintArea" class="print-area portrait-page bg-white hidden mt-6"><div id="reportHeader" class="mb-6"></div><div id="analyticsContent" class="space-y-6 pb-6"></div><div id="reportSignatures" class="mt-10 pb-10"></div></div>
     </div>
 
-    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-[100]"><div class="text-center bg-white p-8 rounded-3xl max-w-sm w-full mx-4 shadow-2xl"><div class="w-14 h-14 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto mb-5"></div><p class="text-blue-900 font-black text-lg" id="loadingText">កំពុងទាញទិន្នន័យ...</p></div></div>
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-[100]"><div class="text-center bg-white p-8 rounded-3xl max-w-sm w-full mx-4 shadow-2xl"><div class="w-14 h-14 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto mb-5"></div><p class="text-blue-900 font-black text-lg" id="loadingText">កំពុងដំណើរការ...</p></div></div>
+
     <script>
         const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
@@ -194,7 +192,7 @@
 
         const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
 
-        // 🛠️ Function កាត់ឃ្លាអូតូ ទោះបញ្ចូល "12 A" ទៅជា "12A" ដើម្បីផ្ទៀងផ្ទាត់
+        // 🛠️ កាត់ឃ្លាអូតូ ទោះបញ្ចូល "12 A" ទៅជា "12A"
         const fmtCls = (str) => {
             if(!str) return "";
             let s = String(str).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]).replace(/\s+/g, '').toUpperCase();
@@ -205,12 +203,11 @@
 
         const getDriveImgUrl = (url) => {
             if(!url) return '';
-            let idMatch = url.match(/id=([^&]+)/);
+            let idMatch = url.match(/(?:id=|file\/d\/)([\w-]+)/);
             if(idMatch) return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
             return url;
         };
 
-        // 🛠️ LocalStorage Auto Save & Load
         function saveUserPrefs(id, month) {
             localStorage.setItem('kpt_last_search_id', id);
             localStorage.setItem('kpt_last_search_month', month);
@@ -218,15 +215,19 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             fetchInitialSetupData().then(() => {
-                // Auto Search via URL Parameters
                 const urlParams = new URLSearchParams(window.location.search);
-                let idToSearch = urlParams.get('id') || localStorage.getItem('kpt_last_search_id');
-                let monthToSearch = urlParams.get('month') || localStorage.getItem('kpt_last_search_month') || 'មករា';
-
-                if (idToSearch) {
+                let idToSearch = urlParams.get('id');
+                let monthToSearch = urlParams.get('month');
+                
+                if(idToSearch) {
                     document.getElementById('searchInput').value = idToSearch;
-                    document.getElementById('monthSelect').value = monthToSearch;
+                    document.getElementById('monthSelect').value = monthToSearch || localStorage.getItem('kpt_last_search_month') || 'មករា';
                     executeSearch();
+                } else {
+                    let savedId = localStorage.getItem('kpt_last_search_id');
+                    if(savedId) document.getElementById('searchInput').value = savedId;
+                    let savedMonth = localStorage.getItem('kpt_last_search_month');
+                    if(savedMonth) document.getElementById('monthSelect').value = savedMonth;
                 }
             });
         });
@@ -244,11 +245,9 @@
             return res;
         }
 
-        // 🛠️ ទាញយកឈ្មោះថ្នាក់ពី teacher_info (Tab 3 & 4) និងផ្ទៀងផ្ទាត់ពិន្ទុអតិបរមា
         async function fetchInitialSetupData() {
             try {
                 let allClassNamesSet = new Set();
-                
                 let confData = await supaFetch(`config_max_scores?select=*`);
                 confData.forEach(c => { 
                     configList.push(c); 
@@ -260,7 +259,6 @@
 
                 let teachData = await supaFetch(`teacher_info?select=*`);
                 teachData.forEach(t => {
-                    // ទាញយកឈ្មោះថ្នាក់ពី teacher_info
                     let rawCls = String(t.homeroom_class || "").trim();
                     if(rawCls) { 
                         teacherMap[fmtCls(rawCls)] = { name: t.teacher_name, sign: getDriveImgUrl(t.signature_link) }; 
@@ -275,18 +273,13 @@
             } catch(e) { console.error("DB Init Error: " + e); }
         }
 
-        // ==========================================
-        // 🛠️ ក្បាលទំព័រ និងកាលបរិច្ឆេទ ដូចរូបទី១ និងទី២
-        // ==========================================
         function buildPrintHeader(title) {
             return `
                 <div style="width: 100%; margin-bottom: 5px; position: relative; height: 70px;">
-                    <!-- កណ្តាលលើគេបង្អស់ -->
                     <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center;">
                         <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a; margin-bottom: 4px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
                         <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
                     </div>
-                    <!-- ឆ្វេងរុញចុះក្រោមមួយបន្ទាត់ (មន្ទីរអប់រំ) -->
                     <div style="position: absolute; top: 25px; left: 0; text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6;">
                         <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
                         <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
@@ -299,21 +292,23 @@
 
         function getStampHTML(dateSolar, dateLunar, tInfo) {
             let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
-            // 🛠️ ពង្រីកត្រា x3 (width/height: 200px)
-            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 200px; max-width: none; max-height: 200px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
-            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); max-height: 60px; max-width: 140px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
+            // 🛠️ ពង្រីកត្រា x3 និងខិតលើស្តាំ
+            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: -0.7cm; left: calc(50% + 1.5cm); transform: translateX(-50%); width: 270px; max-width: none; max-height: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
+            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); height: 60px; max-width: 140px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
             
+            let finalLunar = (dateLunar && dateLunar !== '.......................') ? dateLunar : 'ថ្ងៃ.......................................................';
+            let finalSolar = (dateSolar && dateSolar !== '.......................') ? dateSolar : 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...';
+
             return `
             <div style="display: flex; justify-content: space-between; margin-top: 15px; width: 100%; position: relative;">
-                <div style="text-align: center; width: 200px; position: relative; min-height: 150px;">
+                <div style="text-align: center; width: 300px; position: relative; min-height: 150px;">
                     <p style="font-weight: bold; font-size: 12px; margin-bottom: 5px;">បានឃើញ និងឯកភាព</p>
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a;">នាយកសាលា</p>
                     ${pImg}
                 </div>
-                <div style="text-align: center; width: 250px; position: relative; min-height: 150px;">
-                    <!-- 🛠️ កាលបរិច្ឆេទកែឲ្យត្រូវតាមរូបទី២ -->
-                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 2px;">${dateLunar || '...................................................'}</p>
-                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 8px;">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
+                <div style="text-align: center; width: 300px; position: relative; min-height: 150px;">
+                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 2px;">${finalLunar}</p>
+                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 15px;">${finalSolar}</p>
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a;">គ្រូបន្ទុកថ្នាក់</p>
                     ${tImg}
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%;">${tInfo.name}</p>
@@ -321,9 +316,6 @@
             </div>`;
         }
 
-        // ==========================================
-        // MAIN SEARCH (អត្តលេខ ឬ ឈ្មោះ)
-        // ==========================================
         async function executeSearch() {
             let activeTab = document.querySelector('.tab-content.active').id;
             if(activeTab === 'tab-internal' || activeTab === 'tab-report') return; 
@@ -333,7 +325,7 @@
             
             if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខ ឬឈ្មោះសិស្សជាមុនសិន!', 'warning');
             
-            saveUserPrefs(q, period); // 🛠️ Save to Auto-load later via Telegram
+            saveUserPrefs(q, period);
             showLoading("កំពុងទាញយកទិន្នន័យ...");
             
             let table = "student_scores"; let periodCol = "month_name";
@@ -423,7 +415,7 @@
                         let val = cleanNum(histMap[m].Average);
                         if(!isNaN(val)) {
                             let pct = (val / 50) * 100; if (pct > 100) pct = 100;
-                            cHtml += `<div class="trend-bar-wrapper"><div style="font-size:9px; font-weight:bold; color:#475569; margin-bottom:2px;">${val.toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div style="font-size:9px; font-weight:bold; color:#1e293b; margin-top:5px;">${m.substring(0,6)}</div></div>`;
+                            cHtml += `<div class="trend-bar-wrapper"><div class="trend-val" style="font-size:10px; font-weight:bold; color:#475569; margin-bottom:2px;">${val.toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div class="trend-lbl" style="font-size:10px; font-weight:bold; color:#1e293b; margin-top:5px;">${m.substring(0,6)}</div></div>`;
                         }
                     });
                     document.getElementById('t1-chartArea').innerHTML = `<div class="border border-slate-200 rounded-xl p-4 pb-0 bg-white"><p class="text-[11px] font-black text-slate-500 mb-2 text-center uppercase tracking-widest">📈 ក្រាបប្រៀបធៀបមធ្យមភាគប្រចាំខែ</p><div class="trend-chart">${cHtml}</div></div>`;
@@ -512,9 +504,6 @@
             } catch (e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
         }
 
-        // ==========================================
-        // LINK TELEGRAM
-        // ==========================================
         async function linkTelegram(type) {
             if(!currentStudentInfo) return Swal.fire('បញ្ជាក់', 'សូមស្វែងរកសិស្សជាមុនសិន!', 'warning');
             const { value: username } = await Swal.fire({ title: `ភ្ជាប់ Telegram ${type==='Student'?'សិស្ស':'អាណាព្យាបាល'}`, input: 'text', inputPlaceholder: 'ឧទាហរណ៍: @sok_123', showCancelButton: true, confirmButtonText: 'ភ្ជាប់ឥឡូវនេះ' });
@@ -609,7 +598,11 @@
             
             showLoading("កំពុងរៀបចំសៀវភៅតាមដាន... អាចចំណាយពេលបន្តិច!");
             try {
-                let dbData = await supaFetch(`student_scores?month_name=eq.${encodeURIComponent(period)}&limit=5000`);
+                let table = "student_scores"; let periodCol = "month_name";
+                if (period.includes("ប្រចាំឆមាស")) { table = "semester_scores"; periodCol = "semester_name"; }
+                else if (period === "ប្រចាំឆ្នាំ") { table = "annual_scores"; periodCol = "academic_year"; period = new Date().getFullYear().toString(); }
+
+                let dbData = await supaFetch(`${table}?${periodCol}=eq.${encodeURIComponent(period)}&limit=5000`);
                 let cData = dbData.map(r => mapDbToLegacy(r)).filter(s => fmtCls(s.Grade) === fmtCls(cls));
                 
                 if(cData.length === 0) { hideLoading(); return Swal.fire('ទទេ!', 'គ្មានទិន្នន័យសម្រាប់ថ្នាក់នេះទេ!', 'info'); }
@@ -627,7 +620,7 @@
                         if(raw !== "") maxTotal += (cleanNum(gConf[dbMap[sub]])||50);
                     });
 
-                    html += `<div class="print-area portrait-page ${index > 0 ? 'page-break' : ''}">
+                    html += `<div class="print-area portrait-page">
                         ${buildPrintHeader(`តារាងលទ្ធផលសិក្សារបស់សិស្សប្រចាំ ${period}`)}
                         <div class="student-info-box">
                             <div><p>ឈ្មោះ ៖ <span class="moul-font text-blue-800" style="font-size:14px">${s.Name}</span></p><p>អត្តលេខ ៖ <span>${s.ID}</span></p></div>
@@ -736,11 +729,11 @@
         // ==========================================
         async function switchTab(tabId) {
             if (tabId === 'tab-internal' && !isInternalUnlocked) {
-                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់រដ្ឋបាល', input: 'password', confirmButtonText: 'ចូលប្រើប្រាស់' });
+                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់រដ្ឋបាល', input: 'password', confirmButtonText: 'ចូលប្រើប្រាស់', customClass: { title: 'swal2-title'} });
                 if (pwd && pwd.trim() === INTERNAL_PWD) isInternalUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
             }
             if (tabId === 'tab-report' && !isReportUnlocked) {
-                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់របាយការណ៍', input: 'password', confirmButtonText: 'ចូលប្រើប្រាស់' });
+                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់របាយការណ៍', input: 'password', confirmButtonText: 'ចូលប្រើប្រាស់', customClass: { title: 'swal2-title'} });
                 if (pwd && pwd.trim() === REPORT_PWD) isReportUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
             }
             
