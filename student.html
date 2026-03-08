@@ -18,8 +18,9 @@
         .back-link { display: inline-flex; align-items: center; gap: 5px; color: #475569; font-weight: 600; transition: color 0.3s; }
         .back-link:hover { color: var(--primary-blue); }
 
-        .print-area { background: white; margin: 25px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
-        .portrait-page { width: 210mm; padding: 10mm 15mm; min-height: 297mm;}
+        /* Print Area - Added margin-bottom to separate pages on screen */
+        .print-area { background: white; margin: 25px auto 40px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
+        .portrait-page { width: 210mm; max-width: 100%; padding: 10mm 15mm; min-height: 297mm;}
         
         .student-info-box { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 12px; margin-bottom: 12px; line-height: 1.8;}
         .student-info-box span { color: #0f172a; margin-left: 5px; font-weight: 900;}
@@ -54,7 +55,7 @@
 </head>
 <body>
 
-    <!-- Simple Navigation -->
+    <!-- Navigation -->
     <nav class="nav-container no-print">
         <div class="max-w-6xl mx-auto">
             <a href="index.html" class="back-link">
@@ -67,15 +68,15 @@
     <!-- Search Section -->
     <div id="searchSection" class="max-w-4xl mx-auto my-6 no-print px-4">
         <div class="text-center mb-8 space-y-2">
-            <h2 class="moul-font text-blue-900 text-xl">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
-            <p class="font-bold text-gray-500 bg-white inline-block px-4 py-1 rounded-full shadow-sm border border-gray-100">ស្វែងរកលទ្ធផលសិក្សាសិស្ស</p>
+            <h2 class="moul-font text-blue-900 text-xl md:text-2xl">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
+            <p class="font-bold text-gray-500 bg-white inline-block px-4 py-1 rounded-full shadow-sm border border-gray-100 text-sm">ស្វែងរកលទ្ធផលសិក្សាសិស្ស</p>
         </div>
-        <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 relative">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-gray-100 relative">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-end">
                 <div class="space-y-2">
                     <label class="text-xs font-black text-slate-500">ការវាយតម្លៃ (ខែ/ឆមាស)</label>
-                    <select id="monthSelect" class="w-full p-3.5 rounded-xl bg-slate-50 border outline-none font-bold text-sm text-slate-700">
+                    <select id="monthSelect" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-blue-500 font-bold text-sm text-slate-700">
                         <option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option><option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option>
                         <option value="មីនា">មីនា</option><option value="មេសា">មេសា</option><option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
                         <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option><option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
@@ -85,26 +86,29 @@
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs font-black text-slate-500">អត្តលេខ ឬឈ្មោះសិស្ស</label>
-                    <input type="text" id="searchInput" class="w-full p-3.5 rounded-xl bg-slate-50 border outline-none font-bold text-sm" placeholder="ឧ. 024025026 ឬ ហុន ម៉ុម">
+                    <input type="text" id="searchInput" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-blue-500 font-bold text-sm" placeholder="ឧ. 024025026 ឬ ហុន ម៉ុម">
                 </div>
                 <div>
-                    <button onclick="executeSearch()" class="w-full bg-blue-600 text-white p-3.5 rounded-xl font-black text-sm shadow-md hover:bg-blue-700 transition">ស្វែងរកលទ្ធផល</button>
+                    <button onclick="executeSearch()" class="w-full bg-blue-600 text-white p-3 rounded-xl font-black text-sm shadow-md hover:bg-blue-700 transition">ស្វែងរកលទ្ធផល</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Output Actions -->
-    <div id="t1-actions" class="no-print mt-4 mb-6 hidden flex-wrap justify-center gap-4 max-w-4xl mx-auto">
-        <button onclick="window.print()" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition">🖨️ Print លទ្ធផល</button>
-        <button onclick="linkTelegram('Student')" class="bg-sky-500 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition">ភ្ជាប់ Telegram សិស្ស</button>
-        <button onclick="linkTelegram('Parent')" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
+    <!-- Output Actions (Mobile Friendly Layout) -->
+    <div id="t1-actions" class="no-print mt-4 mb-6 hidden flex-col md:flex-row justify-center gap-3 max-w-4xl mx-auto px-4">
+        <button onclick="window.print()" class="w-full md:w-auto bg-slate-800 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition flex justify-center items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Print លទ្ធផល
+        </button>
+        <button onclick="linkTelegram('Student')" class="w-full md:w-auto bg-sky-500 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition">ភ្ជាប់ Telegram សិស្ស</button>
+        <button onclick="linkTelegram('Parent')" class="w-full md:w-auto bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:scale-105 transition">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
     </div>
 
-    <!-- Results Area -->
-    <div id="t1-capture-area" class="print-area portrait-page hidden">
+    <!-- Container for both pages to ensure spacing -->
+    <div id="results-container" class="hidden">
         <!-- ទំព័រទី ១ -->
-        <div id="t1-page1">
+        <div id="t1-page1" class="print-area portrait-page">
             <div id="t1-header"></div>
             <div id="t1-summaryArea" class="summary-box"></div>
             <div id="t1-tableArea"></div>
@@ -112,7 +116,7 @@
         </div>
 
         <!-- ទំព័រទី ២ (ប្រៀបធៀប) -->
-        <div id="t1-page2" style="page-break-before: always; padding-top: 15px;">
+        <div id="t1-page2" class="print-area portrait-page pt-4">
             <div id="t1-p2-header"></div>
             <div id="t1-chartArea" class="mb-4"></div>
             <div id="t1-comparisonTableContainer"></div>
@@ -125,11 +129,10 @@
     <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center hidden z-[100]">
         <div class="text-center bg-white p-8 rounded-3xl shadow-xl">
             <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p class="font-bold text-blue-900">កំពុងដំណើរការ...</p>
+            <p class="font-bold text-blue-900">កំពុងស្វែងរក...</p>
         </div>
     </div>
 
-    <!-- MAIN JAVASCRIPT LOGIC -->
     <script>
         const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
@@ -142,14 +145,16 @@
 
         let configMap = {}; let teacherMap = {}; let currentStudentInfo = null;
 
+        // 🛠️ Formatting Utils (Improved for absolute match)
         const fmtCls = (str) => {
             if(!str) return "";
-            let s = String(str).trim();
-            s = s.replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]);
+            // Replace Khmer numerals, remove spaces, dashes, underscores, make uppercase
+            let s = String(str).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]);
             s = s.replace(/[\s\-_]/g, '').toUpperCase();
+            // Translate Khmer characters to English for class letters
             const kmToEn = { 'ក':'A', 'ខ':'B', 'គ':'C', 'ឃ':'D', 'ង':'E', 'ច':'F', 'ឆ':'G', 'ជ':'H', 'ឈ':'I', 'ញ':'J', 'ដ':'K', 'ឋ':'L', 'ឌ':'M', 'ឍ':'N', 'ណ':'O' };
             for (let k in kmToEn) { s = s.replace(new RegExp(k, 'g'), kmToEn[k]); }
-            return s;
+            return s.trim();
         };
 
         const getDriveImgUrl = (urlOrId) => {
@@ -188,12 +193,7 @@
             return data;
         }
 
-        function mapDbToLegacy(row) {
-            let res = { ID: row.student_id, Name: row.student_name, Gender: row.gender, Grade: row.grade, DOB: row.dob||'', DateSolar: row.date_solar||'', DateLunar: row.date_lunar||'', Total: row.total_score || row.exam_total_score || 0, Average: row.average || row.semester_average || row.annual_average || 0, Rank: row.class_rank, "ចំណាត់ថ្នាក់ក្នុងសាលា": row.school_rank, Grade_Result: row.grade_result || row.final_result || 'F' };
-            SUBJECTS_15.forEach(sub => { res[sub] = row[dbMap[sub]]; });
-            return res;
-        }
-
+        // 🛠️ ទាញយកទិន្នន័យគ្រូ និង Config ឲ្យត្រូវរចនាសម្ព័ន្ធ
         async function fetchInitialData() {
             try {
                 let confRes = await supaFetch(`config_max_scores?select=*`);
@@ -202,17 +202,22 @@
                         if(c.grade_level) configMap[fmtCls(c.grade_level)] = c; 
                     });
                 }
+
                 let teachRes = await supaFetch(`teacher_info?select=*`);
                 if(Array.isArray(teachRes)) {
                     teachRes.forEach(t => { 
                         if(t.homeroom_class) {
-                            teacherMap[fmtCls(t.homeroom_class)] = { name: t.teacher_name, sign: getDriveImgUrl(t.signature_link) }; 
+                            teacherMap[fmtCls(t.homeroom_class)] = { 
+                                name: t.teacher_name, 
+                                sign: getDriveImgUrl(t.signature_link) 
+                            }; 
                         }
                     });
                 }
             } catch(e) { console.error("Init Error", e); }
         }
 
+        // HTML Builders
         function buildPrintHeader(title) {
             return `
                 <div style="width: 100%; position: relative; height: 60px;">
@@ -232,8 +237,10 @@
 
         function getStampHTML(dateSolar, dateLunar, tInfo) {
             let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
-            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: -0.2cm; left: calc(50% + 1.0cm); transform: translateX(-50%); width: 300px; max-width: none; max-height: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
-            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); height: 60px; max-width: 140px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
+            // 🛠️ កែប្រែត្រា: ឡើងលើ 0.5cm (top: -0.5cm), បង្រួមទំហំ -5% (width: 255px)
+            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: -0.5cm; left: calc(50% + 1.0cm); transform: translateX(-50%); width: 255px; max-width: none; max-height: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
+            
+            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); height: 60px; max-width: 140px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
             
             return `
             <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 20px;">
@@ -252,6 +259,7 @@
             </div>`;
         }
 
+        // Main Logic
         async function executeSearch() {
             let q = document.getElementById('searchInput').value.trim();
             let period = document.getElementById('monthSelect').value;
@@ -267,24 +275,38 @@
             if(period === "ប្រចាំឆ្នាំ") period = new Date().getFullYear().toString();
 
             try {
+                // Search by ID or Name
                 let data = await supaFetch(`${table}?${pCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.%25${encodeURIComponent(q)}%25)&limit=1`);
                 
                 if(!data || data.length === 0) {
-                    hideLoading(); return Swal.fire('រកមិនឃើញ!', `មិនមានទិន្នន័យរបស់សិស្សឈ្មោះ ឬលេខ [${q}] សម្រាប់ ${period} ទេ!`, 'error');
+                    hideLoading(); return Swal.fire('រកមិនឃើញ!', `មិនមានទិន្នន័យរបស់សិស្ស [${q}] សម្រាប់ ${period} ទេ!`, 'error');
                 }
 
-                let s = mapDbToLegacy(data[0]); 
+                let dbS = data[0];
+                let s = { ID: dbS.student_id, Name: dbS.student_name, Gender: dbS.gender, Grade: dbS.grade, DOB: dbS.dob||'', DateSolar: dbS.date_solar||'', DateLunar: dbS.date_lunar||'', Total: dbS.total_score || dbS.exam_total_score || 0, Average: dbS.average || dbS.semester_average || dbS.annual_average || 0, Rank: dbS.class_rank, "ចំណាត់ថ្នាក់ក្នុងសាលា": dbS.school_rank, Grade_Result: dbS.grade_result || dbS.final_result || 'F' };
+                SUBJECTS_15.forEach(sub => { s[sub] = dbS[dbMap[sub]]; });
+                
                 currentStudentInfo = { id: s.ID, name: s.Name };
                 
+                // 🛠️ Map Data Properly
                 let fGrade = fmtCls(s.Grade);
                 let gConf = configMap[fGrade] || {};
                 let tInfo = teacherMap[fGrade] || {name:'មិនស្គាល់', sign:''};
 
+                // P1 Build
                 document.getElementById('t1-header').innerHTML = buildPrintHeader(`តារាងលទ្ធផលសិក្សារបស់សិស្សប្រចាំ ${document.getElementById('monthSelect').value}`);
                 document.getElementById('t1-header').innerHTML += `
                     <div class="student-info-box">
-                        <div><p>គោត្តនាម-នាម ៖ <span class="moul-font text-blue-800" style="font-size: 14px;">${s.Name}</span></p><p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${s.DOB || '...'}</span></p><p>អត្តលេខ ៖ <span>${s.ID}</span></p></div>
-                        <div><p>ភេទ ៖ <span>${s.Gender}</span></p><p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p><p>ឆ្នាំសិក្សា ៖ <span>២០២៥-២០២៦</span></p></div>
+                        <div>
+                            <p>គោត្តនាម-នាម ៖ <span class="moul-font text-blue-800" style="font-size: 14px;">${s.Name}</span></p>
+                            <p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${s.DOB || '...'}</span></p>
+                            <p>អត្តលេខ ៖ <span>${s.ID}</span></p>
+                        </div>
+                        <div>
+                            <p>ភេទ ៖ <span>${s.Gender}</span></p>
+                            <p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p>
+                            <p>ឆ្នាំសិក្សា ៖ <span>២០២៥-២០២៦</span></p>
+                        </div>
                     </div>`;
                 
                 document.getElementById('t1-summaryArea').innerHTML = `
@@ -298,7 +320,10 @@
                 SUBJECTS_15.forEach(sub => {
                     if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
                         let raw = String(s[sub]).trim(); 
-                        let ms = 50; if (gConf[dbMap[sub]]) { ms = cleanNum(gConf[dbMap[sub]]); }
+                        
+                        let ms = 50;
+                        if (gConf[dbMap[sub]]) { ms = cleanNum(gConf[dbMap[sub]]); }
+                        
                         if (raw !== "") maxTotal += ms; 
                         
                         if(raw.toUpperCase() === "ABS" || raw.toUpperCase() === "ម.ថ" || isNaN(cleanNum(raw))) {
@@ -311,10 +336,12 @@
                 });
                 
                 document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead><tr class="bg-slate-50"><th class="w-8 border-r border-slate-200">ល.រ</th><th class="col-left w-48 border-r border-slate-200">មុខវិជ្ជា</th><th class="w-20 border-r border-slate-200">អតិបរមា</th><th class="w-24 border-r border-slate-200">ពិន្ទុ</th><th class="w-32 border-r border-slate-200">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold py-2">ពិន្ទុសរុប</td><td class="font-bold">${maxTotal || '-'}</td><td class="text-blue-700 font-black text-lg">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[10px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
+                
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
                 
-                // P2 Build
-                let histData = await supaFetch(`student_scores?student_id=eq.${encodeURIComponent(s.ID)}`);
+                // P2 Build (ប្រៀបធៀប)
+                let resHist = await fetch(`${SUPABASE_URL}/rest/v1/student_scores?student_id=eq.${encodeURIComponent(s.ID)}`, { headers });
+                let histData = await resHist.json();
                 
                 document.getElementById('t1-p2-header').innerHTML = buildPrintHeader(`តារាងប្រៀបធៀបលទ្ធផលសិក្សាតាមមុខវិជ្ជាប្រចាំខែ`);
                 document.getElementById('t1-p2-header').innerHTML += `<div class="student-info-box" style="border-left-color:#eab308; background: linear-gradient(90deg, #fefce8 0%, transparent 100%);"><div><p>ឈ្មោះ ៖ <span class="moul-font text-blue-800" style="font-size:13px;">${s.Name}</span></p></div><div><p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p></div></div>`;
@@ -325,7 +352,8 @@
                     document.getElementById('t1-chartArea').innerHTML = `<div class="text-center p-10 border-2 border-dashed rounded-xl"><p class="text-slate-500 font-bold">មិនទាន់មានទិន្នន័យប្រចាំខែ សម្រាប់ធ្វើការប្រៀបធៀបទេ!</p></div>`;
                     document.getElementById('t1-comparisonTableContainer').innerHTML = ""; document.getElementById('t1-analysisBox').innerHTML = "";
                 } else {
-                    let histMap = {}; histData.forEach(r => { if(availableMonths.includes(r.month_name)) { let tRes = { Average: r.average||0 }; SUBJECTS_10.forEach(sub => { tRes[sub] = r[dbMap[sub]]; }); histMap[r.month_name] = tRes; } });
+                    let histMap = {}; 
+                    histData.forEach(r => { if(availableMonths.includes(r.month_name)) { let tRes = { Average: r.average||0 }; SUBJECTS_10.forEach(sub => { tRes[sub] = r[dbMap[sub]]; }); histMap[r.month_name] = tRes; } });
                     
                     let cHtml = ""; availableMonths.forEach(m => { let pct = Math.min((cleanNum(histMap[m].Average) / 50) * 100, 100); cHtml += `<div class="trend-bar-wrapper"><div style="font-size:9px; font-weight:bold; color:#475569; margin-bottom:2px;">${cleanNum(histMap[m].Average).toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div style="font-size:9px; font-weight:bold; color:#1e293b; margin-top:5px;">${m.substring(0,6)}</div></div>`; });
                     document.getElementById('t1-chartArea').innerHTML = `<div class="border border-slate-200 rounded-xl p-4 pb-0 bg-white"><p class="text-[11px] font-black text-slate-500 mb-2 text-center uppercase">📈 ក្រាបប្រៀបធៀបមធ្យមភាគប្រចាំខែ</p><div class="trend-chart">${cHtml}</div></div>`;
@@ -361,8 +389,9 @@
                 }
                 document.getElementById('t1-p2-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
 
-                document.getElementById('t1-capture-area').classList.remove('hidden');
+                document.getElementById('results-container').classList.remove('hidden');
                 document.getElementById('t1-actions').classList.remove('hidden');
+                document.getElementById('t1-actions').classList.add('flex');
                 hideLoading();
             } catch (e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
         }
@@ -371,7 +400,7 @@
             if(!currentStudentInfo) return Swal.fire('បញ្ជាក់', 'សូមស្វែងរកសិស្សជាមុនសិន!', 'warning');
             const { value: username } = await Swal.fire({ title: `ភ្ជាប់ Telegram ${type==='Student'?'សិស្ស':'អាណាព្យាបាល'}`, input: 'text', inputPlaceholder: 'ឧទាហរណ៍: @sok_123', showCancelButton: true, confirmButtonText: 'ភ្ជាប់ឥឡូវនេះ' });
             if(!username) return;
-            showLoading("កំពុងភ្ជាប់...");
+            showLoading();
             try {
                 let resGet = await fetch(`${SUPABASE_URL}/rest/v1/telegram_db?student_id=eq.${encodeURIComponent(currentStudentInfo.id)}`, { headers });
                 let existing = await resGet.json();
