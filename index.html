@@ -5,117 +5,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធគ្រប់គ្រងការសិក្សា - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
     
+    <!-- CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;700;900&family=Moul&family=Battambang:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&family=Battambang:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert2 សម្រាប់ Popup ទំនើប -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         :root { --primary-blue: #1e40af; --khmer-red: #dc2626; }
-        body { font-family: 'Kantumruy Pro', sans-serif; background: #f1f5f9; color: #1e293b; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background: #f4f7f6; color: #1e293b; }
         .moul-font { font-family: 'Moul', serif; }
         .font-battambang { font-family: 'Battambang', cursive; }
         
-        .tab-btn { transition: all 0.3s ease; }
-        .tab-btn.active { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); }
-        .tab-btn.inactive { background-color: white; color: #64748b; border-color: #cbd5e1; }
+        /* ផ្ទាំង Tab ទំនើប */
+        .tab-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+        .tab-btn.active { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(30, 64, 175, 0.3); }
+        .tab-btn.inactive { background-color: white; color: #64748b; border-color: #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .tab-btn:hover:not(.active) { border-color: #94a3b8; color: #334155; }
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
-
-        /* Print Area Styling based on Screenshots */
-        .print-area { background: white; margin: 20px auto; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; }
-        .portrait-page { width: 210mm; padding: 10mm 15mm; min-height: 297mm; }
-        .landscape-page { width: 297mm; padding: 10mm 15mm; }
+        .tab-content.active { display: block; animation: fadeSlideUp 0.5s ease-out forwards; }
         
-        .header-section { display: flex; flex-direction: column; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; }
-        
-        .student-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; font-weight: bold; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 15px; margin-bottom: 15px;}
-        .student-info-grid span { color: #000; margin-left: 10px;}
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Summaries Box */
-        .summary-box { display: flex; justify-content: space-between; align-items: stretch; border-top: 2px solid #e2e8f0; border-bottom: 2px solid #e2e8f0; padding: 10px 0; margin-bottom: 15px;}
+        /* Print Area */
+        .print-area { background: white; margin: 25px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
+        .portrait-page { width: 210mm; padding: 12mm 15mm; min-height: 297mm; }
+        .landscape-page { width: 297mm; padding: 12mm 15mm; min-height: 210mm; }
+        
+        .header-section { display: flex; flex-direction: column; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 15px; }
+        .student-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 15px; margin-bottom: 15px; background: linear-gradient(90deg, #eff6ff 0%, transparent 100%); padding: 10px 15px;}
+        .student-info-grid span { color: #0f172a; margin-left: 8px; font-weight: 900;}
+
+        /* Summary Box */
+        .summary-box { display: flex; justify-content: space-between; align-items: stretch; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 0; margin-bottom: 15px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         .summary-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .summary-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 15%; height: 70%; width: 1px; background-color: #cbd5e1; }
-        .s-title { font-size: 11px; color: #64748b; font-weight: bold; margin-bottom: 5px; }
-        .s-value { font-size: 22px; font-weight: 900; color: #2563eb; line-height: 1; }
-        .s-sub { font-size: 9px; color: #94a3b8; margin-top: 4px; }
+        .summary-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background-color: #cbd5e1; }
+        .s-title { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .s-value { font-size: 24px; font-weight: 900; color: #2563eb; line-height: 1; }
+        .s-sub { font-size: 10px; color: #94a3b8; margin-top: 5px; }
         
-        /* Table Styling */
-        .c-table { border-collapse: collapse; width: 100%; font-size: 11px; }
-        .c-table th { padding: 8px 4px; text-align: center; color: #1e3a8a; border-bottom: 2px solid #cbd5e1; border-top: 2px solid #cbd5e1; }
-        .c-table td { padding: 6px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; font-weight: bold;}
-        .c-table tbody tr:nth-child(even) { background-color: #f8fafc; }
+        /* Tables */
+        .c-table { border-collapse: collapse; width: 100%; font-size: 12px; }
+        .c-table th { padding: 10px 6px; text-align: center; color: #1e3a8a; border-bottom: 2px solid #94a3b8; font-weight: 900; }
+        .c-table td { padding: 8px 6px; text-align: center; border-bottom: 1px dashed #e2e8f0; font-weight: 600;}
+        .c-table tbody tr:hover { background-color: #f8fafc; }
         .col-left { text-align: left !important; padding-left: 15px !important; }
         
         /* Progress Bar */
-        .bar-bg { width: 100%; background-color: #f1f5f9; height: 8px; border-radius: 4px; overflow: hidden; display: inline-block; vertical-align: middle; }
-        .bar-fill { height: 100%; border-radius: 4px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .bar-bg { width: 100%; background-color: #f1f5f9; height: 10px; border-radius: 5px; overflow: hidden; display: inline-block; vertical-align: middle; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);}
+        .bar-fill { height: 100%; border-radius: 5px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
         /* Chart */
-        .trend-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 160px; border-bottom: 1px solid #94a3b8; margin-top: 20px; padding: 10px 0 0 0; position: relative; }
-        .trend-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 35px; height: 100%; justify-content: flex-end; z-index: 10;}
-        .trend-bar { width: 20px; border-radius: 3px 3px 0 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .trend-val { font-size: 9px; font-weight: bold; color: #475569; margin-bottom: 2px; }
-        .trend-lbl { font-size: 10px; font-weight: bold; color: #1e293b; margin-top: 5px; }
+        .trend-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 160px; border-bottom: 2px solid #cbd5e1; margin-top: 15px; padding: 10px 0 0 0; position: relative; }
+        .trend-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; height: 100%; justify-content: flex-end; z-index: 10;}
+        .trend-bar { width: 24px; border-radius: 4px 4px 0 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; box-shadow: 0 -2px 5px rgba(0,0,0,0.05);}
+        .trend-val { font-size: 10px; font-weight: 900; color: #334155; margin-bottom: 4px; }
+        .trend-lbl { font-size: 11px; font-weight: 700; color: #64748b; margin-top: 6px; }
 
-        .analysis-box { background: #f0fdfa; border-left: 4px solid #0d9488; padding: 12px; border-radius: 4px; margin-top: 20px; font-size: 11px; line-height: 1.6; color: #0f766e; }
+        .analysis-box { background: #f0fdfa; border: 1px solid #ccfbf1; border-left: 4px solid #0d9488; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 12px; line-height: 1.7; color: #0f766e; }
 
-        .signatures { display: flex; justify-content: space-between; margin-top: 30px; padding: 0 20px; }
+        /* Signatures */
+        .signatures { display: flex; justify-content: space-between; margin-top: 35px; padding: 0 30px; }
         .sig-box { text-align: center; position: relative; width: 180px; height: 120px; }
-        .sig-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); max-height: 70px; mix-blend-mode: multiply; }
+        .sig-img { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); max-height: 75px; max-width: 140px; mix-blend-mode: multiply; object-fit: contain; }
 
-        .page-break { page-break-before: always; }
-        
+        .swal2-title { font-family: 'Kantumruy Pro', sans-serif !important; font-weight: 900 !important; color: #1e3a8a !important;}
+        .swal2-html-container { font-family: 'Kantumruy Pro', sans-serif !important; }
+
         @media print {
-            @page { size: A4 portrait; margin: 0; }
-            body { background: white; margin: 0; padding: 0; }
+            @page { size: A4 portrait; margin: 8mm; }
+            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
-            .print-area { box-shadow: none; margin: 0; padding: 10mm 15mm; width: 100%; }
+            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; padding: 0 !important; width: 100% !important; page-break-after: always; }
+            .print-area:last-child { page-break-after: auto; }
             .landscape-page { size: A4 landscape; }
         }
     </style>
 </head>
 <body class="p-2 md:p-4">
 
-    <!-- Navigation -->
-    <div class="max-w-6xl mx-auto mb-6 flex flex-wrap justify-center gap-3 no-print mt-4">
-        <button onclick="switchTab('tab-student')" id="btn-tab-student" class="tab-btn active px-5 py-2 rounded-full font-bold border-2 shadow-sm text-sm">១. លទ្ធផលទូទៅ</button>
-        <button onclick="switchTab('tab-bac2')" id="btn-tab-bac2" class="tab-btn inactive px-5 py-2 rounded-full font-bold border-2 shadow-sm text-sm text-yellow-600 border-yellow-200">២. ស្តង់ដារបាក់ឌុប</button>
-        <button onclick="switchTab('tab-internal')" id="btn-tab-internal" class="tab-btn inactive px-5 py-2 rounded-full font-bold border-2 shadow-sm text-sm bg-purple-50 text-purple-700 border-purple-200">៣. កិច្ចការរដ្ឋបាល</button>
-        <button onclick="switchTab('tab-report')" id="btn-tab-report" class="tab-btn inactive px-5 py-2 rounded-full font-bold border-2 shadow-sm text-sm bg-slate-800 text-white border-slate-800">៤. របាយការណ៍សាលា</button>
+    <!-- 🌟 Navigation -->
+    <div class="max-w-5xl mx-auto mb-6 flex flex-wrap justify-center gap-3 no-print mt-4">
+        <button onclick="switchTab('tab-student')" id="btn-tab-student" class="tab-btn active px-6 py-2.5 rounded-full font-bold border-2 text-sm">១. លទ្ធផលទូទៅ</button>
+        <button onclick="switchTab('tab-bac2')" id="btn-tab-bac2" class="tab-btn inactive px-6 py-2.5 rounded-full font-bold border-2 text-sm">២. ស្តង់ដារបាក់ឌុប</button>
+        <button onclick="switchTab('tab-internal')" id="btn-tab-internal" class="tab-btn inactive px-6 py-2.5 rounded-full font-bold border-2 text-sm">៣. កិច្ចការរដ្ឋបាល</button>
+        <button onclick="switchTab('tab-report')" id="btn-tab-report" class="tab-btn inactive px-6 py-2.5 rounded-full font-bold border-2 text-sm">៤. របាយការណ៍សាលា</button>
     </div>
 
-    <!-- Search Section -->
+    <!-- 🔍 Search Section -->
     <div id="searchSection" class="max-w-4xl mx-auto my-6 no-print px-4">
-        <div class="text-center mb-6 space-y-2">
-            <h2 class="moul-font text-blue-800 text-lg">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
-            <p class="font-bold text-gray-500">ស្វែងរកលទ្ធផលសិក្សាសិស្ស</p>
+        <div class="text-center mb-8 space-y-2">
+            <h2 class="moul-font text-blue-900 text-xl tracking-wide drop-shadow-sm">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
+            <p class="font-bold text-gray-500 bg-white inline-block px-4 py-1 rounded-full shadow-sm border border-gray-100">ស្វែងរកលទ្ធផលសិក្សាសិស្ស</p>
         </div>
-        <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-blue-600">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-gray-500">ការវាយតម្លៃ (ខែ/ឆមាស)</label>
-                    <select id="monthSelect" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none font-bold text-sm">
-                        <option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option>
-                        <option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option>
-                        <option value="មីនា">មីនា</option><option value="មេសា">មេសា</option>
-                        <option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
-                        <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option><option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
-                        <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option><option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២</option>
-                        <option value="ប្រចាំឆ្នាំ">ប្រចាំឆ្នាំ</option>
+        <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                <div class="space-y-2">
+                    <label class="text-xs font-black text-slate-500 uppercase tracking-wider ml-1">ការវាយតម្លៃ (ខែ/ឆមាស)</label>
+                    <select id="monthSelect" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition font-bold text-sm text-slate-700">
+                        <optgroup label="ប្រចាំខែ">
+                            <option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option><option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option>
+                            <option value="មីនា">មីនា</option><option value="មេសា">មេសា</option><option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
+                        </optgroup>
+                        <optgroup label="ប្រឡងឆមាស">
+                            <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option><option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                        </optgroup>
+                        <optgroup label="លទ្ធផលសរុបរួម">
+                            <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option><option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២</option><option value="ប្រចាំឆ្នាំ">ប្រចាំឆ្នាំ</option>
+                        </optgroup>
                     </select>
                 </div>
                 
-                <div class="space-y-1" id="inputContainer">
-                    <label class="text-xs font-bold text-gray-500">អត្តលេខសិស្ស</label>
-                    <input type="text" id="searchInput" class="w-full p-3 rounded-xl bg-gray-50 border outline-none font-bold text-sm" placeholder="បញ្ចូលអត្តលេខ...">
+                <div class="space-y-2" id="inputContainer">
+                    <label class="text-xs font-black text-slate-500 uppercase tracking-wider ml-1">អត្តលេខសិស្ស</label>
+                    <input type="text" id="searchInput" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition font-bold text-sm" placeholder="ឧ. 424000123">
                 </div>
                 
-                <div class="space-y-1 hidden" id="classSelectContainer">
-                    <label class="text-xs font-bold text-gray-500">ជ្រើសរើសថ្នាក់រៀន</label>
-                    <select id="classSelect" class="w-full p-3 rounded-xl bg-gray-50 border outline-none font-bold text-sm"></select>
+                <div class="space-y-2 hidden" id="classSelectContainer">
+                    <label class="text-xs font-black text-slate-500 uppercase tracking-wider ml-1">ជ្រើសរើសថ្នាក់រៀន</label>
+                    <select id="classSelect" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-blue-500 transition font-bold text-sm text-slate-700"></select>
                 </div>
 
                 <div>
-                    <button onclick="executeSearch()" class="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 shadow-md transition">ស្វែងរកលទ្ធផល</button>
+                    <button onclick="executeSearch()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-3.5 rounded-xl font-black text-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">ស្វែងរកលទ្ធផល</button>
                 </div>
             </div>
         </div>
@@ -125,15 +139,14 @@
     <!-- TAB 1: លទ្ធផលទូទៅ និង ការវិភាគ -->
     <!-- ========================================== -->
     <div id="tab-student" class="tab-content active">
-        <!-- Action Buttons (Print & Telegram) -->
-        <div id="t1-actions" class="no-print mt-4 mb-6 hidden flex-wrap justify-center gap-3 max-w-4xl mx-auto">
-            <button onclick="window.print()" class="bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-emerald-700">🖨️ Print (ទំព័រ១ នឹង ២)</button>
-            <button onclick="linkTelegram('Student')" class="bg-sky-500 text-white px-6 py-3 rounded-xl font-bold shadow-md">ភ្ជាប់ Telegram សិស្ស</button>
-            <button onclick="linkTelegram('Parent')" class="bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold shadow-md">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
+        <div id="t1-actions" class="no-print mt-4 mb-6 hidden flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+            <button onclick="window.print()" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-slate-900 transition flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> Print លទ្ធផល</button>
+            <button onclick="linkTelegram('Student')" class="bg-[#0088cc] text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-[#0077b3] transition">ភ្ជាប់ Telegram សិស្ស</button>
+            <button onclick="linkTelegram('Parent')" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-indigo-700 transition">ភ្ជាប់ Telegram អាណាព្យាបាល</button>
         </div>
 
         <div id="t1-capture-area" class="print-area portrait-page hidden">
-            <!-- ទំព័រ ១: តារាងពិន្ទុទូទៅ -->
+            <!-- Page 1: Main Table -->
             <div id="t1-page1">
                 <div id="t1-header"></div>
                 <div id="t1-summaryArea" class="summary-box"></div>
@@ -141,9 +154,8 @@
                 <div id="t1-signatures" class="signatures"></div>
             </div>
 
-            <!-- ទំព័រ ២: ប្រៀបធៀប និងវិភាគ -->
-            <div class="page-break"></div>
-            <div id="t1-page2" class="pt-4">
+            <!-- Page 2: Analytics -->
+            <div id="t1-page2" style="page-break-before: always; padding-top: 15px;">
                 <div id="t1-p2-header"></div>
                 <div id="t1-chartArea" class="mb-6"></div>
                 <div id="t1-comparisonTableContainer"></div>
@@ -154,28 +166,28 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- TAB 3: ស្តង់ដារបាក់ឌុប (វិទ្យាសាស្ត្រ/សង្គម) -->
+    <!-- TAB 3: ស្តង់ដារបាក់ឌុប (Bac2) -->
     <!-- ========================================== -->
     <div id="tab-bac2" class="tab-content hidden">
         <div id="t3-actions" class="no-print mt-4 mb-6 hidden flex justify-center max-w-4xl mx-auto">
-            <button onclick="window.print()" class="bg-yellow-600 text-white px-10 py-3 rounded-xl font-bold shadow-md">🖨️ Print របាយការណ៍បាក់ឌុប</button>
+            <button onclick="window.print()" class="bg-yellow-600 text-white px-10 py-3 rounded-xl font-bold shadow-md hover:bg-yellow-700 transition">🖨️ Print របាយការណ៍បាក់ឌុប</button>
         </div>
         <div id="t3-capture-area" class="print-area portrait-page hidden">
             <div id="t3-header"></div>
-            <div id="t3-summaryArea" class="summary-box border-yellow-300"></div>
+            <div id="t3-summaryArea" class="summary-box border-yellow-400 bg-yellow-50/30"></div>
             <div id="t3-tableArea">
                 <table class="c-table mt-4">
-                    <thead><tr><th class="w-8">ល.រ</th><th class="col-left">មុខវិជ្ជា (គោល)</th><th class="w-20">អតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-32">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead>
+                    <thead><tr class="bg-slate-50"><th class="w-8 border-r border-slate-200">ល.រ</th><th class="col-left border-r border-slate-200">មុខវិជ្ជា (គោល)</th><th class="w-20 border-r border-slate-200">អតិបរមា</th><th class="w-24 border-r border-slate-200">ពិន្ទុទទួលបាន</th><th class="w-32 border-r border-slate-200">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead>
                     <tbody id="t3-tableBody"></tbody>
                 </table>
             </div>
-            <div class="mt-6 p-4 bg-slate-50 border rounded-lg text-[10px] text-slate-600 leading-relaxed">
-                <b>*សម្គាល់ការគណនា៖</b><br>
+            <div class="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-lg text-[11px] text-slate-600 leading-relaxed font-bold">
+                <span class="text-red-600 moul-font text-[12px]">*សម្គាល់ការគណនា៖</span><br>
                 - មុខវិជ្ជាគោលទាំង ៦ បូកបញ្ចូលគ្នាជាពិន្ទុដើម។<br>
-                - ភាសាអង់គ្លេស ជាមុខវិជ្ជាពិន្ទុបន្ថែម (លើកទឹកចិត្ត) ក្រោម ២៦=០, ចាប់ពី ២៦ ឡើងយកពិន្ទុដកនឹង ២៥។<br>
+                - <span class="text-emerald-700">ភាសាអង់គ្លេស ជាមុខវិជ្ជាពិន្ទុបន្ថែម (លើកទឹកចិត្ត) ក្រោម ២៦=០, ចាប់ពី ២៦ ឡើងយកពិន្ទុដកនឹង ២៥។</span><br>
                 - និទ្ទេសរួមត្រូវបានគណនាផ្អែកលើពិន្ទុសរុបធៀបនឹងអតិបរមា ដោយធ្វើការបង្គត់ចុះ (Floor)។
             </div>
-            <div id="t3-signatures" class="signatures"></div>
+            <div id="t3-signatures" class="signatures mt-12"></div>
         </div>
     </div>
 
@@ -183,67 +195,75 @@
     <!-- TAB 2: កិច្ចការរដ្ឋបាល (Admin Tools) -->
     <!-- ========================================== -->
     <div id="tab-internal" class="tab-content hidden max-w-5xl mx-auto px-2">
-        <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-            <div class="bg-purple-800 p-6 text-white text-center">
-                <h2 class="moul-font text-xl mb-2">ប្រព័ន្ធទាញយកឯកសាររដ្ឋបាល (ថ្នាក់រៀន)</h2>
-                <p class="text-sm text-purple-200">សូមជ្រើសរើស ខែ និង ថ្នាក់ នៅផ្នែកស្វែងរកខាងលើ រួចចុចប៊ូតុងខាងក្រោម</p>
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden mt-2">
+            <div class="bg-gradient-to-r from-purple-800 to-indigo-900 p-8 text-white text-center">
+                <h2 class="moul-font text-2xl mb-3 drop-shadow-md">ប្រព័ន្ធទាញយកឯកសាររដ្ឋបាល</h2>
+                <p class="text-sm text-purple-200 font-bold bg-white/10 inline-block px-4 py-1.5 rounded-full">សូមជ្រើសរើស ខែ និង ថ្នាក់ នៅផ្នែកស្វែងរកខាងលើ</p>
             </div>
-            <div class="p-6 grid md:grid-cols-3 gap-6 text-center">
-                <div class="space-y-3 p-4 border rounded-xl bg-yellow-50 border-yellow-200">
-                    <h3 class="font-bold text-lg text-yellow-800">🏆 តារាងកិត្តិយស</h3>
-                    <button onclick="generateInternalReport('honor')" class="w-full bg-yellow-500 text-black p-2 rounded-lg font-bold shadow-sm">បង្ហាញ (Top 5)</button>
+            <div class="p-8 grid md:grid-cols-3 gap-6 text-center bg-slate-50">
+                <div class="space-y-4 p-6 border rounded-2xl bg-white border-yellow-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-4xl">🏆</div>
+                    <h3 class="font-black text-lg text-yellow-800">តារាងកិត្តិយស</h3>
+                    <p class="text-xs text-slate-500 font-bold">ចម្រាញ់យកតែ Top 5 ក្នុងថ្នាក់</p>
+                    <button onclick="generateInternalReport('honor')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black py-2.5 rounded-xl font-black shadow-sm transition">បង្កើតតារាង</button>
                 </div>
-                <div class="space-y-3 p-4 border rounded-xl bg-blue-50 border-blue-200">
-                    <h3 class="font-bold text-lg text-blue-800">📊 តារាងចំណាត់ថ្នាក់</h3>
-                    <button onclick="generateInternalReport('ranking')" class="w-full bg-blue-600 text-white p-2 rounded-lg font-bold shadow-sm">បង្ហាញ (ពេញ១ថ្នាក់)</button>
+                <div class="space-y-4 p-6 border rounded-2xl bg-white border-blue-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-4xl">📊</div>
+                    <h3 class="font-black text-lg text-blue-800">តារាងចំណាត់ថ្នាក់</h3>
+                    <p class="text-xs text-slate-500 font-bold">បញ្ជីពិន្ទុ និងចំណាត់ថ្នាក់ពេញ១ថ្នាក់</p>
+                    <button onclick="generateInternalReport('ranking')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-black shadow-sm transition">បង្កើតតារាង</button>
                 </div>
-                <div class="space-y-3 p-4 border rounded-xl bg-emerald-50 border-emerald-200">
-                    <h3 class="font-bold text-lg text-emerald-800">📄 សៀវភៅតាមដាន</h3>
-                    <button onclick="generateTrackingBook()" class="w-full bg-emerald-600 text-white p-2 rounded-lg font-bold shadow-sm">បង្កើតរាល់សិស្សទាំងអស់</button>
+                <div class="space-y-4 p-6 border rounded-2xl bg-white border-emerald-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-4xl">📄</div>
+                    <h3 class="font-black text-lg text-emerald-800">សៀវភៅតាមដាន</h3>
+                    <p class="text-xs text-slate-500 font-bold">បង្កើត ១សន្លឹក/ម្នាក់ សរុប១ថ្នាក់</p>
+                    <button onclick="generateTrackingBook()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-black shadow-sm transition">បង្កើតសៀវភៅ</button>
                 </div>
             </div>
         </div>
-        <div id="internal-actions" class="no-print mt-4 hidden text-center">
-            <button onclick="window.print()" class="bg-slate-800 text-white px-8 py-2 rounded-xl font-bold">🖨️ Print ឯកសារនេះ</button>
+        <div id="internal-actions" class="no-print mt-6 hidden text-center">
+            <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white px-10 py-3 rounded-xl font-black shadow-lg flex items-center gap-2 mx-auto"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> Print ឯកសារនេះ</button>
         </div>
-        <div id="internal-render-area" class="mt-6 flex flex-col items-center"></div>
+        <div id="internal-render-area" class="mt-6 flex flex-col items-center w-full"></div>
     </div>
 
     <!-- ========================================== -->
     <!-- TAB 4: របាយការណ៍សាលា -->
     <!-- ========================================== -->
     <div id="tab-report" class="tab-content hidden max-w-7xl mx-auto px-2">
-        <div class="bg-white p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4 no-print border-t-4 border-slate-800 mt-4 shadow-sm">
-            <div><h1 class="text-lg font-black text-slate-800 moul-font">របាយការណ៍ស្ថិតិសាលា</h1></div>
-            <div class="flex flex-col sm:flex-row gap-2 items-center w-full md:w-auto">
-                <select id="reportMode" onchange="toggleReportMode()" class="border border-slate-300 px-3 py-2 rounded-lg text-sm font-bold bg-blue-50">
+        <div class="bg-white p-5 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 no-print border border-slate-200 mt-4 shadow-lg">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">📈</span>
+                <h1 class="text-xl font-black text-slate-800 moul-font">របាយការណ៍ស្ថិតិសាលា</h1>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 items-center w-full md:w-auto">
+                <select id="reportMode" onchange="toggleReportMode()" class="border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold bg-slate-50 outline-none focus:ring-2 focus:ring-blue-200">
                     <option value="subject">មើលតាមមុខវិជ្ជា</option><option value="class">មើលតាមថ្នាក់</option>
                 </select>
-                <select id="reportSubjectFilter" class="border border-slate-300 px-3 py-2 rounded-lg text-sm font-bold">
-                    <option value="Average">មធ្យមភាគរួម</option><option value="ភាសាខ្មែរ">ភាសាខ្មែរ</option><option value="គណិតវិទ្យា">គណិតវិទ្យា</option>
+                <select id="reportSubjectFilter" class="border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold bg-white outline-none focus:ring-2 focus:ring-blue-200">
+                    <option value="Average">មធ្យមភាគរួម</option><option value="ភាសាខ្មែរ">ភាសាខ្មែរ</option><option value="គណិតវិទ្យា">គណិតវិទ្យា</option><option value="រូបវិទ្យា">រូបវិទ្យា</option><option value="គីមីវិទ្យា">គីមីវិទ្យា</option>
                 </select>
-                <select id="reportClassFilter" class="border border-slate-300 px-3 py-2 rounded-lg text-sm font-bold hidden"></select>
-                <button onclick="executeAdminReport()" class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold">ទាញទិន្នន័យ</button>
+                <select id="reportClassFilter" class="border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold bg-white outline-none focus:ring-2 focus:ring-blue-200 hidden"></select>
+                <button onclick="executeAdminReport()" class="bg-slate-800 hover:bg-slate-900 text-white px-8 py-2.5 rounded-xl font-black transition shadow-md">ទាញទិន្នន័យ</button>
             </div>
         </div>
-        <div id="report-actions" class="no-print mt-4 hidden text-center">
-            <button onclick="window.print()" class="bg-emerald-600 text-white px-8 py-2 rounded-xl font-bold">🖨️ Print ស្ថិតិ</button>
+        <div id="report-actions" class="no-print mt-6 hidden text-center">
+            <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-3 rounded-xl font-black shadow-lg">🖨️ Print ស្ថិតិសាលា</button>
         </div>
-        <div id="adminPrintArea" class="print-area portrait-page bg-white hidden mt-4">
-            <div id="reportHeader" class="mb-4"></div>
-            <div id="analyticsContent" class="space-y-4 pb-4"></div>
-            <div id="reportSignatures" class="signatures mt-8 pb-10"></div>
+        <div id="adminPrintArea" class="print-area portrait-page bg-white hidden mt-6">
+            <div id="reportHeader" class="mb-6 border-b-2 border-slate-800 pb-4"></div>
+            <div id="analyticsContent" class="space-y-6 pb-6"></div>
+            <div id="reportSignatures" class="signatures mt-10 pb-10"></div>
         </div>
     </div>
 
-    <!-- Loading & Error -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50">
-        <div class="text-center bg-white p-8 rounded-2xl max-w-sm w-full mx-4 shadow-2xl">
-            <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p class="text-blue-900 font-black text-lg" id="loadingText">កំពុងដំណើរការ...</p>
+    <!-- 🌟 Loading & Error -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-[100] transition-opacity">
+        <div class="text-center bg-white p-8 rounded-3xl max-w-sm w-full mx-4 shadow-2xl transform scale-100">
+            <div class="w-14 h-14 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto mb-5"></div>
+            <p class="text-blue-900 font-black text-lg" id="loadingText">កំពុងទាញទិន្នន័យ...</p>
         </div>
     </div>
-    <div id="errorBox" class="fixed top-5 right-5 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg font-bold hidden z-50 transition-opacity"></div>
 
     <script>
         // =================================================================
@@ -252,8 +272,8 @@
         const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
         
-        const INTERNAL_PWD = "H@nm@m64"; // លេខសម្ងាត់ចូលរដ្ឋបាល
-        const REPORT_PWD = "H@nm@m64"; // លេខសម្ងាត់ចូលរបាយការណ៍
+        const INTERNAL_PWD = "H@nm@m64"; 
+        const REPORT_PWD = "H@nm@m64"; 
 
         const SUBJECTS_10 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
         const SUBJECTS_15 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
@@ -278,17 +298,24 @@
         });
 
         // ==========================================
-        // 🛠️ DATA MAPPER (FUNCTION នេះឯងដែលបាត់មុននេះ!)
+        // 🛠️ DATA FETCHER & MAPPER
         // ==========================================
+        async function supaFetch(endpoint) {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, { headers });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "Network Error");
+            return data;
+        }
+
         function mapDbToLegacy(row) {
             let res = {
                 ID: row.student_id, 
                 Name: row.student_name, 
                 Gender: row.gender, 
                 Grade: row.grade,
-                DOB: row.dob || '',
-                DateSolar: row.date_solar || '', 
-                DateLunar: row.date_lunar || '',
+                DOB: row.dob || '.......................',
+                DateSolar: row.date_solar || '.......................', 
+                DateLunar: row.date_lunar || '.......................',
                 Total: row.total_score || row.exam_total_score || 0,
                 Average: row.average || row.semester_average || row.annual_average || 0,
                 Rank: row.class_rank, 
@@ -304,12 +331,10 @@
         // ==========================================
         async function fetchInitialSetupData() {
             try {
-                let resConf = await fetch(`${SUPABASE_URL}/rest/v1/config_max_scores?select=*`, { headers });
-                let confData = await resConf.json();
-                confData.forEach(c => { configList.push(c); if(c.grade_level) classTypeMap[c.grade_level] = String(c.class_type || "").toUpperCase(); });
+                let confData = await supaFetch(`config_max_scores?select=*`);
+                confData.forEach(c => { configList.push(c); if(c.grade_level) classTypeMap[c.grade_level.trim()] = String(c.class_type || "").toUpperCase(); });
 
-                let resTeach = await fetch(`${SUPABASE_URL}/rest/v1/teacher_info?select=*`, { headers });
-                let teachData = await resTeach.json();
+                let teachData = await supaFetch(`teacher_info?select=*`);
                 teachData.forEach(t => {
                     let cls = String(t.homeroom_class || "").trim();
                     if(cls) { teacherMap[cls] = { name: t.teacher_name, sign: t.signature_link }; allClassNames.push(cls); }
@@ -332,36 +357,35 @@
             let q = document.getElementById('searchInput').value.trim();
             let period = document.getElementById('monthSelect').value;
             
-            if(!q) return showError("សូមបញ្ចូលអត្តលេខសិស្ស!");
-            showLoading("កំពុងទាញយកទិន្នន័យ...");
+            if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខសិស្សជាមុនសិន!', 'warning');
             
+            showLoading("កំពុងទាញយកទិន្នន័យ...");
             let table = "student_scores"; let periodCol = "month_name";
             if (period.includes("ប្រចាំឆមាស")) { table = "semester_scores"; periodCol = "semester_name"; }
             else if (period === "ប្រចាំឆ្នាំ") { table = "annual_scores"; periodCol = "academic_year"; period = new Date().getFullYear().toString(); }
 
             try {
-                let queryUrl = `${SUPABASE_URL}/rest/v1/${table}?${periodCol}=eq.${encodeURIComponent(period)}&student_id=eq.${encodeURIComponent(q)}`;
-                let res = await fetch(queryUrl, { headers });
-                let data = await res.json();
-
+                let data = await supaFetch(`${table}?${periodCol}=eq.${encodeURIComponent(period)}&student_id=eq.${encodeURIComponent(q)}`);
                 if(!data || data.length === 0) {
-                    hideLoading(); return showError(`មិនមានទិន្នន័យរបស់សិស្សអត្តលេខ [${q}] សម្រាប់ ${period} ទេ!`);
+                    hideLoading(); 
+                    return Swal.fire('រកមិនឃើញ!', `មិនមានទិន្នន័យរបស់សិស្សលេខ [${q}] សម្រាប់ ${period} ទេ!`, 'error');
                 }
 
                 let s = mapDbToLegacy(data[0]); 
                 currentStudentInfo = { id: s.ID, name: s.Name };
 
                 let sGrade = String(s.Grade).trim();
-                let gConf = configList.find(c => c.grade_level === sGrade) || {};
+                let gConf = configList.find(c => String(c.grade_level).trim() === sGrade) || {};
                 let isUpper = sGrade.includes("១១") || sGrade.includes("11") || sGrade.includes("១២") || sGrade.includes("12");
                 let track = classTypeMap[sGrade] || "";
-                let tInfo = teacherMap[sGrade] || {name:'...', sign:''};
+                let tInfo = teacherMap[sGrade] || {name:'មិនស្គាល់', sign:''};
 
+                // ======= RENDER TAB 1 PAGE 1 =======
                 document.getElementById('t1-header').innerHTML = buildPrintHeader(`តារាងលទ្ធផលសិក្សារបស់សិស្សប្រចាំ ${period}`);
                 document.getElementById('t1-header').innerHTML += `
                     <div class="student-info-grid">
                         <p>គោត្តនាម-នាម ៖ <span class="moul-font text-blue-800">${s.Name}</span></p><p>ភេទ ៖ <span>${s.Gender}</span></p>
-                        <p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${s.DOB || '...'}</span></p><p>ថ្នាក់ទី ៖ <span>${sGrade}</span></p>
+                        <p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${s.DOB}</span></p><p>ថ្នាក់ទី ៖ <span>${sGrade}</span></p>
                         <p>អត្តលេខ ៖ <span>${s.ID}</span></p><p>ឆ្នាំសិក្សា ៖ <span>២០២៥-២០២៦</span></p>
                     </div>`;
                 
@@ -377,79 +401,90 @@
                     if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
                         let raw = String(s[sub]).trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
                         if(raw.toUpperCase() === "ABS" || raw.toUpperCase() === "ម.ថ" || isNaN(cleanNum(raw))) {
-                            tRows += `<tr><td>${idx++}</td><td class="col-left">${sub}</td><td>${ms}</td><td class="text-red-500 font-bold">${raw}</td><td colspan="2" class="text-gray-400">-</td></tr>`;
+                            tRows += `<tr><td>${idx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="text-red-500 font-bold">${raw}</td><td colspan="2" class="text-gray-400">-</td></tr>`;
                         } else {
                             let sc = cleanNum(raw); let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
-                            tRows += `<tr><td>${idx++}</td><td class="col-left moul-font text-[10px]">${sub}</td><td>${ms}</td><td class="text-blue-700 font-bold text-[12px]">${sc}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div><span class="text-[9px] ml-1 text-gray-500">${Math.round(pct)}%</span></td><td class="font-bold text-[12px] ${getGrdCol(g)}">${g}</td></tr>`;
+                            tRows += `<tr><td>${idx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="text-blue-700 font-bold text-[13px]">${sc}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div><span class="text-[9px] ml-1 text-gray-500">${Math.round(pct)}%</span></td><td class="font-bold text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
                         }
                     }
                 });
-                document.getElementById('t1-tableArea').innerHTML = `<table class="c-table mt-2"><thead><tr><th class="w-8">ល.រ</th><th class="col-left w-48">មុខវិជ្ជា</th><th class="w-20">ពិន្ទុអតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-32">ភាគរយ (%)</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody>
-                    <tfoot><tr class="bg-slate-100"><td colspan="3" class="col-left text-right text-[12px]">ពិន្ទុសរុប</td><td class="font-bold text-blue-700 text-[14px]" colspan="3">${s.Total || '-'}</td></tr></tfoot></table>`;
+                document.getElementById('t1-tableArea').innerHTML = `<table class="c-table mt-2"><thead><tr class="bg-slate-50"><th class="w-8 border-r border-slate-200">ល.រ</th><th class="col-left w-48 border-r border-slate-200">មុខវិជ្ជា</th><th class="w-20 border-r border-slate-200">ពិន្ទុអតិបរមា</th><th class="w-24 border-r border-slate-200">ពិន្ទុទទួលបាន</th><th class="w-32 border-r border-slate-200">ភាគរយ (%)</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody>
+                    <tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="3" class="col-left text-right font-bold text-[13px]">ពិន្ទុសរុប</td><td class="font-black text-blue-700 text-[16px]" colspan="3">${s.Total || '-'}</td></tr></tfoot></table>`;
                 
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign);
                 
-                let resHist = await fetch(`${SUPABASE_URL}/rest/v1/student_scores?student_id=eq.${encodeURIComponent(s.ID)}`, { headers });
-                let histData = await resHist.json();
-                let histMap = {}; histData.forEach(r => histMap[r.month_name] = mapDbToLegacy(r));
-
+                // ======= RENDER TAB 1 PAGE 2 (HISTORICAL) =======
+                let histData = await supaFetch(`student_scores?student_id=eq.${encodeURIComponent(s.ID)}`);
+                
                 document.getElementById('t1-p2-header').innerHTML = buildPrintHeader(`តារាងប្រៀបធៀបលទ្ធផលសិក្សាតាមមុខវិជ្ជាប្រចាំខែ`);
-                document.getElementById('t1-p2-header').innerHTML += `<div class="student-info-grid" style="border-left-color:#eab308;"><p>ឈ្មោះ ៖ <span class="moul-font text-blue-800">${s.Name}</span></p><p>ថ្នាក់ទី ៖ <span>${sGrade}</span></p></div>`;
+                document.getElementById('t1-p2-header').innerHTML += `<div class="student-info-grid" style="border-left-color:#eab308; background: linear-gradient(90deg, #fefce8 0%, transparent 100%);"><p>ឈ្មោះ ៖ <span class="moul-font text-blue-800">${s.Name}</span></p><p>ថ្នាក់ទី ៖ <span>${sGrade}</span></p></div>`;
 
-                let availableMonths =["វិច្ឆិកា", "ធ្នូ", "មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា"].filter(m => histMap[m]);
-                
-                let cHtml = "";
-                availableMonths.forEach(m => {
-                    let val = cleanNum(histMap[m].Average);
-                    if(!isNaN(val)) {
-                        let pct = (val / 50) * 100; if (pct > 100) pct = 100;
-                        cHtml += `<div class="trend-bar-wrapper"><div class="trend-val">${val.toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div class="trend-lbl">${m.substring(0,6)}</div></div>`;
-                    }
-                });
-                document.getElementById('t1-chartArea').innerHTML = `<div class="border rounded-lg p-4 pb-0 bg-white"><p class="text-[10px] font-bold text-gray-500 mb-2 text-center">📈 ក្រាបប្រៀបធៀបមធ្យមភាគប្រចាំខែ</p><div class="trend-chart">${cHtml}</div></div>`;
+                const stdMonths =["វិច្ឆិកា", "ធ្នូ", "មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា"];
+                let availableMonths = stdMonths.filter(m => histData.some(d => d.month_name === m));
 
-                let tb = `<table class="c-table mt-4"><thead><tr><th class="w-8">ល.រ</th><th class="col-left w-32">មុខវិជ្ជា</th><th class="w-16">អតិបរមា</th>`;
-                availableMonths.forEach(m => tb+=`<th>${m.substring(0,8)}</th>`);
-                tb += `</tr></thead><tbody>`;
-                
-                let subjectAvgs = {};
-                SUBJECTS_10.forEach((sub, i) => {
-                    tb += `<tr><td>${i+1}</td><td class="col-left">${sub}</td>`;
-                    let maxS = cleanNum(gConf[dbMap[sub]])||50; tb += `<td class="text-gray-400">${maxS}</td>`;
-                    let tPct=0, c=0;
+                if (availableMonths.length === 0) {
+                    // បើអត់មានទិន្នន័យខែទេ បង្ហាញសារប្រាប់ កុំឲ្យចេញក្រដាសស
+                    document.getElementById('t1-chartArea').innerHTML = `<div class="text-center p-10 border-2 border-dashed border-slate-300 rounded-xl"><p class="text-slate-500 font-bold text-lg">មិនទាន់មានទិន្នន័យប្រចាំខែ សម្រាប់ធ្វើការប្រៀបធៀបទេ!</p></div>`;
+                    document.getElementById('t1-comparisonTableContainer').innerHTML = "";
+                    document.getElementById('t1-analysisBox').innerHTML = "";
+                } else {
+                    let histMap = {}; 
+                    histData.forEach(r => { if(availableMonths.includes(r.month_name)) histMap[r.month_name] = mapDbToLegacy(r); });
+
+                    let cHtml = "";
                     availableMonths.forEach(m => {
-                        let d = histMap[m];
-                        if(d && d[sub] && !isNaN(cleanNum(d[sub]))) {
-                            let sc = cleanNum(d[sub]); let pct = Math.min((sc/maxS)*100, 100); let g = getGrd(pct);
-                            tb += `<td class="font-bold text-[11px] ${getGrdCol(g)}">${sc} <span class="text-[9px] text-gray-400">(${g})</span></td>`;
-                            tPct+=pct; c++;
-                        } else tb += `<td class="text-gray-300">-</td>`;
+                        let val = cleanNum(histMap[m].Average);
+                        if(!isNaN(val)) {
+                            let pct = (val / 50) * 100; if (pct > 100) pct = 100;
+                            cHtml += `<div class="trend-bar-wrapper"><div class="trend-val">${val.toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div class="trend-lbl">${m.substring(0,6)}</div></div>`;
+                        }
                     });
-                    tb += `</tr>`;
-                    if(c>0) subjectAvgs[sub] = tPct/c;
-                });
-                tb += `</tbody></table>`;
-                document.getElementById('t1-comparisonTableContainer').innerHTML = tb;
-                
-                let sortS = Object.keys(subjectAvgs).sort((a,b)=>subjectAvgs[b]-subjectAvgs[a]);
-                let str = sortS.filter(x=>subjectAvgs[x]>=70).slice(0,3); 
-                let wk = sortS.filter(x=>subjectAvgs[x]<50).slice(0,3);
-                document.getElementById('t1-analysisBox').innerHTML = `💡 <b>ការសន្និដ្ឋានបឋម៖</b> ផ្អែកតាមទិន្នន័យមធ្យមភាគប្រចាំខែ សិស្សមានភាពលេចធ្លោលើមុខវិជ្ជា <b class="text-emerald-700">${str.length>0?str.join(", "):"មិនទាន់មាន"}</b>។ ${wk.length>0 ? `ទន្ទឹមនឹងនេះ គប្បីយកចិត្តទុកដាក់បន្ថែមលើមុខវិជ្ជា <b class="text-red-600">${wk.join(", ")}</b> ដើម្បីទទួលបានលទ្ធផលកាន់តែប្រសើរ។`:''}`;
-                
+                    document.getElementById('t1-chartArea').innerHTML = `<div class="border border-slate-200 rounded-xl p-5 pb-0 bg-white shadow-sm"><p class="text-[11px] font-black text-slate-500 mb-3 text-center uppercase tracking-widest">📈 ក្រាបប្រៀបធៀបមធ្យមភាគប្រចាំខែ</p><div class="trend-chart">${cHtml}</div></div>`;
+
+                    let tb = `<table class="c-table mt-6 border border-slate-300"><thead><tr class="bg-slate-100"><th class="w-8 border-r border-slate-300">ល.រ</th><th class="col-left w-32 border-r border-slate-300">មុខវិជ្ជា (គោល)</th><th class="w-16 border-r border-slate-300">អតិបរមា</th>`;
+                    availableMonths.forEach(m => tb+=`<th class="border-r border-slate-300">${m.substring(0,8)}</th>`);
+                    tb += `</tr></thead><tbody>`;
+                    
+                    let subjectAvgs = {};
+                    SUBJECTS_10.forEach((sub, i) => {
+                        tb += `<tr><td class="border-r border-slate-200">${i+1}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td>`;
+                        let maxS = cleanNum(gConf[dbMap[sub]])||50; tb += `<td class="text-slate-400 font-bold border-r border-slate-200">${maxS}</td>`;
+                        let tPct=0, c=0;
+                        availableMonths.forEach(m => {
+                            let d = histMap[m];
+                            if(d && d[sub] && !isNaN(cleanNum(d[sub]))) {
+                                let sc = cleanNum(d[sub]); let pct = Math.min((sc/maxS)*100, 100); let g = getGrd(pct);
+                                tb += `<td class="font-black text-[12px] border-r border-slate-200 ${getGrdCol(g)}">${sc} <span class="text-[9px] text-slate-400 font-bold">(${g})</span></td>`;
+                                tPct+=pct; c++;
+                            } else tb += `<td class="text-slate-300 border-r border-slate-200">-</td>`;
+                        });
+                        tb += `</tr>`;
+                        if(c>0) subjectAvgs[sub] = tPct/c;
+                    });
+                    tb += `</tbody></table>`;
+                    document.getElementById('t1-comparisonTableContainer').innerHTML = tb;
+                    
+                    let sortS = Object.keys(subjectAvgs).sort((a,b)=>subjectAvgs[b]-subjectAvgs[a]);
+                    let str = sortS.filter(x=>subjectAvgs[x]>=70).slice(0,3); 
+                    let wk = sortS.filter(x=>subjectAvgs[x]<50).slice(0,3);
+                    document.getElementById('t1-analysisBox').innerHTML = `💡 <b>ការសន្និដ្ឋានបឋម៖</b> ផ្អែកតាមទិន្នន័យមធ្យមភាគប្រចាំខែ សិស្សមានភាពលេចធ្លោលើមុខវិជ្ជា <b class="text-emerald-700">${str.length>0?str.join(", "):"មិនទាន់មាន"}</b>។ ${wk.length>0 ? `ទន្ទឹមនឹងនេះ គប្បីយកចិត្តទុកដាក់បន្ថែមលើមុខវិជ្ជា <b class="text-red-600">${wk.join(", ")}</b> ដើម្បីទទួលបានលទ្ធផលកាន់តែប្រសើរ។`:''}`;
+                }
+
                 document.getElementById('t1-p2-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign);
                 
                 document.getElementById('t1-capture-area').classList.remove('hidden');
                 document.getElementById('t1-actions').classList.remove('hidden');
                 document.getElementById('t1-actions').classList.add('flex');
 
+                // ======= RENDER TAB 3 (BAC2) =======
                 let t3Area = document.getElementById('t3-capture-area');
-                if (isUpper && table === "student_scores") {
+                if (isUpper) {
                     let trackName = track.includes("SC") ? "វិទ្យាសាស្ត្រ" : "វិទ្យាសាស្ត្រសង្គម";
                     let cSubjs = track.includes("SC") ?["គណិតវិទ្យា","ភាសាខ្មែរ","រូបវិទ្យា","គីមីវិទ្យា","ជីវវិទ្យា","ប្រវត្តិវិទ្យា"] :["ភាសាខ្មែរ","គណិតវិទ្យា","សីលធម៌ពលរដ្ឋ","ប្រវត្តិវិទ្យា","ភូមិវិទ្យា","ផែនដីវិទ្យា"];
                     
-                    document.getElementById('t3-header').innerHTML = buildPrintHeader(`តារាងលទ្ធផលសិក្សាតាមស្តង់ដារបាក់ឌុប<br><span class="text-sm text-yellow-600">(ថ្នាក់${trackName} ប្រចាំ ${period})</span>`);
+                    document.getElementById('t3-header').innerHTML = buildPrintHeader(`តារាងលទ្ធផលសិក្សាតាមស្តង់ដារបាក់ឌុប<br><span class="text-[14px] text-yellow-700 mt-1 block">(ថ្នាក់${trackName} ប្រចាំ ${period})</span>`);
                     document.getElementById('t3-header').innerHTML += `
-                        <div class="student-info-grid" style="border-left-color:#eab308;">
+                        <div class="student-info-grid" style="border-left-color:#eab308; background: linear-gradient(90deg, #fefce8 0%, transparent 100%);">
                             <p>ឈ្មោះ ៖ <span class="moul-font text-blue-800">${s.Name}</span></p><p>ភេទ ៖ <span>${s.Gender}</span></p>
                             <p>ថ្នាក់ទី ៖ <span>${sGrade}</span></p><p>អត្តលេខ ៖ <span>${s.ID}</span></p>
                         </div>`;
@@ -458,11 +493,11 @@
                     cSubjs.forEach(sub => {
                         let raw = String(s[sub]||"").trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
                         if(isNaN(cleanNum(raw)) || raw==="ABS" || raw==="ម.ថ" || !raw) {
-                            trRows += `<tr><td>${ixx++}</td><td class="col-left">${sub}</td><td>${ms}</td><td class="text-red-500 font-bold">${raw||'ម.ថ'}</td><td colspan="2">-</td></tr>`;
+                            trRows += `<tr><td class="border-r border-slate-200">${ixx++}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-red-500 font-bold border-r border-slate-200">${raw||'ម.ថ'}</td><td colspan="2">-</td></tr>`;
                         } else {
                             let sc = cleanNum(raw); bTotal+=sc; bMax+=ms; vC++;
                             let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
-                            trRows += `<tr><td>${ixx++}</td><td class="col-left moul-font text-[11px]">${sub}</td><td>${ms}</td><td class="text-blue-700 font-bold text-[12px]">${sc}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-bold text-[12px] ${getGrdCol(g)}">${g}</td></tr>`;
+                            trRows += `<tr><td class="border-r border-slate-200">${ixx++}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-black text-[13px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-black text-[14px] ${getGrdCol(g)}">${g}</td></tr>`;
                         }
                     });
                     
@@ -470,14 +505,14 @@
                     if(!isNaN(eng)) {
                         if(eng>=26) { engBonus = eng-25; bTotal+=engBonus; vC++; }
                         let g = getGrd((eng/50)*100);
-                        trRows += `<tr class="bg-emerald-50 italic"><td>${ixx++}</td><td class="col-left text-emerald-700 font-bold">ភាសាអង់គ្លេស (Bonus)</td><td>50</td><td class="text-emerald-700 font-bold">${eng} <span class="text-[10px]">(+${engBonus})</span></td><td>-</td><td class="font-bold ${getGrdCol(g)}">${g}</td></tr>`;
+                        trRows += `<tr class="bg-emerald-50 italic"><td class="border-r border-slate-200">${ixx++}</td><td class="col-left text-emerald-700 font-black border-r border-slate-200">ភាសាអង់គ្លេស (Bonus)</td><td class="border-r border-slate-200 text-emerald-800">50</td><td class="text-emerald-700 font-black text-[13px] border-r border-slate-200">${eng} <span class="text-[10px]">(+${engBonus})</span></td><td class="border-r border-slate-200 text-emerald-700 font-bold">ពិន្ទុលើកទឹកចិត្ត</td><td class="font-black text-[14px] ${getGrdCol(g)}">${g}</td></tr>`;
                     }
                     if(vC>0) finalGrd = getGrd(Math.floor(bMax>0 ? (bTotal/bMax)*100 : 0)); 
 
                     document.getElementById('t3-tableBody').innerHTML = trRows;
                     document.getElementById('t3-summaryArea').innerHTML = `
-                        <div class="summary-item"><p class="s-title">ពិន្ទុសរុប</p><p class="s-value text-blue-700 text-[26px]">${vC>0 ? bTotal.toFixed(2).replace(/\.00$/,'') : 0}</p><p class="s-sub">លើអតិបរមា ${bMax}</p></div>
-                        <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value font-black ${getGrdCol(finalGrd)} text-[28px]">${finalGrd}</p><p class="s-sub">(គិតលើរបបបង្គត់ចុះ)</p></div>`;
+                        <div class="summary-item"><p class="s-title">ពិន្ទុសរុប</p><p class="s-value text-blue-700 text-[32px]">${vC>0 ? bTotal.toFixed(2).replace(/\.00$/,'') : 0}</p><p class="s-sub font-bold">លើអតិបរមា ${bMax}</p></div>
+                        <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value font-black ${getGrdCol(finalGrd)} text-[36px]">${finalGrd}</p><p class="s-sub font-bold">(គិតលើរបបបង្គត់ចុះ)</p></div>`;
                     document.getElementById('t3-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign);
                     
                     t3Area.classList.remove('hidden');
@@ -488,22 +523,27 @@
                 }
 
                 hideLoading();
-            } catch (e) { hideLoading(); showError("បរាជ័យ៖ " + e.message); }
+            } catch (e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
         }
 
         // ==========================================
         // 🔗 LINK TELEGRAM FUNCTION
         // ==========================================
         async function linkTelegram(type) {
-            if(!currentStudentInfo) return alert("សូមស្វែងរកសិស្សជាមុនសិន!");
-            let username = prompt(`សូមបញ្ចូល Username ឬ ID Telegram របស់ ${type==='Student'?'សិស្ស':'អាណាព្យាបាល'} (ឧ. @sok_123)៖`);
-            if(!username) return;
+            if(!currentStudentInfo) return Swal.fire('បញ្ជាក់', 'សូមស្វែងរកសិស្សជាមុនសិន!', 'warning');
+            
+            const { value: username } = await Swal.fire({
+                title: `ភ្ជាប់ Telegram ${type==='Student'?'សិស្ស':'អាណាព្យាបាល'}`,
+                input: 'text',
+                inputPlaceholder: 'ឧទាហរណ៍: @sok_123',
+                showCancelButton: true,
+                confirmButtonText: 'ភ្ជាប់ឥឡូវនេះ'
+            });
 
+            if(!username) return;
             showLoading("កំពុងភ្ជាប់...");
             try {
-                let res = await fetch(`${SUPABASE_URL}/rest/v1/telegram_db?student_id=eq.${encodeURIComponent(currentStudentInfo.id)}`, { headers });
-                let existing = await res.json();
-                
+                let existing = await supaFetch(`telegram_db?student_id=eq.${encodeURIComponent(currentStudentInfo.id)}`);
                 let payload = { student_id: currentStudentInfo.id, student_name: currentStudentInfo.name };
                 if (existing.length > 0) {
                     payload = existing[0];
@@ -515,12 +555,12 @@
                 }
 
                 let opts = { method: "POST", headers: { ...headers, "Prefer": "resolution=merge-duplicates" }, body: JSON.stringify([payload]) };
-                let updateRes = await fetch(`${SUPABASE_URL}/rest/v1/telegram_db?on_conflict=student_id`, opts);
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/telegram_db?on_conflict=student_id`, opts);
                 
                 hideLoading();
-                if(updateRes.ok) alert("✅ បានភ្ជាប់ប្រព័ន្ធ Telegram រួចរាល់!");
+                if(res.ok) Swal.fire('ជោគជ័យ!', 'បានភ្ជាប់ប្រព័ន្ធ Telegram រួចរាល់!', 'success');
                 else throw new Error("Update Failed");
-            } catch(e) { hideLoading(); alert("បរាជ័យ៖ " + e.message); }
+            } catch(e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
         }
 
         // ==========================================
@@ -529,7 +569,7 @@
         async function generateInternalReport(type) {
             let period = document.getElementById('monthSelect').value;
             let cls = document.getElementById('classSelect').value;
-            if(!period || !cls) return alert("សូមជ្រើសរើសខែ និងថ្នាក់!");
+            if(!period || !cls) return Swal.fire('បញ្ជាក់', 'សូមជ្រើសរើសខែ និងថ្នាក់!', 'warning');
             
             showLoading("កំពុងទាញទិន្នន័យថ្នាក់ " + cls);
             try {
@@ -537,15 +577,13 @@
                 if (period.includes("ប្រចាំឆមាស")) { table = "semester_scores"; periodCol = "semester_name"; }
                 else if (period === "ប្រចាំឆ្នាំ") { table = "annual_scores"; periodCol = "academic_year"; period = new Date().getFullYear().toString(); }
 
-                let url = `${SUPABASE_URL}/rest/v1/${table}?${periodCol}=eq.${encodeURIComponent(period)}&grade=eq.${encodeURIComponent(cls)}`;
-                let res = await fetch(url, { headers });
-                let dbData = await res.json();
+                let dbData = await supaFetch(`${table}?${periodCol}=eq.${encodeURIComponent(period)}&grade=eq.${encodeURIComponent(cls)}`);
                 let cData = dbData.map(r => mapDbToLegacy(r));
 
-                if(cData.length === 0) { hideLoading(); return alert("គ្មានទិន្នន័យសម្រាប់ថ្នាក់នេះទេ!"); }
+                if(cData.length === 0) { hideLoading(); return Swal.fire('ទទេ!', 'គ្មានទិន្នន័យសម្រាប់ថ្នាក់នេះទេ!', 'info'); }
 
                 let renderArea = document.getElementById('internal-render-area');
-                let tInfo = teacherMap[cls] || {};
+                let tInfo = teacherMap[cls] || {name: 'មិនស្គាល់'};
 
                 if(type === 'honor') {
                     let topStus = cData.filter(s => { let r = parseInt(s.Rank); return !isNaN(r) && r >= 1 && r <= 5; });
@@ -553,16 +591,16 @@
                     
                     let html = `<div class="print-area landscape-page">
                     ${buildPrintHeader(`🏆 តារាងកិត្តិយសប្រចាំ ${period} 🏆`)}
-                    <p class="text-center font-bold text-sm mt-2 mb-4">ថ្នាក់ទី ${cls} | គ្រូបន្ទុកថ្នាក់៖ ${tInfo.name || 'មិនស្គាល់'}</p>
-                    <table class="c-table"><thead><tr class="bg-yellow-100"><th class="w-8">លេខ</th><th class="col-left">ឈ្មោះសិស្ស</th><th class="w-8">ភេទ</th>`;
-                    SUBJECTS_10.forEach(s => html += `<th>${s.substring(0,5)}</th>`);
-                    html += `<th>មធ្យមភាគ</th><th>និទ្ទេស</th></tr></thead><tbody class="font-bold">`;
+                    <p class="text-center font-black text-slate-600 mb-5 tracking-widest text-sm">ថ្នាក់ទី ${cls} | គ្រូបន្ទុកថ្នាក់៖ ${tInfo.name}</p>
+                    <table class="c-table border border-slate-300"><thead><tr class="bg-yellow-100"><th class="w-8 border-r border-yellow-200">លេខ</th><th class="col-left border-r border-yellow-200">ឈ្មោះសិស្ស</th><th class="w-8 border-r border-yellow-200">ភេទ</th>`;
+                    SUBJECTS_10.forEach(s => html += `<th class="border-r border-yellow-200">${s.substring(0,5)}</th>`);
+                    html += `<th class="border-r border-yellow-200">មធ្យមភាគ</th><th>និទ្ទេស</th></tr></thead><tbody class="font-bold">`;
 
                     topStus.forEach(s => {
                         let rank = parseInt(s.Rank);
-                        html += `<tr class="${rank===1?'bg-yellow-50 text-blue-900':'text-slate-800'}"><td>${rank}</td><td class="col-left">${s.Name}</td><td>${s.Gender}</td>`;
-                        SUBJECTS_10.forEach(sub => html += `<td>${s[sub] || 'ម.ថ'}</td>`);
-                        html += `<td class="text-blue-600">${s.Average||0}</td><td class="font-black ${getGrdCol(s.Grade_Result)}">${s.Grade_Result||'F'}</td></tr>`;
+                        html += `<tr class="${rank===1?'bg-yellow-50 text-blue-900 border-b-2 border-yellow-200':'text-slate-800 border-b border-slate-200'}"><td class="border-r border-slate-200 text-lg">${rank===1?'🥇':(rank===2?'🥈':(rank===3?'🥉':rank))}</td><td class="col-left border-r border-slate-200">${s.Name}</td><td class="border-r border-slate-200">${s.Gender}</td>`;
+                        SUBJECTS_10.forEach(sub => html += `<td class="border-r border-slate-200">${s[sub] || 'ម.ថ'}</td>`);
+                        html += `<td class="text-blue-700 font-black border-r border-slate-200">${s.Average||0}</td><td class="font-black text-lg ${getGrdCol(s.Grade_Result)}">${s.Grade_Result||'F'}</td></tr>`;
                     });
                     html += `</tbody></table></div>`;
                     renderArea.innerHTML = html;
@@ -571,46 +609,43 @@
                     cData.sort((a,b) => (parseInt(a.Rank) || 9999) - (parseInt(b.Rank) || 9999));
                     let html = `<div class="print-area portrait-page">
                     ${buildPrintHeader(`តារាងចំណាត់ថ្នាក់សិស្សប្រចាំ ${period}`)}
-                    <p class="text-center font-bold text-sm mt-2 mb-4">ថ្នាក់ទី ${cls} | សិស្សសរុប៖ ${cData.length} នាក់</p>
-                    <table class="c-table w-full"><thead><tr class="bg-blue-50 text-blue-900"><th class="w-6">ល.រ</th><th class="col-left">ឈ្មោះ</th><th>ភេទ</th>`;
-                    SUBJECTS_10.forEach(s => html += `<th>${s.substring(0,4)}</th>`);
-                    html += `<th>មធ្យម</th><th>និទ្ទេស</th><th>ចំណាត់ថ្នាក់</th></tr></thead><tbody class="font-bold">`;
+                    <p class="text-center font-black text-slate-600 mb-5 tracking-widest text-sm">ថ្នាក់ទី ${cls} | សិស្សសរុប៖ ${cData.length} នាក់</p>
+                    <table class="c-table w-full border border-slate-300"><thead><tr class="bg-blue-50 text-blue-900"><th class="w-6 border-r border-blue-100">ល.រ</th><th class="col-left border-r border-blue-100">ឈ្មោះ</th><th class="border-r border-blue-100">ភេទ</th>`;
+                    SUBJECTS_10.forEach(s => html += `<th class="border-r border-blue-100">${s.substring(0,4)}</th>`);
+                    html += `<th class="border-r border-blue-100">មធ្យម</th><th class="border-r border-blue-100">និទ្ទេស</th><th>ចំណាត់ថ្នាក់</th></tr></thead><tbody class="font-bold text-[10px]">`;
 
                     cData.forEach((s, i) => {
-                        html += `<tr><td>${i+1}</td><td class="col-left whitespace-nowrap text-[10px]">${s.Name}</td><td>${s.Gender}</td>`;
-                        SUBJECTS_10.forEach(sub => html += `<td>${s[sub] || '-'}</td>`);
-                        html += `<td class="text-blue-700">${s.Average || 0}</td><td class="${getGrdCol(s.Grade_Result)}">${s.Grade_Result||'F'}</td><td class="text-red-600">${s.Rank||'-'}</td></tr>`;
+                        html += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200 text-slate-500">${i+1}</td><td class="col-left whitespace-nowrap text-[11px] border-r border-slate-200">${s.Name}</td><td class="border-r border-slate-200 text-slate-500">${s.Gender}</td>`;
+                        SUBJECTS_10.forEach(sub => html += `<td class="border-r border-slate-200">${s[sub] || '-'}</td>`);
+                        html += `<td class="text-blue-700 border-r border-slate-200">${s.Average || 0}</td><td class="border-r border-slate-200 font-black ${getGrdCol(s.Grade_Result)}">${s.Grade_Result||'F'}</td><td class="text-red-600 font-black">${s.Rank||'-'}</td></tr>`;
                     });
                     html += `</tbody></table></div>`;
                     renderArea.innerHTML = html;
                 }
                 document.getElementById('internal-actions').classList.remove('hidden');
                 hideLoading();
-            } catch(e) { hideLoading(); showError(e.message); }
+            } catch(e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
         }
 
         async function generateTrackingBook() {
             let period = document.getElementById('monthSelect').value;
             let cls = document.getElementById('classSelect').value;
-            if(!period || !cls) return alert("សូមជ្រើសរើសខែ និងថ្នាក់!");
+            if(!period || !cls) return Swal.fire('បញ្ជាក់', 'សូមជ្រើសរើសខែ និងថ្នាក់!', 'warning');
             
-            showLoading("កំពុងបង្កើតសៀវភៅតាមដាន... អាចចំណាយពេលបន្តិច!");
+            showLoading("កំពុងរៀបចំសៀវភៅតាមដាន... អាចចំណាយពេលបន្តិច!");
             try {
-                let url = `${SUPABASE_URL}/rest/v1/student_scores?month_name=eq.${encodeURIComponent(period)}&grade=eq.${encodeURIComponent(cls)}`;
-                let res = await fetch(url, { headers });
-                let dbData = await res.json();
+                let dbData = await supaFetch(`student_scores?month_name=eq.${encodeURIComponent(period)}&grade=eq.${encodeURIComponent(cls)}`);
                 let cData = dbData.map(r => mapDbToLegacy(r));
                 
-                if(cData.length === 0) { hideLoading(); return alert("គ្មានទិន្នន័យសម្រាប់ថ្នាក់នេះទេ!"); }
+                if(cData.length === 0) { hideLoading(); return Swal.fire('ទទេ!', 'គ្មានទិន្នន័យសម្រាប់ថ្នាក់នេះទេ!', 'info'); }
 
-                let gConf = configList.find(c => c.grade_level === cls) || {};
-                let tInfo = teacherMap[cls] || {name:'...', sign:''};
+                let gConf = configList.find(c => String(c.grade_level).trim() === cls) || {};
+                let tInfo = teacherMap[cls] || {name:'មិនស្គាល់', sign:''};
                 let renderArea = document.getElementById('internal-render-area');
                 let html = "";
 
                 cData.forEach((s, index) => {
-                    if(index > 0) html += `<div class="page-break"></div>`;
-                    html += `<div class="print-area portrait-page">
+                    html += `<div class="print-area portrait-page ${index > 0 ? 'page-break' : ''}">
                         ${buildPrintHeader(`តារាងលទ្ធផលសិក្សារបស់សិស្សប្រចាំ ${period}`)}
                         <div class="student-info-grid">
                             <p>ឈ្មោះ ៖ <span class="moul-font text-blue-800">${s.Name}</span></p><p>ភេទ ៖ <span>${s.Gender}</span></p>
@@ -619,19 +654,19 @@
                         <div class="summary-box">
                             <div class="summary-item"><p class="s-title">មធ្យមភាគ</p><p class="s-value">${s.Average}</p></div>
                             <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់</p><p class="s-value text-red-600">${s.Rank||'-'}</p></div>
-                            <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value ${getGrdCol(s.Grade_Result)}">${s.Grade_Result || 'F'}</p></div>
+                            <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value font-black ${getGrdCol(s.Grade_Result)}">${s.Grade_Result || 'F'}</p></div>
                         </div>
-                        <table class="c-table mt-2"><thead><tr><th class="w-8">ល.រ</th><th class="col-left w-48">មុខវិជ្ជា</th><th class="w-20">អតិបរមា</th><th class="w-24">ពិន្ទុ</th><th class="w-32">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>`;
+                        <table class="c-table mt-2"><thead><tr class="bg-slate-50"><th class="w-8 border-r border-slate-200">ល.រ</th><th class="col-left w-48 border-r border-slate-200">មុខវិជ្ជា</th><th class="w-20 border-r border-slate-200">អតិបរមា</th><th class="w-24 border-r border-slate-200">ពិន្ទុ</th><th class="w-32 border-r border-slate-200">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>`;
                     
                     let idx=1;
                     SUBJECTS_15.forEach(sub => {
                         if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
                             let raw = String(s[sub]).trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
                             if(isNaN(cleanNum(raw)) || !raw) {
-                                html += `<tr><td>${idx++}</td><td class="col-left">${sub}</td><td>${ms}</td><td class="text-red-500 font-bold">${raw||'ម.ថ'}</td><td colspan="2">-</td></tr>`;
+                                html += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-red-500 font-bold border-r border-slate-200">${raw||'ម.ថ'}</td><td colspan="2">-</td></tr>`;
                             } else {
                                 let sc = cleanNum(raw); let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
-                                html += `<tr><td>${idx++}</td><td class="col-left moul-font text-[10px]">${sub}</td><td>${ms}</td><td class="text-blue-700 font-bold">${sc}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-bold ${getGrdCol(g)}">${g}</td></tr>`;
+                                html += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-black text-[13px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-black text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
                             }
                         }
                     });
@@ -641,7 +676,7 @@
                 renderArea.innerHTML = html;
                 document.getElementById('internal-actions').classList.remove('hidden');
                 hideLoading();
-            } catch(e) { hideLoading(); showError(e.message); }
+            } catch(e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
         }
 
         // ==========================================
@@ -655,15 +690,14 @@
                 if (period.includes("ប្រចាំឆមាស")) { table = "semester_scores"; periodCol = "semester_name"; }
                 else if (period === "ប្រចាំឆ្នាំ") { table = "annual_scores"; periodCol = "academic_year"; period = new Date().getFullYear().toString(); }
 
-                let res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${periodCol}=eq.${encodeURIComponent(period)}`, { headers });
-                let dbData = await res.json();
+                let dbData = await supaFetch(`${table}?${periodCol}=eq.${encodeURIComponent(period)}`);
                 let cData = dbData.map(r => mapDbToLegacy(r));
 
                 const mode = document.getElementById('reportMode').value;
                 const subjectFilter = document.getElementById('reportSubjectFilter').value;
                 const classFilter = document.getElementById('reportClassFilter').value;
 
-                document.getElementById('reportHeader').innerHTML = buildPrintHeader(`របាយការណ៍វិភាគលទ្ធផលសិក្សាសិស្ស<br><span class="text-sm text-gray-600">(${mode === 'subject' ? `មុខវិជ្ជា៖ ${subjectFilter}` : `ថ្នាក់រៀន៖ ${classFilter}`} | ${period})</span>`);
+                document.getElementById('reportHeader').innerHTML = buildPrintHeader(`របាយការណ៍វិភាគលទ្ធផលសិក្សាសិស្ស<br><span class="text-sm font-bold text-indigo-700 mt-2 block tracking-widest uppercase">${mode === 'subject' ? `មុខវិជ្ជា៖ ${subjectFilter}` : `ថ្នាក់រៀន៖ ${classFilter}`} | ${period}</span>`);
                 document.getElementById('adminPrintArea').classList.remove('hidden');
                 document.getElementById('report-actions').classList.remove('hidden');
                 
@@ -682,19 +716,19 @@
                     if(stats.count === 0) return;
                     const tp = stats.count - stats.ABS; const pG = (v) => tp > 0 ? Math.round((v/tp)*100) : 0;
                     
-                    let row = `<tr class="text-center text-[10px] border-b hover:bg-slate-50">
-                        <td class="col-left font-bold w-[15%] text-slate-700">${title}</td>
-                        <td class="font-black text-indigo-600 border-l">${stats.count}</td>
-                        <td class="text-red-600 border-l">${stats.A} (${pG(stats.A)}%)</td>
-                        <td class="text-pink-600 border-l">${stats.B} (${pG(stats.B)}%)</td>
-                        <td class="text-orange-600 border-l">${stats.C} (${pG(stats.C)}%)</td>
-                        <td class="text-green-600 border-l">${stats.D} (${pG(stats.D)}%)</td>
-                        <td class="text-blue-600 border-l">${stats.E} (${pG(stats.E)}%)</td>
-                        <td class="text-slate-800 border-l">${stats.F} (${pG(stats.F)}%)</td>
-                        <td class="text-slate-500 border-l">${stats.ABS}</td>
+                    let row = `<tr class="text-center text-[11px] border-b hover:bg-slate-50 transition">
+                        <td class="col-left font-black w-[15%] text-slate-800 border-r border-slate-200">${title}</td>
+                        <td class="font-black text-indigo-700 border-r border-slate-200 text-sm">${stats.count}</td>
+                        <td class="text-red-600 font-bold border-r border-slate-200">${stats.A} <span class="text-[9px] text-slate-400">(${pG(stats.A)}%)</span></td>
+                        <td class="text-pink-600 font-bold border-r border-slate-200">${stats.B} <span class="text-[9px] text-slate-400">(${pG(stats.B)}%)</span></td>
+                        <td class="text-orange-600 font-bold border-r border-slate-200">${stats.C} <span class="text-[9px] text-slate-400">(${pG(stats.C)}%)</span></td>
+                        <td class="text-green-600 font-bold border-r border-slate-200">${stats.D} <span class="text-[9px] text-slate-400">(${pG(stats.D)}%)</span></td>
+                        <td class="text-blue-600 font-bold border-r border-slate-200">${stats.E} <span class="text-[9px] text-slate-400">(${pG(stats.E)}%)</span></td>
+                        <td class="text-slate-800 font-bold border-r border-slate-200">${stats.F} <span class="text-[9px] text-slate-400">(${pG(stats.F)}%)</span></td>
+                        <td class="text-slate-500 font-bold">${stats.ABS}</td>
                     </tr>`;
                     
-                    container.innerHTML += `<div class="mb-4"><table class="c-table"><thead><tr class="bg-slate-100 text-[10px]"><th class="col-left">${mode==='subject'?'ថ្នាក់':'មុខវិជ្ជា'}</th><th>សរុប</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>អ.វ</th></tr></thead><tbody>${row}</tbody></table></div>`;
+                    container.innerHTML += `<div class="mb-5 shadow-sm border border-slate-200 rounded-xl overflow-hidden"><table class="c-table w-full"><thead><tr class="bg-slate-800 text-white text-[11px]"><th class="col-left border-r border-slate-700 py-3">${mode==='subject'?'ថ្នាក់':'មុខវិជ្ជា'}</th><th class="border-r border-slate-700">សរុប</th><th class="border-r border-slate-700">A</th><th class="border-r border-slate-700">B</th><th class="border-r border-slate-700">C</th><th class="border-r border-slate-700">D</th><th class="border-r border-slate-700">E</th><th class="border-r border-slate-700">F</th><th>អ.វ</th></tr></thead><tbody>${row}</tbody></table></div>`;
                 }
 
                 if (mode === 'subject') {
@@ -708,9 +742,9 @@
                     if(clsData.length > 0) SUBJECTS_10.forEach(sub => renderAdminCard(sub, clsData, 50));
                 }
 
-                if(container.innerHTML === '') container.innerHTML = '<div class="p-10 text-center text-slate-400 font-bold">មិនមានទិន្នន័យ</div>';
+                if(container.innerHTML === '') container.innerHTML = '<div class="p-10 text-center text-slate-400 font-bold text-lg border-2 border-dashed rounded-xl">មិនមានទិន្នន័យ</div>';
                 hideLoading();
-            } catch(e) { hideLoading(); showError(e.message); }
+            } catch(e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
         }
 
         // ==========================================
@@ -719,25 +753,34 @@
         function buildPrintHeader(title) {
             return `
                 <div class="header-section">
-                    <h2 class="moul-font text-[14px] text-blue-900 mb-1">ព្រះរាជាណាចក្រកម្ពុជា</h2>
-                    <h2 class="moul-font text-[14px] text-blue-900 mb-3">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
-                    <h1 class="moul-font text-red-600 text-[18px] text-center leading-relaxed">${title}</h1>
+                    <h2 class="moul-font text-[15px] text-blue-900 mb-1 leading-relaxed">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+                    <h2 class="moul-font text-[15px] text-blue-900 mb-4 leading-relaxed">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
+                    <h1 class="moul-font text-red-600 text-[19px] text-center leading-relaxed drop-shadow-sm">${title}</h1>
                 </div>`;
         }
 
         function getStampHTML(dateSolar, dateLunar, tSign) {
-            let stampHTML = `<div class="sig-box"><p class="font-bold text-[11px] mb-1">បានឃើញ និងឯកភាព</p><p class="moul-font text-[11px] text-blue-900">នាយកសាលា</p></div>`;
-            let rightHTML = `<div class="sig-box"><p class="font-bold text-[10px] text-gray-600 mb-1">${dateSolar || '...'}</p><p class="font-bold text-[10px] text-gray-600 mb-2">${dateLunar || '...'}</p><p class="moul-font text-[11px] text-blue-900">គ្រូបន្ទុកថ្នាក់</p>${tSign ? `<img src="${tSign}" class="sig-img">` : ''}</div>`;
+            let stampHTML = `<div class="sig-box"><p class="font-bold text-[12px] mb-1">បានឃើញ និងឯកភាព</p><p class="moul-font text-[12px] text-blue-900 mt-2">នាយកសាលា</p></div>`;
+            let rightHTML = `<div class="sig-box"><p class="font-bold text-[11px] text-gray-700 mb-1">${dateSolar || '.........................'}</p><p class="font-bold text-[11px] text-gray-700 mb-3">${dateLunar || '.........................'}</p><p class="moul-font text-[12px] text-blue-900">គ្រូបន្ទុកថ្នាក់</p>${tSign ? `<img src="${tSign}" class="sig-img">` : ''}</div>`;
             return stampHTML + rightHTML;
         }
 
-        function switchTab(tabId) {
-            if (tabId === 'tab-internal' && !isInternalUnlocked) { if (prompt("លេខសម្ងាត់រដ្ឋបាល ៖") === INTERNAL_PWD) isInternalUnlocked = true; else return; }
-            if (tabId === 'tab-report' && !isReportUnlocked) { if (prompt("លេខសម្ងាត់របាយការណ៍ ៖") === REPORT_PWD) isReportUnlocked = true; else return; }
+        async function switchTab(tabId) {
+            if (tabId === 'tab-internal' && !isInternalUnlocked) {
+                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់រដ្ឋបាល', input: 'password', confirmButtonText: 'បញ្ជាក់' });
+                if (pwd === INTERNAL_PWD) isInternalUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
+            }
+            if (tabId === 'tab-report' && !isReportUnlocked) {
+                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់របាយការណ៍', input: 'password', confirmButtonText: 'បញ្ជាក់' });
+                if (pwd === REPORT_PWD) isReportUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
+            }
+            
             document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.classList.add('inactive'); });
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-            document.getElementById('btn-' + tabId).classList.add('active');
-            document.getElementById(tabId).classList.remove('hidden');
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            let btn = document.getElementById('btn-' + tabId);
+            btn.classList.add('active'); btn.classList.remove('inactive');
+            document.getElementById(tabId).classList.add('active');
             
             if(tabId === 'tab-report') { document.getElementById('searchSection').classList.add('hidden'); } 
             else { 
@@ -755,7 +798,6 @@
 
         function showLoading(text) { document.getElementById('loadingText').innerText = text; document.getElementById('loadingOverlay').classList.remove('hidden'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
-        function showError(msg) { let b = document.getElementById('errorBox'); b.innerText = msg; b.classList.remove('hidden'); setTimeout(()=>b.classList.add('hidden'), 5000); }
         
         function cleanNum(val) { if(val===null||val===""||val===undefined) return NaN; return parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)])); }
         function getGrd(p) { let x=Math.floor(p); if(x>=90) return "A"; if(x>=80) return "B"; if(x>=70) return "C"; if(x>=60) return "D"; if(x>=50) return "E"; return "F"; }
