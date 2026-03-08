@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធគ្រប់គ្រងការសិក្សា - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
     
-    <!-- CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&family=Battambang:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -15,63 +14,56 @@
         body { font-family: 'Kantumruy Pro', sans-serif; background: #f4f7f6; color: #1e293b; }
         .moul-font { font-family: 'Moul', serif; }
         
-        /* Tab Styles */
-        .tab-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+        .tab-btn { transition: all 0.3s ease; position: relative; overflow: hidden; }
         .tab-btn.active { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(30, 64, 175, 0.3); }
         .tab-btn.inactive { background-color: white; color: #64748b; border-color: #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeSlideUp 0.5s ease-out forwards; }
         @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Print Area - A4 Setup */
+        /* Print Area - រៀបចំឲ្យណែនល្អ មិនធ្លាយទំព័រ */
         .print-area { background: white; margin: 25px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
-        .portrait-page { width: 210mm; padding: 12mm 15mm; min-height: 297mm; }
-        .landscape-page { width: 297mm; padding: 12mm 15mm; min-height: 210mm; }
+        .portrait-page { width: 210mm; padding: 10mm 12mm; min-height: 297mm; }
+        .landscape-page { width: 297mm; padding: 10mm 12mm; min-height: 210mm; }
         
-        /* Header Layout matching Image 2 */
-        .print-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; width: 100%; position: relative;}
-        .print-header-left { text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6; }
-        .print-header-center { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; width: 300px;}
-        
-        /* Student Info Box */
-        .student-info-box { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 15px; margin-bottom: 20px; line-height: 2;}
+        /* ព័ត៌មានសិស្ស */
+        .student-info-box { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 12px; margin-bottom: 12px; line-height: 1.8;}
         .student-info-box span { color: #0f172a; margin-left: 5px; font-weight: 900;}
 
-        /* Summary Box */
-        .summary-box { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 0; margin-bottom: 20px;}
+        /* ប្រអប់សរុបលទ្ធផល */
+        .summary-box { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px 0; margin-bottom: 12px;}
         .summary-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .summary-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 15%; height: 70%; width: 1.5px; background-color: #e2e8f0; }
-        .s-title { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 5px;}
-        .s-value { font-size: 22px; font-weight: 900; color: #2563eb; line-height: 1; }
-        .s-sub { font-size: 9px; color: #94a3b8; margin-top: 5px; }
+        .s-title { font-size: 10px; color: #64748b; font-weight: 700; margin-bottom: 4px;}
+        .s-value { font-size: 20px; font-weight: 900; color: #2563eb; line-height: 1; }
         
-        /* Tables */
-        .c-table { border-collapse: collapse; width: 100%; font-size: 12px; }
-        .c-table th { padding: 10px 6px; text-align: center; color: #1e3a8a; border-bottom: 2px solid #cbd5e1; border-top: 2px solid #cbd5e1; font-weight: 900; }
-        .c-table td { padding: 8px 6px; text-align: center; border-bottom: 1px solid #f1f5f9; font-weight: 700;}
+        /* តារាងពិន្ទុ */
+        .c-table { border-collapse: collapse; width: 100%; font-size: 11px; }
+        .c-table th { padding: 6px 4px; text-align: center; color: #1e3a8a; border-bottom: 2px solid #cbd5e1; border-top: 2px solid #cbd5e1; font-weight: 900; }
+        .c-table td { padding: 4px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; font-weight: 700;}
         .c-table tbody tr:nth-child(even) { background-color: #f8fafc; }
-        .col-left { text-align: left !important; padding-left: 15px !important; }
+        .col-left { text-align: left !important; padding-left: 12px !important; }
         
         /* Progress Bar */
-        .bar-bg { width: 100%; background-color: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden; display: inline-block; vertical-align: middle; }
-        .bar-fill { height: 100%; border-radius: 4px; transition: width 1s; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .bar-bg { width: 100%; background-color: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; }
+        .bar-fill { height: 100%; border-radius: 3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
         /* Chart */
-        .trend-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 160px; border-bottom: 2px solid #cbd5e1; margin-top: 15px; padding: 10px 0 0 0; position: relative; }
-        .trend-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; height: 100%; justify-content: flex-end; z-index: 10;}
-        .trend-bar { width: 24px; border-radius: 4px 4px 0 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+        .trend-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 150px; border-bottom: 2px solid #cbd5e1; margin-top: 10px; padding: 10px 0 0 0; position: relative; }
+        .trend-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; height: 100%; justify-content: flex-end;}
+        .trend-bar { width: 22px; border-radius: 4px 4px 0 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
         
-        /* Signatures Layout matching Image 2 */
-        .signatures { display: flex; justify-content: space-between; margin-top: 30px; padding: 0 10px; }
-        .sig-box { text-align: center; position: relative; min-height: 120px; }
-        .stamp-img { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); max-height: 90px; max-width: 90px; mix-blend-mode: multiply; pointer-events: none; z-index: 10; opacity: 0.9;}
-        .sig-img { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); max-height: 50px; max-width: 120px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;}
+        /* ហត្ថលេខា និង ត្រា */
+        .signatures { display: flex; justify-content: space-between; margin-top: 15px; padding: 0 10px; }
+        .sig-box { text-align: center; position: relative; min-height: 100px; }
+        .stamp-img { position: absolute; top: 25px; left: 50%; transform: translateX(-50%); max-height: 85px; max-width: 85px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;}
+        .sig-img { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); max-height: 45px; max-width: 120px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;}
 
         @media print {
             @page { size: A4 portrait; margin: 0; }
             body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
-            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; padding: 10mm 15mm !important; width: 100% !important; page-break-after: always; }
+            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; padding: 10mm 12mm !important; width: 100% !important; page-break-after: always; }
             .print-area:last-child { page-break-after: auto; }
             .landscape-page { size: A4 landscape; }
         }
@@ -138,10 +130,10 @@
             </div>
             <div id="t1-page2" style="page-break-before: always; padding-top: 15px;">
                 <div id="t1-p2-header"></div>
-                <div id="t1-chartArea" class="mb-6"></div>
+                <div id="t1-chartArea" class="mb-4"></div>
                 <div id="t1-comparisonTableContainer"></div>
-                <div id="t1-analysisBox" class="analysis-box"></div>
-                <div id="t1-p2-signatures" class="mt-10"></div>
+                <div id="t1-analysisBox" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mt-4 text-[11px] leading-relaxed text-blue-900 font-bold"></div>
+                <div id="t1-p2-signatures" class="mt-8"></div>
             </div>
         </div>
     </div>
@@ -212,13 +204,21 @@
 
         const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
 
-        // 🛠️ Function កាត់ឃ្លា (Space) និងបម្លែងលេខខ្មែរទៅលេខអង់គ្លេស ដើម្បីអោយផ្ទៀងផ្ទាត់ត្រូវ ១០០%
+        // 🛠️ Function កាត់ឃ្លា (Space) និងបម្លែងលេខខ្មែរទៅលេខអង់គ្លេស ដើម្បីអោយផ្ទៀងផ្ទាត់ត្រូវ ១០០% ទោះបញ្ចូលខុសក៏ដោយ
         const fmtCls = (str) => {
             if(!str) return "";
             return String(str)
                 .replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)])
                 .replace(/\s+/g, '')
                 .toUpperCase();
+        };
+
+        // 🛠️ Function បម្លែង Link Google Drive អោយចេញរូបភាព
+        const getDriveImgUrl = (url) => {
+            if(!url) return '';
+            let idMatch = url.match(/id=([^&]+)/);
+            if(idMatch) return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
+            return url;
         };
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -257,7 +257,7 @@
                 teachData.forEach(t => {
                     let rawCls = String(t.homeroom_class || "").trim();
                     if(rawCls) { 
-                        teacherMap[fmtCls(rawCls)] = { name: t.teacher_name, sign: t.signature_link }; 
+                        teacherMap[fmtCls(rawCls)] = { name: t.teacher_name, sign: getDriveImgUrl(t.signature_link) }; 
                         allClassNames.push(rawCls); 
                     }
                 });
@@ -274,24 +274,28 @@
         // ==========================================
         function buildPrintHeader(title) {
             return `
-                <div class="print-header">
-                    <div class="print-header-left">
+                <div style="position: relative; width: 100%; min-height: 80px; margin-bottom: 5px;">
+                    <!-- កណ្តាលលើគេបង្អស់ -->
+                    <div style="position: absolute; width: 100%; text-align: center; top: 0;">
+                        <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a; margin-bottom: 5px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+                        <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
+                    </div>
+                    <!-- ឆ្វេងរុញចុះក្រោមបន្តិច -->
+                    <div style="position: absolute; left: 0; top: 25px; text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6;">
                         <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
                         <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
                         <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
                     </div>
-                    <div class="print-header-center">
-                        <h2 class="moul-font" style="font-size: 14px; color: #1e3a8a; margin-bottom: 5px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
-                        <h2 class="moul-font" style="font-size: 14px; color: #1e3a8a; margin-bottom: 15px;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
-                    </div>
                 </div>
-                <h1 class="moul-font text-red-600 text-center" style="font-size: 20px; margin: 15px 0;">${title}</h1>
+                <h1 class="moul-font text-red-600 text-center" style="font-size: 18px; margin: 15px 0;">${title}</h1>
             `;
         }
 
         function getStampHTML(dateSolar, dateLunar, tSign) {
-            let pImg = PRINCIPAL_STAMP_URL ? `<img src="${PRINCIPAL_STAMP_URL}" class="stamp-img">` : '';
-            let tImg = tSign ? `<img src="${tSign}" class="sig-img">` : '';
+            let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
+            let pImg = pImgUrl ? `<img src="${pImgUrl}" class="stamp-img" onerror="this.style.display='none'">` : '';
+            let tImg = tSign ? `<img src="${tSign}" class="sig-img" onerror="this.style.display='none'">` : '';
+            
             return `
             <div class="signatures">
                 <div class="sig-box">
@@ -301,7 +305,7 @@
                 </div>
                 <div class="sig-box" style="width: 250px;">
                     <p class="font-bold text-[11px] text-gray-700 mb-1">${dateLunar || '...................................................'}</p>
-                    <p class="font-bold text-[11px] text-gray-700 mb-3">${dateSolar || '...................................................'}</p>
+                    <p class="font-bold text-[11px] text-gray-700 mb-3">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
                     <p class="moul-font text-[12px] text-blue-900">គ្រូបន្ទុកថ្នាក់</p>
                     ${tImg}
                 </div>
@@ -326,8 +330,8 @@
             else if (period === "ប្រចាំឆ្នាំ") { table = "annual_scores"; periodCol = "academic_year"; period = new Date().getFullYear().toString(); }
 
             try {
-                // 🔍 អាចរកតាម ID ឬ តាមឈ្មោះ (ilike ស្វែងរកពាក្យស្រដៀង)
-                let queryUrl = `${table}?${periodCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.*${encodeURIComponent(q)}*)&limit=10`;
+                // 🔍 អាចរកតាម ID ឬ តាមឈ្មោះ (ilike)
+                let queryUrl = `${table}?${periodCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.%25${encodeURIComponent(q)}%25)&limit=1`;
                 let data = await supaFetch(queryUrl);
                 
                 if(!data || data.length === 0) {
@@ -348,7 +352,7 @@
                 document.getElementById('t1-header').innerHTML += `
                     <div class="student-info-box">
                         <div>
-                            <p>គោត្តនាម-នាម ៖ <span class="moul-font text-blue-800" style="font-size: 15px;">${s.Name}</span></p>
+                            <p>គោត្តនាម-នាម ៖ <span class="moul-font text-blue-800" style="font-size: 14px;">${s.Name}</span></p>
                             <p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${s.DOB || '...'}</span></p>
                             <p>អត្តលេខ ៖ <span>${s.ID}</span></p>
                         </div>
@@ -370,21 +374,19 @@
                 SUBJECTS_15.forEach(sub => {
                     if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
                         let raw = String(s[sub]).trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
-                        
-                        // បូកពិន្ទុអតិបរមាសរុប (ទោះសិស្សអវត្តមានក៏ដោយ ឲ្យតែមានក្នុងតារាង)
-                        maxTotal += ms;
+                        maxTotal += ms; // គណនាពិន្ទុអតិបរមាសរុប
 
                         if(raw.toUpperCase() === "ABS" || raw.toUpperCase() === "ម.ថ" || isNaN(cleanNum(raw))) {
                             tRows += `<tr><td>${idx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="text-red-500 font-bold">${raw}</td><td colspan="2" class="text-gray-400">-</td></tr>`;
                         } else {
                             let sc = cleanNum(raw); let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
-                            tRows += `<tr><td>${idx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="text-blue-700 font-bold text-[13px]">${sc}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div><span class="text-[10px] ml-1 text-gray-500">${Math.round(pct)}%</span></td><td class="font-bold text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
+                            tRows += `<tr><td>${idx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="text-blue-700 font-bold text-[12px]">${sc}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-bold text-[12px] ${getGrdCol(g)}">${g}</td></tr>`;
                         }
                     }
                 });
 
-                document.getElementById('t1-tableArea').innerHTML = `<table class="c-table mt-2"><thead><tr><th class="w-8">ល.រ</th><th class="col-left w-48">មុខវិជ្ជា</th><th class="w-20">ពិន្ទុអតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-32">ក្រាបភាគរយ (%)</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody>
-                    <tfoot><tr class="bg-slate-100"><td colspan="2" class="col-left text-right font-bold text-[12px] py-3">ពិន្ទុសរុប</td><td class="font-bold text-gray-500">${maxTotal || '-'}</td><td class="font-black text-blue-700 text-[16px]">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[11px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
+                document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead><tr><th class="w-8">ល.រ</th><th class="col-left w-48">មុខវិជ្ជា</th><th class="w-20">ពិន្ទុអតិបរមា</th><th class="w-24">ពិន្ទុទទួលបាន</th><th class="w-32">ក្រាបភាគរយ (%)</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody>
+                    <tfoot><tr class="bg-slate-100"><td colspan="2" class="col-left text-right font-bold text-[12px] py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-500">${maxTotal || '-'}</td><td class="font-black text-blue-700 text-[14px]">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[11px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
                 
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign);
                 
@@ -392,7 +394,7 @@
                 let histData = await supaFetch(`student_scores?student_id=eq.${encodeURIComponent(s.ID)}`);
                 
                 document.getElementById('t1-p2-header').innerHTML = buildPrintHeader(`តារាងប្រៀបធៀបលទ្ធផលសិក្សាតាមមុខវិជ្ជាប្រចាំខែ`);
-                document.getElementById('t1-p2-header').innerHTML += `<div class="student-info-box" style="border-left-color:#eab308; background: linear-gradient(90deg, #fefce8 0%, transparent 100%);"><div><p>ឈ្មោះ ៖ <span class="moul-font text-blue-800" style="font-size:14px;">${s.Name}</span></p></div><div><p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p></div></div>`;
+                document.getElementById('t1-p2-header').innerHTML += `<div class="student-info-box" style="border-left-color:#eab308; background: linear-gradient(90deg, #fefce8 0%, transparent 100%);"><div><p>ឈ្មោះ ៖ <span class="moul-font text-blue-800" style="font-size:13px;">${s.Name}</span></p></div><div><p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p></div></div>`;
 
                 const stdMonths =["វិច្ឆិកា", "ធ្នូ", "មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា"];
                 let availableMonths = stdMonths.filter(m => histData.some(d => d.month_name === m));
@@ -413,9 +415,9 @@
                             cHtml += `<div class="trend-bar-wrapper"><div class="trend-val">${val.toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div class="trend-lbl">${m.substring(0,6)}</div></div>`;
                         }
                     });
-                    document.getElementById('t1-chartArea').innerHTML = `<div class="border border-slate-200 rounded-xl p-5 pb-0 bg-white"><p class="text-[11px] font-black text-slate-500 mb-3 text-center uppercase tracking-widest">📈 ក្រាបប្រៀបធៀបមធ្យមភាគប្រចាំខែ</p><div class="trend-chart">${cHtml}</div></div>`;
+                    document.getElementById('t1-chartArea').innerHTML = `<div class="border border-slate-200 rounded-xl p-4 pb-0 bg-white"><p class="text-[11px] font-black text-slate-500 mb-2 text-center uppercase tracking-widest">📈 ក្រាបប្រៀបធៀបមធ្យមភាគប្រចាំខែ</p><div class="trend-chart">${cHtml}</div></div>`;
 
-                    let tb = `<table class="c-table mt-6 border border-slate-300"><thead><tr class="bg-slate-100"><th class="w-8 border-r border-slate-300">ល.រ</th><th class="col-left w-32 border-r border-slate-300">មុខវិជ្ជា (គោល)</th><th class="w-16 border-r border-slate-300">អតិបរមា</th>`;
+                    let tb = `<table class="c-table mt-4 border border-slate-300"><thead><tr class="bg-slate-100"><th class="w-8 border-r border-slate-300">ល.រ</th><th class="col-left w-32 border-r border-slate-300">មុខវិជ្ជា (គោល)</th><th class="w-16 border-r border-slate-300">អតិបរមា</th>`;
                     availableMonths.forEach(m => tb+=`<th class="border-r border-slate-300">${m.substring(0,8)}</th>`);
                     tb += `</tr></thead><tbody>`;
                     
@@ -428,7 +430,7 @@
                             let d = histMap[m];
                             if(d && d[sub] && !isNaN(cleanNum(d[sub]))) {
                                 let sc = cleanNum(d[sub]); let pct = Math.min((sc/maxS)*100, 100); let g = getGrd(pct);
-                                tb += `<td class="font-black text-[12px] border-r border-slate-200 ${getGrdCol(g)}">${sc} <span class="text-[9px] text-slate-400 font-bold">(${g})</span></td>`;
+                                tb += `<td class="font-black text-[11px] border-r border-slate-200 ${getGrdCol(g)}">${sc} <span class="text-[9px] text-slate-400 font-bold">(${g})</span></td>`;
                                 tPct+=pct; c++;
                             } else tb += `<td class="text-slate-300 border-r border-slate-200">-</td>`;
                         });
@@ -451,21 +453,15 @@
 
                 // ======= TAB 3 (BAC2) =======
                 let t3Area = document.getElementById('t3-capture-area');
-                if (isUpper) {
+                if (isUpper && table === "student_scores") {
                     let trackName = track.includes("SC") ? "វិទ្យាសាស្ត្រ" : "វិទ្យាសាស្ត្រសង្គម";
                     let cSubjs = track.includes("SC") ?["គណិតវិទ្យា","ភាសាខ្មែរ","រូបវិទ្យា","គីមីវិទ្យា","ជីវវិទ្យា","ប្រវត្តិវិទ្យា"] :["ភាសាខ្មែរ","គណិតវិទ្យា","សីលធម៌ពលរដ្ឋ","ប្រវត្តិវិទ្យា","ភូមិវិទ្យា","ផែនដីវិទ្យា"];
                     
-                    document.getElementById('t3-header').innerHTML = buildPrintHeader(`តារាងលទ្ធផលសិក្សាតាមស្តង់ដារបាក់ឌុប<br><span class="text-[14px] text-yellow-700 mt-1 block">(ថ្នាក់${trackName} ប្រចាំ ${period})</span>`);
+                    document.getElementById('t3-header').innerHTML = buildPrintHeader(`តារាងលទ្ធផលសិក្សាតាមស្តង់ដារបាក់ឌុប<br><span class="text-[13px] text-yellow-700 mt-1 block">(ថ្នាក់${trackName} ប្រចាំ ${period})</span>`);
                     document.getElementById('t3-header').innerHTML += `
                         <div class="student-info-box" style="border-left-color:#eab308; background: linear-gradient(90deg, #fefce8 0%, transparent 100%);">
-                            <div>
-                                <p>ឈ្មោះ ៖ <span class="moul-font text-blue-800" style="font-size:15px">${s.Name}</span></p>
-                                <p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p>
-                            </div>
-                            <div>
-                                <p>ភេទ ៖ <span>${s.Gender}</span></p>
-                                <p>អត្តលេខ ៖ <span>${s.ID}</span></p>
-                            </div>
+                            <div><p>ឈ្មោះ ៖ <span class="moul-font text-blue-800" style="font-size:14px">${s.Name}</span></p><p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p></div>
+                            <div><p>ភេទ ៖ <span>${s.Gender}</span></p><p>អត្តលេខ ៖ <span>${s.ID}</span></p></div>
                         </div>`;
 
                     let bTotal = 0; let bMax = 0; let vC = 0; let trRows = ""; let ixx=1;
@@ -476,7 +472,7 @@
                         } else {
                             let sc = cleanNum(raw); bTotal+=sc; bMax+=ms; vC++;
                             let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
-                            trRows += `<tr><td class="border-r border-slate-200">${ixx++}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-black text-[13px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-black text-[14px] ${getGrdCol(g)}">${g}</td></tr>`;
+                            trRows += `<tr><td class="border-r border-slate-200">${ixx++}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-black text-[13px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-black text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
                         }
                     });
                     
@@ -484,14 +480,14 @@
                     if(!isNaN(eng)) {
                         if(eng>=26) { engBonus = eng-25; bTotal+=engBonus; vC++; }
                         let g = getGrd((eng/50)*100);
-                        trRows += `<tr class="bg-emerald-50 italic"><td class="border-r border-slate-200">${ixx++}</td><td class="col-left text-emerald-700 font-black border-r border-slate-200">ភាសាអង់គ្លេស (Bonus)</td><td class="border-r border-slate-200 text-emerald-800">50</td><td class="text-emerald-700 font-black text-[13px] border-r border-slate-200">${eng} <span class="text-[10px]">(+${engBonus})</span></td><td class="border-r border-slate-200 text-emerald-700 font-bold">ពិន្ទុលើកទឹកចិត្ត</td><td class="font-black text-[14px] ${getGrdCol(g)}">${g}</td></tr>`;
+                        trRows += `<tr class="bg-emerald-50 italic"><td class="border-r border-slate-200">${ixx++}</td><td class="col-left text-emerald-700 font-black border-r border-slate-200">ភាសាអង់គ្លេស (Bonus)</td><td class="border-r border-slate-200 text-emerald-800">50</td><td class="text-emerald-700 font-black text-[13px] border-r border-slate-200">${eng} <span class="text-[9px]">(+${engBonus})</span></td><td class="border-r border-slate-200 text-emerald-700 font-bold text-[10px]">ពិន្ទុលើកទឹកចិត្ត</td><td class="font-black text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
                     }
                     if(vC>0) finalGrd = getGrd(Math.floor(bMax>0 ? (bTotal/bMax)*100 : 0)); 
 
                     document.getElementById('t3-tableBody').innerHTML = trRows;
                     document.getElementById('t3-summaryArea').innerHTML = `
-                        <div class="summary-item"><p class="s-title">ពិន្ទុសរុប</p><p class="s-value text-blue-700 text-[32px]">${vC>0 ? bTotal.toFixed(2).replace(/\.00$/,'') : 0}</p><p class="s-sub font-bold">លើអតិបរមា ${bMax}</p></div>
-                        <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value font-black ${getGrdCol(finalGrd)} text-[36px]">${finalGrd}</p><p class="s-sub font-bold">(គិតលើរបបបង្គត់ចុះ)</p></div>`;
+                        <div class="summary-item"><p class="s-title">ពិន្ទុសរុប</p><p class="s-value text-blue-700 text-[26px]">${vC>0 ? bTotal.toFixed(2).replace(/\.00$/,'') : 0}</p><p class="s-sub font-bold">លើអតិបរមា ${bMax}</p></div>
+                        <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value font-black ${getGrdCol(finalGrd)} text-[28px]">${finalGrd}</p><p class="s-sub font-bold">(គិតលើរបបបង្គត់ចុះ)</p></div>`;
                     document.getElementById('t3-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign);
                     
                     t3Area.classList.remove('hidden');
@@ -503,6 +499,31 @@
 
                 hideLoading();
             } catch (e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
+        }
+
+        // ==========================================
+        // LINK TELEGRAM
+        // ==========================================
+        async function linkTelegram(type) {
+            if(!currentStudentInfo) return Swal.fire('បញ្ជាក់', 'សូមស្វែងរកសិស្សជាមុនសិន!', 'warning');
+            const { value: username } = await Swal.fire({ title: `ភ្ជាប់ Telegram ${type==='Student'?'សិស្ស':'អាណាព្យាបាល'}`, input: 'text', inputPlaceholder: 'ឧទាហរណ៍: @sok_123', showCancelButton: true, confirmButtonText: 'ភ្ជាប់ឥឡូវនេះ' });
+            if(!username) return;
+            showLoading("កំពុងភ្ជាប់...");
+            try {
+                let existing = await supaFetch(`telegram_db?student_id=eq.${encodeURIComponent(currentStudentInfo.id)}`);
+                let payload = { student_id: currentStudentInfo.id, student_name: currentStudentInfo.name };
+                if (existing.length > 0) {
+                    payload = existing[0];
+                    let currentField = type === 'Student' ? payload.telegram_student : payload.telegram_parent;
+                    if(currentField && !currentField.includes(username)) payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = currentField + ";" + username;
+                    else if(!currentField) payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = username;
+                } else { payload[type === 'Student' ? 'telegram_student' : 'telegram_parent'] = username; }
+
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/telegram_db?on_conflict=student_id`, { method: "POST", headers: { ...headers, "Prefer": "resolution=merge-duplicates" }, body: JSON.stringify([payload]) });
+                hideLoading();
+                if(res.ok) Swal.fire('ជោគជ័យ!', 'បានភ្ជាប់ប្រព័ន្ធ Telegram រួចរាល់!', 'success');
+                else throw new Error("Update Failed");
+            } catch(e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
         }
 
         // ==========================================
@@ -519,7 +540,6 @@
                 if (period.includes("ប្រចាំឆមាស")) { table = "semester_scores"; periodCol = "semester_name"; }
                 else if (period === "ប្រចាំឆ្នាំ") { table = "annual_scores"; periodCol = "academic_year"; period = new Date().getFullYear().toString(); }
 
-                // ប្រើ limit=5000 ដើម្បីកុំឲ្យបាត់ទិន្នន័យពេលសិស្សច្រើន ហើយ Filter កាត់ Space ដោយ JavaScript 
                 let dbData = await supaFetch(`${table}?${periodCol}=eq.${encodeURIComponent(period)}&limit=5000`);
                 let cData = dbData.map(r => mapDbToLegacy(r)).filter(s => fmtCls(s.Grade) === fmtCls(cls));
 
@@ -544,7 +564,7 @@
                         let rank = parseInt(s.Rank);
                         html += `<tr class="${rank===1?'bg-yellow-50 text-blue-900 border-b-2 border-yellow-200':'text-slate-800 border-b border-slate-200'}"><td class="border-r border-slate-200 text-lg">${rank===1?'🥇':(rank===2?'🥈':(rank===3?'🥉':rank))}</td><td class="col-left border-r border-slate-200">${s.Name}</td><td class="border-r border-slate-200">${s.Gender}</td>`;
                         SUBJECTS_10.forEach(sub => html += `<td class="border-r border-slate-200">${s[sub] || 'ម.ថ'}</td>`);
-                        html += `<td class="text-blue-700 font-black border-r border-slate-200">${s.Average||0}</td><td class="font-black text-lg ${getGrdCol(s.Grade_Result)}">${s.Grade_Result||'F'}</td></tr>`;
+                        html += `<td class="text-blue-700 font-black border-r border-slate-200">${s.Average||0}</td><td class="font-black text-[13px] ${getGrdCol(s.Grade_Result)}">${s.Grade_Result||'F'}</td></tr>`;
                     });
                     html += `</tbody></table></div>`;
                     renderArea.innerHTML = html;
@@ -617,11 +637,11 @@
                                 html += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-red-500 font-bold border-r border-slate-200">${raw||'ម.ថ'}</td><td colspan="2">-</td></tr>`;
                             } else {
                                 let sc = cleanNum(raw); let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
-                                html += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-black text-[13px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-black text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
+                                html += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-black text-[12px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-black text-[12px] ${getGrdCol(g)}">${g}</td></tr>`;
                             }
                         }
                     });
-                    html += `</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold text-[12px] py-3">ពិន្ទុសរុប</td><td class="font-bold text-gray-500">${maxTotal || '-'}</td><td class="font-black text-blue-700 text-[16px]">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[11px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>${getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign)}</div>`;
+                    html += `</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold text-[12px] py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-500">${maxTotal || '-'}</td><td class="font-black text-blue-700 text-[14px]">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[11px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>${getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign)}</div>`;
                 });
 
                 renderArea.innerHTML = html;
@@ -648,7 +668,7 @@
                 const subjectFilter = document.getElementById('reportSubjectFilter').value;
                 const classFilter = document.getElementById('reportClassFilter').value;
 
-                document.getElementById('reportHeader').innerHTML = buildPrintHeader(`របាយការណ៍វិភាគលទ្ធផលសិក្សាសិស្ស<br><span class="text-sm font-bold text-indigo-700 mt-2 block tracking-widest uppercase">${mode === 'subject' ? `មុខវិជ្ជា៖ ${subjectFilter}` : `ថ្នាក់រៀន៖ ${classFilter}`} | ${period}</span>`);
+                document.getElementById('reportHeader').innerHTML = buildPrintHeader(`របាយការណ៍វិភាគលទ្ធផលសិក្សាសិស្ស<br><span class="text-[13px] font-bold text-indigo-700 mt-2 block tracking-widest uppercase">${mode === 'subject' ? `មុខវិជ្ជា៖ ${subjectFilter}` : `ថ្នាក់រៀន៖ ${classFilter}`} | ${period}</span>`);
                 document.getElementById('adminPrintArea').classList.remove('hidden');
                 document.getElementById('report-actions').classList.remove('hidden');
                 
@@ -669,7 +689,7 @@
                     
                     let row = `<tr class="text-center text-[11px] border-b hover:bg-slate-50 transition">
                         <td class="col-left font-black w-[15%] text-slate-800 border-r border-slate-200">${title}</td>
-                        <td class="font-black text-indigo-700 border-r border-slate-200 text-sm">${stats.count}</td>
+                        <td class="font-black text-indigo-700 border-r border-slate-200 text-[13px]">${stats.count}</td>
                         <td class="text-red-600 font-bold border-r border-slate-200">${stats.A} <span class="text-[9px] text-slate-400">(${pG(stats.A)}%)</span></td>
                         <td class="text-pink-600 font-bold border-r border-slate-200">${stats.B} <span class="text-[9px] text-slate-400">(${pG(stats.B)}%)</span></td>
                         <td class="text-orange-600 font-bold border-r border-slate-200">${stats.C} <span class="text-[9px] text-slate-400">(${pG(stats.C)}%)</span></td>
@@ -679,7 +699,7 @@
                         <td class="text-slate-500 font-bold">${stats.ABS}</td>
                     </tr>`;
                     
-                    container.innerHTML += `<div class="mb-5 shadow-sm border border-slate-200 rounded-xl overflow-hidden"><table class="c-table w-full"><thead><tr class="bg-slate-800 text-white text-[11px]"><th class="col-left border-r border-slate-700 py-3">${mode==='subject'?'ថ្នាក់':'មុខវិជ្ជា'}</th><th class="border-r border-slate-700">សរុប</th><th class="border-r border-slate-700">A</th><th class="border-r border-slate-700">B</th><th class="border-r border-slate-700">C</th><th class="border-r border-slate-700">D</th><th class="border-r border-slate-700">E</th><th class="border-r border-slate-700">F</th><th>អ.វ</th></tr></thead><tbody>${row}</tbody></table></div>`;
+                    container.innerHTML += `<div class="mb-4 shadow-sm border border-slate-200 rounded-xl overflow-hidden"><table class="c-table w-full"><thead><tr class="bg-slate-800 text-white text-[11px]"><th class="col-left border-r border-slate-700 py-2">${mode==='subject'?'ថ្នាក់':'មុខវិជ្ជា'}</th><th class="border-r border-slate-700">សរុប</th><th class="border-r border-slate-700">A</th><th class="border-r border-slate-700">B</th><th class="border-r border-slate-700">C</th><th class="border-r border-slate-700">D</th><th class="border-r border-slate-700">E</th><th class="border-r border-slate-700">F</th><th>អ.វ</th></tr></thead><tbody>${row}</tbody></table></div>`;
                 }
 
                 if (mode === 'subject') {
@@ -704,11 +724,11 @@
         // ==========================================
         async function switchTab(tabId) {
             if (tabId === 'tab-internal' && !isInternalUnlocked) {
-                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់រដ្ឋបាល', input: 'password', confirmButtonText: 'បញ្ជាក់', customClass: { title: 'swal2-title'} });
+                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់រដ្ឋបាល', input: 'password', confirmButtonText: 'ចូលប្រើប្រាស់' });
                 if (pwd === INTERNAL_PWD) isInternalUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
             }
             if (tabId === 'tab-report' && !isReportUnlocked) {
-                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់របាយការណ៍', input: 'password', confirmButtonText: 'បញ្ជាក់', customClass: { title: 'swal2-title'} });
+                const { value: pwd } = await Swal.fire({ title: 'លេខសម្ងាត់របាយការណ៍', input: 'password', confirmButtonText: 'ចូលប្រើប្រាស់' });
                 if (pwd === REPORT_PWD) isReportUnlocked = true; else return Swal.fire('ខុសលេខសម្ងាត់!', '', 'error');
             }
             
