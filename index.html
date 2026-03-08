@@ -21,7 +21,6 @@
         .tab-content.active { display: block; animation: fadeSlideUp 0.5s ease-out forwards; }
         @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Print Area */
         .print-area { background: white; margin: 25px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
         .portrait-page { width: 210mm; padding: 10mm 15mm; }
         .landscape-page { width: 297mm; padding: 10mm 15mm; }
@@ -48,12 +47,10 @@
         .trend-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; height: 100%; justify-content: flex-end;}
         .trend-bar { width: 22px; border-radius: 4px 4px 0 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
         
-        /* Signatures */
-        .signatures { display: flex; justify-content: space-between; margin-top: 20px; padding: 0 10px; }
-        .sig-box { text-align: center; position: relative; min-height: 100px; }
-        .stamp-img { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); max-height: 85px; max-width: 85px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;}
-        .sig-img { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); max-height: 45px; max-width: 120px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;}
-
+        /* Signatures Container Layout - Updated Base Layout */
+        .signatures-container { margin-top: 20px; padding: 0 10px; }
+        
+        /* Print Styles */
         @media print {
             @page { size: A4 portrait; margin: 0; }
             body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -95,7 +92,7 @@
                 </div>
                 <div class="space-y-2" id="inputContainer">
                     <label class="text-xs font-black text-slate-500">អត្តលេខ ឬឈ្មោះសិស្ស</label>
-                    <input type="text" id="searchInput" class="w-full p-3.5 rounded-xl bg-slate-50 border outline-none font-bold text-sm" placeholder="ឧ. 424000123 ឬ សុខ សាន្ត">
+                    <input type="text" id="searchInput" class="w-full p-3.5 rounded-xl bg-slate-50 border outline-none font-bold text-sm" placeholder="ឧ. 024025026 ឬ ហុន ម៉ុម">
                 </div>
                 <div class="space-y-2 hidden" id="classSelectContainer">
                     <label class="text-xs font-black text-slate-500">ជ្រើសរើសថ្នាក់រៀន</label>
@@ -121,14 +118,14 @@
                 <div id="t1-header"></div>
                 <div id="t1-summaryArea" class="summary-box"></div>
                 <div id="t1-tableArea"></div>
-                <div id="t1-signatures"></div>
+                <div id="t1-signatures" class="signatures-container"></div>
             </div>
             <div id="t1-page2" style="page-break-before: always; padding-top: 15px;">
                 <div id="t1-p2-header"></div>
                 <div id="t1-chartArea" class="mb-4"></div>
                 <div id="t1-comparisonTableContainer"></div>
                 <div id="t1-analysisBox" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mt-4 text-[11px] leading-relaxed text-blue-900 font-bold"></div>
-                <div id="t1-p2-signatures" class="mt-8"></div>
+                <div id="t1-p2-signatures" class="signatures-container mt-8"></div>
             </div>
         </div>
     </div>
@@ -147,7 +144,7 @@
                 - ភាសាអង់គ្លេស ជាមុខវិជ្ជាពិន្ទុបន្ថែម (លើកទឹកចិត្ត) ក្រោម ២៦=០, ចាប់ពី ២៦ ឡើងយកពិន្ទុដកនឹង ២៥។<br>
                 - និទ្ទេសរួមត្រូវបានគណនាផ្អែកលើពិន្ទុសរុបធៀបនឹងអតិបរមា ដោយធ្វើការបង្គត់ចុះ (Floor)។
             </div>
-            <div id="t3-signatures" class="mt-10"></div>
+            <div id="t3-signatures" class="signatures-container mt-10"></div>
         </div>
     </div>
 
@@ -175,16 +172,14 @@
             </div>
         </div>
         <div id="report-actions" class="no-print mt-6 hidden text-center"><button onclick="window.print()" class="bg-emerald-600 text-white px-10 py-3 rounded-xl font-black shadow-lg">🖨️ Print ស្ថិតិសាលា</button></div>
-        <div id="adminPrintArea" class="print-area portrait-page bg-white hidden mt-6"><div id="reportHeader" class="mb-6"></div><div id="analyticsContent" class="space-y-6 pb-6"></div><div id="reportSignatures" class="mt-10 pb-10"></div></div>
+        <div id="adminPrintArea" class="print-area portrait-page bg-white hidden mt-6"><div id="reportHeader" class="mb-6"></div><div id="analyticsContent" class="space-y-6 pb-6"></div><div id="reportSignatures" class="signatures-container mt-10 pb-10"></div></div>
     </div>
 
     <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-[100]"><div class="text-center bg-white p-8 rounded-3xl max-w-sm w-full mx-4 shadow-2xl"><div class="w-14 h-14 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto mb-5"></div><p class="text-blue-900 font-black text-lg" id="loadingText">កំពុងទាញទិន្នន័យ...</p></div></div>
-
     <script>
         const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
         
-        // 🔑 លេខសម្ងាត់
         const INTERNAL_PWD = "H@nm@m64"; 
         const REPORT_PWD = "hs@8888"; 
 
@@ -199,7 +194,7 @@
 
         const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
 
-        // 🛠️ Function កាត់ឃ្លា និងបម្លែងអក្សរខ្មែរទៅអង់គ្លេស (ការពារការវាយខុសក្នុង Excel)
+        // 🛠️ Function កាត់ឃ្លាអូតូ ទោះបញ្ចូល "12 A" ទៅជា "12A" ដើម្បីផ្ទៀងផ្ទាត់
         const fmtCls = (str) => {
             if(!str) return "";
             let s = String(str).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]).replace(/\s+/g, '').toUpperCase();
@@ -208,7 +203,6 @@
             return s;
         };
 
-        // 🛠️ Function បម្លែង Link Google Drive ឲ្យក្លាយជារូបភាពដែលអាចបញ្ចាំងបាន
         const getDriveImgUrl = (url) => {
             if(!url) return '';
             let idMatch = url.match(/id=([^&]+)/);
@@ -216,12 +210,22 @@
             return url;
         };
 
+        // 🛠️ LocalStorage Auto Save & Load
+        function saveUserPrefs(id, month) {
+            localStorage.setItem('kpt_last_search_id', id);
+            localStorage.setItem('kpt_last_search_month', month);
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             fetchInitialSetupData().then(() => {
+                // Auto Search via URL Parameters
                 const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.has('id') && urlParams.has('month')) {
-                    document.getElementById('searchInput').value = urlParams.get('id');
-                    document.getElementById('monthSelect').value = urlParams.get('month');
+                let idToSearch = urlParams.get('id') || localStorage.getItem('kpt_last_search_id');
+                let monthToSearch = urlParams.get('month') || localStorage.getItem('kpt_last_search_month') || 'មករា';
+
+                if (idToSearch) {
+                    document.getElementById('searchInput').value = idToSearch;
+                    document.getElementById('monthSelect').value = monthToSearch;
                     executeSearch();
                 }
             });
@@ -240,6 +244,7 @@
             return res;
         }
 
+        // 🛠️ ទាញយកឈ្មោះថ្នាក់ពី teacher_info (Tab 3 & 4) និងផ្ទៀងផ្ទាត់ពិន្ទុអតិបរមា
         async function fetchInitialSetupData() {
             try {
                 let allClassNamesSet = new Set();
@@ -255,6 +260,7 @@
 
                 let teachData = await supaFetch(`teacher_info?select=*`);
                 teachData.forEach(t => {
+                    // ទាញយកឈ្មោះថ្នាក់ពី teacher_info
                     let rawCls = String(t.homeroom_class || "").trim();
                     if(rawCls) { 
                         teacherMap[fmtCls(rawCls)] = { name: t.teacher_name, sign: getDriveImgUrl(t.signature_link) }; 
@@ -262,7 +268,6 @@
                     }
                 });
                 
-                // រៀបចំឈ្មោះថ្នាក់ក្នុង Dropdown
                 allClassNames = Array.from(allClassNamesSet).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
                 let clsOptions = allClassNames.map(c => `<option value="${c}">${c}</option>`).join('');
                 document.getElementById('classSelect').innerHTML = clsOptions;
@@ -271,44 +276,47 @@
         }
 
         // ==========================================
-        // ក្បាលទំព័រ និងកាលបរិច្ឆេទ ដូចរូប ១០០%
+        // 🛠️ ក្បាលទំព័រ និងកាលបរិច្ឆេទ ដូចរូបទី១ និងទី២
         // ==========================================
         function buildPrintHeader(title) {
             return `
-                <div style="position: relative; width: 100%; min-height: 90px; margin-bottom: 10px;">
+                <div style="width: 100%; margin-bottom: 5px; position: relative; height: 70px;">
                     <!-- កណ្តាលលើគេបង្អស់ -->
-                    <div style="position: absolute; width: 100%; text-align: center; top: 0;">
-                        <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a; margin-bottom: 5px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center;">
+                        <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a; margin-bottom: 4px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
                         <h2 class="moul-font" style="font-size: 15px; color: #1e3a8a;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
                     </div>
-                    <!-- ឆ្វេងរុញចុះក្រោម (មន្ទីរអប់រំ) -->
-                    <div style="position: absolute; left: 0; top: 35px; text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6;">
+                    <!-- ឆ្វេងរុញចុះក្រោមមួយបន្ទាត់ (មន្ទីរអប់រំ) -->
+                    <div style="position: absolute; top: 25px; left: 0; text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6;">
                         <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
                         <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
                         <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
                     </div>
                 </div>
-                <h1 class="moul-font text-red-600 text-center" style="font-size: 18px; margin: 15px 0;">${title}</h1>
+                <h1 class="moul-font text-red-600 text-center" style="font-size: 18px; margin: 15px 0 10px 0;">${title}</h1>
             `;
         }
 
-        function getStampHTML(dateSolar, dateLunar, tSign) {
+        function getStampHTML(dateSolar, dateLunar, tInfo) {
             let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
-            let pImg = pImgUrl ? `<img src="${pImgUrl}" class="stamp-img" onerror="this.style.display='none'">` : '';
-            let tImg = tSign ? `<img src="${tSign}" class="sig-img" onerror="this.style.display='none'">` : '';
+            // 🛠️ ពង្រីកត្រា x3 (width/height: 200px)
+            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 200px; max-width: none; max-height: 200px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
+            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); max-height: 60px; max-width: 140px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
             
             return `
-            <div class="signatures">
-                <div class="sig-box">
-                    <p class="font-bold text-[12px] mb-1">បានឃើញ និងឯកភាព</p>
-                    <p class="moul-font text-[12px] text-blue-900 mt-1">នាយកសាលា</p>
+            <div style="display: flex; justify-content: space-between; margin-top: 15px; width: 100%; position: relative;">
+                <div style="text-align: center; width: 200px; position: relative; min-height: 150px;">
+                    <p style="font-weight: bold; font-size: 12px; margin-bottom: 5px;">បានឃើញ និងឯកភាព</p>
+                    <p class="moul-font" style="font-size: 12px; color: #1e3a8a;">នាយកសាលា</p>
                     ${pImg}
                 </div>
-                <div class="sig-box" style="width: 250px;">
-                    <p class="font-bold text-[11px] text-gray-700 mb-1">${dateLunar || 'ថ្ងៃ.......................................................'}</p>
-                    <p class="font-bold text-[11px] text-gray-700 mb-3">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
-                    <p class="moul-font text-[12px] text-blue-900">គ្រូបន្ទុកថ្នាក់</p>
+                <div style="text-align: center; width: 250px; position: relative; min-height: 150px;">
+                    <!-- 🛠️ កាលបរិច្ឆេទកែឲ្យត្រូវតាមរូបទី២ -->
+                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 2px;">${dateLunar || '...................................................'}</p>
+                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 8px;">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
+                    <p class="moul-font" style="font-size: 12px; color: #1e3a8a;">គ្រូបន្ទុកថ្នាក់</p>
                     ${tImg}
+                    <p class="moul-font" style="font-size: 12px; color: #1e3a8a; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%;">${tInfo.name}</p>
                 </div>
             </div>`;
         }
@@ -325,14 +333,15 @@
             
             if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខ ឬឈ្មោះសិស្សជាមុនសិន!', 'warning');
             
+            saveUserPrefs(q, period); // 🛠️ Save to Auto-load later via Telegram
             showLoading("កំពុងទាញយកទិន្នន័យ...");
+            
             let table = "student_scores"; let periodCol = "month_name";
             if (period.includes("ប្រចាំឆមាស")) { table = "semester_scores"; periodCol = "semester_name"; }
             else if (period === "ប្រចាំឆ្នាំ") { table = "annual_scores"; periodCol = "academic_year"; period = new Date().getFullYear().toString(); }
 
             try {
-                // 🔍 រកតាម ID ឬ តាមឈ្មោះ (ilike)
-                let queryUrl = `${table}?${periodCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.*${encodeURIComponent(q)}*)&limit=1`;
+                let queryUrl = `${table}?${periodCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.%25${encodeURIComponent(q)}%25)&limit=1`;
                 let data = await supaFetch(queryUrl);
                 
                 if(!data || data.length === 0) {
@@ -376,22 +385,21 @@
                     if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
                         let raw = String(s[sub]).trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
                         
-                        // បូកពិន្ទុអតិបរមាសរុប
                         if (raw !== "") maxTotal += ms; 
 
                         if(raw.toUpperCase() === "ABS" || raw.toUpperCase() === "ម.ថ" || isNaN(cleanNum(raw))) {
-                            tRows += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-red-500 font-bold border-r border-slate-200">${raw}</td><td colspan="2" class="text-gray-400">-</td></tr>`;
+                            tRows += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-red-500 font-bold border-r border-slate-200">${raw}</td><td colspan="2" class="text-gray-400">-</td></tr>`;
                         } else {
                             let sc = cleanNum(raw); let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
-                            tRows += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold border-r border-slate-200 text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-bold text-[13px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-bold text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
+                            tRows += `<tr class="border-b border-slate-200"><td class="border-r border-slate-200">${idx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td class="border-r border-slate-200">${ms}</td><td class="text-blue-700 font-bold text-[13px] border-r border-slate-200">${sc}</td><td class="border-r border-slate-200"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-bold text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
                         }
                     }
                 });
 
-                document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead><tr class="bg-slate-50"><th class="w-8 border-r border-slate-200">ល.រ</th><th class="col-left w-48 border-r border-slate-200">មុខវិជ្ជា</th><th class="w-20 border-r border-slate-200">អតិបរមា</th><th class="w-24 border-r border-slate-200">ពិន្ទុ</th><th class="w-32 border-r border-slate-200">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody>
-                    <tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold text-[12px] py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-500">${maxTotal || '-'}</td><td class="font-black text-blue-700 text-[14px]">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[11px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
+                document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead><tr class="bg-slate-50"><th class="w-8 border-r border-slate-200">ល.រ</th><th class="col-left w-48 border-r border-slate-200">មុខវិជ្ជា</th><th class="w-20 border-r border-slate-200">ពិន្ទុអតិបរមា</th><th class="w-24 border-r border-slate-200">ពិន្ទុទទួលបាន</th><th class="w-32 border-r border-slate-200">ក្រាបភាគរយ (%)</th><th class="w-16">និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody>
+                    <tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold text-[12px] py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-500">${maxTotal || '-'}</td><td class="font-black text-blue-700 text-[16px]">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[11px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
                 
-                document.getElementById('t1-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign);
+                document.getElementById('t1-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
                 
                 // ======= TAB 1 PAGE 2 (HISTORICAL) =======
                 let histData = await supaFetch(`student_scores?student_id=eq.${encodeURIComponent(s.ID)}`);
@@ -415,7 +423,7 @@
                         let val = cleanNum(histMap[m].Average);
                         if(!isNaN(val)) {
                             let pct = (val / 50) * 100; if (pct > 100) pct = 100;
-                            cHtml += `<div class="trend-bar-wrapper"><div class="trend-val" style="font-size:10px; font-weight:bold; color:#475569; margin-bottom:2px;">${val.toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div class="trend-lbl" style="font-size:10px; font-weight:bold; color:#1e293b; margin-top:5px;">${m.substring(0,6)}</div></div>`;
+                            cHtml += `<div class="trend-bar-wrapper"><div style="font-size:9px; font-weight:bold; color:#475569; margin-bottom:2px;">${val.toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div style="font-size:9px; font-weight:bold; color:#1e293b; margin-top:5px;">${m.substring(0,6)}</div></div>`;
                         }
                     });
                     document.getElementById('t1-chartArea').innerHTML = `<div class="border border-slate-200 rounded-xl p-4 pb-0 bg-white"><p class="text-[11px] font-black text-slate-500 mb-2 text-center uppercase tracking-widest">📈 ក្រាបប្រៀបធៀបមធ្យមភាគប្រចាំខែ</p><div class="trend-chart">${cHtml}</div></div>`;
@@ -449,7 +457,7 @@
                     document.getElementById('t1-analysisBox').innerHTML = `💡 <b>ការសន្និដ្ឋានបឋម៖</b> ផ្អែកតាមទិន្នន័យមធ្យមភាគប្រចាំខែ សិស្សមានភាពលេចធ្លោលើមុខវិជ្ជា <b class="text-emerald-700">${str.length>0?str.join(", "):"មិនទាន់មាន"}</b>។ ${wk.length>0 ? `ទន្ទឹមនឹងនេះ គប្បីយកចិត្តទុកដាក់បន្ថែមលើមុខវិជ្ជា <b class="text-red-600">${wk.join(", ")}</b> ដើម្បីទទួលបានលទ្ធផលកាន់តែប្រសើរ។`:''}`;
                 }
 
-                document.getElementById('t1-p2-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign);
+                document.getElementById('t1-p2-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
                 document.getElementById('t1-capture-area').classList.remove('hidden');
                 document.getElementById('t1-actions').classList.remove('hidden');
                 document.getElementById('t1-actions').classList.add('flex');
@@ -491,7 +499,7 @@
                     document.getElementById('t3-summaryArea').innerHTML = `
                         <div class="summary-item"><p class="s-title">ពិន្ទុសរុប</p><p class="s-value text-blue-700 text-[26px]">${vC>0 ? bTotal.toFixed(2).replace(/\.00$/,'') : 0}</p><p class="s-sub font-bold">លើអតិបរមា ${bMax}</p></div>
                         <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value font-black ${getGrdCol(finalGrd)} text-[28px]">${finalGrd}</p><p class="s-sub font-bold">(គិតលើរបបបង្គត់ចុះ)</p></div>`;
-                    document.getElementById('t3-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign);
+                    document.getElementById('t3-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
                     
                     t3Area.classList.remove('hidden');
                     document.getElementById('t3-actions').classList.remove('hidden');
@@ -550,7 +558,7 @@
 
                 let renderArea = document.getElementById('internal-render-area');
                 let formattedCls = fmtCls(cls);
-                let tInfo = teacherMap[formattedCls] || {name: 'មិនស្គាល់'};
+                let tInfo = teacherMap[formattedCls] || {name: 'មិនស្គាល់', sign: ''};
 
                 if(type === 'honor') {
                     let topStus = cData.filter(s => { let r = parseInt(s.Rank); return !isNaN(r) && r >= 1 && r <= 5; });
@@ -567,7 +575,7 @@
                         let rank = parseInt(s.Rank);
                         html += `<tr class="${rank===1?'bg-yellow-50 text-blue-900 border-b-2 border-yellow-200':'text-slate-800 border-b border-slate-200'}"><td class="border-r border-slate-200 text-lg">${rank===1?'🥇':(rank===2?'🥈':(rank===3?'🥉':rank))}</td><td class="col-left border-r border-slate-200">${s.Name}</td><td class="border-r border-slate-200">${s.Gender}</td>`;
                         SUBJECTS_10.forEach(sub => html += `<td class="border-r border-slate-200">${s[sub] || 'ម.ថ'}</td>`);
-                        html += `<td class="text-blue-700 font-black border-r border-slate-200">${s.Average||0}</td><td class="font-black text-lg ${getGrdCol(s.Grade_Result)}">${s.Grade_Result||'F'}</td></tr>`;
+                        html += `<td class="text-blue-700 font-black border-r border-slate-200">${s.Average||0}</td><td class="font-black text-[13px] ${getGrdCol(s.Grade_Result)}">${s.Grade_Result||'F'}</td></tr>`;
                     });
                     html += `</tbody></table></div>`;
                     renderArea.innerHTML = html;
@@ -644,7 +652,8 @@
                             }
                         }
                     });
-                    html += `</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold text-[12px] py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-500">${maxTotal || '-'}</td><td class="font-black text-blue-700 text-[14px]">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[11px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>${getStampHTML(s.DateSolar, s.DateLunar, tInfo.sign)}</div>`;
+                    html += `</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold text-[12px] py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-500">${maxTotal || '-'}</td><td class="font-black text-blue-700 text-[14px]">${s.Total || '-'}</td><td colspan="2" class="text-gray-400 text-[11px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>
+                    <div class="signatures-container">${getStampHTML(s.DateSolar, s.DateLunar, tInfo)}</div></div>`;
                 });
 
                 renderArea.innerHTML = html;
