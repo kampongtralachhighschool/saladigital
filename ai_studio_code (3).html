@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ស្តង់ដារបាក់ឌុប - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { font-family: 'Kantumruy Pro', sans-serif; background: #f4f7f6; color: #1e293b; }
+        .moul-font { font-family: 'Moul', serif; }
+        .nav-container { background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 50; }
+        .nav-link { padding: 12px 20px; font-weight: bold; color: #64748b; transition: all 0.3s; border-bottom: 3px solid transparent; display: inline-block;}
+        .nav-link:hover { color: #1e40af; background: #f8fafc; }
+        .nav-link.active { color: #ca8a04; border-bottom-color: #ca8a04; background: #fefce8;}
+        
+        .print-area { background: white; margin: 20px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 8px; position: relative; overflow: hidden; }
+        .portrait-page { width: 210mm; padding: 10mm 15mm; min-height: 297mm; }
+        .student-info-box { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #eab308; padding-left: 12px; margin-bottom: 12px; line-height: 1.8;}
+        .student-info-box span { color: #0f172a; margin-left: 5px; font-weight: 900;}
+        .summary-box { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #fde047; border-radius: 8px; padding: 10px 0; margin-bottom: 15px; background: #fefce8;}
+        .summary-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; }
+        .summary-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 15%; height: 70%; width: 1.5px; background-color: #fde047; }
+        .s-title { font-size: 11px; color: #854d0e; font-weight: 700; margin-bottom: 4px;}
+        .s-value { font-size: 26px; font-weight: 900; color: #ca8a04; }
+        .c-table { border-collapse: collapse; width: 100%; font-size: 12px; }
+        .c-table th { padding: 6px 4px; text-align: center; border-bottom: 2px solid #cbd5e1; border-top: 2px solid #cbd5e1; font-weight: 900; }
+        .c-table td { padding: 5px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; font-weight: 700;}
+        .col-left { text-align: left !important; padding-left: 12px !important; }
+        .bar-bg { width: 100%; background-color: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; }
+        .bar-fill { height: 100%; border-radius: 3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print, .nav-container { display: none !important; }
+            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; padding: 10mm 15mm !important; width: 100% !important; page-break-after: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="nav-container no-print">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-center sm:justify-start">
+            <a href="index.html" class="nav-link">១. លទ្ធផលទូទៅ</a>
+            <a href="bac2.html" class="nav-link active">២. ស្តង់ដារបាក់ឌុប</a>
+            <a href="admin.html" class="nav-link">៣. កិច្ចការរដ្ឋបាល</a>
+            <a href="report.html" class="nav-link">៤. របាយការណ៍សាលា</a>
+        </div>
+    </nav>
+
+    <div id="searchSection" class="max-w-4xl mx-auto my-8 no-print px-4">
+        <div class="text-center mb-6 space-y-2">
+            <h2 class="moul-font text-blue-900 text-2xl">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
+            <p class="font-bold text-yellow-600 bg-yellow-50 inline-block px-4 py-1 rounded-full shadow-sm border border-yellow-200">ស្វែងរកលទ្ធផលស្តង់ដារបាក់ឌុប (ទី១១, ទី១២)</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-yellow-500 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div class="space-y-1">
+                <label class="text-xs font-black text-slate-500">ការវាយតម្លៃ (ខែ/ឆមាស)</label>
+                <select id="monthSelect" class="w-full p-3 rounded-xl bg-slate-50 border outline-none font-bold text-sm">
+                    <option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option><option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option>
+                    <option value="មីនា">មីនា</option><option value="មេសា">មេសា</option><option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
+                    <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option><option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                    <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option><option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២</option>
+                    <option value="ប្រចាំឆ្នាំ">ប្រចាំឆ្នាំ</option>
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs font-black text-slate-500">អត្តលេខ ឬឈ្មោះសិស្ស</label>
+                <input type="text" id="searchInput" class="w-full p-3 rounded-xl bg-slate-50 border outline-none font-bold text-sm" placeholder="ឧ. 024025026 ឬ ហុន ម៉ុម">
+            </div>
+            <div><button onclick="executeSearch()" class="w-full bg-yellow-500 text-black p-3 rounded-xl font-black text-sm shadow-md hover:bg-yellow-600">ស្វែងរកលទ្ធផល</button></div>
+        </div>
+    </div>
+
+    <div id="t3-actions" class="no-print mt-4 mb-6 hidden flex justify-center max-w-4xl mx-auto">
+        <button onclick="window.print()" class="bg-slate-800 text-white px-10 py-3 rounded-xl font-bold shadow-md hover:scale-105">🖨️ Print របាយការណ៍បាក់ឌុប</button>
+    </div>
+
+    <div id="t3-capture-area" class="print-area portrait-page hidden">
+        <div id="t3-header"></div>
+        <div id="t3-summaryArea" class="summary-box"></div>
+        <div id="t3-tableArea"></div>
+        <div class="mt-6 p-4 bg-slate-50 border rounded-lg text-[11px] text-slate-600 font-bold leading-relaxed">
+            <span class="text-red-600 moul-font text-[12px]">*សម្គាល់ការគណនា៖</span><br>
+            - មុខវិជ្ជាគោលទាំង ៦ បូកបញ្ចូលគ្នាជាពិន្ទុដើម។<br>
+            - ភាសាអង់គ្លេស ជាមុខវិជ្ជាពិន្ទុបន្ថែម (លើកទឹកចិត្ត) ក្រោម ២៦=០, ចាប់ពី ២៦ ឡើងយកពិន្ទុដកនឹង ២៥ រួចបូកថែម។<br>
+            - និទ្ទេសរួមត្រូវបានគណនាផ្អែកលើពិន្ទុសរុបធៀបនឹងអតិបរមា ដោយធ្វើការបង្គត់ចុះ (Floor)។
+        </div>
+        <div id="t3-signatures"></div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center hidden z-[100]"><div class="text-center bg-white p-8 rounded-3xl"><div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div><p class="font-bold text-blue-900">កំពុងដំណើរការ...</p></div></div>
+
+    <script>
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
+        const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+        const PRINCIPAL_STAMP_URL = "https://drive.google.com/uc?export=view&id=1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne"; 
+        const SUBJECTS_15 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
+        const dbMap = { "ភាសាខ្មែរ":"khmer", "សីលធម៌ពលរដ្ឋ":"morality", "ប្រវត្តិវិទ្យា":"history", "ភូមិវិទ្យា":"geography", "គណិតវិទ្យា":"math", "រូបវិទ្យា":"physics", "គីមីវិទ្យា":"chemistry", "ជីវវិទ្យា":"biology", "ផែនដីវិទ្យា":"earth_science", "ភាសាអង់គ្លេស":"english" };
+
+        let configList =[]; let classTypeMap = {}; let teacherMap = {};
+        
+        const fmtCls = (str) => { if(!str) return ""; let s = String(str).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]).replace(/\s+/g, '').toUpperCase(); const kmToEn = { 'ក':'A', 'ខ':'B', 'គ':'C', 'ឃ':'D', 'ង':'E', 'ច':'F', 'ឆ':'G', 'ជ':'H', 'ឈ':'I', 'ញ':'J', 'ដ':'K', 'ឋ':'L', 'ឌ':'M', 'ឍ':'N', 'ណ':'O' }; for (let k in kmToEn) { s = s.replace(new RegExp(k, 'g'), kmToEn[k]); } return s; };
+        const getDriveImgUrl = (url) => url ? url.replace('export=view', 'export=download') : '';
+        const cleanNum = (val) => isNaN(parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]))) ? NaN : parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]));
+        const getGrd = (p) => p>=90?'A':p>=80?'B':p>=70?'C':p>=60?'D':p>=50?'E':'F';
+        const getBarCol = (pct) => pct>=90?'#059669':pct>=80?'#2563eb':pct>=70?'#d97706':pct>=60?'#7c3aed':pct>=50?'#db2777':'#ef4444';
+        const getGrdCol = (g) => g==='A'?'text-red-600':g==='B'?'text-pink-600':g==='C'?'text-orange-600':g==='D'?'text-green-600':g==='E'?'text-blue-600':'text-slate-800';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchInitialData().then(() => {
+                let sid = localStorage.getItem('kpt_last_search_id');
+                let smonth = localStorage.getItem('kpt_last_search_month');
+                if (sid) { document.getElementById('searchInput').value = sid; if(smonth) document.getElementById('monthSelect').value = smonth; executeSearch(); }
+            });
+        });
+
+        async function fetchInitialData() {
+            try {
+                let confRes = await fetch(`${SUPABASE_URL}/rest/v1/config_max_scores?select=*`, { headers });
+                (await confRes.json()).forEach(c => { configList.push(c); if(c.grade_level) classTypeMap[fmtCls(c.grade_level)] = String(c.class_type || "").toUpperCase(); });
+                let teachRes = await fetch(`${SUPABASE_URL}/rest/v1/teacher_info?select=*`, { headers });
+                (await teachRes.json()).forEach(t => { if(t.homeroom_class) teacherMap[fmtCls(t.homeroom_class)] = { name: t.teacher_name, sign: getDriveImgUrl(t.signature_link) }; });
+            } catch(e) { console.error("Init Error", e); }
+        }
+
+        function buildPrintHeader(title) {
+            return `<div style="width: 100%; position: relative; height: 60px;">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center;"><h2 class="moul-font" style="font-size: 15px; color: #1e3a8a; margin-bottom: 4px;">ព្រះរាជាណាចក្រកម្ពុជា</h2><h2 class="moul-font" style="font-size: 15px; color: #1e3a8a;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2></div>
+                    <div style="position: absolute; top: 25px; left: 0; text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6;"><p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p><p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p><p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p></div></div>
+                <h1 class="moul-font text-red-600 text-center" style="font-size: 18px; margin: 15px 0 10px 0;">${title}</h1>`;
+        }
+
+        function getStampHTML(dateSolar, dateLunar, tInfo) {
+            let pImg = `<img src="${getDriveImgUrl(PRINCIPAL_STAMP_URL)}" style="position: absolute; top: -0.7cm; left: calc(50% + 1.5cm); transform: translateX(-50%); width: 270px; max-width: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;">`;
+            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); height: 60px; max-width: 140px; mix-blend-mode: multiply; pointer-events: none; z-index: 10;">` : '';
+            return `<div style="display: flex; justify-content: space-between; width: 100%;"><div style="text-align: center; width: 300px; position: relative; min-height: 120px;"><p style="font-weight: bold; font-size: 12px; margin-bottom: 5px;">បានឃើញ និងឯកភាព</p><p class="moul-font" style="font-size: 12px; color: #1e3a8a;">នាយកសាលា</p>${pImg}</div><div style="text-align: center; width: 300px; position: relative; min-height: 120px;"><p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 2px;">${dateLunar || 'ថ្ងៃ.......................................................'}</p><p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 15px;">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p><p class="moul-font" style="font-size: 12px; color: #1e3a8a;">គ្រូបន្ទុកថ្នាក់</p>${tImg}
+                    <p class="moul-font" style="font-size: 12px; color: #1e3a8a; position: absolute; bottom: 0; width: 100%; text-align: center;">${tInfo.name}</p></div></div>`;
+        }
+
+        async function executeSearch() {
+            let q = document.getElementById('searchInput').value.trim();
+            let period = document.getElementById('monthSelect').value;
+            if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខ ឬឈ្មោះសិស្ស!', 'warning');
+            
+            localStorage.setItem('kpt_last_search_id', q);
+            localStorage.setItem('kpt_last_search_month', period);
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            
+            let table = period.includes("ប្រចាំឆមាស") ? "semester_scores" : (period === "ប្រចាំឆ្នាំ" ? "annual_scores" : "student_scores");
+            let pCol = period.includes("ប្រចាំឆមាស") ? "semester_name" : (period === "ប្រចាំឆ្នាំ" ? "academic_year" : "month_name");
+            if(period === "ប្រចាំឆ្នាំ") period = new Date().getFullYear().toString();
+
+            try {
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${pCol}=eq.${encodeURIComponent(period)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.%25${encodeURIComponent(q)}%25)&limit=1`, { headers });
+                let data = await res.json();
+                
+                if(!data || data.length === 0) { document.getElementById('loadingOverlay').classList.add('hidden'); return Swal.fire('រកមិនឃើញ!', 'មិនមានទិន្នន័យ!', 'error'); }
+
+                let dbS = data[0]; 
+                let s = { ID: dbS.student_id, Name: dbS.student_name, Gender: dbS.gender, Grade: dbS.grade, DOB: dbS.dob||'', DateSolar: dbS.date_solar||'', DateLunar: dbS.date_lunar||'' };
+                SUBJECTS_15.forEach(sub => { s[sub] = dbS[dbMap[sub]]; });
+
+                let fGrade = fmtCls(s.Grade);
+                let gConf = configList.find(c => fmtCls(c.grade_level) === fGrade) || {};
+                let isUpper = fGrade.includes("11") || fGrade.includes("12");
+                let track = classTypeMap[fGrade] || "";
+                let tInfo = teacherMap[fGrade] || {name:'មិនស្គាល់', sign:''};
+
+                if (!isUpper) { document.getElementById('loadingOverlay').classList.add('hidden'); return Swal.fire('បដិសេធ!', 'សិស្សនេះមិនមែនជាសិស្សថ្នាក់ទី១១ ឬទី១២ ទេ!', 'info'); }
+
+                let trackName = track.includes("SC") ? "វិទ្យាសាស្ត្រ" : "វិទ្យាសាស្ត្រសង្គម";
+                let cSubjs = track.includes("SC") ?["គណិតវិទ្យា","ភាសាខ្មែរ","រូបវិទ្យា","គីមីវិទ្យា","ជីវវិទ្យា","ប្រវត្តិវិទ្យា"] :["ភាសាខ្មែរ","គណិតវិទ្យា","សីលធម៌ពលរដ្ឋ","ប្រវត្តិវិទ្យា","ភូមិវិទ្យា","ផែនដីវិទ្យា"];
+                
+                document.getElementById('t3-header').innerHTML = buildPrintHeader(`តារាងលទ្ធផលសិក្សាតាមស្តង់ដារបាក់ឌុប<br><span style="font-size:13px; color:#ca8a04; margin-top:5px; display:block;">(ថ្នាក់${trackName} ប្រចាំ ${document.getElementById('monthSelect').value})</span>`);
+                document.getElementById('t3-header').innerHTML += `<div class="student-info-box"><div><p>ឈ្មោះ ៖ <span class="moul-font text-blue-800" style="font-size:15px">${s.Name}</span></p><p>ថ្នាក់ទី ៖ <span>${s.Grade}</span></p></div><div><p>ភេទ ៖ <span>${s.Gender}</span></p><p>អត្តលេខ ៖ <span>${s.ID}</span></p></div></div>`;
+
+                let bTotal = 0; let bMax = 0; let vC = 0; let trRows = ""; let ixx=1;
+                cSubjs.forEach(sub => {
+                    let raw = String(s[sub]||"").trim(); let ms = cleanNum(gConf[dbMap[sub]])||50;
+                    if(isNaN(cleanNum(raw)) || raw==="ABS" || raw==="ម.ថ" || !raw) {
+                        trRows += `<tr style="border-bottom: 1px solid #e2e8f0;"><td>${ixx++}</td><td class="col-left" style="font-weight: bold; color: #1e293b;">${sub}</td><td>${ms}</td><td style="color: #ef4444; font-weight: bold;">${raw||'ម.ថ'}</td><td colspan="2">-</td></tr>`;
+                    } else {
+                        let sc = cleanNum(raw); bTotal+=sc; bMax+=ms; vC++; let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
+                        trRows += `<tr style="border-bottom: 1px solid #e2e8f0;"><td>${ixx++}</td><td class="col-left" style="font-weight: bold; color: #1e293b;">${sub}</td><td>${ms}</td><td style="color: #1d4ed8; font-weight: bold; font-size: 13px;">${sc}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td style="font-weight: bold; font-size: 13px;" class="${getGrdCol(g)}">${g}</td></tr>`;
+                    }
+                });
+                
+                let eng = cleanNum(s["ភាសាអង់គ្លេស"]); let engBonus = 0; let finalGrd = "F";
+                if(!isNaN(eng)) {
+                    if(eng>=26) { engBonus = eng-25; bTotal+=engBonus; vC++; }
+                    let g = getGrd((eng/50)*100);
+                    trRows += `<tr style="background-color: #f0fdfa; font-style: italic;"><td>${ixx++}</td><td class="col-left" style="color: #047857; font-weight: bold;">ភាសាអង់គ្លេស (Bonus)</td><td style="color: #065f46;">50</td><td style="color: #047857; font-weight: bold; font-size: 13px;">${eng} <span style="font-size: 9px;">(+${engBonus})</span></td><td style="color: #047857; font-size: 10px;">ពិន្ទុលើកទឹកចិត្ត</td><td style="font-weight: bold; font-size: 13px;" class="${getGrdCol(g)}">${g}</td></tr>`;
+                }
+                if(vC>0) finalGrd = getGrd(Math.floor(bMax>0 ? (bTotal/bMax)*100 : 0)); 
+
+                document.getElementById('t3-tableArea').innerHTML = `<table class="c-table"><thead><tr style="background-color: #f8fafc;"><th style="width: 30px;">ល.រ</th><th class="col-left">មុខវិជ្ជា (គោល)</th><th style="width: 80px;">អតិបរមា</th><th style="width: 90px;">ពិន្ទុទទួលបាន</th><th style="width: 120px;">ភាគរយ</th><th style="width: 60px;">និទ្ទេស</th></tr></thead><tbody>${trRows}</tbody></table>`;
+                document.getElementById('t3-summaryArea').innerHTML = `<div class="summary-item"><p class="s-title">ពិន្ទុសរុប</p><p class="s-value" style="font-size: 28px;">${vC>0 ? bTotal.toFixed(2).replace(/\.00$/,'') : 0}</p><p class="s-sub">លើអតិបរមា ${bMax}</p></div><div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value ${getGrdCol(finalGrd)}" style="font-size: 32px;">${finalGrd}</p><p class="s-sub">(គិតលើរបបបង្គត់ចុះ)</p></div>`;
+                document.getElementById('t3-signatures').innerHTML = getStampHTML(s.DateSolar, s.DateLunar, tInfo);
+                
+                document.getElementById('t3-capture-area').classList.remove('hidden');
+                document.getElementById('t3-actions').classList.remove('hidden');
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            } catch (e) { document.getElementById('loadingOverlay').classList.add('hidden'); Swal.fire('បរាជ័យ!', e.message, 'error'); }
+        }
+    </script>
+</body>
+</html>
