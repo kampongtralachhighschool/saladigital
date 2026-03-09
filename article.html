@@ -168,7 +168,11 @@
 
             // ប្រសិនបើអត់មាន ID ទេ
             if (!articleId) {
-                document.getElementById('article-title').innerText = "រកមិនឃើញអត្ថបទទេ!";
+            // បញ្ចូលអត្ថបទពេញពី Column 'description'
+            let fullText = item.description || 'មិនទាន់មានខ្លឹមសារ...';
+
+            // កូដនេះជួយបម្លែងការចុះបន្ទាត់ (Enter) ដែលអ្នកបានវាយក្នុង Supabase ឲ្យចេញជាទម្រង់កថាខណ្ឌស្អាតនៅលើ Website
+                document.getElementById('article-desc').innerHTML = fullText.replace(/\n/g, '<br><br>');
                 document.getElementById('article-desc').innerHTML = "<p class='text-red-500 font-bold'>សូមត្រឡប់ទៅទំព័រដើមវិញ រួចសាកល្បងម្តងទៀត។</p>";
                 document.getElementById('img-container').classList.add('hidden');
                 return;
