@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ចំណងជើងនឹងប្តូរអូតូតាមអត្ថបទ -->
+    <title>អានអត្ថបទ - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --main-blue: #003399; --main-red: #cc0000; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background-color: #f8fafc; color: #334155; }
+        .moul-font { font-family: 'Moul', serif; }
+        
+        /* Navigation */
+        .nav-bar { background-color: var(--main-blue); border-bottom: 4px solid var(--main-red); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 50;}
+        .nav-link { padding: 16px 20px; font-weight: 700; color: white; transition: background 0.3s; display: block; font-size: 15px;}
+        @media (min-width: 768px) { .nav-link { display: inline-block; } }
+        .nav-link:hover { background-color: #002266; }
+        .nav-link.active { background-color: var(--main-red); }
+    </style>
+</head>
+<body>
+
+    <!-- 🌟 Header Banner -->
+    <header class="relative bg-cover bg-center bg-no-repeat" style="background-image: url('https://i.ibb.co/n8fZ33D6/photo-2025-12-25-15-56-18.jpg');">
+        <div class="absolute inset-0 bg-[#002266]/85"></div>
+        <div class="relative max-w-7xl mx-auto px-4 py-8 md:py-12 flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8">
+            <div class="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.2)] flex-shrink-0 mt-2 border-2 border-yellow-400">
+                <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" alt="Logo" class="w-full h-full object-contain">
+            </div>
+            <div class="flex flex-col justify-center text-center md:text-left mt-2 w-full">
+                <h2 class="font-bold text-[22px] md:text-4xl text-yellow-400 mb-2 drop-shadow-md tracking-wider uppercase">ក្រសួងអប់រំ យុវជន និងកីឡា</h2>
+                <h1 class="moul-font text-[22px] md:text-4xl text-white drop-shadow-lg leading-loose md:leading-relaxed">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- 🌟 Navigation Menu -->
+    <nav class="nav-bar">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-[56px] md:h-auto">
+            <div class="md:hidden w-full flex justify-end">
+                <button id="mobile-menu-btn" class="text-white focus:outline-none p-2">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+            <div id="desktop-menu" class="hidden md:flex flex-wrap w-full justify-between items-center">
+                <div>
+                    <a href="index.html" class="nav-link moul-font">ទំព័រដើម</a>
+                    <a href="student.html" class="nav-link">លទ្ធផលសិក្សាទូទៅ</a>
+                    <a href="bac2.html" class="nav-link">ស្តង់ដារបាក់ឌុប</a>
+                    <a href="admin.html" class="nav-link">កិច្ចការរដ្ឋបាល</a>
+                    <a href="report.html" class="nav-link">របាយការណ៍សាលា</a>
+                </div>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="hidden flex-col bg-[#002266] md:hidden border-t border-blue-800 shadow-xl">
+            <a href="index.html" class="nav-link moul-font">ទំព័រដើម</a>
+            <a href="student.html" class="nav-link border-t border-blue-800/50">លទ្ធផលសិក្សាទូទៅ</a>
+            <a href="bac2.html" class="nav-link border-t border-blue-800/50">ស្តង់ដារបាក់ឌុប</a>
+            <a href="admin.html" class="nav-link border-t border-blue-800/50">កិច្ចការរដ្ឋបាល</a>
+            <a href="report.html" class="nav-link border-t border-blue-800/50">របាយការណ៍សាលា</a>
+        </div>
+    </nav>
+
+    <!-- Main Content for Article -->
+    <main class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+        <!-- Back Button -->
+        <a href="index.html" class="inline-flex items-center gap-2 text-[#003399] font-bold hover:underline mb-6 text-sm md:text-base bg-blue-50 px-4 py-2 rounded-lg transition-colors hover:bg-blue-100 border border-blue-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            ត្រឡប់ទៅទំព័រដើម
+        </a>
+
+        <!-- Article Container -->
+        <article class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <!-- Article Image Loading Skeleton -->
+            <div id="img-container" class="w-full h-[250px] md:h-[450px] bg-slate-100 relative">
+                <div id="img-skeleton" class="w-full h-full bg-slate-200 animate-pulse"></div>
+                <img id="article-img" src="" alt="Article Cover" class="w-full h-full object-cover hidden">
+            </div>
+            
+            <div class="p-6 md:p-10">
+                <!-- Badge & Date -->
+                <div class="flex items-center gap-3 mb-5">
+                    <span id="article-badge" class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded hidden uppercase tracking-wider">ព័ត៌មាន</span>
+                    <span id="article-date" class="text-sm text-gray-500 font-bold hidden">🗓️ ...</span>
+                </div>
+                
+                <!-- Title -->
+                <h1 id="article-title" class="moul-font text-xl md:text-3xl text-[#001a4d] mb-6 leading-relaxed md:leading-loose">
+                    កំពុងទាញយកទិន្នន័យ...
+                </h1>
+                
+                <hr class="border-t border-gray-100 mb-6">
+
+                <!-- Description -->
+                <div id="article-desc" class="text-gray-700 leading-loose text-[15px] md:text-base whitespace-pre-wrap">
+                    <!-- Skeleton Loader Text -->
+                    <div class="animate-pulse space-y-4">
+                        <div class="h-4 bg-slate-200 rounded w-full"></div>
+                        <div class="h-4 bg-slate-200 rounded w-full"></div>
+                        <div class="h-4 bg-slate-200 rounded w-5/6"></div>
+                        <div class="h-4 bg-slate-200 rounded w-4/6"></div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <!-- 🌟 Footer -->
+    <footer class="bg-[#0f172a] text-slate-300 pt-12 pb-8 border-t-4 border-main-red mt-10">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-12 gap-8 text-sm">
+            <div class="md:col-span-5 md:border-r border-slate-700 md:pr-6">
+                <h4 class="moul-font text-yellow-400 text-lg mb-5 border-b border-slate-700 pb-2 inline-block">គណៈគ្រប់គ្រងសាលា</h4>
+                <ul class="space-y-4 leading-relaxed text-[13px] md:text-sm">
+                    <li><span class="font-bold text-white">លោក នី ម៉ៅ</span> (នាយកសាលា)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 76 647 8888</span></li>
+                    <li><span class="font-bold text-white">លោក ណៃ កាណុល</span> (នាយករងរដ្ឋបាល)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 17 821 588</span></li>
+                    <li><span class="font-bold text-white">លោកស្រី ណាក សំណាង</span> (នាយិការងបច្ចេកទេស)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 12 925 739</span></li>
+                    <li><span class="font-bold text-white">លោក ហុន ម៉ុម</span> (ជំនួយការបច្ចេកទេស ICT)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 016 476 664</span></li>
+                </ul>
+            </div>
+            
+            <div class="md:col-span-3 md:border-r border-slate-700 md:px-6">
+                <h4 class="moul-font text-yellow-400 text-lg mb-5 border-b border-slate-700 pb-2 inline-block">ម៉ោងធ្វើការ</h4>
+                <p class="mb-4 text-base text-white font-bold">ចន្ទ ដល់ សៅរ៍</p>
+                <div class="space-y-3 font-bold">
+                    <p class="flex items-center gap-3"><span class="bg-slate-800 text-slate-300 px-2 py-1 rounded">ព្រឹក៖</span> ០៧:០០ - ១១:០០</p>
+                    <p class="flex items-center gap-3"><span class="bg-slate-800 text-slate-300 px-2 py-1 rounded">រសៀល៖</span> ១៣:០០ - ១៧:០០</p>
+                </div>
+            </div>
+            
+            <div class="md:col-span-4 md:pl-6">
+                <h4 class="moul-font text-yellow-400 text-lg mb-5 border-b border-slate-700 pb-2 inline-block">អាសយដ្ឋាន</h4>
+                <p class="leading-loose text-[14px] text-slate-300">
+                    ភូមិសាលាលេខប្រាំ ឃុំអូរឫស្សី<br>
+                    ស្រុកកំពង់ត្រឡាច ខេត្តកំពង់ឆ្នាំង
+                </p>
+                <p class="mt-5 font-bold text-slate-400">Email: <a href="mailto:info@kp-tralach.org" class="text-blue-400 hover:text-white transition">info@kp-tralach.org</a></p>
+            </div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-4 mt-10 pt-6 border-t border-slate-800 text-center text-xs text-slate-500 tracking-wider">
+            &copy; ២០២៦ រក្សាសិទ្ធិដោយ វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច. រៀបចំដោយផ្នែក ICT.
+        </div>
+    </footer>
+
+    <script>
+        // បើក/បិទ ម៉ឺនុយទូរស័ព្ទដៃ
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+        });
+
+        // ការភ្ជាប់ Supabase
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
+        const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY };
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            // ចាប់យក ID ពី URL (ឧទាហរណ៍ ?id=hero ឬ ?id=news1)
+            const urlParams = new URLSearchParams(window.location.search);
+            const articleId = urlParams.get('id');
+
+            // ប្រសិនបើអត់មាន ID ទេ
+            if (!articleId) {
+                document.getElementById('article-title').innerText = "រកមិនឃើញអត្ថបទទេ!";
+                document.getElementById('article-desc').innerHTML = "<p class='text-red-500 font-bold'>សូមត្រឡប់ទៅទំព័រដើមវិញ រួចសាកល្បងម្តងទៀត។</p>";
+                document.getElementById('img-container').classList.add('hidden');
+                return;
+            }
+
+            try {
+                // ទាញយកអត្ថបទចេញពី Supabase តាមរយៈ ID
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/home_content?section_id=eq.${articleId}&select=*`, { headers });
+                let data = await res.json();
+
+                if (data && data.length > 0) {
+                    const item = data[0];
+                    
+                    // បញ្ចូលចំណងជើង
+                    document.getElementById('article-title').innerText = item.title || 'គ្មានចំណងជើង';
+                    
+                    // បញ្ចូលអត្ថបទពេញ (ប្រើ whitespace-pre-wrap ក្នុង CSS រួចហើយ វានឹងចុះបន្ទាត់តាម Database ស្វ័យប្រវត្តិ)
+                    document.getElementById('article-desc').innerText = item.description || 'មិនទាន់មានខ្លឹមសារ...';
+                    
+                    // បញ្ចូលរូបភាព
+                    if (item.media_url) {
+                        const imgEl = document.getElementById('article-img');
+                        imgEl.src = item.media_url;
+                        // លាក់ Skeleton ហើយបង្ហាញរូបពិត
+                        imgEl.onload = () => {
+                            document.getElementById('img-skeleton').classList.add('hidden');
+                            imgEl.classList.remove('hidden');
+                        };
+                    } else {
+                        document.getElementById('img-container').classList.add('hidden');
+                    }
+
+                    // បញ្ចូលកាលបរិច្ឆេទ
+                    if (item.date_text) {
+                        const dateEl = document.getElementById('article-date');
+                        dateEl.innerText = `🗓️ ${item.date_text}`;
+                        dateEl.classList.remove('hidden');
+                        document.getElementById('article-badge').classList.remove('hidden');
+                    }
+                    
+                    // ប្តូរចំណងជើង Tab Browser ទៅតាមឈ្មោះអត្ថបទ
+                    document.title = item.title + " - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច";
+
+                } else {
+                    document.getElementById('article-title').innerText = "ទំព័រនេះត្រូវបានលុប ឬមិនមាន!";
+                    document.getElementById('article-desc').innerHTML = "<p class='text-red-500'>សូមត្រឡប់ទៅទំព័រដើមវិញ។</p>";
+                    document.getElementById('img-container').classList.add('hidden');
+                }
+
+            } catch(e) { 
+                console.error("CMS Load Error:", e);
+                document.getElementById('article-title').innerText = "មានបញ្ហាក្នុងការទាញយកទិន្នន័យ (Network Error)";
+                document.getElementById('article-desc').innerHTML = "<p class='text-red-500'>សូមពិនិត្យមើលសេវាអ៊ីនធឺណិតរបស់អ្នក រួច Refresh ទំព័រនេះម្តងទៀត។</p>";
+                document.getElementById('img-container').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
