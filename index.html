@@ -31,16 +31,32 @@
 </head>
 <body>
 
-    <!-- 🌟 Header Banner -->
+<!-- 🌟 Header Banner -->
     <header class="relative bg-cover bg-center bg-no-repeat" style="background-image: url('https://i.ibb.co/n8fZ33D6/photo-2025-12-25-15-56-18.jpg');">
+        <!-- ផ្ទាំងពណ៌ខៀវក្រាលពីលើរូបភាព (Overlay) -->
         <div class="absolute inset-0 bg-[#002266]/85"></div>
-        <div class="relative max-w-7xl mx-auto px-4 py-8 md:py-12 flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8">
-            <div class="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.2)] flex-shrink-0 mt-2 border-2 border-yellow-400">
+        
+        <div class="relative max-w-7xl mx-auto px-4 py-8 md:py-12 flex flex-col md:flex-row items-center gap-4 md:gap-8">
+            
+            <!-- 🌟 ឡូហ្គោសាលា (បង្ហាញតែលើ កុំព្យូទ័រ និង iPad ប៉ុណ្ណោះ) -->
+            <div class="hidden md:block w-32 h-32 bg-white rounded-full p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.2)] flex-shrink-0 mt-2 border-2 border-yellow-400">
                 <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" alt="Logo" class="w-full h-full object-contain">
             </div>
-            <div class="flex flex-col justify-center text-center md:text-left mt-2 w-full">
-                <h2 class="font-bold text-[22px] md:text-4xl text-yellow-400 mb-2 drop-shadow-md tracking-wider uppercase">ក្រសួងអប់រំ យុវជន និងកីឡា</h2>
-                <h1 class="moul-font text-[22px] md:text-4xl text-white drop-shadow-lg leading-loose md:leading-relaxed">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h1>
+            
+            <!-- អក្សរចំណងជើង -->
+            <div class="flex flex-col items-center md:items-start justify-center text-center md:text-left mt-2 w-full">
+                
+                <!-- ក្រសួង នៅខាងលើ -->
+                <h2 class="font-bold text-[22px] md:text-4xl text-yellow-400 mb-3 md:mb-2 drop-shadow-md tracking-wider uppercase">ក្រសួងអប់រំ យុវជន និងកីឡា</h2>
+                
+                <!-- 🌟 ឡូហ្គោសាលា (បង្ហាញតែលើ ទូរស័ព្ទដៃ នៅចន្លោះអក្សរទាំងពីរ) -->
+                <div class="md:hidden w-24 h-24 bg-white rounded-full p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.2)] flex-shrink-0 mb-3 border-2 border-yellow-400">
+                    <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" alt="Logo" class="w-full h-full object-contain">
+                </div>
+
+                <!-- ឈ្មោះសាលា នៅខាងក្រោម -->
+                <h1 class="moul-font text-[22px] md:text-3xl text-white drop-shadow-lg leading-loose md:leading-relaxed">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h1>
+                
             </div>
         </div>
     </header>
