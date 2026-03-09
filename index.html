@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច - ទំព័រដើម</title>
     
-    <!-- CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
     
@@ -16,22 +15,17 @@
         
         /* Navigation */
         .nav-bar { background-color: var(--main-blue); border-bottom: 4px solid var(--main-red); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 50;}
-        .nav-link { padding: 16px 24px; font-weight: 700; color: white; transition: background 0.3s; display: inline-block; font-size: 15px;}
+        .nav-link { padding: 16px 20px; font-weight: 700; color: white; transition: background 0.3s; display: block; font-size: 15px;}
+        @media (min-width: 768px) { .nav-link { display: inline-block; } }
         .nav-link:hover { background-color: #002266; }
         .nav-link.active { background-color: var(--main-red); }
 
-        /* Banner Overlay */
-        .banner-bg {
-            background-image: linear-gradient(rgba(0, 51, 153, 0.8), rgba(0, 51, 153, 0.8)), url('https://images.unsplash.com/photo-1592289658249-1d41bc4d9a65?q=80&w=2071&auto=format&fit=crop');
-            background-size: cover; background-position: center;
-        }
+        .banner-bg { background-image: linear-gradient(rgba(0, 51, 153, 0.8), rgba(0, 51, 153, 0.8)), url('https://images.unsplash.com/photo-1592289658249-1d41bc4d9a65?q=80&w=2071'); background-size: cover; background-position: center; }
 
-        /* Hover Effects */
         .service-card { transition: all 0.3s ease; }
         .service-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-color: var(--main-blue); }
         .service-card:hover svg { color: var(--main-blue); }
         
-        /* Article Image Zoom */
         .img-wrapper { overflow: hidden; }
         .img-wrapper img { transition: transform 0.5s ease; }
         .article-card:hover .img-wrapper img { transform: scale(1.05); }
@@ -39,192 +33,213 @@
 </head>
 <body>
 
-    <!-- 1. Top Banner (Logo & Title) -->
+    <!-- Header Banner -->
     <header class="banner-bg text-white py-6">
         <div class="max-w-7xl mx-auto px-4 flex items-center gap-6">
-            <!-- ដាក់ Logo សាលានៅទីនេះ -->
-            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center p-2 shadow-lg">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/MoEYS_Cambodia_Logo.svg/1024px-MoEYS_Cambodia_Logo.svg.png" alt="Logo" class="w-full h-full object-contain">
+            <div class="w-20 h-20 md:w-24 md:h-24 bg-white rounded-full flex items-center justify-center p-2 shadow-lg flex-shrink-0">
+                <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" alt="Logo" class="w-full h-full object-contain">
             </div>
             <div>
-                <h2 class="moul-font text-xl md:text-2xl mb-2 drop-shadow-md text-yellow-400">ក្រសួងអប់រំ យុវជន និងកីឡា</h2>
-                <h1 class="moul-font text-2xl md:text-4xl drop-shadow-lg leading-relaxed">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h1>
+                <h2 class="moul-font text-lg md:text-2xl mb-1 md:mb-2 drop-shadow-md text-yellow-400">ក្រសួងអប់រំ យុវជន និងកីឡា</h2>
+                <h1 class="moul-font text-xl md:text-4xl drop-shadow-lg leading-relaxed">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h1>
             </div>
         </div>
     </header>
 
-    <!-- 2. Navigation Menu -->
+    <!-- Responsive Navigation Menu -->
     <nav class="nav-bar">
-        <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between">
-            <div class="flex flex-wrap">
-                <a href="index.html" class="nav-link active moul-font">ទំព័រដើម</a>
-                <a href="student.html" class="nav-link">លទ្ធផលសិក្សាទូទៅ</a>
-                <a href="bac2.html" class="nav-link">ស្តង់ដារបាក់ឌុប</a>
-                <a href="admin.html" class="nav-link">កិច្ចការរដ្ឋបាល</a>
-                <a href="report.html" class="nav-link">របាយការណ៍សាលា</a>
-                <a href="#" class="nav-link">ព័ត៌មាន & ព្រឹត្តិការណ៍</a>
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-[56px] md:h-auto">
+            <!-- Mobile Menu Button -->
+            <div class="text-white font-bold moul-font md:hidden text-lg">ម៉ឺនុយទំព័រ</div>
+            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none p-2">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            
+            <!-- Desktop Menu -->
+            <div id="desktop-menu" class="hidden md:flex flex-wrap w-full justify-between items-center">
+                <div>
+                    <a href="index.html" class="nav-link active moul-font">ទំព័រដើម</a>
+                    <a href="student.html" class="nav-link">លទ្ធផលសិក្សាទូទៅ</a>
+                    <a href="bac2.html" class="nav-link">ស្តង់ដារបាក់ឌុប</a>
+                    <a href="admin.html" class="nav-link">កិច្ចការរដ្ឋបាល</a>
+                    <a href="report.html" class="nav-link">របាយការណ៍សាលា</a>
+                </div>
+                <div class="text-white font-bold px-4">
+                    <span class="mr-2">🇰🇭 ខ្មែរ</span> | <span class="ml-2 text-gray-400">🇬🇧 EN</span>
+                </div>
             </div>
-            <!-- Language / Login -->
-            <div class="text-white font-bold px-4 hidden md:block">
-                <span class="mr-2">🇰🇭 ខ្មែរ</span> | <span class="ml-2 text-gray-400">🇬🇧 EN</span>
-            </div>
+        </div>
+        
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden flex-col bg-[#002266] md:hidden border-t border-blue-800">
+            <a href="index.html" class="nav-link active moul-font">ទំព័រដើម</a>
+            <a href="student.html" class="nav-link border-t border-blue-800/50">លទ្ធផលសិក្សាទូទៅ</a>
+            <a href="bac2.html" class="nav-link border-t border-blue-800/50">ស្តង់ដារបាក់ឌុប</a>
+            <a href="admin.html" class="nav-link border-t border-blue-800/50">កិច្ចការរដ្ឋបាល</a>
+            <a href="report.html" class="nav-link border-t border-blue-800/50">របាយការណ៍សាលា</a>
         </div>
     </nav>
 
-    <!-- 3. Main Content Split Layout (Hero Section) -->
+    <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- Left Side: Slide / Feature News -->
-            <div class="lg:col-span-8 relative rounded-xl overflow-hidden shadow-lg group cursor-pointer h-[400px] lg:h-[450px]">
-                <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover" alt="School Event">
-                <!-- Overlay Gradient -->
-                <div class="absolute inset-0 bg-gradient-to-t from-[#001a4d] via-[#001a4d]/60 to-transparent flex flex-col justify-end p-8">
-                    <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded w-max mb-3">ព័ត៌មានថ្មីៗ</span>
-                    <h2 class="moul-font text-2xl md:text-3xl text-white mb-3 leading-relaxed drop-shadow-md">អបអរសាទរពិធីបើកបវេសនកាល ឆ្នាំសិក្សាថ្មី ២០២៥-២០២៦</h2>
-                    <p class="text-gray-200 line-clamp-2 text-sm md:text-base leading-loose mb-4">
-                        សូមស្វាគមន៍សិស្សានុសិស្សទាំងអស់មកកាន់ឆ្នាំសិក្សាថ្មី។ សាលារៀនបានរៀបចំតុបតែងលម្អយ៉ាងស្រស់ស្អាត និងបានបំពាក់សម្ភារៈសិក្សាទំនើបៗជាច្រើនដើម្បីទទួលស្វាគមន៍កូនក្មួយទាំងអស់គ្នា...
-                    </p>
-                    <a href="#" class="text-yellow-400 font-bold hover:text-white flex items-center gap-2 transition">
-                        អានបន្ត <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </a>
+            <!-- Left Side: Hero Dynamic Content -->
+            <div class="lg:col-span-8 relative rounded-xl overflow-hidden shadow-lg group cursor-pointer h-[350px] md:h-[450px]">
+                <img id="hero-img" src="" class="w-full h-full object-cover bg-slate-200" alt="Cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#001a4d] via-[#001a4d]/70 to-transparent flex flex-col justify-end p-6 md:p-8">
+                    <span id="hero-date" class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded w-max mb-3">ព័ត៌មានថ្មីៗ</span>
+                    <h2 id="hero-title" class="moul-font text-xl md:text-3xl text-white mb-3 leading-relaxed drop-shadow-md">កំពុងទាញយកទិន្នន័យ...</h2>
+                    <p id="hero-desc" class="text-gray-200 line-clamp-2 text-sm md:text-base leading-loose mb-4">...</p>
                 </div>
             </div>
 
-            <!-- Right Side: Quick Services (ដូចរូប) -->
+            <!-- Right Side: Quick Services -->
             <div class="lg:col-span-4 flex flex-col">
                 <div class="border-b-2 border-main-blue mb-4 pb-2">
                     <h3 class="moul-font text-lg text-main-blue">សេវាសាលារៀន៖</h3>
                 </div>
                 <div class="grid grid-cols-2 gap-3 h-full">
-                    
-                    <!-- Box 1 -->
                     <a href="student.html" class="service-card bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-3">
                         <div class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-700">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                         </div>
                         <span class="font-bold text-sm text-gray-700">ពិនិត្យលទ្ធផលសិក្សា</span>
                     </a>
-                    
-                    <!-- Box 2 -->
                     <a href="admin.html" class="service-card bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-3">
                         <div class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-700">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                         </div>
                         <span class="font-bold text-sm text-gray-700">ទាញយកឯកសារ</span>
                     </a>
-
-                    <!-- Box 3 -->
-                    <a href="#" class="service-card bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-3">
+                    <a href="report.html" class="service-card bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-3">
                         <div class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-700">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
                         </div>
-                        <span class="font-bold text-sm text-gray-700">បញ្ជីឈ្មោះសិស្ស</span>
+                        <span class="font-bold text-sm text-gray-700">របាយការណ៍សាលា</span>
                     </a>
-
-                    <!-- Box 4 -->
-                    <a href="#" class="service-card bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-3">
-                        <div class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-700">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
-                        </div>
-                        <span class="font-bold text-sm text-gray-700">អំពីសាលារៀន</span>
-                    </a>
-
-                    <!-- Box 5 -->
-                    <a href="#" class="service-card bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-3">
-                        <div class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-700">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </div>
-                        <span class="font-bold text-sm text-gray-700">កាលវិភាគសិក្សា</span>
-                    </a>
-
-                    <!-- Box 6 -->
                     <a href="#" class="service-card bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-3">
                         <div class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-700">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
                         <span class="font-bold text-sm text-gray-700">ទំនាក់ទំនង</span>
                     </a>
-
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- 4. Content Section (អត្ថបទ និង វីដេអូ) -->
-    <section class="max-w-7xl mx-auto px-4 py-8 mb-10">
+    <!-- Dynamic Content Section (News & Video) -->
+    <section class="max-w-7xl mx-auto px-4 py-4 mb-10">
         <div class="border-b-2 border-main-blue mb-6 pb-2 flex justify-between items-end">
             <h3 class="moul-font text-xl text-main-blue">ព័ត៌មាន និងព្រឹត្តិការណ៍ថ្មីៗ</h3>
-            <a href="#" class="text-sm font-bold text-gray-500 hover:text-main-blue">មើលទាំងអស់ &rarr;</a>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Article 1 -->
-            <article class="article-card bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer">
-                <div class="img-wrapper h-48 w-full">
-                    <img src="https://images.unsplash.com/photo-1546410531-bea5aaaa4cb6?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover" alt="Article">
+            <article class="article-card bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
+                <div class="img-wrapper h-48 w-full bg-slate-100">
+                    <img id="news1-img" src="" class="w-full h-full object-cover">
                 </div>
                 <div class="p-5">
-                    <p class="text-xs text-gray-400 font-bold mb-2">🗓️ ០១ មករា ២០២៥</p>
-                    <h4 class="font-bold text-[15px] leading-relaxed text-gray-800 mb-2 line-clamp-2 hover:text-main-blue">កម្មវិធីប្រគល់រង្វាន់សិស្សពូកែប្រចាំត្រីមាសទី១ ដល់សិស្សានុសិស្ស</h4>
-                    <p class="text-sm text-gray-600 line-clamp-3 leading-loose">ដើម្បីជាការលើកទឹកចិត្តដល់ក្មួយៗសិស្សានុសិស្សដែលខិតខំប្រឹងប្រែងរៀនសូត្រ គណៈគ្រប់គ្រងសាលាបានរៀបចំ...</p>
+                    <p id="news1-date" class="text-xs text-gray-400 font-bold mb-2">...</p>
+                    <h4 id="news1-title" class="font-bold text-[15px] leading-relaxed text-gray-800 mb-2 line-clamp-2">...</h4>
+                    <p id="news1-desc" class="text-sm text-gray-600 line-clamp-3 leading-loose">...</p>
                 </div>
             </article>
 
             <!-- Article 2 -->
-            <article class="article-card bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer">
-                <div class="img-wrapper h-48 w-full">
-                    <img src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover" alt="Article">
+            <article class="article-card bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
+                <div class="img-wrapper h-48 w-full bg-slate-100">
+                    <img id="news2-img" src="" class="w-full h-full object-cover">
                 </div>
                 <div class="p-5">
-                    <p class="text-xs text-gray-400 font-bold mb-2">🗓️ ២៥ ធ្នូ ២០២៤</p>
-                    <h4 class="font-bold text-[15px] leading-relaxed text-gray-800 mb-2 line-clamp-2 hover:text-main-blue">សេចក្តីជូនដំណឹងស្តីពីការឈប់សម្រាកក្នុងឱកាសបុណ្យចូលឆ្នាំសកល</h4>
-                    <p class="text-sm text-gray-600 line-clamp-3 leading-loose">យោងតាមអនុក្រឹត្យរបស់រាជរដ្ឋាភិបាល សាលានឹងអនុញ្ញាតឲ្យសិស្សានុសិស្សឈប់សម្រាកចំនួន ១ថ្ងៃ...</p>
+                    <p id="news2-date" class="text-xs text-gray-400 font-bold mb-2">...</p>
+                    <h4 id="news2-title" class="font-bold text-[15px] leading-relaxed text-gray-800 mb-2 line-clamp-2">...</h4>
+                    <p id="news2-desc" class="text-sm text-gray-600 line-clamp-3 leading-loose">...</p>
                 </div>
             </article>
 
             <!-- Video Section -->
             <article class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
-                <!-- ទីនេះលោកគ្រូអាចយក Link ពី Youtube មកប្តូរនៅត្រង់ src="..." -->
-                <iframe class="w-full h-48" src="https://youtu.be/AI0OPWzhBLc?si=3iLnJDjxzRQ1aaTA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe id="video-frame" class="w-full h-48 bg-slate-100" src="" frameborder="0" allowfullscreen></iframe>
                 <div class="p-5">
                     <span class="bg-red-100 text-red-700 text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider">Video</span>
-                    <h4 class="font-bold text-[15px] leading-relaxed text-gray-800 mb-2 mt-2">វីដេអូឯកសារ៖ សកម្មភាពកីឡាអន្តរថ្នាក់</h4>
+                    <h4 id="video-title" class="font-bold text-[15px] leading-relaxed text-gray-800 mb-2 mt-2">...</h4>
                 </div>
             </article>
         </div>
-    </main>
+    </section>
 
-    <!-- 5. Footer Layout (ទំនាក់ទំនង និង អាសយដ្ឋាន) -->
+    <!-- Footer -->
     <footer class="bg-white border-t border-gray-200 pt-8 pb-6">
         <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center text-sm font-bold text-gray-600">
-            <!-- Col 1 -->
             <div class="md:border-r border-gray-200 px-4">
                 <h4 class="moul-font text-main-blue text-lg mb-4">ទំនាក់ទំនង</h4>
-                <p class="mb-2 text-xl text-gray-800">ទូរស័ព្ទ៖ ០១៦ ៤៧ ៦៦ ៦៤</p>
-                <p class="mb-2 text-xl text-gray-800">០១៧ ៤៧ ៦៦ ៦៤</p>
+                <p class="mb-2 text-xl text-gray-800">ទូរស័ព្ទ៖ ០១២ ៣៤៥ ៦៧៨</p>
                 <p class="text-gray-400 font-normal mt-4">Email: info@kp-tralach.org</p>
             </div>
-            <!-- Col 2 -->
             <div class="md:border-r border-gray-200 px-4">
                 <h4 class="moul-font text-main-blue text-lg mb-4">ម៉ោងធ្វើការ</h4>
-                <p class="mb-2 text-lg text-gray-800">ចន្ទ - សៅរ៍</p>
-                <p class="mb-2">ព្រឹក៖ ០៧:០០ - ១១:០០</p>
-                <p class="mb-2">រសៀល៖ ១៣:០០ - ១៧:០០</p>
+                <p class="mb-2 text-lg text-gray-800">ចន្ទ - សុក្រ</p>
+                <p>ព្រឹក៖ ០៧:០០ - ១១:០០ | រសៀល៖ ១៣:០០ - ១៧:០០</p>
             </div>
-            <!-- Col 3 -->
             <div class="px-4">
                 <h4 class="moul-font text-main-blue text-lg mb-4">អាសយដ្ឋាន</h4>
-                <p class="leading-loose text-[13px] text-gray-700">
-                    ភូមិសាលាលេខប្រាំ ឃុំអូរឫស្សី <br>
-                    ស្រុកកំពង់ត្រឡាច ខេត្តកំពង់ឆ្នាំង <br>
-                </p>
+                <p class="leading-loose text-[13px] text-gray-700">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច<br>ស្រុកកំពង់ត្រឡាច ខេត្តកំពង់ឆ្នាំង</p>
             </div>
-        </div>
-        <div class="max-w-7xl mx-auto px-4 mt-8 pt-4 border-t border-gray-100 text-center text-xs text-gray-400 font-normal">
-            &copy; ២០២៦ រក្សាសិទ្ធិដោយ វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច. រៀបចំដោយ IT Team នៃវិទ្យាល័យ ហ៊ុនសែន កំពង់ត្រឡាច.
         </div>
     </footer>
 
+    <script>
+        // 🌟 មុខងារបើក/បិទ ម៉ឺនុយទូរស័ព្ទ
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+        });
+
+        // 🌟 មុខងារទាញយកទិន្នន័យ (CMS) ពី Database
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
+        const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY };
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/home_content?select=*`, { headers });
+                let data = await res.json();
+                
+                data.forEach(item => {
+                    // Update Hero
+                    if(item.section_id === 'hero') {
+                        document.getElementById('hero-title').innerText = item.title || '';
+                        document.getElementById('hero-desc').innerText = item.description || '';
+                        document.getElementById('hero-img').src = item.media_url || '';
+                        document.getElementById('hero-date').innerText = item.date_text || 'ព័ត៌មានថ្មីៗ';
+                    }
+                    // Update News 1
+                    if(item.section_id === 'news1') {
+                        document.getElementById('news1-title').innerText = item.title || '';
+                        document.getElementById('news1-desc').innerText = item.description || '';
+                        document.getElementById('news1-img').src = item.media_url || '';
+                        document.getElementById('news1-date').innerText = `🗓️ ${item.date_text || ''}`;
+                    }
+                    // Update News 2
+                    if(item.section_id === 'news2') {
+                        document.getElementById('news2-title').innerText = item.title || '';
+                        document.getElementById('news2-desc').innerText = item.description || '';
+                        document.getElementById('news2-img').src = item.media_url || '';
+                        document.getElementById('news2-date').innerText = `🗓️ ${item.date_text || ''}`;
+                    }
+                    // Update Video
+                    if(item.section_id === 'video') {
+                        document.getElementById('video-title').innerText = item.title || '';
+                        document.getElementById('video-frame').src = item.media_url || '';
+                    }
+                });
+            } catch(e) { console.error("CMS Load Error:", e); }
+        });
+    </script>
 </body>
 </html>
