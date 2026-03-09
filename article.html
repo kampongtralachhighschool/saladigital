@@ -24,59 +24,56 @@
 </head>
 <body>
 
-<!-- 🌟 Footer (រចនាបថថ្មី Responsive) -->
-    <footer class="bg-[#0a1128] text-slate-300 pt-12 pb-8 border-t-4 border-main-red mt-10">
-        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 text-sm">
+<!-- 🌟 Header Banner -->
+    <header class="relative bg-cover bg-center bg-no-repeat" style="background-image: url('https://i.ibb.co/n8fZ33D6/photo-2025-12-25-15-56-18.jpg');">
+        <div class="absolute inset-0 bg-[#002266]/85"></div>
+        <div class="relative max-w-7xl mx-auto px-4 py-8 md:py-12 flex flex-col md:flex-row items-center gap-4 md:gap-8">
             
-            <!-- ផ្នែកទី ១: គណៈគ្រប់គ្រង (ទូរស័ព្ទវានឹងនៅខាងលើគេ) -->
-            <div class="md:col-span-5 md:pr-6">
-                <h4 class="moul-font text-yellow-400 text-lg mb-5 border-b border-slate-700/60 pb-2 inline-block">គណៈគ្រប់គ្រងសាលា</h4>
-                <ul class="space-y-4 leading-relaxed text-[13px] md:text-sm">
-                    <li><span class="font-bold text-white">លោក នី ម៉ៅ</span> (នាយកសាលា)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 76 647 8888</span></li>
-                    <li><span class="font-bold text-white">លោក ណៃ កាណុល</span> (នាយករងរដ្ឋបាល)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 17 821 588</span></li>
-                    <li><span class="font-bold text-white">លោកស្រី ណាក សំណាង</span> (នាយិការងបច្ចេកទេស)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 12 925 739</span></li>
-                    <li><span class="font-bold text-white">លោក ហុន ម៉ុម</span> (ជំនួយការបច្ចេកទេស ICT)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 016 476 664</span></li>
-                </ul>
+            <!-- ឡូហ្គោសាលា (បង្ហាញតែលើ កុំព្យូទ័រ និង iPad ប៉ុណ្ណោះ) -->
+            <div class="hidden md:block w-32 h-32 bg-white rounded-full p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.2)] flex-shrink-0 mt-2 border-2 border-yellow-400">
+                <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" alt="Logo" class="w-full h-full object-contain">
             </div>
             
-            <!-- ផ្នែកទី ២: ម៉ោងធ្វើការ -->
-            <div class="md:col-span-3 md:px-4">
-                <h4 class="moul-font text-yellow-400 text-lg mb-5 border-b border-slate-700/60 pb-2 inline-block">ម៉ោងធ្វើការ</h4>
-                <p class="mb-4 text-[15px] text-white font-bold">ចន្ទ ដល់ សៅរ៍</p>
-                <div class="space-y-3 font-bold text-[13px] md:text-sm">
-                    <p class="flex items-center gap-3"><span class="bg-slate-800 text-slate-300 px-3 py-1.5 rounded">ព្រឹក៖</span> ០៧:០០ - ១១:០០</p>
-                    <p class="flex items-center gap-3"><span class="bg-slate-800 text-slate-300 px-3 py-1.5 rounded">រសៀល៖</span> ១៣:០០ - ១៧:០០</p>
-                </div>
+            <!-- អក្សរចំណងជើង -->
+            <div class="flex flex-col items-center md:items-start justify-center text-center md:text-left mt-2 w-full">
+                <!-- ក្រសួង នៅខាងលើ -->
+                <h2 class="font-bold text-[22px] md:text-4xl text-yellow-400 mb-2 drop-shadow-md tracking-wider uppercase">ក្រសួងអប់រំ យុវជន និងកីឡា</h2>
+                
+                <!-- ឈ្មោះសាលា នៅខាងក្រោម -->
+                <h1 class="moul-font text-[18px] md:text-4xl text-white drop-shadow-lg leading-loose md:leading-relaxed">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h1>
+                <h2 class="font-bold text-[22px] md:text-4xl text-yellow-400 mb-2 drop-shadow-md tracking-wider uppercase">សូមស្វាគមន៍!</h2>
             </div>
             
-            <!-- ផ្នែកទី ៣: អាសយដ្ឋាន -->
-            <div class="md:col-span-4 md:pl-6">
-                <h4 class="moul-font text-yellow-400 text-lg mb-5 border-b border-slate-700/60 pb-2 inline-block">អាសយដ្ឋាន</h4>
-                <p class="leading-loose text-[14px] text-slate-300">
-                    ភូមិសាលាលេខប្រាំ ឃុំអូរឫស្សី<br>
-                    ស្រុកកំពង់ត្រឡាច ខេត្តកំពង់ឆ្នាំង
-                </p>
-                <p class="mt-5 font-bold text-[14px] text-slate-400">Email: <a href="mailto:info@kp-tralach.org" class="text-blue-400 hover:text-white transition">info@kp-tralach.org</a></p>
-            </div>
         </div>
-        
-        <!-- រក្សាសិទ្ធិ -->
-        <div class="max-w-7xl mx-auto px-4 mt-10 pt-6 border-t border-slate-800 text-center text-xs text-slate-500 tracking-wider">
-            &copy; ២០២៦ រក្សាសិទ្ធិដោយ វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច. រៀបចំដោយផ្នែក ICT.
-        </div>
-    </footer>
+    </header>
 
-    <!-- 🌟 Navigation Menu -->
+<!-- 🌟 Navigation Menu -->
     <nav class="nav-bar">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-[56px] md:h-auto">
-            <div class="md:hidden w-full flex justify-end">
-                <button id="mobile-menu-btn" class="text-white focus:outline-none p-2">
+        <!-- ខ្ញុំបានដំឡើងកម្ពស់ h-[64px] សម្រាប់ទូរស័ព្ទ ដើម្បីឲ្យ Logo មានទំហំសមល្មម -->
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-[64px] md:h-auto">
+            
+            <!-- 🌟 ផ្នែកនេះបង្ហាញតែលើទូរស័ព្ទប៉ុណ្ណោះ (Logo ឆ្វេង + ប៊ូតុង ស្តាំ) -->
+            <div class="flex w-full justify-between items-center md:hidden">
+                
+                <!-- Logo និង ឈ្មោះសាលា (ខាងឆ្វេង) -->
+                <a href="index.html" class="flex items-center gap-3">
+                    <div class="w-11 h-11 bg-white rounded-full p-0.5 border-2 border-yellow-400 flex-shrink-0 shadow-md">
+                        <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" alt="Logo" class="w-full h-full object-contain">
+                    </div>
+                    <span class="moul-font text-white text-[13px] tracking-wide drop-shadow-sm">វិ. ហ៊ុន សែន កំពង់ត្រឡាច</span>
+                </a>
+
+                <!-- Mobile Menu Button (ខាងស្តាំ) -->
+                <button id="mobile-menu-btn" class="text-white focus:outline-none p-2 -mr-2">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
+                
             </div>
+            
+            <!-- 🌟 Desktop Menu (បង្ហាញតែលើកុំព្យូទ័រ) -->
             <div id="desktop-menu" class="hidden md:flex flex-wrap w-full justify-between items-center">
                 <div>
-                    <a href="index.html" class="nav-link moul-font">ទំព័រដើម</a>
+                    <a href="index.html" class="nav-link active moul-font">ទំព័រដើម</a>
                     <a href="student.html" class="nav-link">លទ្ធផលសិក្សាទូទៅ</a>
                     <a href="bac2.html" class="nav-link">ស្តង់ដារបាក់ឌុប</a>
                     <a href="admin.html" class="nav-link">កិច្ចការរដ្ឋបាល</a>
@@ -85,14 +82,16 @@
             </div>
         </div>
         
+        <!-- Mobile Dropdown Menu -->
         <div id="mobile-menu" class="hidden flex-col bg-[#002266] md:hidden border-t border-blue-800 shadow-xl">
-            <a href="index.html" class="nav-link moul-font">ទំព័រដើម</a>
+            <a href="index.html" class="nav-link active moul-font">ទំព័រដើម</a>
             <a href="student.html" class="nav-link border-t border-blue-800/50">លទ្ធផលសិក្សាទូទៅ</a>
             <a href="bac2.html" class="nav-link border-t border-blue-800/50">ស្តង់ដារបាក់ឌុប</a>
             <a href="admin.html" class="nav-link border-t border-blue-800/50">កិច្ចការរដ្ឋបាល</a>
             <a href="report.html" class="nav-link border-t border-blue-800/50">របាយការណ៍សាលា</a>
         </div>
     </nav>
+
 
     <!-- Main Content for Article -->
     <main class="max-w-4xl mx-auto px-4 py-8 md:py-12">
