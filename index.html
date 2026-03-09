@@ -20,8 +20,6 @@
         .nav-link:hover { background-color: #002266; }
         .nav-link.active { background-color: var(--main-red); }
 
-        .banner-bg { background-image: linear-gradient(rgba(0, 51, 153, 0.8), rgba(0, 51, 153, 0.8)), url('https://images.unsplash.com/photo-1592289658249-1d41bc4d9a65?q=80&w=2071'); background-size: cover; background-position: center; }
-
         .service-card { transition: all 0.3s ease; }
         .service-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-color: var(--main-blue); }
         .service-card:hover svg { color: var(--main-blue); }
@@ -33,29 +31,28 @@
 </head>
 <body>
 
-    <!-- Header Banner -->
-    <header class="banner-bg text-white py-6">
-        <div class="max-w-7xl mx-auto px-4 flex items-center gap-6">
-            <div class="w-20 h-20 md:w-24 md:h-24 bg-white rounded-full flex items-center justify-center p-2 shadow-lg flex-shrink-0">
+    <!-- 🌟 Header Banner -->
+    <header class="relative bg-cover bg-center bg-no-repeat" style="background-image: url('https://i.ibb.co/n8fZ33D6/photo-2025-12-25-15-56-18.jpg');">
+        <div class="absolute inset-0 bg-[#002266]/85"></div>
+        <div class="relative max-w-7xl mx-auto px-4 py-8 md:py-12 flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8">
+            <div class="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.2)] flex-shrink-0 mt-2 border-2 border-yellow-400">
                 <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" alt="Logo" class="w-full h-full object-contain">
             </div>
-            <div>
-                <h2 class="moul-font text-lg md:text-2xl mb-1 md:mb-2 drop-shadow-md text-yellow-400">ក្រសួងអប់រំ យុវជន និងកីឡា</h2>
-                <h1 class="moul-font text-xl md:text-4xl drop-shadow-lg leading-relaxed">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h1>
+            <div class="flex flex-col justify-center text-center md:text-left mt-2 w-full">
+                <h2 class="font-bold text-[22px] md:text-4xl text-yellow-400 mb-2 drop-shadow-md tracking-wider uppercase">ក្រសួងអប់រំ យុវជន និងកីឡា</h2>
+                <h1 class="moul-font text-[22px] md:text-4xl text-white drop-shadow-lg leading-loose md:leading-relaxed">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h1>
             </div>
         </div>
     </header>
 
-    <!-- Responsive Navigation Menu -->
+    <!-- 🌟 Navigation Menu -->
     <nav class="nav-bar">
         <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-[56px] md:h-auto">
-            <!-- Mobile Menu Button -->
-            <div class="text-white font-bold moul-font md:hidden text-lg">ម៉ឺនុយទំព័រ</div>
-            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none p-2">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
-            
-            <!-- Desktop Menu -->
+            <div class="md:hidden w-full flex justify-end">
+                <button id="mobile-menu-btn" class="text-white focus:outline-none p-2">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
             <div id="desktop-menu" class="hidden md:flex flex-wrap w-full justify-between items-center">
                 <div>
                     <a href="index.html" class="nav-link active moul-font">ទំព័រដើម</a>
@@ -64,14 +61,10 @@
                     <a href="admin.html" class="nav-link">កិច្ចការរដ្ឋបាល</a>
                     <a href="report.html" class="nav-link">របាយការណ៍សាលា</a>
                 </div>
-                <div class="text-white font-bold px-4">
-                    <span class="mr-2">🇰🇭 ខ្មែរ</span> | <span class="ml-2 text-gray-400">🇬🇧 EN</span>
-                </div>
             </div>
         </div>
         
-        <!-- Mobile Dropdown Menu -->
-        <div id="mobile-menu" class="hidden flex-col bg-[#002266] md:hidden border-t border-blue-800">
+        <div id="mobile-menu" class="hidden flex-col bg-[#002266] md:hidden border-t border-blue-800 shadow-xl">
             <a href="index.html" class="nav-link active moul-font">ទំព័រដើម</a>
             <a href="student.html" class="nav-link border-t border-blue-800/50">លទ្ធផលសិក្សាទូទៅ</a>
             <a href="bac2.html" class="nav-link border-t border-blue-800/50">ស្តង់ដារបាក់ឌុប</a>
@@ -85,12 +78,17 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
             <!-- Left Side: Hero Dynamic Content -->
-            <div class="lg:col-span-8 relative rounded-xl overflow-hidden shadow-lg group cursor-pointer h-[350px] md:h-[450px]">
+            <div class="lg:col-span-8 relative rounded-xl overflow-hidden shadow-lg group h-[350px] md:h-[450px]">
                 <img id="hero-img" src="" class="w-full h-full object-cover bg-slate-200" alt="Cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#001a4d] via-[#001a4d]/70 to-transparent flex flex-col justify-end p-6 md:p-8">
                     <span id="hero-date" class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded w-max mb-3">ព័ត៌មានថ្មីៗ</span>
                     <h2 id="hero-title" class="moul-font text-xl md:text-3xl text-white mb-3 leading-relaxed drop-shadow-md">កំពុងទាញយកទិន្នន័យ...</h2>
-                    <p id="hero-desc" class="text-gray-200 line-clamp-2 text-sm md:text-base leading-loose mb-4">...</p>
+                    <p id="hero-desc" class="text-gray-200 line-clamp-2 text-sm md:text-base leading-loose mb-3">...</p>
+                    
+                    <!-- កែប្រែជា <a> Tag និងដាក់ ID ដើម្បីបញ្ជាតាម JS -->
+                    <a id="hero-link" href="#" class="text-yellow-400 text-sm font-bold inline-flex items-center gap-1 hover:underline w-max">
+                        អានបន្ត <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </a>
                 </div>
             </div>
 
@@ -136,34 +134,47 @@
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
             <!-- Article 1 -->
-            <article class="article-card bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
+            <article class="article-card bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 flex flex-col h-full">
                 <div class="img-wrapper h-48 w-full bg-slate-100">
                     <img id="news1-img" src="" class="w-full h-full object-cover">
                 </div>
-                <div class="p-5">
+                <div class="p-5 flex flex-col flex-grow">
                     <p id="news1-date" class="text-xs text-gray-400 font-bold mb-2">...</p>
                     <h4 id="news1-title" class="font-bold text-[15px] leading-relaxed text-gray-800 mb-2 line-clamp-2">...</h4>
-                    <p id="news1-desc" class="text-sm text-gray-600 line-clamp-3 leading-loose">...</p>
+                    <p id="news1-desc" class="text-sm text-gray-600 line-clamp-3 leading-loose mb-4">...</p>
+                    
+                    <!-- ដាក់ ID id="news1-link" -->
+                    <a id="news1-link" href="#" class="mt-auto text-[#003399] text-[13px] font-bold hover:underline inline-flex items-center gap-1 w-max">
+                        អានបន្ត 
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </a>
                 </div>
             </article>
 
             <!-- Article 2 -->
-            <article class="article-card bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
+            <article class="article-card bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 flex flex-col h-full">
                 <div class="img-wrapper h-48 w-full bg-slate-100">
                     <img id="news2-img" src="" class="w-full h-full object-cover">
                 </div>
-                <div class="p-5">
+                <div class="p-5 flex flex-col flex-grow">
                     <p id="news2-date" class="text-xs text-gray-400 font-bold mb-2">...</p>
                     <h4 id="news2-title" class="font-bold text-[15px] leading-relaxed text-gray-800 mb-2 line-clamp-2">...</h4>
-                    <p id="news2-desc" class="text-sm text-gray-600 line-clamp-3 leading-loose">...</p>
+                    <p id="news2-desc" class="text-sm text-gray-600 line-clamp-3 leading-loose mb-4">...</p>
+                    
+                    <!-- ដាក់ ID id="news2-link" -->
+                    <a id="news2-link" href="#" class="mt-auto text-[#003399] text-[13px] font-bold hover:underline inline-flex items-center gap-1 w-max">
+                        អានបន្ត 
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </a>
                 </div>
             </article>
 
             <!-- Video Section -->
-            <article class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
-                <iframe id="video-frame" class="w-full h-48 bg-slate-100" src="" frameborder="0" allowfullscreen></iframe>
-                <div class="p-5">
+            <article class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 flex flex-col h-full">
+                <iframe id="video-frame" class="w-full h-56 bg-slate-100" src="" frameborder="0" allowfullscreen></iframe>
+                <div class="p-5 flex-grow bg-slate-50">
                     <span class="bg-red-100 text-red-700 text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider">Video</span>
                     <h4 id="video-title" class="font-bold text-[15px] leading-relaxed text-gray-800 mb-2 mt-2">...</h4>
                 </div>
@@ -171,28 +182,15 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 pt-8 pb-6">
-        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center text-sm font-bold text-gray-600">
-            <div class="md:border-r border-gray-200 px-4">
-                <h4 class="moul-font text-main-blue text-lg mb-4">ទំនាក់ទំនង</h4>
-                <p class="mb-2 text-xl text-gray-800">ទូរស័ព្ទ៖ ០១៦ ៤៧ ៦៦ ៦៤</p>
-                <p class="text-gray-400 font-normal mt-4">Email: info@kp-tralach.org</p>
-            </div>
-            <div class="md:border-r border-gray-200 px-4">
-                <h4 class="moul-font text-main-blue text-lg mb-4">ម៉ោងធ្វើការ</h4>
-                <p class="mb-2 text-lg text-gray-800">ចន្ទ - សៅរ៍</p>
-                <p>ព្រឹក៖ ០៧:០០ - ១១:០០ | រសៀល៖ ១៣:០០ - ១៧:០០</p>
-            </div>
-            <div class="px-4">
-                <h4 class="moul-font text-main-blue text-lg mb-4">អាសយដ្ឋាន</h4>
-                <p class="leading-loose text-[13px] text-gray-700">ភូមិសាលាលេខប្រាំ ឃុំអូរឫស្សី<br>ស្រុកកំពង់ត្រឡាច ខេត្តកំពង់ឆ្នាំង</p>
-            </div>
+    <!-- 🌟 Footer -->
+    <footer class="bg-[#0f172a] text-slate-300 pt-12 pb-8 border-t-4 border-main-red">
+        <!-- Footer Content ដដែល -->
+        <div class="max-w-7xl mx-auto px-4 mt-10 pt-6 border-t border-slate-800 text-center text-xs text-slate-500 tracking-wider">
+            &copy; ២០២៦ រក្សាសិទ្ធិដោយ វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច. រៀបចំដោយផ្នែក ICT.
         </div>
     </footer>
 
     <script>
-        // 🌟 មុខងារបើក/បិទ 
         const mobileBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         mobileBtn.addEventListener('click', () => {
@@ -200,10 +198,25 @@
             mobileMenu.classList.toggle('flex');
         });
 
-        // 🌟 មុខងារទាញយកទិន្នន័យ (CMS) ពី Database
         const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
         const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY };
+
+        function parseYouTubeUrl(url) {
+            if (!url) return '';
+            let videoId = '';
+            try {
+                if (url.includes('youtu.be/')) {
+                    videoId = url.split('youtu.be/')[1].split(/[?#]/)[0];
+                } else if (url.includes('youtube.com/watch')) {
+                    const urlParams = new URL(url).searchParams;
+                    videoId = urlParams.get('v');
+                } else if (url.includes('youtube.com/embed/')) {
+                    return url; 
+                }
+            } catch (e) { console.error("Invalid URL format"); }
+            return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
+        }
 
         window.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -211,31 +224,39 @@
                 let data = await res.json();
                 
                 data.forEach(item => {
-                    // Update Hero
+                    // 🌟 មុខងារកំណត់ URL អត្ថបទពេលចុច អានបន្ត
+                    // ប្រសិនបើក្នុង Table អ្នកមាន Column ชื่อ `link_url` អាចប្តូរជា `item.link_url` បាន
+                    // តែជាទូទៅយើងភ្ជាប់វាទៅកាន់ទំព័រអត្ថបទតាមរយៈ Parameter ឧទាហរណ៍ `article.html?id=hero`
+                    let linkToArticle = `article.html?id=${item.section_id}`;
+
                     if(item.section_id === 'hero') {
                         document.getElementById('hero-title').innerText = item.title || '';
                         document.getElementById('hero-desc').innerText = item.description || '';
                         document.getElementById('hero-img').src = item.media_url || '';
                         document.getElementById('hero-date').innerText = item.date_text || 'ព័ត៌មានថ្មីៗ';
+                        // ភ្ជាប់ Link អានបន្ត
+                        document.getElementById('hero-link').href = linkToArticle;
                     }
-                    // Update News 1
                     if(item.section_id === 'news1') {
                         document.getElementById('news1-title').innerText = item.title || '';
                         document.getElementById('news1-desc').innerText = item.description || '';
                         document.getElementById('news1-img').src = item.media_url || '';
                         document.getElementById('news1-date').innerText = `🗓️ ${item.date_text || ''}`;
+                        // ភ្ជាប់ Link អានបន្ត
+                        document.getElementById('news1-link').href = linkToArticle;
                     }
-                    // Update News 2
                     if(item.section_id === 'news2') {
                         document.getElementById('news2-title').innerText = item.title || '';
                         document.getElementById('news2-desc').innerText = item.description || '';
                         document.getElementById('news2-img').src = item.media_url || '';
                         document.getElementById('news2-date').innerText = `🗓️ ${item.date_text || ''}`;
+                        // ភ្ជាប់ Link អានបន្ត
+                        document.getElementById('news2-link').href = linkToArticle;
                     }
-                    // Update Video
                     if(item.section_id === 'video') {
                         document.getElementById('video-title').innerText = item.title || '';
-                        document.getElementById('video-frame').src = item.media_url || '';
+                        let embedUrl = parseYouTubeUrl(item.media_url);
+                        document.getElementById('video-frame').src = embedUrl || '';
                     }
                 });
             } catch(e) { console.error("CMS Load Error:", e); }
