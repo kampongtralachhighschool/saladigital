@@ -93,18 +93,21 @@
     <main class="max-w-7xl mx-auto px-4 py-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- Left Side: Hero Dynamic Content -->
-            <div class="lg:col-span-8 relative rounded-xl overflow-hidden shadow-lg group h-[350px] md:h-[450px]">
-                <img id="hero-img" src="" class="w-full h-full object-cover bg-slate-200" alt="Cover">
+        <!-- Left Side: Hero Dynamic Content (កែប្រែឲ្យចុចបានទាំងមូល) -->
+            <a id="hero-link" href="#" class="lg:col-span-8 relative rounded-xl overflow-hidden shadow-lg group block h-[350px] md:h-[450px]">
+                <!-- រូបភាពមាន Effect ពេលដាក់ម៉ៅស៍ពីលើ -->
+                <img id="hero-img" src="" class="w-full h-full object-cover bg-slate-200 transition-transform duration-700 group-hover:scale-105" alt="Cover">
+                
                 <div class="absolute inset-0 bg-gradient-to-t from-[#001a4d] via-[#001a4d]/70 to-transparent flex flex-col justify-end p-6 md:p-8">
                     <span id="hero-date" class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded w-max mb-3">ព័ត៌មានថ្មីៗ</span>
                     <h2 id="hero-title" class="moul-font text-xl md:text-3xl text-white mb-3 leading-relaxed drop-shadow-md">កំពុងទាញយកទិន្នន័យ...</h2>
                     <p id="hero-desc" class="text-gray-200 line-clamp-2 text-sm md:text-base leading-loose mb-3">...</p>
                     
-                    <!-- កែប្រែជា <a> Tag និងដាក់ ID ដើម្បីបញ្ជាតាម JS -->
-                    <a id="hero-link" href="#" class="text-yellow-400 text-sm font-bold inline-flex items-center gap-1 hover:underline w-max">
+                    <span class="text-yellow-400 text-sm font-bold inline-flex items-center gap-1 group-hover:underline w-max">
                         អានបន្ត <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                    </a>
+                    </span>
+                </div>
+            </a>
                 </div>
             </div>
 
@@ -198,9 +201,43 @@
         </div>
     </section>
 
-    <!-- 🌟 Footer -->
-    <footer class="bg-[#0f172a] text-slate-300 pt-12 pb-8 border-t-4 border-main-red">
-        <!-- Footer Content ដដែល -->
+<!-- 🌟 Footer (រចនាបថថ្មី Responsive) -->
+    <footer class="bg-[#0a1128] text-slate-300 pt-12 pb-8 border-t-4 border-main-red mt-10">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 text-sm">
+            
+            <!-- ផ្នែកទី ១: គណៈគ្រប់គ្រង (ទូរស័ព្ទវានឹងនៅខាងលើគេ) -->
+            <div class="md:col-span-5 md:pr-6">
+                <h4 class="moul-font text-yellow-400 text-lg mb-5 border-b border-slate-700/60 pb-2 inline-block">គណៈគ្រប់គ្រងសាលា</h4>
+                <ul class="space-y-4 leading-relaxed text-[13px] md:text-sm">
+                    <li><span class="font-bold text-white">លោក នី ម៉ៅ</span> (នាយកសាលា)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 76 647 8888</span></li>
+                    <li><span class="font-bold text-white">លោក ណៃ កាណុល</span> (នាយករងរដ្ឋបាល)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 17 821 588</span></li>
+                    <li><span class="font-bold text-white">លោកស្រី ណាក សំណាង</span> (នាយិការងបច្ចេកទេស)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 12 925 739</span></li>
+                    <li><span class="font-bold text-white">លោក ហុន ម៉ុម</span> (ជំនួយការបច្ចេកទេស ICT)<br> <span class="text-blue-400 font-bold tracking-wider">Tel: +855 016 476 664</span></li>
+                </ul>
+            </div>
+            
+            <!-- ផ្នែកទី ២: ម៉ោងធ្វើការ -->
+            <div class="md:col-span-3 md:px-4">
+                <h4 class="moul-font text-yellow-400 text-lg mb-5 border-b border-slate-700/60 pb-2 inline-block">ម៉ោងធ្វើការ</h4>
+                <p class="mb-4 text-[15px] text-white font-bold">ចន្ទ ដល់ សៅរ៍</p>
+                <div class="space-y-3 font-bold text-[13px] md:text-sm">
+                    <p class="flex items-center gap-3"><span class="bg-slate-800 text-slate-300 px-3 py-1.5 rounded">ព្រឹក៖</span> ០៧:០០ - ១១:០០</p>
+                    <p class="flex items-center gap-3"><span class="bg-slate-800 text-slate-300 px-3 py-1.5 rounded">រសៀល៖</span> ១៣:០០ - ១៧:០០</p>
+                </div>
+            </div>
+            
+            <!-- ផ្នែកទី ៣: អាសយដ្ឋាន -->
+            <div class="md:col-span-4 md:pl-6">
+                <h4 class="moul-font text-yellow-400 text-lg mb-5 border-b border-slate-700/60 pb-2 inline-block">អាសយដ្ឋាន</h4>
+                <p class="leading-loose text-[14px] text-slate-300">
+                    ភូមិសាលាលេខប្រាំ ឃុំអូរឫស្សី<br>
+                    ស្រុកកំពង់ត្រឡាច ខេត្តកំពង់ឆ្នាំង
+                </p>
+                <p class="mt-5 font-bold text-[14px] text-slate-400">Email: <a href="mailto:info@kp-tralach.org" class="text-blue-400 hover:text-white transition">info@kp-tralach.org</a></p>
+            </div>
+        </div>
+        
+        <!-- រក្សាសិទ្ធិ -->
         <div class="max-w-7xl mx-auto px-4 mt-10 pt-6 border-t border-slate-800 text-center text-xs text-slate-500 tracking-wider">
             &copy; ២០២៦ រក្សាសិទ្ធិដោយ វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច. រៀបចំដោយផ្នែក ICT.
         </div>
