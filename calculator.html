@@ -3,308 +3,422 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ឧបករណ៍គណនាពិន្ទុបាក់ឌុប - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
-    
+    <title>ឧបករណ៍គណនាពិន្ទុបាក់ឌុប - Bac II Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
-        :root { --primary-blue: #1e40af; --khmer-red: #dc2626; }
-        body { font-family: 'Kantumruy Pro', sans-serif; background: #f8fafc; color: #1e293b; }
+        body { 
+            font-family: 'Kantumruy Pro', 'Inter', sans-serif; 
+            background-color: #f3f4f6; 
+            color: #1e293b;
+        }
         .moul-font { font-family: 'Moul', serif; }
         
-        .nav-container { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; padding: 10px 20px;}
-        .back-link { display: inline-flex; align-items: center; gap: 5px; color: #475569; font-weight: 600; transition: color 0.3s; font-size: 15px;}
-        .back-link:hover { color: var(--primary-blue); }
+        /* Smooth UI Transitions */
+        .card-neo {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
+        }
+        .card-neo:hover {
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -2px rgba(0, 0, 0, 0.03);
+            border-color: #e2e8f0;
+        }
 
-        .tab-btn { transition: all 0.3s ease; position: relative; overflow: hidden; }
-        .tab-btn.active { background-color: #0ea5e9; color: white; border-color: #0ea5e9; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.3); }
-        .tab-btn.inactive { background-color: white; color: #64748b; border-color: #cbd5e1; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Input Styles */
+        .score-input {
+            width: 80px;
+            height: 60px;
+            font-size: 24px;
+            font-weight: 900;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            color: #0f172a;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+        .score-input:focus {
+            border-color: #3b82f6;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
 
-        .input-score { width: 100%; text-align: center; font-weight: 900; font-size: 16px; color: #1e40af; background: #f1f5f9; border: 2px solid #cbd5e1; border-radius: 8px; padding: 8px; outline: none; transition: border-color 0.2s;}
-        .input-score:focus { border-color: #3b82f6; background: #fff; }
-        .input-score.error { border-color: #ef4444; background: #fef2f2; color: #dc2626; }
+        /* Toggle Switch */
+        .toggle-bg { background: #e2e8f0; border-radius: 9999px; padding: 4px; display: inline-flex; }
+        .toggle-btn {
+            padding: 10px 24px; border-radius: 9999px; font-weight: 700; font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; color: #64748b;
+        }
+        .toggle-btn.active { background: #0f172a; color: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 
-        .grd-box { padding: 4px 12px; border-radius: 6px; font-weight: 900; font-size: 14px; display: inline-block; min-width: 40px; text-align: center;}
-        
-        /* Grade Colors */
-        .g-A { background: #fee2e2; color: #dc2626; } 
-        .g-B { background: #fce7f3; color: #db2777; } 
-        .g-C { background: #ffedd5; color: #ea580c; } 
-        .g-D { background: #dcfce7; color: #16a34a; } 
-        .g-E { background: #dbeafe; color: #2563eb; } 
-        .g-F { background: #f1f5f9; color: #475569; }
+        /* Grades Text Colors */
+        .grd-A { color: #ef4444; } .grd-B { color: #d946ef; } .grd-C { color: #f97316; }
+        .grd-D { color: #10b981; } .grd-E { color: #3b82f6; } .grd-F { color: #64748b; }
 
-        .result-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; text-align: center; }
+        /* AI Analysis Box */
+        .ai-box {
+            background: linear-gradient(145deg, #f0f9ff 0%, #e0e7ff 100%);
+            border: 1px solid #bae6fd;
+            position: relative;
+            overflow: hidden;
+        }
+        .ai-box::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #d946ef);
+        }
     </style>
 </head>
-<body>
+<body class="pb-20">
 
-    <nav class="nav-container">
-        <div class="max-w-4xl mx-auto flex justify-between">
-            <a href="bac2.html" class="back-link">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                ត្រឡប់ក្រោយ
-            </a>
-            <a href="reference.html" target="_blank" class="text-sm font-bold text-blue-600 hover:text-blue-800 underline">តារាងយោងរបបពិន្ទុ</a>
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.close()">
+                <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <span class="font-bold text-slate-600 hidden sm:block">ត្រឡប់ក្រោយ / Back</span>
+            </div>
+            <h1 class="font-black text-slate-800 text-lg md:text-xl">EXAM SCORE <span class="text-blue-600">CALCULATOR</span></h1>
+            <div class="w-24"></div> <!-- Spacer for center alignment -->
         </div>
-    </nav>
+    </header>
 
-    <div class="max-w-4xl mx-auto px-4 py-8">
-        <div class="text-center mb-8">
-            <h2 class="moul-font text-blue-900 text-2xl md:text-3xl mb-3">ឧបករណ៍គណនាពិន្ទុបាក់ឌុប</h2>
-            <p class="font-bold text-gray-500">សាកល្បងកំណត់គោលដៅពិន្ទុរបស់អ្នក ដើម្បីដឹងពីនិទ្ទេសដែលនឹងទទួលបាន</p>
+    <main class="max-w-5xl mx-auto px-4 mt-8">
+        
+        <!-- Header Info -->
+        <div class="text-center mb-10">
+            <h2 class="moul-font text-blue-900 text-2xl md:text-3xl mb-3 leading-relaxed">ម៉ាស៊ីនគណនាពិន្ទុបាក់ឌុប</h2>
+            <p class="text-slate-500 font-bold mb-6">កំណត់គោលដៅពិន្ទុរបស់អ្នក ដើម្បីត្រៀមខ្លួនប្រឡង</p>
+            
+            <div class="max-w-xs mx-auto mb-6">
+                <input type="text" id="studentName" placeholder="បញ្ចូលឈ្មោះរបស់អ្នកទីនេះ (ជម្រើស)" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 outline-none focus:border-blue-500 font-bold text-center text-slate-700 bg-white">
+            </div>
+
+            <!-- Class Toggle -->
+            <div class="toggle-bg">
+                <button id="btn-science" class="toggle-btn active" onclick="setClass('science')">ថ្នាក់វិទ្យាសាស្ត្រ <span class="text-[10px] ml-1 opacity-70">Science</span></button>
+                <button id="btn-social" class="toggle-btn" onclick="setClass('social')">ថ្នាក់វិទ្យាសាស្ត្រសង្គម <span class="text-[10px] ml-1 opacity-70">Social</span></button>
+            </div>
         </div>
 
-        <!-- 🌟 Tab Navigation -->
-        <div class="flex justify-center gap-4 mb-8">
-            <button onclick="switchTab('sc')" id="btn-sc" class="tab-btn active px-8 py-3 rounded-xl font-black text-sm md:text-base border-2">🔬 ថ្នាក់វិទ្យាសាស្ត្រ</button>
-            <button onclick="switchTab('ss')" id="btn-ss" class="tab-btn inactive px-8 py-3 rounded-xl font-black text-sm md:text-base border-2">🏛️ ថ្នាក់វិទ្យាសាស្ត្រសង្គម</button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
-            <!-- 🌟 Left Side: Input Form -->
-            <div class="md:col-span-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <div class="flex justify-between font-black text-slate-400 text-xs uppercase tracking-wider border-b-2 border-slate-100 pb-3 mb-4 px-2">
-                    <span class="w-1/2 text-left">មុខវិជ្ជា (ពិន្ទុពេញ)</span>
-                    <span class="w-1/4 text-center">ពិន្ទុរំពឹងទុក</span>
-                    <span class="w-1/4 text-right">និទ្ទេស</span>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Panel: Score Inputs -->
+            <div class="lg:col-span-8">
+                <div class="mb-2 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+                    <h3 class="font-black text-slate-700 text-lg">មុខវិជ្ជាគោល (Main Subjects)</h3>
+                </div>
+                
+                <div id="main-subjects-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <!-- Dynamic Subjects Render Here -->
                 </div>
 
-                <!-- 🔬 Science Tab -->
-                <div id="tab-sc" class="tab-content active space-y-4">
-                    <!-- Math -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">គណិតវិទ្យា</p><p class="text-xs text-gray-400 font-bold">ពេញ: 125</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="sc-math" class="input-score" max="125" min="0" value="0" oninput="calcSC()"></div>
-                        <div class="w-1/4 text-right"><span id="sc-grd-math" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- Khmer -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">ភាសាខ្មែរ</p><p class="text-xs text-gray-400 font-bold">ពេញ: 75</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="sc-khmer" class="input-score" max="75" min="0" value="0" oninput="calcSC()"></div>
-                        <div class="w-1/4 text-right"><span id="sc-grd-khmer" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- Physics -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">រូបវិទ្យា</p><p class="text-xs text-gray-400 font-bold">ពេញ: 75</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="sc-phys" class="input-score" max="75" min="0" value="0" oninput="calcSC()"></div>
-                        <div class="w-1/4 text-right"><span id="sc-grd-phys" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- Chemistry -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">គីមីវិទ្យា</p><p class="text-xs text-gray-400 font-bold">ពេញ: 75</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="sc-chem" class="input-score" max="75" min="0" value="0" oninput="calcSC()"></div>
-                        <div class="w-1/4 text-right"><span id="sc-grd-chem" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- Biology -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">ជីវវិទ្យា</p><p class="text-xs text-gray-400 font-bold">ពេញ: 75</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="sc-bio" class="input-score" max="75" min="0" value="0" oninput="calcSC()"></div>
-                        <div class="w-1/4 text-right"><span id="sc-grd-bio" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- History -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">ប្រវត្តិវិទ្យា</p><p class="text-xs text-gray-400 font-bold">ពេញ: 50</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="sc-hist" class="input-score" max="50" min="0" value="0" oninput="calcSC()"></div>
-                        <div class="w-1/4 text-right"><span id="sc-grd-hist" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- English (Bonus) -->
-                    <div class="flex items-center justify-between px-2 bg-emerald-50 py-3 rounded-lg mt-4 border border-emerald-100">
-                        <div class="w-1/2"><p class="font-bold text-emerald-800">ភាសាអង់គ្លេស <span class="text-[10px] bg-emerald-200 px-1 rounded">Bonus</span></p><p class="text-[10px] text-emerald-600 font-bold">ក្រោម ២៦=០, ចាប់ពី ២៦ឡើង ដក ២៥</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="sc-eng" class="input-score" style="border-color:#10b981; color:#047857;" max="50" min="0" value="0" oninput="calcSC()"></div>
-                        <div class="w-1/4 text-right"><span id="sc-bonus-val" class="font-black text-emerald-600">+ 0</span></div>
-                    </div>
+                <div class="mb-2 flex items-center gap-2 mt-8">
+                    <span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span>
+                    <h3 class="font-black text-slate-700 text-lg">មុខវិជ្ជាជ្រើសរើស (Selection Subject)</h3>
                 </div>
-
-                <!-- 🏛️ Social Science Tab -->
-                <div id="tab-ss" class="tab-content hidden space-y-4">
-                    <!-- Khmer -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">ភាសាខ្មែរ</p><p class="text-xs text-gray-400 font-bold">ពេញ: 125</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="ss-khmer" class="input-score" max="125" min="0" value="0" oninput="calcSS()"></div>
-                        <div class="w-1/4 text-right"><span id="ss-grd-khmer" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- Math -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">គណិតវិទ្យា</p><p class="text-xs text-gray-400 font-bold">ពេញ: 75</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="ss-math" class="input-score" max="75" min="0" value="0" oninput="calcSS()"></div>
-                        <div class="w-1/4 text-right"><span id="ss-grd-math" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- History -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">ប្រវត្តិវិទ្យា</p><p class="text-xs text-gray-400 font-bold">ពេញ: 75</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="ss-hist" class="input-score" max="75" min="0" value="0" oninput="calcSS()"></div>
-                        <div class="w-1/4 text-right"><span id="ss-grd-hist" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- Geography -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">ភូមិវិទ្យា</p><p class="text-xs text-gray-400 font-bold">ពេញ: 75</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="ss-geo" class="input-score" max="75" min="0" value="0" oninput="calcSS()"></div>
-                        <div class="w-1/4 text-right"><span id="ss-grd-geo" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- Morality -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">សីលធម៌ពលរដ្ឋ</p><p class="text-xs text-gray-400 font-bold">ពេញ: 75</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="ss-mor" class="input-score" max="75" min="0" value="0" oninput="calcSS()"></div>
-                        <div class="w-1/4 text-right"><span id="ss-grd-mor" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- Earth Science -->
-                    <div class="flex items-center justify-between px-2">
-                        <div class="w-1/2"><p class="font-bold text-slate-800">ផែនដីវិទ្យា</p><p class="text-xs text-gray-400 font-bold">ពេញ: 50</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="ss-earth" class="input-score" max="50" min="0" value="0" oninput="calcSS()"></div>
-                        <div class="w-1/4 text-right"><span id="ss-grd-earth" class="grd-box g-F">F</span></div>
-                    </div>
-                    <!-- English (Bonus) -->
-                    <div class="flex items-center justify-between px-2 bg-emerald-50 py-3 rounded-lg mt-4 border border-emerald-100">
-                        <div class="w-1/2"><p class="font-bold text-emerald-800">ភាសាអង់គ្លេស <span class="text-[10px] bg-emerald-200 px-1 rounded">Bonus</span></p><p class="text-[10px] text-emerald-600 font-bold">ក្រោម ២៦=០, ចាប់ពី ២៦ឡើង ដក ២៥</p></div>
-                        <div class="w-1/4 px-2"><input type="number" id="ss-eng" class="input-score" style="border-color:#10b981; color:#047857;" max="50" min="0" value="0" oninput="calcSS()"></div>
-                        <div class="w-1/4 text-right"><span id="ss-bonus-val" class="font-black text-emerald-600">+ 0</span></div>
-                    </div>
+                
+                <div id="selection-subjects-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Dynamic Selection Subjects Render Here -->
                 </div>
             </div>
 
-            <!-- 🌟 Right Side: Results Display -->
-            <div class="md:col-span-4">
-                <div class="result-card sticky top-24">
-                    <h3 class="font-black text-slate-500 uppercase tracking-widest text-xs mb-4">លទ្ធផលព្យាករណ៍</h3>
-                    
-                    <div class="mb-6">
-                        <p class="text-sm font-bold text-gray-500 mb-1">ពិន្ទុសរុប</p>
-                        <p class="text-4xl font-black text-blue-700" id="final-total">0</p>
-                        <p class="text-xs font-bold text-gray-400 mt-1">លើអតិបរមា 500</p>
+            <!-- Right Panel: Results & Actions -->
+            <div class="lg:col-span-4">
+                <div class="sticky top-24">
+                    <!-- Result Card -->
+                    <div class="card-neo p-6 mb-6 text-center">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-6">
+                            <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Result Table</span>
+                            <button onclick="resetScores()" class="text-xs font-bold text-slate-400 hover:text-red-500 transition">Clear ↺</button>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2 items-end mb-4">
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase mb-2">Result</p>
+                                <p id="final-status" class="text-xl md:text-2xl font-black text-slate-300">---</p>
+                            </div>
+                            <div class="bg-blue-600 rounded-2xl p-4 text-white shadow-lg shadow-blue-600/30 transform hover:-translate-y-1 transition">
+                                <p class="text-xs font-bold text-blue-200 uppercase mb-1">Total</p>
+                                <p id="final-total" class="text-3xl md:text-4xl font-black">0</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase mb-2">Grade</p>
+                                <p id="final-grade" class="text-3xl md:text-4xl font-black text-slate-300">F</p>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 font-medium leading-relaxed px-4">
+                            * ពិន្ទុសរុបមានបូកបញ្ចូលពិន្ទុភាសាបរទេស (ដក២៥) ប្រសិនបើភាសាបរទេសទទួលបានចាប់ពី ២៥ពិន្ទុឡើងទៅ។
+                        </p>
                     </div>
 
-                    <div class="mb-6 border-t border-slate-100 pt-6">
-                        <p class="text-sm font-bold text-gray-500 mb-2">និទ្ទេសរួម</p>
-                        <div id="final-grade" class="text-6xl font-black text-slate-300 drop-shadow-md">F</div>
-                    </div>
-
-                    <div id="status-msg" class="p-3 bg-red-50 text-red-600 font-bold text-sm rounded-lg border border-red-200">
-                        ធ្លាក់ (មិនទាន់ដល់ ២៣៧ ពិន្ទុ)
-                    </div>
-                    
-                    <button onclick="clearAll()" class="mt-6 w-full py-2.5 rounded-xl font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 transition">កំណត់ឡើងវិញ (Clear)</button>
+                    <!-- AI Analysis Button -->
+                    <button onclick="analyzeScores()" class="w-full bg-[#0f172a] text-white py-4 rounded-2xl font-black text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex justify-center items-center gap-2">
+                        ✨ វិភាគលទ្ធផលតាមរយៈ AI
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- AI Analysis Result Box (Hidden by Default) -->
+        <div id="ai-analysis-container" class="mt-12 hidden">
+            <h3 class="moul-font text-xl text-blue-900 mb-4 flex items-center gap-2">
+                <span class="text-2xl">🤖</span> ការវិភាគលទ្ធផល (AI Analysis)
+            </h3>
+            <div class="ai-box rounded-2xl p-6 md:p-8 shadow-sm">
+                <div id="ai-content" class="text-sm md:text-base leading-loose text-slate-700">
+                    <!-- Dynamic AI Content -->
+                </div>
+            </div>
+        </div>
+
+    </main>
 
     <script>
-        // 🔄 Switch Tabs
-        function switchTab(type) {
-            document.querySelectorAll('.tab-btn').forEach(btn => { btn.classList.remove('active'); btn.classList.add('inactive'); });
-            document.querySelectorAll('.tab-content').forEach(tab => { tab.classList.remove('active'); tab.classList.add('hidden'); });
-            
-            document.getElementById(`btn-${type}`).classList.add('active');
-            document.getElementById(`btn-${type}`).classList.remove('inactive');
-            document.getElementById(`tab-${type}`).classList.add('active');
-            document.getElementById(`tab-${type}`).classList.remove('hidden');
-            
-            clearAll(); // Reset when switching
+        // Data Structure & MoEYS Rules
+        const cutoffs = {
+            125: { A: 112, B: 100, C: 87, D: 75, E: 62 },
+            75: { A: 67, B: 60, C: 52, D: 45, E: 37 },
+            50: { A: 45, B: 40, C: 35, D: 30, E: 25 },
+            500: { A: 427, B: 380, C: 332, D: 285, E: 237 }
+        };
+
+        const subjectsData = {
+            science: {
+                main:[
+                    { id: 'sc_khm', kh: 'ភាសាខ្មែរ', en: 'Khmer Language', max: 75, icon: '🇰🇭' },
+                    { id: 'sc_math', kh: 'គណិតវិទ្យា', en: 'Mathematics', max: 125, icon: '📐' },
+                    { id: 'sc_phys', kh: 'រូបវិទ្យា', en: 'Physics', max: 75, icon: '⚛️' },
+                    { id: 'sc_chem', kh: 'គីមីវិទ្យា', en: 'Chemistry', max: 75, icon: '🧪' },
+                    { id: 'sc_bio', kh: 'ជីវវិទ្យា', en: 'Biology', max: 75, icon: '🧬' },
+                    { id: 'sc_hist', kh: 'ប្រវត្តិវិទ្យា', en: 'History', max: 50, icon: '🏛️' }
+                ],
+                selection:[
+                    { id: 'sc_eng', kh: 'ភាសាបរទេស', en: 'Foreign Language', max: 50, icon: '🌐', isBonus: true }
+                ]
+            },
+            social: {
+                main:[
+                    { id: 'ss_khm', kh: 'ភាសាខ្មែរ', en: 'Khmer Language', max: 125, icon: '🇰🇭' },
+                    { id: 'ss_math', kh: 'គណិតវិទ្យា', en: 'Mathematics', max: 75, icon: '📐' },
+                    { id: 'ss_mor', kh: 'សីលធម៌ពលរដ្ឋ', en: 'Morality & Civics', max: 75, icon: '⚖️' },
+                    { id: 'ss_hist', kh: 'ប្រវត្តិវិទ្យា', en: 'History', max: 75, icon: '🏛️' },
+                    { id: 'ss_geo', kh: 'ភូមិវិទ្យា', en: 'Geography', max: 75, icon: '🌍' }
+                ],
+                selection:[
+                    { id: 'ss_earth', kh: 'ផែនដី និងបរិស្ថាន', en: 'Earth Science', max: 50, icon: '🌱' },
+                    { id: 'ss_eng', kh: 'ភាសាបរទេស', en: 'Foreign Language', max: 50, icon: '🌐', isBonus: true }
+                ]
+            }
+        };
+
+        let currentClass = 'science';
+
+        // Helpers
+        function getGrade(score, max) {
+            let c = cutoffs[max];
+            if (!c) return 'F'; // Fallback
+            if (score >= c.A) return 'A';
+            if (score >= c.B) return 'B';
+            if (score >= c.C) return 'C';
+            if (score >= c.D) return 'D';
+            if (score >= c.E) return 'E';
+            return 'F';
         }
 
-        // 🧮 Auto Calculator Logic based on Official MOEYS Standards
-        function getGrade(score, maxScore) {
-            let pct = (score / maxScore) * 100;
-            if(pct >= 90) return {g: 'A', c: 'g-A'};
-            if(pct >= 80) return {g: 'B', c: 'g-B'};
-            if(pct >= 70) return {g: 'C', c: 'g-C'};
-            if(pct >= 60) return {g: 'D', c: 'g-D'};
-            if(pct >= 50) return {g: 'E', c: 'g-E'};
-            return {g: 'F', c: 'g-F'};
+        // UI Renders
+        function renderSubjects() {
+            const mainContainer = document.getElementById('main-subjects-container');
+            const selContainer = document.getElementById('selection-subjects-container');
+            mainContainer.innerHTML = ''; selContainer.innerHTML = '';
+
+            let data = subjectsData[currentClass];
+
+            const buildCard = (sub) => `
+                <div class="card-neo p-4 flex justify-between items-center">
+                    <div class="flex flex-col gap-1 w-full">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">${sub.icon}</span>
+                            <div>
+                                <p class="font-bold text-slate-800 text-sm">${sub.kh}</p>
+                                <p class="text-[10px] text-slate-400 font-bold">${sub.en}</p>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-blue-500 font-black mt-1 uppercase tracking-wider">MAX: ${sub.max}</p>
+                    </div>
+                    <div class="flex items-center gap-3 border-l border-slate-100 pl-4 ml-2">
+                        <input type="number" id="${sub.id}" class="score-input" min="0" max="${sub.max}" value="0" onclick="this.select()" oninput="handleInput('${sub.id}', ${sub.max}, ${sub.isBonus || false})">
+                        <div id="grade-${sub.id}" class="text-3xl font-black grd-F w-10 text-center">F</div>
+                    </div>
+                </div>
+            `;
+
+            data.main.forEach(sub => mainContainer.innerHTML += buildCard(sub));
+            data.selection.forEach(sub => selContainer.innerHTML += buildCard(sub));
+            
+            calculateTotal();
         }
 
-        function validateInput(id, max) {
+        function handleInput(id, max, isBonus) {
             let el = document.getElementById(id);
-            let val = parseInt(el.value) || 0;
-            if (val > max) { el.value = max; val = max; el.classList.add('error'); setTimeout(()=>el.classList.remove('error'), 500); }
-            if (val < 0) { el.value = 0; val = 0; }
-            return val;
+            let val = Math.floor(Number(el.value)); // Force integer
+            if (val > max) { el.value = max; val = max; }
+            if (val < 0 || isNaN(val)) { el.value = 0; val = 0; }
+            
+            let grdEl = document.getElementById(`grade-${id}`);
+            let grd = getGrade(val, max);
+            
+            // UI Update Grade
+            grdEl.className = `text-3xl font-black w-10 text-center grd-${grd}`;
+            grdEl.innerText = grd;
+
+            // If it's English, show bonus logic specifically in AI later, but for now calculate total
+            calculateTotal();
         }
 
-        function updateUI(totalScore) {
-            document.getElementById('final-total').innerText = totalScore;
-            let finalGrdEl = document.getElementById('final-grade');
-            let statusEl = document.getElementById('status-msg');
+        function calculateTotal() {
+            let data = subjectsData[currentClass];
+            let total = 0;
             
-            let finalGrdObj = getGrade(totalScore, 500);
-            
-            finalGrdEl.className = `text-6xl font-black drop-shadow-md ${finalGrdObj.c.replace('g-','text-').replace('F','slate-300')}`;
-            finalGrdEl.innerText = finalGrdObj.g;
+            // Sum Main
+            data.main.forEach(sub => {
+                let val = parseInt(document.getElementById(sub.id).value) || 0;
+                total += val;
+            });
 
-            if (totalScore >= 237) {
-                statusEl.className = "p-3 bg-emerald-50 text-emerald-600 font-bold text-sm rounded-lg border border-emerald-200";
-                statusEl.innerText = "អបអរសាទរ! អ្នកប្រឡងជាប់។ 🎉";
+            // Sum Selection (handle bonus)
+            data.selection.forEach(sub => {
+                let val = parseInt(document.getElementById(sub.id).value) || 0;
+                if (sub.isBonus) {
+                    if (val >= 25) total += (val - 25);
+                } else {
+                    total += val;
+                }
+            });
+
+            // Overall
+            let overGrd = getOverallGrade(total);
+            document.getElementById('final-total').innerText = total;
+            
+            let fgEl = document.getElementById('final-grade');
+            fgEl.innerText = overGrd;
+            fgEl.className = `text-3xl md:text-4xl font-black drop-shadow-md grd-${overGrd}`;
+
+            let statusEl = document.getElementById('final-status');
+            if (total >= 237) {
+                statusEl.innerText = "Pass";
+                statusEl.className = "text-xl md:text-2xl font-black text-emerald-500";
             } else {
-                statusEl.className = "p-3 bg-red-50 text-red-600 font-bold text-sm rounded-lg border border-red-200";
-                let needed = 237 - totalScore;
-                statusEl.innerText = `ធ្លាក់! អ្នកត្រូវការ ${needed} ពិន្ទុទៀតដើម្បីជាប់។`;
+                statusEl.innerText = "Fail";
+                statusEl.className = "text-xl md:text-2xl font-black text-red-500";
             }
         }
 
-        // 🔬 Calc Science
-        function calcSC() {
-            let total = 0;
-            const subjs =[
-                { id: 'sc-math', max: 125 }, { id: 'sc-khmer', max: 75 },
-                { id: 'sc-phys', max: 75 }, { id: 'sc-chem', max: 75 },
-                { id: 'sc-bio', max: 75 }, { id: 'sc-hist', max: 50 }
-            ];
+        function getOverallGrade(total) {
+            let c = cutoffs[500];
+            if (total >= c.A) return 'A';
+            if (total >= c.B) return 'B';
+            if (total >= c.C) return 'C';
+            if (total >= c.D) return 'D';
+            if (total >= c.E) return 'E';
+            return 'F';
+        }
 
-            subjs.forEach(s => {
-                let sc = validateInput(s.id, s.max);
-                total += sc;
-                let res = getGrade(sc, s.max);
-                let grdBox = document.getElementById(`sc-grd-${s.id.split('-')[1]}`);
-                grdBox.className = `grd-box ${res.c}`;
-                grdBox.innerText = res.g;
+        function setClass(type) {
+            currentClass = type;
+            document.getElementById('btn-science').className = `tab-btn px-8 py-3 rounded-xl font-black text-sm md:text-base border-2 ${type==='science' ? 'active' : 'inactive'}`;
+            document.getElementById('btn-social').className = `tab-btn px-8 py-3 rounded-xl font-black text-sm md:text-base border-2 ${type==='social' ? 'active' : 'inactive'}`;
+            document.getElementById('ai-analysis-container').classList.add('hidden');
+            renderSubjects();
+        }
+
+        function resetScores() {
+            renderSubjects();
+            document.getElementById('ai-analysis-container').classList.add('hidden');
+        }
+
+        // 🤖 AI Analysis Feature
+        function analyzeScores() {
+            let name = document.getElementById('studentName').value.trim() || 'ប្អូន';
+            let data = subjectsData[currentClass];
+            let strengths = [];
+            let weaknesses =[];
+            let total = 0;
+
+            // Collect Data
+            let allSubs = [...data.main, ...data.selection];
+            allSubs.forEach(sub => {
+                let val = parseInt(document.getElementById(sub.id).value) || 0;
+                let pct = (val / sub.max) * 100;
+                
+                if (sub.isBonus) {
+                    if (val >= 25) total += (val - 25);
+                } else {
+                    total += val;
+                }
+
+                if (pct >= 70) strengths.push(sub.kh);
+                else if (pct < 50) weaknesses.push(sub.kh);
             });
 
-            let eng = validateInput('sc-eng', 50);
-            let engBonus = eng >= 26 ? eng - 25 : 0;
-            document.getElementById('sc-bonus-val').innerText = `+ ${engBonus}`;
-            total += engBonus;
+            let finalGrd = getOverallGrade(total);
+            let analysisHtml = `<p class="mb-4">សួស្តី <b>${name}</b>! ផ្អែកលើពិន្ទុដែលបានបញ្ចូលកុំព្យូទ័របានធ្វើការវិភាគដូចខាងក្រោម៖</p>`;
 
-            updateUI(total);
+            // Status Analysis
+            if (total >= 237) {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                analysisHtml += `<div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl mb-4 text-emerald-800">
+                    🎉 <b>អបអរសាទរ!</b> ប្រសិនបើប្អូនទទួលបានពិន្ទុប៉ុណ្ណេះមែន ប្អូននឹងប្រឡងជាប់ដោយទទួលបាននិទ្ទេស <b>${finalGrd}</b>។ លទ្ធផលនេះបង្ហាញពីការខិតខំប្រឹងប្រែងដ៏ល្អ!
+                </div>`;
+            } else {
+                let needed = 237 - total;
+                analysisHtml += `<div class="p-4 bg-red-50 border border-red-200 rounded-xl mb-4 text-red-800">
+                    ⚠️ <b>កុំទាន់បាក់ទឹកចិត្ត!</b> បច្ចុប្បន្នប្អូនខ្វះ <b>${needed} ពិន្ទុ</b> ទៀតទើបអាចប្រឡងជាប់។ ប្អូននៅមានពេលគ្រប់គ្រាន់ក្នុងការកែប្រែលទ្ធផលនេះ!
+                </div>`;
+            }
+
+            // Strengths & Weaknesses
+            analysisHtml += `<div class="grid md:grid-cols-2 gap-4 mt-4">`;
+            
+            if (strengths.length > 0) {
+                analysisHtml += `<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                    <h4 class="font-black text-blue-700 mb-2 flex items-center gap-2">💪 មុខវិជ្ជាខ្លាំង</h4>
+                    <p class="text-sm">ប្អូនធ្វើបានល្អខ្លាំងលើមុខវិជ្ជា៖ <b class="text-slate-800">${strengths.join(' , ')}</b>។ សូមបន្តរក្សាភាពខ្លាំងនេះឲ្យបានរហូតដល់ថ្ងៃប្រឡង។</p>
+                </div>`;
+            }
+
+            if (weaknesses.length > 0) {
+                analysisHtml += `<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                    <h4 class="font-black text-orange-600 mb-2 flex items-center gap-2">🎯 ចំណុចត្រូវពង្រឹងបន្ថែម</h4>
+                    <p class="text-sm">ដើម្បីទាញពិន្ទុរួមឲ្យកើនឡើង ប្អូនត្រូវបង្កើនម៉ោងរំលឹក និងធ្វើលំហាត់បន្ថែមលើមុខវិជ្ជា៖ <b class="text-red-600">${weaknesses.join(' , ')}</b>។</p>
+                </div>`;
+            }
+            
+            analysisHtml += `</div>`;
+
+            // Footer motivational quote
+            analysisHtml += `<p class="mt-6 text-center font-bold text-blue-800 italic">"ការប្រឹងប្រែងនៅថ្ងៃនេះ គឺជាជោគជ័យនៅថ្ងៃស្អែក! ជូនពរ ${name} ទទួលបាននិទ្ទេសល្អក្នុងការប្រឡង!"</p>`;
+
+            document.getElementById('ai-content').innerHTML = analysisHtml;
+            
+            let container = document.getElementById('ai-analysis-container');
+            container.classList.remove('hidden');
+            
+            // Scroll to AI naturally
+            setTimeout(() => {
+                container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         }
 
-        // 🏛️ Calc Social Science
-        function calcSS() {
-            let total = 0;
-            const subjs =[
-                { id: 'ss-khmer', max: 125 }, { id: 'ss-math', max: 75 },
-                { id: 'ss-hist', max: 75 }, { id: 'ss-geo', max: 75 },
-                { id: 'ss-mor', max: 75 }, { id: 'ss-earth', max: 50 }
-            ];
+        // Initialize
+        renderSubjects();
 
-            subjs.forEach(s => {
-                let sc = validateInput(s.id, s.max);
-                total += sc;
-                let res = getGrade(sc, s.max);
-                let grdBox = document.getElementById(`ss-grd-${s.id.split('-')[1]}`);
-                grdBox.className = `grd-box ${res.c}`;
-                grdBox.innerText = res.g;
-            });
-
-            let eng = validateInput('ss-eng', 50);
-            let engBonus = eng >= 26 ? eng - 25 : 0;
-            document.getElementById('ss-bonus-val').innerText = `+ ${engBonus}`;
-            total += engBonus;
-
-            updateUI(total);
-        }
-
-        function clearAll() {
-            document.querySelectorAll('.input-score').forEach(inp => input.value = 0);
-            document.querySelectorAll('.grd-box').forEach(b => { b.className = "grd-box g-F"; b.innerText = "F"; });
-            document.getElementById('sc-bonus-val').innerText = "+ 0";
-            document.getElementById('ss-bonus-val').innerText = "+ 0";
-            updateUI(0);
-        }
     </script>
 </body>
 </html>
