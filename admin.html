@@ -4,43 +4,767 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>កិច្ចការរដ្ឋបាល - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- [Insert same styling as previous files] -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style id="print-orientation-style"></style>
+
+    <style>
+        :root { --primary-blue: #1e40af; --khmer-red: #dc2626; }
+        body { font-family: 'Kantumruy Pro', 'Battambang', sans-serif; background: #f4f7f6; color: #1e293b; }
+        .moul-font { font-family: 'Moul', serif; }
+        
+        .nav-container { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; padding: 10px 20px;}
+        .back-link { display: inline-flex; align-items: center; gap: 5px; color: #475569; font-weight: 600; transition: color 0.3s; font-size: 15px;}
+        .back-link:hover { color: var(--primary-blue); }
+
+        /* 🎨 Grade Colors */
+        .grd-A { color: #dc2626 !important; font-weight: 900; } 
+        .grd-B { color: #ea580c !important; font-weight: 900; } 
+        .grd-C { color: #ca8a04 !important; font-weight: 900; } 
+        .grd-D { color: #16a34a !important; font-weight: 900; } 
+        .grd-E { color: #2563eb !important; font-weight: 900; } 
+        .grd-F { color: #1e293b !important; font-weight: 900; } 
+
+        /* 📄 Print Area Layout */
+        .print-container-wrapper { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 30px; padding-bottom: 40px;}
+        .print-area { background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); position: relative; box-sizing: border-box; overflow: hidden; margin: 0 auto; }
+        .portrait-page { width: 210mm; min-height: 297mm; padding: 10mm 15mm; }
+        .landscape-page { width: 297mm; min-height: 210mm; padding: 15mm 20mm; }
+
+        .student-info-box { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 12px; margin-bottom: 12px; line-height: 1.8;}
+        .student-info-box span { color: #0f172a; margin-left: 5px; font-weight: 900;}
+        
+        .summary-box { display: flex; justify-content: space-between; align-items: stretch; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 0; margin-bottom: 15px;}
+        .summary-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: flex-start; padding: 2px 5px;}
+        .summary-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 10%; height: 80%; width: 1.5px; background-color: #e2e8f0; }
+        
+        /* 📊 Table Styles */
+        .c-table { border-collapse: collapse; width: 100%; font-size: 12px; background: white; margin-bottom: 10px;}
+        .c-table th { padding: 6px 2px; text-align: center; color: #1e3a8a; border: 1px solid #cbd5e1; background: #f8fafc; font-weight: 900; }
+        .c-table td { padding: 4px 2px; text-align: center; border: 1px solid #cbd5e1; font-weight: 600; color: #334155; height: 24px;}
+        .col-left { text-align: left !important; padding-left: 8px !important; }
+        .sub-col { width: 5.5%; } 
+
+        .bar-bg { width: 100%; background-color: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; }
+        .bar-fill { height: 100%; border-radius: 3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+        /* 🏆 New Premium Honor Roll Styling */
+        .page-border { position: absolute; top: 0.3cm; bottom: 0.3cm; left: 0.3cm; right: 0.3cm; border: 8px double #d97706; border-radius: 12px; pointer-events: none; z-index: 40; }
+        .page-border-inner { position: absolute; top: 0.65cm; bottom: 0.65cm; left: 0.65cm; right: 0.65cm; border: 1px solid #b45309; border-radius: 6px; pointer-events: none; z-index: 40; }
+        .bg-pattern { background-color: #ffffff; background-image: radial-gradient(rgba(217, 119, 6, 0.08) 1.5px, transparent 1.5px); background-size: 25px 25px; }
+        
+        .premium-plaque { position: relative; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 0 0 3px rgba(255, 255, 255, 0.7); }
+        .premium-plaque::before { content: ''; position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; border: 1px dashed rgba(0,0,0,0.2); border-radius: 8px; pointer-events: none; }
+        .badge-pill { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15); }
+
+        /* 🏅 Certificate Landscape */
+        .cert-landscape { background: #ffffff; border: 10px solid transparent; border-image: url('https://img.freepik.com/premium-vector/gold-border-frame-luxury-vintage-corner_422344-1144.jpg') 30 stretch; outline: 2px solid #ca8a04; outline-offset: -12px; position: relative; padding: 40px; }
+        .cert-landscape::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/MoEYS_Cambodia_Logo.svg/1024px-MoEYS_Cambodia_Logo.svg.png'); background-size: 35%; background-position: center; background-repeat: no-repeat; opacity: 0.05; z-index: 1; }
+
+        /* ✍️ Signatures */
+        .signatures-area { display: flex; justify-content: space-between; margin-top: 20px; width: 100%; padding: 0 20px; position: relative; z-index: 50;}
+        .sig-block { width: 250px; text-align: center; position: relative; min-height: 120px;}
+        
+        .stamp-main { position: absolute; top: -10px; left: 50%; transform: translateX(calc(-50% + 0.3cm)); width: 286px; opacity: 0.9; mix-blend-mode: multiply; pointer-events: none; z-index: 5; }
+        .sig-main { max-height: 60px; max-width: 140px; mix-blend-mode: multiply; object-fit: contain; pointer-events: none; position: relative; z-index: 10;}
+        .hide-sigs .stamp-main, .hide-sigs .sig-main { opacity: 0 !important; display: none !important; }
+
+        @media screen {
+            .page-separator { display: block; height: 40px; border-top: 2px dashed #94a3b8; margin: 20px 0; position: relative; width: 100%; max-width: 210mm;}
+            .page-separator::after { content: "✂️ ទំព័របន្ទាប់"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #e2e8f0; padding: 0 15px; color: #475569; font-size: 12px; font-weight: bold; border-radius: 20px; }
+        }
+
+        @media print {
+            body, html { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+            .no-print, .page-separator { display: none !important; }
+            .print-container-wrapper { padding: 0 !important; gap: 0 !important; display: block !important; }
+            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; border: none !important; width: 100% !important; min-width: 100% !important; height: auto !important; min-height: 100vh !important; page-break-after: always !important; }
+            .c-table { page-break-inside: auto; }
+            .c-table tr { page-break-inside: avoid; page-break-after: auto; }
+            .c-table thead { display: table-header-group; }
+            .c-table tfoot { display: table-footer-group; }
+        }
+    </style>
 </head>
 <body>
 
     <nav class="nav-container no-print">
-        <div class="max-w-6xl mx-auto flex flex-wrap justify-center sm:justify-start">
-            <a href="index.html" class="nav-link">១. លទ្ធផលទូទៅ</a>
-            <a href="bac2.html" class="nav-link">២. ស្តង់ដារបាក់ឌុប</a>
-            <a href="admin.html" class="nav-link active" style="color: #7e22ce; border-bottom-color: #7e22ce; background: #faf5ff;">៣. កិច្ចការរដ្ឋបាល</a>
-            <a href="report.html" class="nav-link">៤. របាយការណ៍សាលា</a>
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="back-link">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                ទំព័រដើម
+            </a>
+            <span class="font-black text-purple-700 bg-purple-100 px-3 py-1 rounded-full text-xs">ផ្នែករដ្ឋបាល</span>
         </div>
     </nav>
 
-    <!-- Admin Section -->
-    <div id="tab-internal" class="max-w-5xl mx-auto px-2 mt-6">
-        <div class="bg-white rounded-3xl shadow-xl border overflow-hidden mt-2 no-print">
-            <div class="bg-purple-800 p-8 text-white text-center">
-                <h2 class="moul-font text-2xl mb-2">ប្រព័ន្ធទាញយកឯកសាររដ្ឋបាល</h2>
-                <div class="flex justify-center gap-4 mt-4">
-                    <select id="monthSelect" class="p-3 rounded-xl text-black font-bold text-sm w-48">
-                        <option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option><option value="មីនា">មីនា</option><option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option>
-                    </select>
-                    <!-- 🛠️ Dropdown រើសថ្នាក់នឹងលោតចូលទីនេះ -->
-                    <select id="classSelect" class="p-3 rounded-xl text-black font-bold text-sm w-32"></select>
-                </div>
+    <!-- Admin Controls -->
+    <div id="admin-controls" class="max-w-5xl mx-auto my-8 no-print px-4 hidden animate-fade-in">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-slate-100 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-700 to-indigo-600"></div>
+            
+            <div class="text-center mb-6 mt-2">
+                <h2 class="moul-font text-purple-900 text-xl md:text-2xl mb-2">ប្រព័ន្ធទាញយកឯកសាររដ្ឋបាល</h2>
+                <p class="font-bold text-slate-500 text-sm">សូមជ្រើសរើសខែ រួចចុចលើឯកសារដែលចង់បាន</p>
             </div>
-            <div class="p-6 grid md:grid-cols-3 gap-6 text-center bg-slate-50">
-                <div class="p-6 border rounded-2xl bg-white"><button onclick="generateInternalReport('honor')" class="w-full bg-yellow-500 text-black py-2.5 rounded-xl font-black">🏆 តារាងកិត្តិយស</button></div>
-                <div class="p-6 border rounded-2xl bg-white"><button onclick="generateInternalReport('ranking')" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-black">📊 តារាងចំណាត់ថ្នាក់</button></div>
-                <div class="p-6 border rounded-2xl bg-white"><button onclick="generateTrackingBook()" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-black">📄 សៀវភៅតាមដាន</button></div>
+
+            <div class="flex justify-center mb-8">
+                <select id="monthSelect" class="w-full max-w-xs p-3.5 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-purple-500 font-bold text-sm text-slate-700 shadow-sm cursor-pointer text-center">
+                    <option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option><option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option>
+                    <option value="មីនា">មីនា</option><option value="មេសា">មេសា</option><option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option>
+                    <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option><option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                    <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option><option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២</option>
+                    <option value="ប្រចាំឆ្នាំ">ប្រចាំឆ្នាំ</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <button onclick="triggerReport('tracking')" class="flex flex-col items-center gap-2 p-4 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-2xl transition group">
+                    <span class="text-3xl group-hover:scale-110 transition">📄</span>
+                    <span class="font-black text-emerald-800 text-xs text-center mt-1">សៀវភៅតាមដាន<br><span class="text-[9px] text-emerald-600">(រើសថ្នាក់)</span></span>
+                </button>
+                <button onclick="triggerReport('honor')" class="flex flex-col items-center gap-2 p-4 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-2xl transition group">
+                    <span class="text-3xl group-hover:scale-110 transition">🏆</span>
+                    <span class="font-black text-yellow-800 text-xs text-center mt-1">តារាងកិត្តិយស<br><span class="text-[9px] text-yellow-600">(Top 5)</span></span>
+                </button>
+                <button onclick="triggerReport('ranking')" class="flex flex-col items-center gap-2 p-4 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-2xl transition group">
+                    <span class="text-3xl group-hover:scale-110 transition">📊</span>
+                    <span class="font-black text-blue-800 text-xs text-center mt-1">តារាងចំណាត់ថ្នាក់<br><span class="text-[9px] text-blue-600">(គ្រប់ថ្នាក់)</span></span>
+                </button>
+                <button onclick="triggerReport('gradeA')" class="flex flex-col items-center gap-2 p-4 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-2xl transition group">
+                    <span class="text-3xl group-hover:scale-110 transition">🏅</span>
+                    <span class="font-black text-purple-800 text-xs text-center mt-1">របាយការណ៍/ប័ណ្ណ<br><span class="text-[9px] text-purple-600">(សិស្សនិទ្ទេស A)</span></span>
+                </button>
+            </div>
+            
+            <div id="classSelectWrapper" class="hidden mt-8 text-center border-t border-slate-100 pt-6">
+                <label class="text-xs font-black text-slate-500 mb-3 block uppercase">👉 ជ្រើសរើសថ្នាក់សម្រាប់ទាញយកសៀវភៅតាមដាន៖</label>
+                <select id="classSelect" class="w-full max-w-xs p-3 rounded-xl bg-slate-50 border border-slate-300 outline-none font-bold text-sm text-slate-700 shadow-sm text-center"></select>
+                <button onclick="executeTrackingBook()" class="mt-4 bg-emerald-600 text-white px-8 py-3 rounded-xl font-black shadow-md hover:bg-emerald-700 hover:shadow-lg transition">✅ បង្ហាញឯកសារ</button>
             </div>
         </div>
-        <div id="internal-actions" class="no-print mt-6 hidden text-center"><button onclick="window.print()" class="bg-slate-800 text-white px-10 py-3 rounded-xl font-black">🖨️ Print ឯកសារនេះ</button></div>
-        <div id="internal-render-area" class="mt-6 flex flex-col items-center w-full"></div>
     </div>
 
-    <!--[Insert JavaScript similar to previous, specifically fetchInitialSetupData to populate classSelect] -->
+    <!-- Actions Bar -->
+    <div id="print-action-bar" class="no-print mt-4 mb-6 hidden flex-col sm:flex-row justify-center items-center gap-4 max-w-4xl mx-auto px-4">
+        <label class="flex items-center gap-3 text-sm font-bold text-slate-700 bg-white px-5 py-3.5 rounded-xl shadow-sm border border-slate-200 cursor-pointer hover:bg-slate-50 transition w-full sm:w-auto justify-center">
+            <input type="checkbox" id="toggleSignatures" checked onchange="toggleSigs()" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"> 
+            បង្ហាញហត្ថលេខា & ត្រា
+        </label>
+        <button onclick="window.print()" class="bg-slate-800 text-white px-10 py-3.5 rounded-xl font-black shadow-lg hover:-translate-y-1 transition flex items-center justify-center gap-2 text-[15px] w-full sm:w-auto">
+            🖨️ បោះពុម្ព (Print)
+        </button>
+        <button id="btn-export-excel" onclick="exportToExcel()" class="hidden bg-green-600 text-white px-10 py-3.5 rounded-xl font-black shadow-lg hover:-translate-y-1 transition items-center justify-center gap-2 text-[15px] w-full sm:w-auto">
+            📊 ទាញយក Excel
+        </button>
+    </div>
+
+    <!-- Render Area -->
+    <div id="render-container" class="print-container-wrapper hidden"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center hidden z-[100]">
+        <div class="text-center bg-white p-8 rounded-3xl shadow-2xl">
+            <div class="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p id="loadingText" class="font-black text-purple-900 text-lg">កំពុងរៀបចំឯកសារ...</p>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 🛠️ CONFIGURATIONS & UTILS
+        // ==========================================
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
+        const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+        
+        const ADMIN_PWD = "H@nm@m64";
+        const PRINCIPAL_STAMP_URL = "1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne"; 
+        
+        const SUBJECTS_15 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
+        const dbMap = { "ភាសាខ្មែរ":"khmer", "សីលធម៌ពលរដ្ឋ":"morality", "ប្រវត្តិវិទ្យា":"history", "ភូមិវិទ្យា":"geography", "គណិតវិទ្យា":"math", "រូបវិទ្យា":"physics", "គីមីវិទ្យា":"chemistry", "ជីវវិទ្យា":"biology", "ផែនដីវិទ្យា":"earth_science", "ភាសាអង់គ្លេស":"english", "កីឡា":"sport", "កសិកម្ម":"agriculture", "បច្ចេកវិទ្យា":"technology", "បំណិន":"skill", "សុខភាព":"health" };
+
+        let configMap = {}; let teacherMap = {}; let adminTeacherInfo = null;
+
+        const cleanKey = (str) => {
+            if(!str) return "";
+            let s = String(str).trim().replace(/ថ្នាក់ទី|ថ្នាក់|ទី/g, '').replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]).replace(/[\s\-_]/g, '').toUpperCase();
+            const kmToEn = { 'ក':'A', 'ខ':'B', 'គ':'C', 'ឃ':'D', 'ង':'E', 'ច':'F', 'ឆ':'G', 'ជ':'H', 'ឈ':'I', 'ញ':'J' };
+            for (let k in kmToEn) s = s.replace(new RegExp(k, 'g'), kmToEn[k]);
+            return s;
+        };
+
+        const getDriveImgUrl = (urlOrId) => {
+            if(!urlOrId) return '';
+            if (!urlOrId.includes('http')) return `https://lh3.googleusercontent.com/d/${urlOrId}`;
+            let idMatch = urlOrId.match(/(?:id=|file\/d\/)([\w-]+)/);
+            return idMatch ? `https://lh3.googleusercontent.com/d/${idMatch[1]}` : urlOrId;
+        };
+
+        const cleanNum = (val) => isNaN(parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]))) ? NaN : parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]));
+        const getGrd = (p) => p>=90?'A':p>=80?'B':p>=70?'C':p>=60?'D':p>=50?'E':'F';
+        const getBarCol = (pct) => pct>=90?'#059669':pct>=80?'#2563eb':pct>=70?'#d97706':pct>=60?'#7c3aed':pct>=50?'#db2777':'#ef4444';
+
+        function getGrdClass(g) {
+            let grade = String(g).trim().toUpperCase();
+            if (grade === 'A') return 'grd-A';
+            if (grade === 'B') return 'grd-B';
+            if (grade === 'C') return 'grd-C';
+            if (grade === 'D') return 'grd-D';
+            if (grade === 'E') return 'grd-E';
+            return 'grd-F';
+        }
+
+        const toKhmerNum = (num) => {
+            const khmerNums =['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+            return String(num).split('').map(digit => khmerNums[digit] || digit).join('');
+        };
+
+        function showLoading(msg = "កំពុងរៀបចំឯកសារ...") { document.getElementById('loadingText').innerText = msg; document.getElementById('loadingOverlay').classList.remove('hidden'); }
+        function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+
+        function toggleSigs() {
+            let isChecked = document.getElementById('toggleSignatures').checked;
+            let container = document.getElementById('render-container');
+            if(isChecked) container.classList.remove('hide-sigs');
+            else container.classList.add('hide-sigs');
+        }
+
+        function getPeriodLabel(period) {
+            if (period.includes("ប្រចាំឆមាស") || period.includes("ប្រចាំឆ្នាំ")) return period; 
+            if (period.includes("ប្រឡងឆមាស")) return period;      
+            return "ប្រចាំខែ" + period;                       
+        }
+
+        // ==========================================
+        // 🚀 INITIALIZATION & DATA FETCHING
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { value: pwd } = await Swal.fire({ title: 'ចូលផ្នែករដ្ឋបាលសាលា', input: 'password', confirmButtonText: 'បញ្ជាក់', allowOutsideClick: false });
+            if (pwd === ADMIN_PWD) {
+                document.getElementById('admin-controls').classList.remove('hidden');
+                await ensureConfigLoaded();
+            } else {
+                Swal.fire('ខុសលេខសម្ងាត់', '', 'error').then(() => window.location.href = 'index.html');
+            }
+        });
+
+        async function supaFetch(endpoint) {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, { headers });
+            if (!res.ok) throw new Error("Network Error");
+            return await res.json();
+        }
+
+        async function ensureConfigLoaded() {
+            if (Object.keys(configMap).length > 0) return;
+            showLoading("កំពុងទាញទិន្នន័យមូលដ្ឋានសាលា...");
+            try {
+                let confRes = await supaFetch(`config_max_scores?select=*`);
+                confRes.forEach(c => { if(c.grade_level) configMap[cleanKey(c.grade_level)] = c; });
+
+                let teachRes = await supaFetch(`teacher_info?select=*`);
+                let clsSet = new Set();
+                teachRes.forEach(t => { 
+                    if(t.homeroom_class) {
+                        let cKey = cleanKey(t.homeroom_class);
+                        teacherMap[cKey] = { name: t.teacher_name || '', sign: getDriveImgUrl(t.signature_link) }; 
+                        clsSet.add(t.homeroom_class.trim());
+                    }
+                    if(String(t.teacher_id).trim() === '168') {
+                        adminTeacherInfo = { name: t.teacher_name, sign: getDriveImgUrl(t.signature_link) };
+                    }
+                });
+                
+                let allClassNames = Array.from(clsSet).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+                document.getElementById('classSelect').innerHTML = allClassNames.map(c => `<option value="${c}">${c}</option>`).join('');
+                hideLoading();
+            } catch(e) { hideLoading(); Swal.fire('Error', e.message, 'error'); }
+        }
+
+        function mapDbToLegacy(row) {
+            let res = { 
+                ID: row.student_id, Name: row.student_name, Gender: row.gender, 
+                OriginalGrade: row.grade,
+                Grade: row.grade, 
+                DOB: row.dob||'', DateSolar: row.date_solar||'', DateLunar: row.date_lunar||'', 
+                Total: parseFloat(row.total_score || row.exam_total_score || row.semester_total_score) || 0, 
+                Average: parseFloat(row.average || row.semester_average || row.annual_average || row.exam_average) || 0, 
+                Monthly_Average: parseFloat(row.monthly_average) || 0,
+                Exam_Total: parseFloat(row.exam_total_score) || 0,
+                Exam_Average: parseFloat(row.exam_average) || 0,
+                Semester_Average: parseFloat(row.semester_average) || 0,
+                Rank: row.class_rank || '',  
+                School_Rank: row.school_rank || '', 
+                Grade_Result: row.grade_result || row.final_result || 'F' 
+            };
+            SUBJECTS_15.forEach(sub => { res[sub] = row[dbMap[sub]]; });
+            return res;
+        }
+
+        // ==========================================
+        // 🎨 HTML TEMPLATE HELPERS
+        // ==========================================
+        function getHeaderHTML(title, subtitle) {
+            return `
+                <div style="position: relative; width: 100%; height: 75px; margin-bottom: 20px;">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center;">
+                        <h2 class="moul-font" style="font-size: 13px; color: #1e3a8a; margin-bottom: 4px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+                        <h2 class="moul-font" style="font-size: 13px; color: #1e3a8a;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
+                    </div>
+                    <div style="position: absolute; top: 45px; left: 0; text-align: left; font-size: 10px; font-weight: 700; color: #1e3a8a; line-height: 1.6;">
+                        <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
+                        <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
+                    </div>
+                </div>
+                <h1 class="moul-font text-red-600 text-center" style="font-size: 16px; margin-bottom: 5px;">${title}</h1>
+                ${subtitle ? `<p class="text-center font-bold text-slate-500 mb-4 text-xs">${subtitle}</p>` : ''}
+            `;
+        }
+
+        function getSignaturesHTML(tInfo, dSolar, dLunar, isPrincipalOnly = false) {
+            let pImg = `<img src="${getDriveImgUrl(PRINCIPAL_STAMP_URL)}" class="stamp-main" onerror="this.style.display='none'">`;
+            let tImg = (tInfo && tInfo.sign && !isPrincipalOnly) ? `<img src="${tInfo.sign}" class="sig-main" onerror="this.style.display='none'">` : '';
+            
+            return `
+            <div class="signatures-area" style="position: relative; z-index: 50;">
+                <div class="sig-block" style="margin-top: 38px;">
+                    <p style="font-weight: bold; font-size: 12px; margin-bottom: 10px;">បានឃើញ និងឯកភាព</p>
+                    <p class="moul-font" style="font-size: 12px; color: #1e3a8a; position: relative; z-index: 20;">នាយកសាលា</p>
+                    ${pImg}
+                </div>
+                <div class="sig-block" style="display:flex; flex-direction:column; align-items:center;">
+                    <p class="font-bold text-[11px] text-gray-700 m-0 leading-tight">${dLunar || '........................................................'}</p>
+                    <p class="font-bold text-[11px] text-gray-700 mb-4 leading-tight">${dSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
+                    ${!isPrincipalOnly ? `
+                        <p class="moul-font" style="font-size: 11px; color: #1e3a8a; margin-bottom: 5px;">${tInfo.role || 'គ្រូបន្ទុកថ្នាក់'}</p>
+                        <div style="height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; margin-left: 15px;">${tImg}</div>
+                        <p class="moul-font" style="font-size: 11px; color: #1e3a8a; margin: 0;">${tInfo.name}</p>
+                    ` : ''}
+                </div>
+            </div>`;
+        }
+
+        // ==========================================
+        // 🚦 MAIN ROUTER 
+        // ==========================================
+        function triggerReport(type) {
+            document.getElementById('classSelectWrapper').classList.add('hidden');
+            if (type === 'tracking') {
+                document.getElementById('classSelectWrapper').classList.remove('hidden');
+                return;
+            }
+            fetchAndRender(type);
+        }
+
+        function executeTrackingBook() {
+            let cls = document.getElementById('classSelect').value;
+            fetchAndRender('tracking', cls);
+        }
+
+        async function fetchAndRender(type, specificClass = null) {
+            await ensureConfigLoaded();
+            let period = document.getElementById('monthSelect').value;
+            showLoading(`កំពុងទាញទិន្នន័យសម្រាប់ ${period}...`);
+            
+            let table = period.includes("ប្រចាំឆមាស") ? "semester_scores" : (period === "ប្រចាំឆ្នាំ" ? "annual_scores" : "student_scores");
+            let pCol = period.includes("ប្រចាំឆមាស") ? "semester_name" : (period === "ប្រចាំឆ្នាំ" ? "academic_year" : "month_name");
+            let reqPeriod = period === "ប្រចាំឆ្នាំ" ? new Date().getFullYear().toString() : period;
+            let pLabel = getPeriodLabel(period);
+
+            const styleTag = document.getElementById('print-orientation-style');
+            if (type === 'gradeA') styleTag.innerHTML = "@media print { @page { size: A4 landscape; margin: 0; } }";
+            else styleTag.innerHTML = "@media print { @page { size: A4 portrait; margin: 0; } }";
+
+            try {
+                // ទាញយកសិស្សទាំងមូលក្នុងខែ/ឆមាសនោះដោយគ្មាន Filter ថ្នាក់ ដើម្បីបាន Total School ត្រឹមត្រូវ
+                let url = `${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&limit=5000`;
+                let rawData = await supaFetch(url);
+                let cData = rawData.map(r => mapDbToLegacy(r));
+
+                if(cData.length === 0) { hideLoading(); return Swal.fire('ទទេ!', 'មិនមានទិន្នន័យក្នុងខែនេះទេ!', 'info'); }
+
+                // សម្រាប់តារាងកិត្តិយស និង ចំណាត់ថ្នាក់៖ ទាញឈ្មោះថ្នាក់ពី configMap ដើម្បីកុំឲ្យបាត់
+                let allClassesFromConfig = Object.keys(configMap).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+                
+                let sampleS = cData[0];
+                let cSolar = sampleS.DateSolar || '';
+                let cLunar = sampleS.DateLunar || '';
+                let isSemesterFinal = period.includes("ប្រចាំឆមាស"); 
+                
+                if (isSemesterFinal && (!cSolar || !cLunar)) {
+                    let fallbackPeriod = period.replace("ប្រចាំ", "ប្រឡង"); 
+                    try {
+                        let fallbackData = await supaFetch(`student_scores?month_name=eq.${encodeURIComponent(fallbackPeriod)}&limit=1`);
+                        if (fallbackData && fallbackData.length > 0) {
+                            cSolar = fallbackData[0].date_solar || cSolar;
+                            cLunar = fallbackData[0].date_lunar || cLunar;
+                        }
+                    } catch(e) { console.log("Fallback Date Error:", e); }
+                }
+
+                let totalSchoolStudents = cData.length;
+                let totalSchoolFemale = cData.filter(s => s.Gender === 'ស្រី' || s.Gender === 'F').length;
+
+                document.getElementById('btn-export-excel').classList.add('hidden');
+                let html = "";
+
+                if (type === 'tracking') {
+                    if(!specificClass) return; // ការពារ
+                    html = buildTrackingHTML(cData, specificClass, pLabel, isSemesterFinal, totalSchoolStudents, totalSchoolFemale, cSolar, cLunar);
+                }
+                else if (type === 'honor') html = buildHonorHTML(cData, allClassesFromConfig, pLabel, cSolar, cLunar);
+                else if (type === 'ranking') html = buildRankingHTML(cData, allClassesFromConfig, pLabel, cSolar, cLunar);
+                else if (type === 'gradeA') html = buildGradeAHTML(cData, pLabel, cSolar, cLunar);
+
+                let renderArea = document.getElementById('render-container');
+                renderArea.innerHTML = html;
+                renderArea.classList.remove('hidden');
+                document.getElementById('print-action-bar').classList.remove('hidden');
+                document.getElementById('print-action-bar').classList.add('flex');
+                hideLoading();
+
+            } catch(e) { hideLoading(); Swal.fire('Error', e.message, 'error'); }
+        }
+
+        // ==========================================
+        // 🧩 MODULE 1: TRACKING BOOK (WITH AI ANALYSIS)
+        // ==========================================
+        function buildTrackingHTML(cData, specificClass, pLabel, isSemesterFinal, totalSchool, totalSchoolFem, cSolar, cLunar) {
+            let html = "";
+            let clsKey = cleanKey(specificClass);
+            let gConf = configMap[clsKey] || {};
+            let tInfo = teacherMap[clsKey] || {name:'', sign:''};
+            
+            // Filter យកតែថ្នាក់ដែលបានរើស
+            let classData = cData.filter(s => cleanKey(s.Grade) === clsKey); 
+            if(classData.length === 0) return `<h1 class="text-center text-red-500 mt-10">មិនមានទិន្នន័យសម្រាប់ថ្នាក់នេះទេ</h1>`;
+
+            let classTotal = classData.length;
+            let classFemale = classData.filter(s => s.Gender === 'ស្រី' || s.Gender === 'F').length;
+
+            SUBJECTS_15.forEach(sub => {
+                let validStus = classData.filter(s => s[sub] !== undefined && s[sub] !== null && String(s[sub]).trim() !== '' && !isNaN(cleanNum(s[sub])));
+                validStus.sort((a,b) => cleanNum(b[sub]) - cleanNum(a[sub]));
+                let currentRank = 1;
+                for(let i=0; i<validStus.length; i++) {
+                    if(i > 0 && cleanNum(validStus[i][sub]) < cleanNum(validStus[i-1][sub])) currentRank = i + 1;
+                    validStus[i][sub + '_rank'] = currentRank;
+                }
+            });
+
+            classData.forEach((s) => {
+                let tRows = ""; let maxTot = 0; let n=1;
+                let strengths =[]; let weaknesses =[];
+
+                SUBJECTS_15.forEach(sub => {
+                    if(s[sub] !== undefined && s[sub] !== null && s[sub] !== "") {
+                        let val = String(s[sub]).trim();
+                        let ms = 50; if(dbMap[sub] && gConf[dbMap[sub]]) ms = cleanNum(gConf[dbMap[sub]]);
+                        if(val !== "") maxTot += ms;
+
+                        if(isNaN(cleanNum(val)) || val.toUpperCase() === 'ABS' || val === 'ម.ថ') {
+                            tRows += `<tr><td>${n++}</td><td class="col-left">${sub}</td><td>${ms}</td><td class="text-red-500 font-bold">${val}</td><td colspan="3">-</td></tr>`;
+                        } else {
+                            let sc=cleanNum(val); let pct=Math.min((sc/ms)*100,100); let g=getGrd(pct);
+                            let sRank = s[sub + '_rank'] || '-';
+                            
+                            // លេខចំណាត់ថ្នាក់មុខវិជ្ជាត្រូវបានបង្ខំជាពណ៌ក្រហម (text-red-600)
+                            tRows += `<tr><td>${n++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="font-bold text-blue-700">${sc}</td><td class="font-black text-red-600 text-[14px]">${sRank}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="${getGrdClass(g)}">${g}</td></tr>`;
+                            
+                            if(pct >= 80) strengths.push(sub);
+                            if(pct < 50) weaknesses.push(sub);
+                        }
+                    }
+                });
+
+                // 🧠 Advanced AI Analysis Logic (Deeply Motivating)
+                let avgForAi = isSemesterFinal ? (s.Semester_Average || s.Average) : s.Average;
+                let strText = strengths.length > 0 ? `<span class="text-blue-700 font-bold">${strengths.slice(0,3).join(', ')}</span>` : '';
+                let wkText = weaknesses.length > 0 ? `<span class="text-red-600 font-bold">${weaknesses.slice(0,3).join(', ')}</span>` : '';
+                
+                let aiText = "";
+                if (Number(avgForAi) >= 80) {
+                    aiText = `លទ្ធផលសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិតល្អប្រសើរគួរជាទីមោទនៈបំផុត! ${strText ? `ប្អូនធ្វើបានយ៉ាងល្អឥតខ្ចោះលើមុខវិជ្ជា ${strText}។` : ''} លោកគ្រូអ្នកគ្រូពិតជាមានមោទនភាពចំពោះការខិតខំប្រឹងប្រែងនេះ។ សូមបន្តរក្សាវិន័យ និងការតាំងចិត្តនេះ ដើម្បីអនាគតដ៏ភ្លឺស្វាង!`;
+                } else if (Number(avgForAi) >= 65) {
+                    aiText = `លទ្ធផលសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិតល្អបង្គួរ។ ${strText ? `ប្អូនមានមូលដ្ឋានគ្រឹះល្អលើមុខវិជ្ជា ${strText}។` : ''} ទន្ទឹមនេះប្អូននៅមានសក្តានុពលអាចធ្វើបានល្អជាងនេះទៀត ${wkText ? `ជាពិសេសលើមុខវិជ្ជា ${wkText}។` : '។'} សូមកុំរួញរាក្នុងការសួរនាំលោកគ្រូអ្នកគ្រូ។ តស៊ូឡើង ក្តីជោគជ័យដ៏ធំកំពុងរង់ចាំប្អូន!`;
+                } else if (Number(avgForAi) >= 50) {
+                    aiText = `លទ្ធផលសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិតមធ្យមនៅឡើយ។ ប្អូនប្រាកដជាអាចធ្វើបានល្អជាងនេះ ប្រសិនបើប្អូនបន្ថែមការយកចិត្តទុកដាក់ ${wkText ? `ជាពិសេសលើមុខវិជ្ជា ${wkText}។` : 'ជាប្រចាំ។'} លោកគ្រូអ្នកគ្រូជឿជាក់យ៉ាងមុតមាំលើសមត្ថភាពរបស់ប្អូន។ កុំបោះបង់!`;
+                } else {
+                    aiText = `លទ្ធផលសិក្សារបស់ប្អូននៅមានកម្រិតខ្សោយ ដែលទាមទារការប្រឹងប្រែងខ្លាំងជាបន្ទាន់។ សូមកុំអស់សង្ឃឹម គ្រប់ភាពជោគជ័យតែងចាប់ផ្តើមពីការតស៊ូ ${wkText ? `ពិសេសត្រូវពង្រឹងមុខវិជ្ជា ${wkText}។` : '។'} លោកគ្រូអ្នកគ្រូ និងមិត្តភក្តិនៅទីនេះរង់ចាំជួយប្អូនជានិច្ច។ ចាប់ផ្តើមសាជាថ្មីម្តងទៀត!`;
+                }
+                
+                let summaryBoxHtml = '';
+                let tFooter = '';
+                
+                let examTotalRounded = Math.round(s.Exam_Total || s.Total);
+                let regularTotalRounded = Math.round(s.Total);
+
+                let rankTextClass = `<p class="text-[9px] text-slate-500 mt-1 leading-tight">ក្នុងចំណោមសិស្សសរុប ${classTotal} នាក់<br>ស្រី ${classFemale} នាក់</p>`;
+                let rankTextSchool = `<p class="text-[9px] text-slate-500 mt-1 leading-tight">ក្នុងចំណោមសិស្សសរុប ${totalSchool} នាក់<br>ស្រី ${totalSchoolFem} នាក់</p>`;
+
+                if (isSemesterFinal) {
+                    summaryBoxHtml = `
+                    <div class="summary-box" style="padding: 8px 0;">
+                        <div class="summary-item"><p class="s-title text-[11px] text-slate-500 mb-1">មធ្យមភាគខែ</p><p class="s-value font-black text-blue-700 text-[14px]">${Number(s.Monthly_Average).toFixed(2)}</p></div>
+                        <div class="summary-item"><p class="s-title text-[11px] text-slate-500 mb-1">មធ្យមភាគប្រឡង</p><p class="s-value font-black text-blue-700 text-[14px]">${Number(s.Exam_Average || s.Average).toFixed(2)}</p></div>
+                        <div class="summary-item"><p class="s-title text-[11px] text-slate-500 mb-1">មធ្យមភាគឆមាស</p><p class="s-value font-black text-purple-700 text-[14px]">${Number(s.Semester_Average || s.Average).toFixed(2)}</p></div>
+                        <div class="summary-item"><p class="s-title text-[11px] text-slate-500 mb-1">ចំណាត់ថ្នាក់ថ្នាក់</p><p class="s-value font-black text-red-600 text-[14px]">${s.Rank||'-'}</p>${rankTextClass}</div>
+                        <div class="summary-item"><p class="s-title text-[11px] text-slate-500 mb-1">ចំណាត់ថ្នាក់សាលា</p><p class="s-value font-black text-red-600 text-[14px]">${s.School_Rank||'-'}</p>${rankTextSchool}</div>
+                        <div class="summary-item"><p class="s-title text-[11px] text-slate-500 mb-1">និទ្ទេសរួម</p><p class="s-value font-black ${getGrdClass(s.Grade_Result)} text-[14px]">${s.Grade_Result}</p></div>
+                    </div>`;
+                    tFooter = `<tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="text-right font-bold py-2 pr-4">ពិន្ទុសរុបប្រឡងឆមាស</td><td class="font-bold text-slate-500">${maxTot}</td><td class="font-black text-blue-700 text-sm">${examTotalRounded}</td><td colspan="3"></td></tr>`;
+                } else {
+                    summaryBoxHtml = `
+                    <div class="summary-box" style="padding: 10px 0;">
+                        <div class="summary-item"><p class="s-title text-[11px] text-slate-500 mb-1">ពិន្ទុសរុប</p><p class="s-value font-black text-blue-700 text-[15px]">${regularTotalRounded}</p></div>
+                        <div class="summary-item"><p class="s-title text-[11px] text-slate-500 mb-1">មធ្យមភាគ</p><p class="s-value font-black text-blue-700 text-[15px]">${Number(s.Average).toFixed(2)}</p></div>
+                        <div class="summary-item"><p class="s-title text-[11px] text-slate-500 mb-1">ចំណាត់ថ្នាក់ថ្នាក់</p><p class="s-value font-black text-red-600 text-[15px]">${s.Rank||'-'}</p>${rankTextClass}</div>
+                        <div class="summary-item"><p class="s-title text-[11px] text-slate-500 mb-1">ចំណាត់ថ្នាក់សាលា</p><p class="s-value font-black text-red-600 text-[15px]">${s.School_Rank||'-'}</p>${rankTextSchool}</div>
+                        <div class="summary-item"><p class="s-title text-[11px] text-slate-500 mb-1">និទ្ទេសរួម</p><p class="s-value font-black ${getGrdClass(s.Grade_Result)} text-[15px]">${s.Grade_Result}</p></div>
+                    </div>`;
+                    tFooter = `<tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="text-right font-bold py-2 pr-4">ពិន្ទុសរុប</td><td class="font-bold text-slate-500">${maxTot}</td><td class="font-black text-blue-700 text-sm">${regularTotalRounded}</td><td colspan="3"></td></tr>`;
+                }
+
+                html += `
+                <div class="print-area portrait-page">
+                    ${getHeaderHTML(`តារាងលទ្ធផលសិក្សារបស់សិស្ស${pLabel}`, '')}
+                    <div class="student-info-box">
+                        <div><p>គោត្តនាម-នាម ៖ <span class="moul-font text-blue-800">${s.Name}</span></p><p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${s.DOB || '...'}</span></p><p>អត្តលេខ ៖ <span>${s.ID}</span></p></div>
+                        <div style="text-align:right;"><p>ភេទ ៖ <span>${s.Gender}</span></p><p>ថ្នាក់ទី ៖ <span>${s.OriginalGrade}</span></p><p>ឆ្នាំសិក្សា ៖ <span>២០២៥-២០២៦</span></p></div>
+                    </div>
+                    ${summaryBoxHtml}
+                    <table class="c-table"><thead><tr><th>ល.រ</th><th class="col-left">មុខវិជ្ជា</th><th>អតិបរមា</th><th>ពិន្ទុ</th><th><span class="text-red-600">ចំណាត់ថ្នាក់</span></th><th>ភាគរយ</th><th>និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody>
+                    <tfoot>${tFooter}</tfoot></table>
+                    <div class="mt-3 p-3 bg-blue-50 border-l-4 border-blue-500 rounded text-[10px] leading-relaxed text-blue-900"><span class="font-black underline">ការវាយតម្លៃរបស់គ្រូបន្ទុកថ្នាក់៖</span> ${aiText}</div>
+                    ${getSignaturesHTML(tInfo, cSolar, cLunar)}
+                </div>
+                <div class="page-separator no-print"></div>`;
+            });
+            return html;
+        }
+
+        // ==========================================
+        // 🧩 MODULE 2: PREMIUM HONOR ROLL (FLEX-WRAP)
+        // ==========================================
+        function buildHonorHTML(cData, allClassesFromConfig, pLabel, cSolar, cLunar) {
+            let html = "";
+            allClassesFromConfig.forEach((clsKey) => {
+                // រកទិន្នន័យដោយប្រើ cleanKey ដើម្បីឲ្យត្រូវជាមួយឈ្មោះថ្នាក់
+                let clsData = cData.filter(s => cleanKey(s.Grade) === clsKey);
+                if(clsData.length === 0) return;
+
+                clsData.sort((a,b) => (parseInt(a.Rank)||999) - (parseInt(b.Rank)||999));
+                
+                // ចាប់យកត្រឹមលេខ៥ តែបើស្ទួនលេខ៥ វានឹងរាប់បញ្ចូលទាំងអស់
+                let topStus = clsData.filter(s => parseInt(s.Rank) > 0 && parseInt(s.Rank) <= 5);
+                if(topStus.length === 0) return;
+                
+                let tInfo = teacherMap[clsKey] || {name:''};
+                let displayClass = clsData[0].OriginalGrade || clsKey;
+
+                const generateCard = (student, isTop) => {
+                    const widthClass = isTop ? 'w-[320px]' : 'w-[280px]'; 
+                    const nameSize = isTop ? 'text-[24px]' : 'text-[20px]'; 
+                    const heightClass = isTop ? 'py-8' : 'py-6'; 
+                    const khmerRank = toKhmerNum(student.Rank);
+                    
+                    let bgGradient, borderColor, iconHtml;
+                    let numRank = parseInt(student.Rank);
+                    
+                    if (numRank === 1) {
+                        bgGradient = 'bg-gradient-to-r from-yellow-100 via-yellow-400 to-yellow-100';
+                        borderColor = 'border-yellow-600';
+                        iconHtml = '<i class="fa-solid fa-trophy text-yellow-600"></i>';
+                    } else if (numRank === 2) {
+                        bgGradient = 'bg-gradient-to-r from-slate-100 via-slate-300 to-slate-100';
+                        borderColor = 'border-slate-500';
+                        iconHtml = '<i class="fa-solid fa-medal text-slate-600"></i>';
+                    } else if (numRank === 3) {
+                        bgGradient = 'bg-gradient-to-r from-orange-100 via-orange-300 to-orange-100';
+                        borderColor = 'border-orange-600';
+                        iconHtml = '<i class="fa-solid fa-medal text-orange-600"></i>';
+                    } else {
+                        bgGradient = 'bg-gradient-to-r from-blue-50 via-blue-200 to-blue-50';
+                        borderColor = 'border-blue-400';
+                        iconHtml = '<i class="fa-solid fa-award text-blue-500"></i>';
+                    }
+
+                    return `
+                        <div class="relative ${widthClass} mx-2 mt-6 flex flex-col items-center">
+                            <div class="premium-plaque ${bgGradient} border-[2px] ${borderColor} w-full ${heightClass} px-6 flex items-center justify-center relative overflow-hidden">
+                                <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/50 to-white/0 pointer-events-none"></div>
+                                <h2 class="moul-font ${nameSize} text-red-600 text-center w-full truncate relative z-10 flex items-center justify-center gap-3" style="text-shadow: 1px 1px 0px rgba(255,255,255,0.8);">
+                                    ${iconHtml} ${student.Name}
+                                </h2>
+                            </div>
+                            <div class="badge-pill absolute -top-5 left-1/2 transform -translate-x-1/2 bg-white border ${borderColor} rounded-full px-5 py-1.5 text-[14px] font-bold text-blue-900 whitespace-nowrap z-20 flex items-center justify-center gap-3">
+                                <span>លេខ <span class="text-red-600 moul-font text-[16px] ml-1">${khmerRank}</span></span>
+                                <span class="w-[1.5px] h-3 bg-slate-300"></span>
+                                <span>និទ្ទេស <span class="text-red-600 moul-font text-[16px] ml-1">${student.Grade_Result}</span></span>
+                            </div>
+                        </div>
+                    `;
+                };
+
+                html += `
+                <div class="print-area portrait-page bg-pattern" style="padding: 15mm 15mm;">
+                    <div class="page-border"></div>
+                    <div class="page-border-inner"></div>
+                    
+                    <div style="position: relative; z-index: 50; padding: 20px;">
+                        ${getHeaderHTML(`🏆 តារាងកិត្តិយស 🏆`, `ថ្នាក់ទី ${displayClass} | ${pLabel}`)}
+                        
+                        <!-- ប្រើ Flex-wrap ដើម្បីបត់បែនស្វ័យប្រវត្តិ (gap-y-[1cm] ឃ្លាតបញ្ឈរ 1cm) -->
+                        <div class="w-full flex flex-wrap items-center justify-center gap-x-8 gap-y-[1cm] py-8 relative z-10">
+                            ${topStus.map(s => generateCard(s, parseInt(s.Rank) === 1)).join('')}
+                        </div>
+
+                        <div style="margin-top: 30px;">
+                            ${getSignaturesHTML(tInfo, cSolar, cLunar)}
+                        </div>
+                    </div>
+                </div><div class="page-separator no-print"></div>`;
+            });
+            return html;
+        }
+
+        // ==========================================
+        // 🧩 MODULE 3: RANKING TABLE
+        // ==========================================
+        function buildRankingHTML(cData, allClassesFromConfig, pLabel, cSolar, cLunar) {
+            let html = "";
+            allClassesFromConfig.forEach((clsKey) => {
+                let clsData = cData.filter(s => cleanKey(s.Grade) === clsKey);
+                if(clsData.length === 0) return;
+                clsData.sort((a,b) => (parseInt(a.Rank)||999) - (parseInt(b.Rank)||999));
+
+                let displayClass = clsData[0].OriginalGrade || clsKey;
+                let activeSubs = SUBJECTS_15.filter(sub => clsData.some(s => s[sub] !== undefined && s[sub] !== null && String(s[sub]).trim() !== '')); 
+                let tInfo = teacherMap[clsKey] || {name:''};
+
+                html += `
+                <div class="print-area portrait-page">
+                    ${getHeaderHTML(`តារាងចំណាត់ថ្នាក់សិស្ស${pLabel}`, `ថ្នាក់ទី ${displayClass} | សិស្សសរុប៖ ${clsData.length} នាក់`)}
+                    <table class="c-table"><thead><tr>
+                        <th style="width: 4%;">ល.រ</th>
+                        <th class="col-left" style="width: 15%;">ឈ្មោះ</th>
+                        <th style="width: 4%;">ភេទ</th>`;
+                
+                activeSubs.forEach(sub => html += `<th class="sub-col">${sub.substring(0,4)}</th>`);
+                
+                html += `<th style="width: 6%;">មធ្យម</th><th style="width: 6%;">និទ្ទេស</th><th style="width: 7%;"><span class="text-red-600">ចំណាត់ថ្នាក់</span></th></tr></thead><tbody>`;
+
+                clsData.forEach((s, i) => {
+                    let displayAvg = s.Semester_Average || s.Average;
+                    html += `<tr>
+                        <td class="text-black">${i+1}</td>
+                        <td class="col-left text-[11px] whitespace-nowrap">${s.Name}</td>
+                        <td class="text-slate-500">${s.Gender}</td>`;
+                    
+                    activeSubs.forEach(sub => html += `<td>${s[sub]||'-'}</td>`);
+                    
+                    html += `<td class="text-blue-700 font-bold">${Number(displayAvg).toFixed(2)}</td>
+                             <td class="font-black ${getGrdClass(s.Grade_Result)}">${s.Grade_Result}</td>
+                             <td class="font-black text-red-600">${s.Rank||'-'}</td></tr>`;
+                });
+                html += `</tbody></table>
+                    ${getSignaturesHTML(tInfo, cSolar, cLunar)}
+                </div><div class="page-separator no-print"></div>`;
+            });
+            return html;
+        }
+
+        // ==========================================
+        // 🧩 MODULE 4: GRADE 'A' REPORT
+        // ==========================================
+        function buildGradeAHTML(cData, pLabel, cSolar, cLunar) {
+            let aStudents = cData.filter(s => String(s.Grade_Result).trim().toUpperCase() === 'A' || s.Average >= 90);
+            if(aStudents.length === 0) {
+                Swal.fire('គ្មានទិន្នន័យ', 'មិនមានសិស្សនិទ្ទេស A ក្នុងខែនេះទេ!', 'info');
+                return "";
+            }
+
+            aStudents.sort((a,b) => (parseInt(a.School_Rank) || 9999) - (parseInt(b.School_Rank) || 9999));
+            
+            window.excelDataForExport = aStudents; 
+            document.getElementById('btn-export-excel').classList.remove('hidden');
+
+            let adminInfo = adminTeacherInfo || {name: 'ការិយាល័យសិក្សាធិការ', role: 'អ្នករៀបចំរបាយការណ៍', sign: ''};
+
+            let html = `
+            <div class="print-area landscape-page">
+                ${getHeaderHTML(`បញ្ជីរាយនាមសិស្សានុសិស្សទទួលបាននិទ្ទេស A ${pLabel}`, `ទូទាំងសាលា | សរុប៖ ${aStudents.length} នាក់`)}
+                <table class="c-table mt-4" id="table-export"><thead><tr class="bg-slate-800 text-white"><th>ល.រ</th><th class="col-left">អត្តលេខ</th><th class="col-left">ឈ្មោះសិស្ស</th><th>ភេទ</th><th>ថ្ងៃខែឆ្នាំកំណើត</th><th>ថ្នាក់</th><th>មធ្យមភាគ</th><th>លេខសាលា</th><th>និទ្ទេស</th></tr></thead><tbody>`;
+            
+            aStudents.forEach((s, i) => {
+                let displayAvg = s.Semester_Average || s.Average;
+                html += `<tr><td>${i+1}</td><td class="col-left">${s.ID}</td><td class="col-left font-bold text-[13px]">${s.Name}</td><td>${s.Gender}</td><td>${s.DOB}</td><td class="font-bold text-indigo-700">${s.OriginalGrade}</td><td class="text-blue-700 font-black">${Number(displayAvg).toFixed(2)}</td><td class="text-red-600 font-black">${s.School_Rank||'-'}</td><td class="text-red-600 font-black text-lg">A</td></tr>`;
+            });
+            
+            html += `</tbody></table>
+            <div style="display:flex; justify-content:space-between; width:100%; margin-top:20px; padding: 0 40px; position: relative; z-index: 50;">
+                <div style="text-align:center; width:250px; position:relative; min-height: 120px; margin-top: 38px;">
+                     <p class="font-bold text-[12px] mb-2">បានឃើញ និងឯកភាព</p>
+                     <p class="moul-font text-[12px] text-blue-900 m-0 relative z-20">នាយកសាលា</p>
+                     <img src="${getDriveImgUrl(PRINCIPAL_STAMP_URL)}" class="stamp-main" style="top: -15px;" onerror="this.style.display='none'">
+                </div>
+                <div style="text-align:center; width:250px;">
+                     <p class="font-bold text-[12px] text-gray-700 m-0 leading-tight">${cLunar || '...........................................'}</p>
+                     <p class="font-bold text-[12px] text-gray-700 m-0 leading-tight">${cSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
+                     <p class="moul-font text-[12px] text-blue-900 mt-2">${adminInfo.role}</p>
+                     <img src="${adminInfo.sign}" style="height:50px; mix-blend-mode:multiply; margin: 0 auto;" onerror="this.style.display='none'">
+                     <p class="moul-font text-[12px] text-blue-900">${adminInfo.name}</p>
+                </div>
+            </div>
+            </div><div class="page-separator no-print"></div>`;
+
+            // Certificates
+            aStudents.forEach(s => {
+                html += `
+                <div class="print-area landscape-page cert-landscape">
+                    <div style="text-align: center; width: 100%; margin-top: 10px;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/MoEYS_Cambodia_Logo.svg/1024px-MoEYS_Cambodia_Logo.svg.png" style="width: 80px; margin: 0 auto 10px auto;">
+                        <h2 class="moul-font text-blue-900 drop-shadow-sm" style="font-size: 24px;">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
+                    </div>
+                    
+                    <div style="margin-top: 25px; width: 100%; text-align: center;">
+                        <h1 class="moul-font text-red-600" style="font-size: 46px; text-shadow: 2px 2px 0px rgba(253,224,71,0.5); margin-bottom: 15px;">វិញ្ញាបនបត្រសរសើរ</h1>
+                        <h3 class="moul-font text-blue-900" style="font-size: 20px; margin-bottom: 25px;">នាយកវិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h3>
+                    </div>
+
+                    <div style="text-align: center; font-size: 18px; line-height: 2.2; font-weight: 900; color: #1e293b; padding: 0 40px;">
+                        សូមកោតសរសើរ និងវាយតម្លៃខ្ពស់ចំពោះ យុវសិស្សឈ្មោះ <span class="moul-font text-red-600 text-2xl mx-2">${s.Name}</span> ភេទ <span class="text-xl mx-1">${s.Gender}</span><br>
+                        សិស្សថ្នាក់ទី <span class="text-xl text-blue-700 mx-1">${s.OriginalGrade}</span> ដែលបានខិតខំប្រឹងប្រែងយកចិត្តទុកដាក់ក្នុងការរៀនសូត្រ ប្រកបដោយវិន័យ<br>
+                        សីលធម៌ និងឥរិយាបថល្អប្រសើរ រហូតទទួលបានលទ្ធផល <span class="text-red-600 text-2xl mx-1">និទ្ទេស A</span> ក្នុងការប្រឡង${pLabel}<br>
+                        ឆ្នាំសិក្សា ២០២៥-២០២៦។
+                    </div>
+
+                    <div style="position: absolute; bottom: 30px; right: 50px; text-align: center; width: 250px; z-index: 50;">
+                        <p class="font-bold text-[12px] text-gray-700 m-0 leading-tight">${cLunar || '...........................................'}</p>
+                        <p class="font-bold text-[12px] text-gray-700 mb-6 leading-tight">${cSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
+                        <p class="moul-font text-[14px] text-blue-900 m-0 relative z-20">នាយកសាលា</p>
+                        <img src="${getDriveImgUrl(PRINCIPAL_STAMP_URL)}" class="stamp-main" style="top: -20px; transform: translateX(calc(-50% + 0.3cm));" onerror="this.style.display='none'">
+                    </div>
+
+                    <div style="position: absolute; bottom: 40px; left: 0; width: 100%; text-align: center; font-weight: 900; font-size: 14px; color: #1e3a8a;">
+                        សូមជូនពរឱ្យប្អូនបន្តទទួលបានជោគជ័យក្នុងការសិក្សា និងក្លាយជាទំពាំងស្នងឫស្សីដ៏ប្រពៃសម្រាប់<br>គ្រួសារ និងសង្គមជាតិ។
+                    </div>
+                </div><div class="page-separator no-print"></div>`;
+            });
+            
+            return html;
+        }
+
+        function exportToExcel() {
+            let table = document.getElementById("table-export");
+            let wb = XLSX.utils.table_to_book(table, {sheet:"Sheet1"});
+            XLSX.writeFile(wb, "បញ្ជីសិស្សនិទ្ទេសA.xlsx");
+        }
+    </script>
+</body>
+</html>
