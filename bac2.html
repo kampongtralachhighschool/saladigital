@@ -49,6 +49,31 @@
         .bar-bg { width: 100%; background-color: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; }
         .bar-fill { height: 100%; border-radius: 3px; transition: width 1s; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
+        .signatures-area { display: flex; justify-content: space-between; margin-top: 30px; width: 100%; padding: 0 10px;}
+        .sig-block { width: 45%; text-align: center; position: relative; min-height: 140px;}
+        
+        .stamp-main { 
+            position: absolute; 
+            top: 40px; 
+            left: 57%; 
+            transform: translate(-50%, -2.5cm); 
+            width: 285px; 
+            opacity: 0.9; 
+            mix-blend-mode: multiply; 
+            pointer-events: none;
+            z-index: 10; 
+        }
+       .sig-main { 
+            position: absolute; 
+            bottom: 30px; 
+            left: calc(50% + 0.5cm); 
+            transform: translateX(-50%); 
+            height: 60px; 
+            mix-blend-mode: multiply; 
+            pointer-events: none;
+            z-index: 10;
+        }
+
         @media print {
             @page { size: A4 portrait; margin: 0; }
             body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
@@ -71,15 +96,29 @@
 
     <!-- Search Section -->
     <div id="searchSection" class="max-w-4xl mx-auto my-8 no-print px-4">
+        
+        <div class="text-center mb-6 space-y-2">
+            <h2 class="moul-font text-blue-900 text-xl md:text-2xl mb-2">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
+            <p class="font-bold text-yellow-700 text-sm bg-yellow-50 inline-block px-4 py-1 rounded-full border border-yellow-200 mb-2">ប្រព័ន្ធវាយតម្លៃតាមស្តង់ដារបាក់ឌុប</p>
+        </div>
+
+<!-- 🌟 ប៊ូតុងមុខងារ (ដាក់នៅខាងក្រៅ ស្រួលចុច) -->
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mb-8 px-4">
+            
+            <a href="calculator.html" target="_blank" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3.5 rounded-xl font-black text-[15px] shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">
+                🧮 សាកល្បងគណនាពិន្ទុគោលដៅ
+            </a>
+            
+            <button onclick="goToGeneralResults()" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-white text-blue-700 border-2 border-blue-600 px-8 py-3.5 rounded-xl font-black text-[15px] shadow-md hover:bg-blue-50 hover:-translate-y-0.5 transition-all">
+                👁️ មើលលទ្ធផលទូទៅ (១៥មុខ)
+            </button>
+            
+        </div>
+
         <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-500 via-yellow-400 to-orange-500"></div>
             
-            <div class="text-center mb-6 mt-2">
-                <h2 class="moul-font text-blue-900 text-xl md:text-2xl mb-2">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
-                <p class="font-bold text-yellow-700 text-sm bg-yellow-50 inline-block px-4 py-1 rounded-full border border-yellow-200">ប្រព័ន្ធវាយតម្លៃតាមស្តង់ដារបាក់ឌុប</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-end bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-200">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-end bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-200 mt-2">
                 <div class="md:col-span-4">
                     <label class="text-xs font-black text-slate-500 mb-2 block uppercase tracking-wider ml-1">១. ខែ/ឆមាស</label>
                     <select id="monthSelect" class="w-full py-3.5 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-yellow-400 font-bold text-sm text-slate-700 bg-white shadow-sm cursor-pointer">
@@ -98,22 +137,19 @@
 
                 <div class="md:col-span-3">
                     <button onclick="executeSearch()" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-3.5 rounded-xl font-black text-[15px] shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">
-                        គណនាបាក់ឌុប
+                        ស្វែងរកលទ្ធផល
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Output Actions -->
-    <div id="t3-actions" class="no-print mt-4 mb-6 hidden flex-col md:flex-row justify-center gap-3 max-w-4xl mx-auto px-4">
-        <!-- 🌟 ប៊ូតុងថ្មីសម្រាប់មើលលទ្ធផល ១៥ មុខវិជ្ជាវិញ -->
-        <button onclick="goToGeneralResults()" class="w-full md:flex-1 bg-blue-100 text-blue-800 py-3.5 rounded-xl font-bold shadow-md hover:bg-blue-200 transition flex justify-center items-center gap-2 border border-blue-200">
-            👁️ មើលលទ្ធផលទូទៅ (១៥មុខ)
-        </button>
-        <button onclick="window.print()" class="w-full md:flex-1 bg-yellow-600 text-white py-3.5 rounded-xl font-bold shadow-md hover:bg-yellow-700 transition flex justify-center items-center gap-2">
+    <!-- Output Actions (បោះពុម្ព & លទ្ធផលទូទៅ) -->
+    <div id="t3-actions" class="no-print mt-4 mb-6 hidden flex-col md:flex-row justify-center gap-4 max-w-4xl mx-auto px-4">
+        <button onclick="window.print()" class="w-full md:w-1/2 bg-yellow-600 text-white py-3.5 rounded-xl font-bold shadow-md hover:-translate-y-1 transition flex justify-center items-center gap-2">
             🖨️ បោះពុម្ព (Print)
         </button>
+
     </div>
 
     <!-- Results Area -->
@@ -131,7 +167,7 @@
                 <span class="text-red-600 moul-font text-[12px]">*សម្គាល់ការគណនា៖</span><br>
                 - មុខវិជ្ជាគោលទាំង ៦ បូកបញ្ចូលគ្នាជាពិន្ទុដើម។<br>
                 - <span class="text-emerald-700">ភាសាអង់គ្លេស ជាមុខវិជ្ជាពិន្ទុបន្ថែម (លើកទឹកចិត្ត) ក្រោម ២៦=០, ចាប់ពី ២៦ ឡើងយកពិន្ទុដកនឹង ២៥។</span><br>
-                - និទ្ទេសរួមត្រូវបានគណនាផ្អែកលើពិន្ទុសរុបធៀបនឹងអតិបរមា ដោយធ្វើការបង្គត់ចុះ (Floor) ទៅតាមកម្រិត៖ </span><br>
+                - និទ្ទេសរួមត្រូវបានគណនាផ្អែកលើពិន្ទុសរុបធៀបនឹងអតិបរមា ដោយធ្វើការបង្គត់ចុះ (Floor) ទៅតាមកម្រិត៖ A(៩០-១០០%), B(៨០-៨៩%), C(៧០-៧៩%), D(៦០-៦៩%), E(៥០-៥៩%) និង F(ក្រោម ៥០%)។<br>
                 - សម្រាប់ព័ត៌មានលម្អិតពីរបបពិន្ទុ សូម <a href="reference.html" target="_blank" class="text-blue-600 underline">ចុចទីនេះ ដើម្បីមើលតារាងកម្រិតពិន្ទុយោង</a>។
             </div>
             <div id="t3-signatures"></div>
@@ -232,7 +268,6 @@
             }
         }
 
-        // 🌟 Link ទៅកាន់លទ្ធផលទូទៅ
         function goToGeneralResults() {
             let id = document.getElementById('searchInput').value.trim();
             let month = document.getElementById('monthSelect').value;
@@ -256,13 +291,10 @@
             `;
         }
 
-        // 🌟 ត្រានាយក និង ហត្ថលេខា Update ថ្មី
         function getStampHTML(dateSolar, dateLunar, tInfo) {
             let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
-            // ឡើងលើ 0.5cm (top: -0.7cm) និង បង្រួម -5% (width: 285px) 
             let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: -0.7cm; left: calc(50% + 1.0cm); transform: translateX(-50%); width: 285px; max-width: none; max-height: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;" onerror="this.style.display='none'">` : '';
             
-            // ហត្ថលេខា ដក position absolute ចេញ ដើម្បីកុំឲ្យអណ្តែតជាន់អក្សរ
             let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="max-height: 65px; max-width: 150px; mix-blend-mode: multiply; object-fit: contain; pointer-events: none;" onerror="this.style.display='none'">` : '';
             
             return `
@@ -278,12 +310,9 @@
                     <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 2px;">${dateLunar || 'ថ្ងៃ.......................................................'}</p>
                     <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 12px;">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a; margin-bottom: 5px;">គ្រូបន្ទុកថ្នាក់</p>
-                    
-                    <!-- ប្រអប់ផ្ទុកហត្ថលេខា រុញទៅស្តាំ 15px និងកម្ពស់កំណត់ច្បាស់ -->
                     <div style="height: 65px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; margin-left: 15px;">
                         ${tImg}
                     </div>
-                    
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a; margin: 0;">${tInfo.name}</p>
                 </div>
             </div>`;
@@ -327,7 +356,6 @@
                 let tInfo = teacherMap[targetKey] || teacherMap[gradeNumOnly] || {name:'មិនទាន់មានឈ្មោះ', sign:''};
                 let track = gConf.class_type || "";
 
-                // Title Logic
                 let dynamicTitle = "";
                 if (period.includes("ប្រឡងឆមាសទី១")) { dynamicTitle = "លទ្ធផលសិក្សាតាមស្តង់ដារបាក់ឌុប (ប្រឡងឆមាសលើកទី១)"; } 
                 else if (period.includes("ប្រឡងឆមាសទី២")) { dynamicTitle = "លទ្ធផលសិក្សាតាមស្តង់ដារបាក់ឌុប (ប្រឡងឆមាសលើកទី២)"; } 
@@ -370,7 +398,6 @@
                     }
                 });
                 
-                // គណនាអង់គ្លេស Bonus
                 let engRaw = sRaw[dbMap["ភាសាអង់គ្លេស"]];
                 let eng = cleanNum(engRaw); let engBonus = 0; let finalGrd = "F";
                 if(!isNaN(eng)) {
