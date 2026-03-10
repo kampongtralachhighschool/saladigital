@@ -16,7 +16,6 @@
         }
         .moul-font { font-family: 'Moul', serif; }
         
-        /* Smooth UI Transitions */
         .card-neo {
             background: #ffffff;
             border-radius: 20px;
@@ -29,7 +28,6 @@
             border-color: #e2e8f0;
         }
 
-        /* Input Styles */
         .score-input {
             width: 80px;
             height: 60px;
@@ -49,19 +47,47 @@
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
 
-        /* Toggle Switch */
-        .toggle-bg { background: #e2e8f0; border-radius: 9999px; padding: 4px; display: inline-flex; }
-        .toggle-btn {
-            padding: 10px 24px; border-radius: 9999px; font-weight: 700; font-size: 14px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; color: #64748b;
+        /* 🌟 រចនាប៊ូតុង Toggle ថ្មី ឲ្យមានស្ថិរភាព */
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
         }
-        .toggle-btn.active { background: #0f172a; color: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .toggle-bg { 
+            background: #e2e8f0; 
+            border-radius: 9999px; 
+            padding: 4px; 
+            display: inline-flex; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .toggle-btn {
+            padding: 12px 30px; 
+            border-radius: 9999px; 
+            font-weight: 700; 
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            cursor: pointer; 
+            color: #64748b;
+            border: none;
+            background: transparent;
+        }
+        .toggle-btn.active { 
+            background: #0f172a; 
+            color: white; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
+        }
 
-        /* Grades Text Colors */
-        .grd-A { color: #ef4444; } .grd-B { color: #d946ef; } .grd-C { color: #f97316; }
-        .grd-D { color: #10b981; } .grd-E { color: #3b82f6; } .grd-F { color: #64748b; }
+        .grd-box { padding: 4px 12px; border-radius: 6px; font-weight: 900; font-size: 14px; display: inline-block; min-width: 40px; text-align: center;}
+        
+        .g-A { background: #fee2e2; color: #dc2626; } 
+        .g-B { background: #fce7f3; color: #db2777; } 
+        .g-C { background: #ffedd5; color: #ea580c; } 
+        .g-D { background: #dcfce7; color: #16a34a; } 
+        .g-E { background: #dbeafe; color: #2563eb; } 
+        .g-F { background: #f1f5f9; color: #475569; }
 
-        /* AI Analysis Box */
+        .result-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; text-align: center; }
+
         .ai-box {
             background: linear-gradient(145deg, #f0f9ff 0%, #e0e7ff 100%);
             border: 1px solid #bae6fd;
@@ -72,6 +98,28 @@
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
             background: linear-gradient(90deg, #3b82f6, #8b5cf6, #d946ef);
         }
+
+        /* Responsive Fix for Subject Cards */
+        .subject-card-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        @media (max-width: 400px) {
+            .subject-card-inner {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .subject-card-inner > div:last-child {
+                border-left: none;
+                border-top: 1px solid #f1f5f9;
+                padding-left: 0;
+                margin-left: 0;
+                padding-top: 10px;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body class="pb-20">
@@ -79,109 +127,126 @@
     <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.close()">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 px-3 py-2 rounded-lg transition" onclick="window.close()">
                 <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 <span class="font-bold text-slate-600 hidden sm:block">ត្រឡប់ក្រោយ / Back</span>
             </div>
             <h1 class="font-black text-slate-800 text-lg md:text-xl">EXAM SCORE <span class="text-blue-600">CALCULATOR</span></h1>
-            <div class="w-24"></div> <!-- Spacer for center alignment -->
+            <div class="w-24 text-right">
+                <a href="reference.html" target="_blank" class="text-xs font-bold text-blue-600 hover:text-blue-800 underline">របបពិន្ទុ</a>
+            </div>
         </div>
     </header>
 
     <main class="max-w-5xl mx-auto px-4 mt-8">
         
-        <!-- Header Info -->
-        <div class="text-center mb-10">
+        <div class="text-center mb-8">
             <h2 class="moul-font text-blue-900 text-2xl md:text-3xl mb-3 leading-relaxed">ម៉ាស៊ីនគណនាពិន្ទុបាក់ឌុប</h2>
             <p class="text-slate-500 font-bold mb-6">កំណត់គោលដៅពិន្ទុរបស់អ្នក ដើម្បីត្រៀមខ្លួនប្រឡង</p>
             
-            <div class="max-w-xs mx-auto mb-6">
-                <input type="text" id="studentName" placeholder="បញ្ចូលឈ្មោះរបស់អ្នកទីនេះ (ជម្រើស)" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 outline-none focus:border-blue-500 font-bold text-center text-slate-700 bg-white">
-            </div>
+            <!-- 🌟 មុខងារស្គាល់ឈ្មោះ និងសិស្សក្នុងសាលា -->
+            <div class="max-w-md mx-auto mb-2 bg-white p-4 rounded-2xl shadow-sm border border-blue-100 relative">
+                <div id="student-info-display" class="hidden text-left mb-3 pb-3 border-b border-slate-100">
+                    <p class="text-xs text-slate-500 font-bold uppercase mb-1">ព័ត៌មានសិស្ស (ទាញចេញពីប្រព័ន្ធ)</p>
+                    <p class="font-black text-blue-800 text-lg" id="disp-name">...</p>
+                    <p class="text-sm font-bold text-slate-600">ថ្នាក់៖ <span id="disp-grade" class="text-indigo-600">...</span> | កំណើត៖ <span id="disp-dob" class="text-slate-800">...</span></p>
+                    <button onclick="clearStudentInfo()" class="absolute top-4 right-4 text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded">ប្តូរអ្នកប្រើប្រាស់</button>
+                </div>
 
-            <!-- Class Toggle -->
+                <div id="manual-name-input">
+                    <label class="block text-left text-xs font-bold text-slate-500 mb-2">សូមបញ្ចូលឈ្មោះរបស់អ្នក (ដើម្បីឲ្យ AI ហៅឈ្មោះ)</label>
+                    <input type="text" id="studentName" placeholder="ឈ្មោះសិស្ស / អ្នកប្រើប្រាស់ក្រៅសាលា" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 outline-none focus:border-blue-500 font-bold text-slate-700 bg-slate-50">
+                </div>
+            </div>
+        </div>
+
+        <!-- 🌟 ប៊ូតុង Toggle រចនាថ្មី មិនបាត់ពេលចុច -->
+        <div class="toggle-container">
             <div class="toggle-bg">
-                <button id="btn-science" class="toggle-btn active" onclick="setClass('science')">ថ្នាក់វិទ្យាសាស្ត្រ <span class="text-[10px] ml-1 opacity-70">Science</span></button>
-                <button id="btn-social" class="toggle-btn" onclick="setClass('social')">ថ្នាក់វិទ្យាសាស្ត្រសង្គម <span class="text-[10px] ml-1 opacity-70">Social</span></button>
+                <button id="btn-science" class="toggle-btn active" onclick="setClass('science')">
+                    🔬 ថ្នាក់វិទ្យាសាស្ត្រ <span class="hidden sm:inline-block text-[11px] ml-1 opacity-70">Science</span>
+                </button>
+                <button id="btn-social" class="toggle-btn" onclick="setClass('social')">
+                    🏛️ ថ្នាក់វិទ្យាសាស្ត្រសង្គម <span class="hidden sm:inline-block text-[11px] ml-1 opacity-70">Social</span>
+                </button>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- Left Panel: Score Inputs -->
             <div class="lg:col-span-8">
-                <div class="mb-2 flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
-                    <h3 class="font-black text-slate-700 text-lg">មុខវិជ្ជាគោល (Main Subjects)</h3>
+                <!-- មុខវិជ្ជាគោល -->
+                <div class="mb-3 flex items-center gap-2 bg-slate-100 p-2 rounded-lg inline-flex">
+                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                    <h3 class="font-black text-slate-700 text-sm uppercase tracking-wider">មុខវិជ្ជាគោល (Main Subjects)</h3>
                 </div>
-                
-                <div id="main-subjects-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                    <!-- Dynamic Subjects Render Here -->
-                </div>
+                <div id="main-subjects-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8"></div>
 
-                <div class="mb-2 flex items-center gap-2 mt-8">
-                    <span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span>
-                    <h3 class="font-black text-slate-700 text-lg">មុខវិជ្ជាជ្រើសរើស (Selection Subject)</h3>
+                <!-- មុខវិជ្ជាជ្រើសរើស -->
+                <div class="mb-3 flex items-center gap-2 bg-slate-100 p-2 rounded-lg inline-flex">
+                    <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                    <h3 class="font-black text-slate-700 text-sm uppercase tracking-wider">មុខវិជ្ជាជ្រើសរើស (Selection Subject)</h3>
                 </div>
-                
-                <div id="selection-subjects-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Dynamic Selection Subjects Render Here -->
-                </div>
+                <div id="selection-subjects-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
             </div>
 
-            <!-- Right Panel: Results & Actions -->
+            <!-- លទ្ធផល -->
             <div class="lg:col-span-4">
                 <div class="sticky top-24">
-                    <!-- Result Card -->
-                    <div class="card-neo p-6 mb-6 text-center">
+                    <div class="result-card mb-6">
                         <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-6">
                             <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Result Table</span>
-                            <button onclick="resetScores()" class="text-xs font-bold text-slate-400 hover:text-red-500 transition">Clear ↺</button>
+                            <button onclick="resetScores()" class="text-xs font-bold text-slate-400 hover:text-red-500 transition px-2 py-1 rounded hover:bg-red-50">Clear ↺</button>
                         </div>
                         
-                        <div class="grid grid-cols-3 gap-2 items-end mb-4">
+                        <div class="grid grid-cols-3 gap-2 items-end mb-6">
                             <div>
                                 <p class="text-xs font-bold text-slate-400 uppercase mb-2">Result</p>
                                 <p id="final-status" class="text-xl md:text-2xl font-black text-slate-300">---</p>
                             </div>
-                            <div class="bg-blue-600 rounded-2xl p-4 text-white shadow-lg shadow-blue-600/30 transform hover:-translate-y-1 transition">
+                            <div class="bg-gradient-to-b from-blue-500 to-blue-700 rounded-2xl p-4 text-white shadow-lg shadow-blue-600/40 transform hover:-translate-y-1 transition border border-blue-400">
                                 <p class="text-xs font-bold text-blue-200 uppercase mb-1">Total</p>
-                                <p id="final-total" class="text-3xl md:text-4xl font-black">0</p>
+                                <p id="final-total" class="text-3xl md:text-4xl font-black drop-shadow-md">0</p>
                             </div>
                             <div>
                                 <p class="text-xs font-bold text-slate-400 uppercase mb-2">Grade</p>
                                 <p id="final-grade" class="text-3xl md:text-4xl font-black text-slate-300">F</p>
                             </div>
                         </div>
-                        <p class="text-[10px] text-slate-400 font-medium leading-relaxed px-4">
+                        
+                        <div id="status-msg" class="p-3 bg-slate-50 text-slate-500 font-bold text-sm rounded-lg border border-slate-200 mb-4">
+                            សូមបញ្ចូលពិន្ទុដើម្បីមើលលទ្ធផល
+                        </div>
+
+                        <p class="text-[10px] text-slate-400 font-medium leading-relaxed px-2 bg-slate-50 py-2 rounded">
                             * ពិន្ទុសរុបមានបូកបញ្ចូលពិន្ទុភាសាបរទេស (ដក២៥) ប្រសិនបើភាសាបរទេសទទួលបានចាប់ពី ២៥ពិន្ទុឡើងទៅ។
                         </p>
                     </div>
 
-                    <!-- AI Analysis Button -->
-                    <button onclick="analyzeScores()" class="w-full bg-[#0f172a] text-white py-4 rounded-2xl font-black text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex justify-center items-center gap-2">
+                    <button onclick="analyzeScores()" class="w-full bg-[#0f172a] text-white py-4 rounded-2xl font-black text-lg shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all flex justify-center items-center gap-2 border-2 border-slate-700">
                         ✨ វិភាគលទ្ធផលតាមរយៈ AI
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- AI Analysis Result Box (Hidden by Default) -->
-        <div id="ai-analysis-container" class="mt-12 hidden">
+        <div id="ai-analysis-container" class="mt-12 hidden mb-20 animate-fade-in">
             <h3 class="moul-font text-xl text-blue-900 mb-4 flex items-center gap-2">
                 <span class="text-2xl">🤖</span> ការវិភាគលទ្ធផល (AI Analysis)
             </h3>
             <div class="ai-box rounded-2xl p-6 md:p-8 shadow-sm">
-                <div id="ai-content" class="text-sm md:text-base leading-loose text-slate-700">
-                    <!-- Dynamic AI Content -->
-                </div>
+                <div id="ai-content" class="text-sm md:text-base leading-loose text-slate-700"></div>
             </div>
         </div>
 
     </main>
 
     <script>
-        // Data Structure & MoEYS Rules
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
+        const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY };
+
+        // 🌟 MoEYS Cutoffs (Fixed limits based on real max scores)
         const cutoffs = {
             125: { A: 112, B: 100, C: 87, D: 75, E: 62 },
             75: { A: 67, B: 60, C: 52, D: 45, E: 37 },
@@ -219,11 +284,46 @@
         };
 
         let currentClass = 'science';
+        let loggedInStudent = null; // រក្សាទុកទិន្នន័យសិស្សបើគាត់ធ្លាប់ឆែក
 
-        // Helpers
+        // 🌟 Auto-detect student on load
+        window.addEventListener('DOMContentLoaded', async () => {
+            let savedId = localStorage.getItem('kpt_last_search_id');
+            if(savedId) {
+                try {
+                    let res = await fetch(`${SUPABASE_URL}/rest/v1/student_scores?student_id=eq.${encodeURIComponent(savedId)}&limit=1`, { headers });
+                    let data = await res.json();
+                    if(data && data.length > 0) {
+                        loggedInStudent = data[0];
+                        document.getElementById('manual-name-input').classList.add('hidden');
+                        document.getElementById('student-info-display').classList.remove('hidden');
+                        
+                        document.getElementById('disp-name').innerText = loggedInStudent.student_name;
+                        document.getElementById('disp-grade').innerText = loggedInStudent.grade;
+                        document.getElementById('disp-dob').innerText = loggedInStudent.dob || 'មិនបញ្ជាក់';
+                        
+                        // Auto set tab based on grade if possible
+                        if(String(loggedInStudent.grade).toUpperCase().includes('SS')) {
+                            setClass('social');
+                        }
+                    }
+                } catch(e) { console.error("Auto Load Error"); }
+            }
+            renderSubjects();
+        });
+
+        function clearStudentInfo() {
+            loggedInStudent = null;
+            localStorage.removeItem('kpt_last_search_id');
+            document.getElementById('student-info-display').classList.add('hidden');
+            document.getElementById('manual-name-input').classList.remove('hidden');
+            document.getElementById('studentName').value = '';
+        }
+
+        // Logic Functions
         function getGrade(score, max) {
             let c = cutoffs[max];
-            if (!c) return 'F'; // Fallback
+            if (!c) return 'F'; 
             if (score >= c.A) return 'A';
             if (score >= c.B) return 'B';
             if (score >= c.C) return 'C';
@@ -232,7 +332,14 @@
             return 'F';
         }
 
-        // UI Renders
+        function setClass(type) {
+            currentClass = type;
+            document.getElementById('btn-science').className = `toggle-btn ${type==='science' ? 'active' : ''}`;
+            document.getElementById('btn-social').className = `toggle-btn ${type==='social' ? 'active' : ''}`;
+            document.getElementById('ai-analysis-container').classList.add('hidden');
+            renderSubjects();
+        }
+
         function renderSubjects() {
             const mainContainer = document.getElementById('main-subjects-container');
             const selContainer = document.getElementById('selection-subjects-container');
@@ -241,44 +348,67 @@
             let data = subjectsData[currentClass];
 
             const buildCard = (sub) => `
-                <div class="card-neo p-4 flex justify-between items-center">
+                <div class="card-neo p-4 subject-card-inner">
                     <div class="flex flex-col gap-1 w-full">
                         <div class="flex items-center gap-2">
                             <span class="text-xl">${sub.icon}</span>
                             <div>
-                                <p class="font-bold text-slate-800 text-sm">${sub.kh}</p>
-                                <p class="text-[10px] text-slate-400 font-bold">${sub.en}</p>
+                                <p class="font-bold text-slate-800 text-sm leading-tight">${sub.kh}</p>
+                                <p class="text-[10px] text-slate-400 font-bold leading-none mt-1">${sub.en}</p>
                             </div>
                         </div>
-                        <p class="text-[10px] text-blue-500 font-black mt-1 uppercase tracking-wider">MAX: ${sub.max}</p>
+                        <p class="text-[10px] text-blue-500 font-black mt-2 uppercase tracking-wider bg-blue-50 w-max px-2 py-0.5 rounded">MAX: ${sub.max}</p>
                     </div>
-                    <div class="flex items-center gap-3 border-l border-slate-100 pl-4 ml-2">
+                    <div class="flex items-center justify-end gap-3 border-l border-slate-100 pl-4 ml-2 min-w-[140px]">
                         <input type="number" id="${sub.id}" class="score-input" min="0" max="${sub.max}" value="0" onclick="this.select()" oninput="handleInput('${sub.id}', ${sub.max}, ${sub.isBonus || false})">
-                        <div id="grade-${sub.id}" class="text-3xl font-black grd-F w-10 text-center">F</div>
+                        <div id="grade-${sub.id}" class="text-3xl font-black grd-F w-10 text-center drop-shadow-sm">F</div>
                     </div>
                 </div>
             `;
 
             data.main.forEach(sub => mainContainer.innerHTML += buildCard(sub));
-            data.selection.forEach(sub => selContainer.innerHTML += buildCard(sub));
+            data.selection.forEach(sub => {
+                if(sub.isBonus) {
+                    selContainer.innerHTML += `
+                    <div class="card-neo p-4 subject-card-inner border-emerald-100 bg-emerald-50/30">
+                        <div class="flex flex-col gap-1 w-full">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">${sub.icon}</span>
+                                <div>
+                                    <p class="font-bold text-emerald-800 text-sm leading-tight">${sub.kh} <span class="bg-emerald-200 text-emerald-800 text-[9px] px-1 rounded ml-1">BONUS</span></p>
+                                    <p class="text-[10px] text-emerald-600/70 font-bold leading-none mt-1">${sub.en}</p>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-emerald-600 font-black mt-2 bg-emerald-100 w-max px-2 py-0.5 rounded">ក្រោម ២៦=០, ចាប់ពី ២៦ឡើង ដក ២៥</p>
+                        </div>
+                        <div class="flex items-center justify-end gap-3 border-l border-emerald-100 pl-4 ml-2 min-w-[140px]">
+                            <input type="number" id="${sub.id}" class="score-input" style="border-color:#10b981; color:#047857; background:white;" min="0" max="${sub.max}" value="0" onclick="this.select()" oninput="handleInput('${sub.id}', ${sub.max}, true)">
+                            <div id="grade-bonus-val" class="font-black text-emerald-600 text-xl w-10 text-center">+0</div>
+                        </div>
+                    </div>`;
+                } else {
+                    selContainer.innerHTML += buildCard(sub);
+                }
+            });
             
             calculateTotal();
         }
 
         function handleInput(id, max, isBonus) {
             let el = document.getElementById(id);
-            let val = Math.floor(Number(el.value)); // Force integer
+            let val = Math.floor(Number(el.value)); 
             if (val > max) { el.value = max; val = max; }
             if (val < 0 || isNaN(val)) { el.value = 0; val = 0; }
             
-            let grdEl = document.getElementById(`grade-${id}`);
-            let grd = getGrade(val, max);
-            
-            // UI Update Grade
-            grdEl.className = `text-3xl font-black w-10 text-center grd-${grd}`;
-            grdEl.innerText = grd;
-
-            // If it's English, show bonus logic specifically in AI later, but for now calculate total
+            if(isBonus) {
+                let engBonus = val >= 26 ? val - 25 : 0;
+                document.getElementById('grade-bonus-val').innerText = `+${engBonus}`;
+            } else {
+                let grdEl = document.getElementById(`grade-${id}`);
+                let grd = getGrade(val, max);
+                grdEl.className = `text-3xl font-black w-10 text-center drop-shadow-sm grd-${grd}`;
+                grdEl.innerText = grd;
+            }
             calculateTotal();
         }
 
@@ -286,37 +416,39 @@
             let data = subjectsData[currentClass];
             let total = 0;
             
-            // Sum Main
-            data.main.forEach(sub => {
-                let val = parseInt(document.getElementById(sub.id).value) || 0;
-                total += val;
-            });
-
-            // Sum Selection (handle bonus)
+            data.main.forEach(sub => total += (parseInt(document.getElementById(sub.id).value) || 0));
             data.selection.forEach(sub => {
                 let val = parseInt(document.getElementById(sub.id).value) || 0;
-                if (sub.isBonus) {
-                    if (val >= 25) total += (val - 25);
-                } else {
-                    total += val;
-                }
+                if (sub.isBonus) { if (val >= 26) total += (val - 25); } 
+                else { total += val; }
             });
 
-            // Overall
             let overGrd = getOverallGrade(total);
             document.getElementById('final-total').innerText = total;
             
             let fgEl = document.getElementById('final-grade');
             fgEl.innerText = overGrd;
-            fgEl.className = `text-3xl md:text-4xl font-black drop-shadow-md grd-${overGrd}`;
+            fgEl.className = `text-4xl md:text-5xl font-black drop-shadow-md grd-${overGrd}`;
 
-            let statusEl = document.getElementById('final-status');
-            if (total >= 237) {
-                statusEl.innerText = "Pass";
-                statusEl.className = "text-xl md:text-2xl font-black text-emerald-500";
+            let statusEl = document.getElementById('status-msg');
+            let statusBadge = document.getElementById('final-status');
+            
+            if(total === 0) {
+                statusEl.className = "p-3 bg-slate-50 text-slate-500 font-bold text-sm rounded-lg border border-slate-200 mb-4";
+                statusEl.innerText = "សូមបញ្ចូលពិន្ទុដើម្បីមើលលទ្ធផល";
+                statusBadge.innerText = "---";
+                statusBadge.className = "text-xl md:text-2xl font-black text-slate-300";
+            } else if (total >= 237) {
+                statusEl.className = "p-3 bg-emerald-50 text-emerald-600 font-bold text-sm rounded-lg border border-emerald-200 mb-4";
+                statusEl.innerText = "អបអរសាទរ! អ្នកប្រឡងជាប់។ 🎉";
+                statusBadge.innerText = "PASS";
+                statusBadge.className = "text-xl md:text-2xl font-black text-emerald-500";
             } else {
-                statusEl.innerText = "Fail";
-                statusEl.className = "text-xl md:text-2xl font-black text-red-500";
+                statusEl.className = "p-3 bg-red-50 text-red-600 font-bold text-sm rounded-lg border border-red-200 mb-4";
+                let needed = 237 - total;
+                statusEl.innerText = `ធ្លាក់! អ្នកត្រូវការ ${needed} ពិន្ទុទៀតដើម្បីជាប់។`;
+                statusBadge.innerText = "FAIL";
+                statusBadge.className = "text-xl md:text-2xl font-black text-red-500";
             }
         }
 
@@ -330,95 +462,102 @@
             return 'F';
         }
 
-        function setClass(type) {
-            currentClass = type;
-            document.getElementById('btn-science').className = `tab-btn px-8 py-3 rounded-xl font-black text-sm md:text-base border-2 ${type==='science' ? 'active' : 'inactive'}`;
-            document.getElementById('btn-social').className = `tab-btn px-8 py-3 rounded-xl font-black text-sm md:text-base border-2 ${type==='social' ? 'active' : 'inactive'}`;
-            document.getElementById('ai-analysis-container').classList.add('hidden');
-            renderSubjects();
-        }
-
         function resetScores() {
             renderSubjects();
             document.getElementById('ai-analysis-container').classList.add('hidden');
         }
 
-        // 🤖 AI Analysis Feature
+        // 🌟 មុខងារ AI វិភាគស៊ីជម្រៅ (ប្រើឈ្មោះពិតបើមានក្នុងប្រព័ន្ធ)
         function analyzeScores() {
-            let name = document.getElementById('studentName').value.trim() || 'ប្អូន';
-            let data = subjectsData[currentClass];
-            let strengths = [];
-            let weaknesses =[];
-            let total = 0;
+            let name = "ប្អូន";
+            if(loggedInStudent) {
+                name = `<b>${loggedInStudent.student_name}</b>`;
+            } else {
+                let mName = document.getElementById('studentName').value.trim();
+                if(mName) name = `<b>${mName}</b>`;
+            }
 
-            // Collect Data
+            let data = subjectsData[currentClass];
+            let strengths = []; let weaknesses =[]; let okays =[];
+            let total = 0; let mainMax = 0;
+
             let allSubs = [...data.main, ...data.selection];
             allSubs.forEach(sub => {
                 let val = parseInt(document.getElementById(sub.id).value) || 0;
                 let pct = (val / sub.max) * 100;
                 
                 if (sub.isBonus) {
-                    if (val >= 25) total += (val - 25);
+                    if (val >= 26) total += (val - 25);
                 } else {
-                    total += val;
+                    total += val; mainMax += sub.max;
                 }
 
-                if (pct >= 70) strengths.push(sub.kh);
-                else if (pct < 50) weaknesses.push(sub.kh);
+                if(!sub.isBonus) {
+                    if (pct >= 80) strengths.push(sub.kh);
+                    else if (pct >= 60 && pct < 80) okays.push(sub.kh);
+                    else if (pct < 60) weaknesses.push(sub.kh);
+                }
             });
 
+            if (total === 0) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលពិន្ទុមុននឹងឲ្យ AI វិភាគ!', 'warning');
+
             let finalGrd = getOverallGrade(total);
-            let analysisHtml = `<p class="mb-4">សួស្តី <b>${name}</b>! ផ្អែកលើពិន្ទុដែលបានបញ្ចូលកុំព្យូទ័របានធ្វើការវិភាគដូចខាងក្រោម៖</p>`;
+            let analysisHtml = `<p class="mb-5 text-slate-600 text-base">សួស្តី ${name}! ផ្អែកលើការវាយតម្លៃពិន្ទុដែលបានបញ្ចូល ខាងក្រោមនេះគឺជាការវិភាគអំពីសមត្ថភាព និងគោលដៅប្រឡងសញ្ញាបត្រមធ្យមសិក្សាទុតិយភូមិរបស់អ្នក៖</p>`;
 
             // Status Analysis
-            if (total >= 237) {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                analysisHtml += `<div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl mb-4 text-emerald-800">
-                    🎉 <b>អបអរសាទរ!</b> ប្រសិនបើប្អូនទទួលបានពិន្ទុប៉ុណ្ណេះមែន ប្អូននឹងប្រឡងជាប់ដោយទទួលបាននិទ្ទេស <b>${finalGrd}</b>។ លទ្ធផលនេះបង្ហាញពីការខិតខំប្រឹងប្រែងដ៏ល្អ!
+            if (total >= 427) {
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                analysisHtml += `<div class="p-5 bg-gradient-to-r from-emerald-50 to-teal-50 border-l-4 border-emerald-500 rounded-r-xl mb-5 text-emerald-900 shadow-sm">
+                    🌟 <b>អស្ចារ្យណាស់!</b> ប្រសិនបើអ្នកអាចរក្សាទម្រង់ពិន្ទុនេះបាន អ្នកនឹងទទួលបាននិទ្ទេស <b>A</b> យ៉ាងពិតប្រាកដ។ អ្នកគឺជាសិស្សដ៏ឆ្នើមម្នាក់!
+                </div>`;
+            } else if (total >= 237) {
+                confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+                analysisHtml += `<div class="p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-r-xl mb-5 text-blue-900 shadow-sm">
+                    ✅ <b>អបអរសាទរ!</b> ពិន្ទុនេះអាចជួយឲ្យអ្នកប្រឡងជាប់បានយ៉ាងជោគជ័យ ដោយទទួលបាននិទ្ទេស <b>${finalGrd}</b>។ ប៉ុន្តែអ្នកនៅតែអាចប្រឹងប្រែងដើម្បីយកនិទ្ទេសឲ្យខ្ពស់ជាងនេះបាន!
                 </div>`;
             } else {
                 let needed = 237 - total;
-                analysisHtml += `<div class="p-4 bg-red-50 border border-red-200 rounded-xl mb-4 text-red-800">
-                    ⚠️ <b>កុំទាន់បាក់ទឹកចិត្ត!</b> បច្ចុប្បន្នប្អូនខ្វះ <b>${needed} ពិន្ទុ</b> ទៀតទើបអាចប្រឡងជាប់។ ប្អូននៅមានពេលគ្រប់គ្រាន់ក្នុងការកែប្រែលទ្ធផលនេះ!
+                analysisHtml += `<div class="p-5 bg-gradient-to-r from-red-50 to-rose-50 border-l-4 border-red-500 rounded-r-xl mb-5 text-red-900 shadow-sm">
+                    ⚠️ <b>កុំទាន់បាក់ទឹកចិត្ត!</b> បច្ចុប្បន្នអ្នកនៅខ្វះ <b>${needed} ពិន្ទុ</b> ទៀតទើបអាចប្រឡងជាប់។ ពេលវេលានៅមាន អ្នកនៅតែអាចកែប្រែលទ្ធផលនេះបាន ប្រសិនបើអ្នកចាប់ផ្តើមប្រឹងប្រែងរំលឹកមេរៀនចាប់ពីថ្ងៃនេះតទៅ។
                 </div>`;
             }
 
-            // Strengths & Weaknesses
-            analysisHtml += `<div class="grid md:grid-cols-2 gap-4 mt-4">`;
+            analysisHtml += `<div class="grid md:grid-cols-2 gap-5 mt-6">`;
             
             if (strengths.length > 0) {
-                analysisHtml += `<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-                    <h4 class="font-black text-blue-700 mb-2 flex items-center gap-2">💪 មុខវិជ្ជាខ្លាំង</h4>
-                    <p class="text-sm">ប្អូនធ្វើបានល្អខ្លាំងលើមុខវិជ្ជា៖ <b class="text-slate-800">${strengths.join(' , ')}</b>។ សូមបន្តរក្សាភាពខ្លាំងនេះឲ្យបានរហូតដល់ថ្ងៃប្រឡង។</p>
+                analysisHtml += `<div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -z-10"></div>
+                    <h4 class="font-black text-blue-700 mb-3 flex items-center gap-2 text-lg">💪 មុខវិជ្ជាខ្លាំង</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">អ្នកធ្វើបានល្អខ្លាំងណាស់លើមុខវិជ្ជា៖ <b class="text-slate-800">${strengths.join(' , ')}</b>។ សូមបន្តរំលឹកនិងរក្សាភាពខ្លាំងនេះឲ្យបានរហូតដល់ថ្ងៃប្រឡង។</p>
                 </div>`;
             }
 
             if (weaknesses.length > 0) {
-                analysisHtml += `<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-                    <h4 class="font-black text-orange-600 mb-2 flex items-center gap-2">🎯 ចំណុចត្រូវពង្រឹងបន្ថែម</h4>
-                    <p class="text-sm">ដើម្បីទាញពិន្ទុរួមឲ្យកើនឡើង ប្អូនត្រូវបង្កើនម៉ោងរំលឹក និងធ្វើលំហាត់បន្ថែមលើមុខវិជ្ជា៖ <b class="text-red-600">${weaknesses.join(' , ')}</b>។</p>
+                analysisHtml += `<div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-red-50 rounded-bl-full -z-10"></div>
+                    <h4 class="font-black text-red-600 mb-3 flex items-center gap-2 text-lg">🎯 មុខវិជ្ជាត្រូវពង្រឹងបន្ទាន់</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">ដើម្បីទាញពិន្ទុរួមឲ្យកើនឡើង និងប្រឡងជាប់ អ្នកត្រូវបង្កើនម៉ោងរៀន និងធ្វើលំហាត់បន្ថែមឲ្យបានច្រើនលើមុខវិជ្ជា៖ <b class="text-red-600">${weaknesses.join(' , ')}</b>។</p>
                 </div>`;
             }
-            
             analysisHtml += `</div>`;
 
-            // Footer motivational quote
-            analysisHtml += `<p class="mt-6 text-center font-bold text-blue-800 italic">"ការប្រឹងប្រែងនៅថ្ងៃនេះ គឺជាជោគជ័យនៅថ្ងៃស្អែក! ជូនពរ ${name} ទទួលបាននិទ្ទេសល្អក្នុងការប្រឡង!"</p>`;
+            // English Check
+            let engVal = parseInt(document.getElementById(data.selection.find(s=>s.isBonus).id).value) || 0;
+            if(engVal < 26) {
+                analysisHtml += `<div class="mt-5 p-4 bg-yellow-50 rounded-xl border border-yellow-200 text-sm text-yellow-800">
+                    💡 <b>គន្លឹះពិសេស៖</b> ពិន្ទុភាសាបរទេសរបស់អ្នកបច្ចុប្បន្នមិនទាន់អាចជួយស្រោចស្រង់ពិន្ទុរួមបានទេ (ទាល់តែចាប់ពី ២៦ ឡើង)។ ការខិតខំភាសាបរទេសបន្តិចទៀត អាចជួយស្រោចស្រង់ពិន្ទុអ្នកបានច្រើនពេលប្រឡងពិតប្រាកដ។
+                </div>`;
+            }
+
+            analysisHtml += `<div class="mt-8 text-center"><p class="font-black text-blue-900 text-lg">"ការប្រឹងប្រែងនៅថ្ងៃនេះ គឺជាជោគជ័យនៅថ្ងៃស្អែក!"</p></div>`;
 
             document.getElementById('ai-content').innerHTML = analysisHtml;
-            
             let container = document.getElementById('ai-analysis-container');
             container.classList.remove('hidden');
-            
-            // Scroll to AI naturally
-            setTimeout(() => {
-                container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
+            setTimeout(() => { container.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
         }
 
-        // Initialize
         renderSubjects();
-
     </script>
 </body>
 </html>
