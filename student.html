@@ -329,7 +329,6 @@
             return aiText;
         }
 
-        // Calculate Rank Locally since we fetch class data
         function getSubjectRank(studentId, subKey, classData) {
             let validScores = classData
                 .map(s => ({ id: s.student_id, score: cleanNum(s[subKey]) }))
@@ -342,6 +341,35 @@
                 if(validScores[i].id === studentId) return rank;
             }
             return '-';
+        }
+
+        // QR Code Scanner Functions
+        function toggleScanner() {
+            const container = document.getElementById('qr-reader-container');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
+                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            } else {
+                stopScanner();
+            }
+        }
+
+        function stopScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.clear();
+                document.getElementById('qr-reader-container').classList.add('hidden');
+            }
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            document.getElementById('searchInput').value = decodedText;
+            stopScanner();
+            executeSearch();
+        }
+
+        function onScanFailure(error) {
+            // Ignore ongoing errors while scanning
         }
 
         // 🌟 MAIN SEARCH EXECUTION
@@ -496,7 +524,7 @@
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(dbS.date_solar, dbS.date_lunar, tInfo);
                 
                 // =====================================
-                // P2 Build (ប្រៀបធៀប)
+                // P2 Build (ប្រៀបធៀប និង វិភាគដោយ AI)
                 // =====================================
                 let histDataRaw = await supaFetch(`student_scores?student_id=eq.${encodeURIComponent(dbS.student_id)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
                 let semDataRaw = await supaFetch(`semester_scores?student_id=eq.${encodeURIComponent(dbS.student_id)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
@@ -507,8 +535,27 @@
                 let targetPeriods =["វិច្ឆិកា", "ធ្នូ", "មករា", "កុម្ភៈ", "ប្រឡងឆមាសទី១", "ប្រចាំឆមាសទី១", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "ប្រឡងឆមាសទី២", "ប្រចាំឆមាសទី២"];
                 let histMap = {}; 
                 
-                histDataRaw.forEach(r => { let tRes = { Average: r.average||0 }; SUBJECTS_10.forEach(sub => { tRes[sub] = r[dbMap[sub]]; }); histMap[r.month_name] = tRes; });
-                semDataRaw.forEach(r => { let tRes = { Average: r.exam_average || r.semester_average || 0 }; SUBJECTS_10.forEach(sub => { tRes[sub] = r[dbMap[sub]]; }); histMap[r.semester_name] = tRes; });
+                histDataRaw.forEach(r => { 
+                    let tRes = { Average: r.average||0 }; 
+                    SUBJECTS_10.forEach(sub => { tRes[sub] = r[dbMap[sub]]; }); 
+                    histMap[r.month_name] = tRes; 
+                });
+                
+                // ជួសជុលបញ្ហាទាញមធ្យមភាគប្រចាំឆមាសខុសនៅទីនេះ
+                semDataRaw.forEach(r => { 
+                    let targetAvg = 0;
+                    if(r.semester_name && r.semester_name.includes('ប្រឡង')) {
+                        targetAvg = r.exam_average || r.average || 0;
+                    } else if(r.semester_name && r.semester_name.includes('ប្រចាំ')) {
+                        targetAvg = r.semester_average || r.average || 0;
+                    } else {
+                        targetAvg = r.average || 0;
+                    }
+                    
+                    let tRes = { Average: targetAvg }; 
+                    SUBJECTS_10.forEach(sub => { tRes[sub] = r[dbMap[sub]]; }); 
+                    histMap[r.semester_name] = tRes; 
+                });
 
                 let availablePeriods = targetPeriods.filter(p => histMap[p]);
 
@@ -516,7 +563,11 @@
                     document.getElementById('t1-chartArea').innerHTML = `<div class="text-center p-10 border-2 border-dashed rounded-xl"><p class="text-slate-500 font-bold">មិនទាន់មានទិន្នន័យប្រៀបធៀបទេ!</p></div>`;
                     document.getElementById('t1-comparisonTableContainer').innerHTML = ""; 
                 } else {
-                    let cHtml = ""; availablePeriods.forEach(m => { let pct = Math.min((cleanNum(histMap[m].Average) / 50) * 100, 100); cHtml += `<div class="trend-bar-wrapper"><div style="font-size:9px; font-weight:bold; color:#475569; margin-bottom:2px;">${cleanNum(histMap[m].Average).toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div style="font-size:9px; font-weight:bold; color:#1e293b; margin-top:5px; text-align:center; line-height:1.2;">${m.replace('ប្រឡង','ប្រឡង<br>').replace('ប្រចាំ','ប្រចាំ<br>')}</div></div>`; });
+                    let cHtml = ""; 
+                    availablePeriods.forEach(m => { 
+                        let pct = Math.min((cleanNum(histMap[m].Average) / 50) * 100, 100); 
+                        cHtml += `<div class="trend-bar-wrapper"><div style="font-size:9px; font-weight:bold; color:#475569; margin-bottom:2px;">${cleanNum(histMap[m].Average).toFixed(2)}</div><div class="trend-bar" style="height:${pct}%;background:${getBarCol(pct)}"></div><div style="font-size:9px; font-weight:bold; color:#1e293b; margin-top:5px; text-align:center; line-height:1.2;">${m.replace('ប្រឡង','ប្រឡង<br>').replace('ប្រចាំ','ប្រចាំ<br>')}</div></div>`; 
+                    });
                     document.getElementById('t1-chartArea').innerHTML = `<div class="border border-slate-200 rounded-xl p-4 pb-0 bg-white"><p class="text-[11px] font-black text-slate-500 mb-2 text-center uppercase tracking-widest">📈 ក្រាបប្រៀបធៀបមធ្យមភាគទូទៅ</p><div class="trend-chart">${cHtml}</div></div>`;
 
                     let tb = `<table class="c-table mt-4 border border-slate-300"><thead><tr class="bg-slate-100"><th class="w-8 border-r border-slate-300">ល.រ</th><th class="col-left w-32 border-r border-slate-300">មុខវិជ្ជា (គោល)</th><th class="w-16 border-r border-slate-300">អតិបរមា</th>`;
@@ -538,7 +589,80 @@
                         tb += `</tr>`;
                     });
                     tb += `</tbody></table>`;
-                    document.getElementById('t1-comparisonTableContainer').innerHTML = tb;
+
+                    // =====================================
+                    // 🧠 ប្រព័ន្ធវិភាគ និងប្រឹក្សាដោយ AI
+                    // =====================================
+                    let aiAnalysisHtml = "";
+                    if(availablePeriods.length >= 2) {
+                        let lastPeriod = availablePeriods[availablePeriods.length - 1];
+                        let prevPeriod = availablePeriods[availablePeriods.length - 2];
+                        let dLast = histMap[lastPeriod];
+                        let dPrev = histMap[prevPeriod];
+
+                        let improved =[];
+                        let declined = [];
+                        let stable = [];
+                        let warnings =[];
+
+                        SUBJECTS_10.forEach(sub => {
+                            if(dLast[sub] && dPrev[sub]) {
+                                let s1 = cleanNum(dPrev[sub]);
+                                let s2 = cleanNum(dLast[sub]);
+                                let maxS = 50; if(dbMap[sub] && gConf[dbMap[sub]]) maxS = cleanNum(gConf[dbMap[sub]]);
+
+                                if(!isNaN(s1) && !isNaN(s2)) {
+                                    if(s2 > s1) improved.push(sub);
+                                    else if(s2 < s1) {
+                                        declined.push(sub);
+                                        if(s2 < (maxS/2)) warnings.push(sub); // បើធ្លាក់ក្រោម ៥០% ត្រូវព្រមាន
+                                    }
+                                    else stable.push(sub);
+                                }
+                            }
+                        });
+
+                        let diffAvg = (cleanNum(dLast.Average) - cleanNum(dPrev.Average)).toFixed(2);
+                        
+                        let aiText = `<div class="flex items-center gap-2 mb-2"><span class="text-xl">🤖</span><p class="font-black text-blue-900 text-[12px] uppercase">ការវិភាគ និងប្រឹក្សាយោបល់ដោយប្រព័ន្ធ៖</p></div>`;
+                        aiText += `<div class="text-[11px] text-slate-700 leading-relaxed text-justify px-2">`;
+
+                        // វិភាគមធ្យមភាគរួម
+                        if(diffAvg > 0) {
+                            aiText += `ធៀបនឹង <b>${prevPeriod}</b> មធ្យមភាគរបស់ប្អូនសម្រាប់ <b>${lastPeriod}</b> ឃើញថាមានការកើនឡើង <b>+${diffAvg}</b> ពិន្ទុ 📈។ លទ្ធផលនេះបង្ហាញពីការខិតខំប្រឹងប្រែងយ៉ាងពិតប្រាកដ លោកគ្រូអ្នកគ្រូសូមកោតសរសើរ! `;
+                        } else if(diffAvg < 0) {
+                            aiText += `ធៀបនឹង <b>${prevPeriod}</b> មធ្យមភាគរបស់ប្អូនសម្រាប់ <b>${lastPeriod}</b> ឃើញថាមានការថយចុះ <b>${diffAvg}</b> ពិន្ទុ 📉។ សូមកុំទាន់បាក់ទឹកចិត្ត នេះគ្រាន់តែជាការជំពប់ជើងបន្តិចបន្តួចប៉ុណ្ណោះ។ `;
+                        } else {
+                            aiText += `ធៀបនឹង <b>${prevPeriod}</b> មធ្យមភាគរបស់ប្អូនសម្រាប់ <b>${lastPeriod}</b> គឺរក្សាបានថេរ ⚖️។ `;
+                        }
+
+                        // វិភាគតាមមុខវិជ្ជា
+                        if(improved.length > 0) {
+                            aiText += `<br><br>🌟 <b>ចំណុចខ្លាំង៖</b> ប្អូនធ្វើបានល្អខ្លាំងដោយមានការរីកចម្រើនលើមុខវិជ្ជា <span class="text-green-600 font-bold">${improved.join(', ')}</span>។ សូមបន្តរក្សាស្នាដៃនេះ។ `;
+                        }
+                        if(declined.length > 0) {
+                            aiText += `<br>⚠️ <b>ចំណុចត្រូវពង្រឹង៖</b> ទន្ទឹមនឹងនេះ មុខវិជ្ជាដែលមានការថយចុះមាន <span class="text-orange-600 font-bold">${declined.join(', ')}</span>។ `;
+                        }
+                        if(warnings.length > 0) {
+                            aiText += `<span class="text-red-600 font-bold underline">ជាពិសេសត្រូវប្រុងប្រយ័ត្នខ្ពស់លើមុខវិជ្ជា ${warnings.join(', ')} ព្រោះពិន្ទុប្អូនស្ថិតក្នុងកម្រិតប្រកាសអាសន្ន។</span> `;
+                        }
+
+                        // ការផ្តល់ដំបូន្មាន (Counseling)
+                        aiText += `<br><br>💡 <b>យោបល់ប្រឹក្សា៖</b> `;
+                        if(warnings.length > 0 || diffAvg < 0) {
+                            aiText += `លោកគ្រូអ្នកគ្រូសូមលើកទឹកចិត្តឲ្យប្អូនកុំបោះបង់។ សូមចំណាយពេលរំលឹកមេរៀនឡើងវិញឲ្យបានច្រើន សាកសួរលោកគ្រូអ្នកគ្រូ ឬរៀនជុំគ្នាជាមួយមិត្តភក្តិ ជាពិសេសលើមុខវិជ្ជាដែលធ្លាក់ចុះ។ យើងជឿជាក់ថាប្អូនពិតជាអាចស្តារលទ្ធផលឡើងវិញបាននៅពេលបន្ទាប់!`;
+                        } else {
+                            aiText += `លទ្ធផលរបស់ប្អូនកំពុងដើរលើផ្លូវត្រូវហើយ។ សូមរក្សាវិន័យនៃការសិក្សានេះជាបន្តទៀត កុំធ្វេសប្រហែសឲ្យសោះ ក្តីជោគជ័យដ៏ធំកំពុងរង់ចាំប្អូននៅខាងមុខ!`;
+                        }
+                        aiText += `</div>`;
+
+                        aiAnalysisHtml = `<div class="mt-4 p-4 border-2 border-dashed border-blue-300 bg-blue-50/50 rounded-xl">${aiText}</div>`;
+                    } else {
+                        aiAnalysisHtml = `<div class="mt-4 p-3 text-center border border-slate-200 bg-slate-50 text-[10px] text-slate-500 rounded-xl">មិនទាន់មានទិន្នន័យគ្រប់គ្រាន់សម្រាប់ប្រព័ន្ធធ្វើការវិភាគប្រៀបធៀបនៅឡើយទេ (ត្រូវការយ៉ាងតិច ២ ខែ/ឆមាស)។</div>`;
+                    }
+
+                    // ភ្ជាប់តារាង និងប្រអប់ AI ចូលគ្នា
+                    document.getElementById('t1-comparisonTableContainer').innerHTML = tb + aiAnalysisHtml;
                 }
                 
                 document.getElementById('t1-p2-signatures').innerHTML = getStampHTML(dbS.date_solar, dbS.date_lunar, tInfo);
