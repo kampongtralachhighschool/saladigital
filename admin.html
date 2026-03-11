@@ -57,10 +57,6 @@
         .page-border { position: absolute; top: 0.3cm; bottom: 0.3cm; left: 0.3cm; right: 0.3cm; border: 8px double #d97706; border-radius: 12px; pointer-events: none; z-index: 40; }
         .page-border-inner { position: absolute; top: 0.65cm; bottom: 0.65cm; left: 0.65cm; right: 0.65cm; border: 1px solid #b45309; border-radius: 6px; pointer-events: none; z-index: 40; }
         .bg-pattern { background-color: #ffffff; background-image: radial-gradient(rgba(217, 119, 6, 0.08) 1.5px, transparent 1.5px); background-size: 25px 25px; }
-        
-        .premium-plaque { position: relative; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 0 0 3px rgba(255, 255, 255, 0.7); }
-        .premium-plaque::before { content: ''; position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; border: 1px dashed rgba(0,0,0,0.2); border-radius: 8px; pointer-events: none; }
-        .badge-pill { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15); }
 
         /* 🏅 Certificate Landscape */
         .cert-landscape { background: #ffffff; border: 10px solid transparent; border-image: url('https://img.freepik.com/premium-vector/gold-border-frame-luxury-vintage-corner_422344-1144.jpg') 30 stretch; outline: 2px solid #ca8a04; outline-offset: -12px; position: relative; padding: 40px; }
@@ -130,7 +126,7 @@
                 </button>
                 <button onclick="triggerReport('honor')" class="flex flex-col items-center gap-2 p-4 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-2xl transition group">
                     <span class="text-3xl group-hover:scale-110 transition">🏆</span>
-                    <span class="font-black text-yellow-800 text-xs text-center mt-1">តារាងកិត្តិយស<br><span class="text-[9px] text-yellow-600">(Top 5)</span></span>
+                    <span class="font-black text-yellow-800 text-xs text-center mt-1">តារាងកិត្តិយស<br><span class="text-[9px] text-yellow-600">(Top 5 ឡើង)</span></span>
                 </button>
                 <button onclick="triggerReport('ranking')" class="flex flex-col items-center gap-2 p-4 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-2xl transition group">
                     <span class="text-3xl group-hover:scale-110 transition">📊</span>
@@ -189,7 +185,7 @@
         const SUBJECTS_15 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
         const dbMap = { "ភាសាខ្មែរ":"khmer", "សីលធម៌ពលរដ្ឋ":"morality", "ប្រវត្តិវិទ្យា":"history", "ភូមិវិទ្យា":"geography", "គណិតវិទ្យា":"math", "រូបវិទ្យា":"physics", "គីមីវិទ្យា":"chemistry", "ជីវវិទ្យា":"biology", "ផែនដីវិទ្យា":"earth_science", "ភាសាអង់គ្លេស":"english", "កីឡា":"sport", "កសិកម្ម":"agriculture", "បច្ចេកវិទ្យា":"technology", "បំណិន":"skill", "សុខភាព":"health" };
 
-        let configMap = {}; let teacherMap = {}; let adminTeacherInfo = null;
+        let configMap = {}; let teacherMap = {}; let adminTeacherInfo = null; let allConfigClasses =[];
 
         const cleanKey = (str) => {
             if(!str) return "";
@@ -220,6 +216,15 @@
             return 'grd-F';
         }
 
+        const parseRank = (val) => {
+            if (val === undefined || val === null || val === '') return 9999;
+            let str = String(val).trim();
+            const khmerToArabic = { '០':'0', '១':'1', '២':'2', '៣':'3', '៤':'4', '៥':'5', '៦':'6', '៧':'7', '៨':'8', '៩':'9' };
+            str = str.replace(/[០-៩]/g, m => khmerToArabic[m]); 
+            let num = parseInt(str.replace(/\D/g, ''), 10); 
+            return isNaN(num) ? 9999 : num;
+        };
+
         const toKhmerNum = (num) => {
             const khmerNums =['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
             return String(num).split('').map(digit => khmerNums[digit] || digit).join('');
@@ -242,7 +247,38 @@
         }
 
         // ==========================================
-        // 🚀 INITIALIZATION & DATA FETCHING
+        // 🚀 PAGINATION FETCH (ទម្លុះដែនកំណត់ ១០០០ Rows)
+        // ==========================================
+        async function supaFetchAll(endpoint) {
+            let allData =[];
+            let offset = 0;
+            const limit = 1000;
+            let keepFetching = true;
+            const separator = endpoint.includes('?') ? '&' : '?';
+
+            while (keepFetching) {
+                const url = `${SUPABASE_URL}/rest/v1/${endpoint}${separator}limit=${limit}&offset=${offset}`;
+                const res = await fetch(url, { headers });
+                if (!res.ok) throw new Error("Network Error");
+                const data = await res.json();
+                
+                if (data.length > 0) {
+                    allData = allData.concat(data);
+                    offset += limit;
+                } else {
+                    keepFetching = false;
+                }
+                
+                // ប្រសិនបើកង់នេះទាញបានតិចជាង limit មានន័យថាវាដល់ចុងក្រោយហើយ
+                if (data.length < limit) {
+                    keepFetching = false;
+                }
+            }
+            return allData;
+        }
+
+        // ==========================================
+        // 🚀 INITIALIZATION
         // ==========================================
         window.addEventListener('DOMContentLoaded', async () => {
             const { value: pwd } = await Swal.fire({ title: 'ចូលផ្នែករដ្ឋបាលសាលា', input: 'password', confirmButtonText: 'បញ្ជាក់', allowOutsideClick: false });
@@ -254,34 +290,36 @@
             }
         });
 
-        async function supaFetch(endpoint) {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, { headers });
-            if (!res.ok) throw new Error("Network Error");
-            return await res.json();
-        }
-
         async function ensureConfigLoaded() {
             if (Object.keys(configMap).length > 0) return;
             showLoading("កំពុងទាញទិន្នន័យមូលដ្ឋានសាលា...");
             try {
-                let confRes = await supaFetch(`config_max_scores?select=*`);
-                confRes.forEach(c => { if(c.grade_level) configMap[cleanKey(c.grade_level)] = c; });
+                let confRes = await supaFetchAll(`config_max_scores?select=*`);
+                let teacherRes = await supaFetchAll(`teacher_info?select=*`);
+                
+                // បញ្ចូលឈ្មោះថ្នាក់ពី config_max_scores និង teacher_info បញ្ចូលគ្នា ដើម្បីកុំឲ្យបាត់
+                let classSet = new Set();
+                
+                confRes.forEach(c => { 
+                    if(c.grade_level) {
+                        configMap[cleanKey(c.grade_level)] = c; 
+                        classSet.add(c.grade_level.trim());
+                    }
+                });
 
-                let teachRes = await supaFetch(`teacher_info?select=*`);
-                let clsSet = new Set();
-                teachRes.forEach(t => { 
+                teacherRes.forEach(t => { 
                     if(t.homeroom_class) {
                         let cKey = cleanKey(t.homeroom_class);
                         teacherMap[cKey] = { name: t.teacher_name || '', sign: getDriveImgUrl(t.signature_link) }; 
-                        clsSet.add(t.homeroom_class.trim());
+                        classSet.add(t.homeroom_class.trim());
                     }
                     if(String(t.teacher_id).trim() === '168') {
                         adminTeacherInfo = { name: t.teacher_name, sign: getDriveImgUrl(t.signature_link) };
                     }
                 });
                 
-                let allClassNames = Array.from(clsSet).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
-                document.getElementById('classSelect').innerHTML = allClassNames.map(c => `<option value="${c}">${c}</option>`).join('');
+                allConfigClasses = Array.from(classSet).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+                document.getElementById('classSelect').innerHTML = allConfigClasses.map(c => `<option value="${c}">${c}</option>`).join('');
                 hideLoading();
             } catch(e) { hideLoading(); Swal.fire('Error', e.message, 'error'); }
         }
@@ -289,7 +327,7 @@
         function mapDbToLegacy(row) {
             let res = { 
                 ID: row.student_id, Name: row.student_name, Gender: row.gender, 
-                OriginalGrade: row.grade,
+                OriginalGrade: row.grade, 
                 Grade: row.grade, 
                 DOB: row.dob||'', DateSolar: row.date_solar||'', DateLunar: row.date_lunar||'', 
                 Total: parseFloat(row.total_score || row.exam_total_score || row.semester_total_score) || 0, 
@@ -369,7 +407,7 @@
         async function fetchAndRender(type, specificClass = null) {
             await ensureConfigLoaded();
             let period = document.getElementById('monthSelect').value;
-            showLoading(`កំពុងទាញទិន្នន័យសម្រាប់ ${period}...`);
+            showLoading(`កំពុងទាញទិន្នន័យសម្រាប់ ${period}... (ដំណើរការនេះអាចប្រើពេលបន្តិច)`);
             
             let table = period.includes("ប្រចាំឆមាស") ? "semester_scores" : (period === "ប្រចាំឆ្នាំ" ? "annual_scores" : "student_scores");
             let pCol = period.includes("ប្រចាំឆមាស") ? "semester_name" : (period === "ប្រចាំឆ្នាំ" ? "academic_year" : "month_name");
@@ -381,16 +419,24 @@
             else styleTag.innerHTML = "@media print { @page { size: A4 portrait; margin: 0; } }";
 
             try {
-                // ទាញយកសិស្សទាំងមូលក្នុងខែ/ឆមាសនោះដោយគ្មាន Filter ថ្នាក់ ដើម្បីបាន Total School ត្រឹមត្រូវ
-                let url = `${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&limit=5000`;
-                let rawData = await supaFetch(url);
+                // ទាញយកសិស្សទាំងមូលក្នុងខែ/ឆមាសនោះដោយប្រើ Pagination ដើម្បីទម្លុះដែនកំណត់ 1000 Rows របស់ Supabase
+                let url = `${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}`;
+                let rawData = await supaFetchAll(url);
                 let cData = rawData.map(r => mapDbToLegacy(r));
 
                 if(cData.length === 0) { hideLoading(); return Swal.fire('ទទេ!', 'មិនមានទិន្នន័យក្នុងខែនេះទេ!', 'info'); }
-
-                // សម្រាប់តារាងកិត្តិយស និង ចំណាត់ថ្នាក់៖ ទាញឈ្មោះថ្នាក់ពី configMap ដើម្បីកុំឲ្យបាត់
-                let allClassesFromConfig = Object.keys(configMap).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
                 
+                // បូកបញ្ចូលថ្នាក់ដែលមានក្នុង Database ផ្ទាល់ និងថ្នាក់ពី Config ចូលគ្នា កុំឲ្យបាត់
+                let currentDataClasses = [...new Set(cData.map(s => s.OriginalGrade))];
+                let mergedClassesMap = new Map();
+                allConfigClasses.forEach(c => mergedClassesMap.set(cleanKey(c), c));
+                currentDataClasses.forEach(c => { if(c) mergedClassesMap.set(cleanKey(c), c); });
+                
+                // យើងយកតែថ្នាក់ណាដែលមានសិស្សពិតប្រាកដក្នុងខែនោះ ដើម្បីកុំឲ្យចេញក្រដាសទទេរ
+                let activeClasses = Array.from(mergedClassesMap.values())
+                                    .filter(cls => cData.some(s => cleanKey(s.Grade) === cleanKey(cls)))
+                                    .sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+
                 let sampleS = cData[0];
                 let cSolar = sampleS.DateSolar || '';
                 let cLunar = sampleS.DateLunar || '';
@@ -399,7 +445,7 @@
                 if (isSemesterFinal && (!cSolar || !cLunar)) {
                     let fallbackPeriod = period.replace("ប្រចាំ", "ប្រឡង"); 
                     try {
-                        let fallbackData = await supaFetch(`student_scores?month_name=eq.${encodeURIComponent(fallbackPeriod)}&limit=1`);
+                        let fallbackData = await supaFetchAll(`student_scores?month_name=eq.${encodeURIComponent(fallbackPeriod)}&limit=1`);
                         if (fallbackData && fallbackData.length > 0) {
                             cSolar = fallbackData[0].date_solar || cSolar;
                             cLunar = fallbackData[0].date_lunar || cLunar;
@@ -407,18 +453,21 @@
                     } catch(e) { console.log("Fallback Date Error:", e); }
                 }
 
-                let totalSchoolStudents = cData.length;
-                let totalSchoolFemale = cData.filter(s => s.Gender === 'ស្រី' || s.Gender === 'F').length;
+                // ការពារបញ្ហាអត្តលេខ ID Text/Number ដោយបំប្លែងជា String សុទ្ធមុននឹងរាប់បំបាត់ស្ទួន
+                let uniqueSchoolStus = new Map();
+                cData.forEach(s => uniqueSchoolStus.set(String(s.ID).trim(), s));
+                let totalSchoolStudents = uniqueSchoolStus.size;
+                let totalSchoolFemale = Array.from(uniqueSchoolStus.values()).filter(s =>['ស្រី', 'F', 'f', 'ស'].includes(String(s.Gender).trim())).length;
 
                 document.getElementById('btn-export-excel').classList.add('hidden');
                 let html = "";
 
                 if (type === 'tracking') {
-                    if(!specificClass) return; // ការពារ
+                    if(!specificClass) return; 
                     html = buildTrackingHTML(cData, specificClass, pLabel, isSemesterFinal, totalSchoolStudents, totalSchoolFemale, cSolar, cLunar);
                 }
-                else if (type === 'honor') html = buildHonorHTML(cData, allClassesFromConfig, pLabel, cSolar, cLunar);
-                else if (type === 'ranking') html = buildRankingHTML(cData, allClassesFromConfig, pLabel, cSolar, cLunar);
+                else if (type === 'honor') html = buildHonorHTML(cData, activeClasses, pLabel, cSolar, cLunar);
+                else if (type === 'ranking') html = buildRankingHTML(cData, activeClasses, pLabel, cSolar, cLunar);
                 else if (type === 'gradeA') html = buildGradeAHTML(cData, pLabel, cSolar, cLunar);
 
                 let renderArea = document.getElementById('render-container');
@@ -440,12 +489,14 @@
             let gConf = configMap[clsKey] || {};
             let tInfo = teacherMap[clsKey] || {name:'', sign:''};
             
-            // Filter យកតែថ្នាក់ដែលបានរើស
+            // Filter យកតែថ្នាក់ដែលបានរើស បន្ទាប់ពីទាញសរុបសាលារួច
             let classData = cData.filter(s => cleanKey(s.Grade) === clsKey); 
-            if(classData.length === 0) return `<h1 class="text-center text-red-500 mt-10">មិនមានទិន្នន័យសម្រាប់ថ្នាក់នេះទេ</h1>`;
+            if(classData.length === 0) return `<h1 class="text-center text-red-500 mt-10 font-bold text-xl">មិនមានទិន្នន័យសម្រាប់ថ្នាក់នេះទេ</h1>`;
 
-            let classTotal = classData.length;
-            let classFemale = classData.filter(s => s.Gender === 'ស្រី' || s.Gender === 'F').length;
+            let uniqueClassStus = new Map();
+            classData.forEach(s => uniqueClassStus.set(String(s.ID).trim(), s));
+            let classTotal = uniqueClassStus.size;
+            let classFemale = Array.from(uniqueClassStus.values()).filter(s =>['ស្រី', 'F', 'f', 'ស'].includes(String(s.Gender).trim())).length;
 
             SUBJECTS_15.forEach(sub => {
                 let validStus = classData.filter(s => s[sub] !== undefined && s[sub] !== null && String(s[sub]).trim() !== '' && !isNaN(cleanNum(s[sub])));
@@ -468,13 +519,21 @@
                         if(val !== "") maxTot += ms;
 
                         if(isNaN(cleanNum(val)) || val.toUpperCase() === 'ABS' || val === 'ម.ថ') {
-                            tRows += `<tr><td>${n++}</td><td class="col-left">${sub}</td><td>${ms}</td><td class="text-red-500 font-bold">${val}</td><td colspan="3">-</td></tr>`;
+                            tRows += `<tr><td>${n++}</td><td class="col-left">${sub}</td><td>${ms}</td><td style="color: #dc2626 !important; font-weight: bold;">${val}</td><td colspan="3">-</td></tr>`;
                         } else {
                             let sc=cleanNum(val); let pct=Math.min((sc/ms)*100,100); let g=getGrd(pct);
                             let sRank = s[sub + '_rank'] || '-';
                             
-                            // លេខចំណាត់ថ្នាក់មុខវិជ្ជាត្រូវបានបង្ខំជាពណ៌ក្រហម (text-red-600)
-                            tRows += `<tr><td>${n++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="font-bold text-blue-700">${sc}</td><td class="font-black text-red-600 text-[14px]">${sRank}</td><td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="${getGrdClass(g)}">${g}</td></tr>`;
+                            // លេខចំណាត់ថ្នាក់មុខវិជ្ជាត្រូវបានបង្ខំ Inline CSS ជាពណ៌ក្រហមដាច់ខាត ទោះបោះពុម្ពក៏ដោយ
+                            tRows += `<tr>
+                                <td>${n++}</td>
+                                <td class="col-left font-bold text-slate-800">${sub}</td>
+                                <td>${ms}</td>
+                                <td class="font-bold text-blue-700">${sc}</td>
+                                <td style="color: #dc2626 !important; font-weight: 900; font-size: 14px;">${sRank}</td>
+                                <td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td>
+                                <td class="${getGrdClass(g)}">${g}</td>
+                            </tr>`;
                             
                             if(pct >= 80) strengths.push(sub);
                             if(pct < 50) weaknesses.push(sub);
@@ -489,13 +548,13 @@
                 
                 let aiText = "";
                 if (Number(avgForAi) >= 80) {
-                    aiText = `លទ្ធផលសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិតល្អប្រសើរគួរជាទីមោទនៈបំផុត! ${strText ? `ប្អូនធ្វើបានយ៉ាងល្អឥតខ្ចោះលើមុខវិជ្ជា ${strText}។` : ''} លោកគ្រូអ្នកគ្រូពិតជាមានមោទនភាពចំពោះការខិតខំប្រឹងប្រែងនេះ។ សូមបន្តរក្សាវិន័យ និងការតាំងចិត្តនេះ ដើម្បីអនាគតដ៏ភ្លឺស្វាង!`;
+                    aiText = `អស្ចារ្យណាស់! លទ្ធផលសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិតល្អប្រសើរ ដែលជាទីមោទនៈបំផុតសម្រាប់លោកគ្រូអ្នកគ្រូ និងក្រុមគ្រួសារ។ ${strText ? `ប្អូនបានបង្ហាញសមត្ថភាពយ៉ាងលេចធ្លោលើមុខវិជ្ជា ${strText}។` : ''} សូមបន្តរក្សាវិន័យ ការតាំងចិត្ត និងក្តីស្រមៃនេះ ដើម្បីឈានទៅសម្រេចជោគជ័យដ៏ត្រចះត្រចង់នាថ្ងៃអនាគត! លោកគ្រូអ្នកគ្រូជឿជាក់លើប្អូនជានិច្ច!`;
                 } else if (Number(avgForAi) >= 65) {
-                    aiText = `លទ្ធផលសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិតល្អបង្គួរ។ ${strText ? `ប្អូនមានមូលដ្ឋានគ្រឹះល្អលើមុខវិជ្ជា ${strText}។` : ''} ទន្ទឹមនេះប្អូននៅមានសក្តានុពលអាចធ្វើបានល្អជាងនេះទៀត ${wkText ? `ជាពិសេសលើមុខវិជ្ជា ${wkText}។` : '។'} សូមកុំរួញរាក្នុងការសួរនាំលោកគ្រូអ្នកគ្រូ។ តស៊ូឡើង ក្តីជោគជ័យដ៏ធំកំពុងរង់ចាំប្អូន!`;
+                    aiText = `ធ្វើបានល្អបង្គួរ! លទ្ធផលរបស់ប្អូនបង្ហាញពីការខិតខំប្រឹងប្រែងគួរជាទីកត់សម្គាល់។ ${strText ? `ប្អូនមានមូលដ្ឋានគ្រឹះរឹងមាំលើមុខវិជ្ជា ${strText}។` : ''} ទោះជាយ៉ាងណា ប្អូននៅមានសក្តានុពលអាចធ្វើបានកប់កំពូលជាងនេះទៀត ${wkText ? `ជាពិសេសសូមបន្ថែមការយកចិត្តទុកដាក់លើមុខវិជ្ជា ${wkText}។` : '។'} សូមកុំរួញរាក្នុងការសួរនាំលោកគ្រូអ្នកគ្រូ តស៊ូឡើងជោគជ័យធំកំពុងរង់ចាំប្អូន!`;
                 } else if (Number(avgForAi) >= 50) {
-                    aiText = `លទ្ធផលសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិតមធ្យមនៅឡើយ។ ប្អូនប្រាកដជាអាចធ្វើបានល្អជាងនេះ ប្រសិនបើប្អូនបន្ថែមការយកចិត្តទុកដាក់ ${wkText ? `ជាពិសេសលើមុខវិជ្ជា ${wkText}។` : 'ជាប្រចាំ។'} លោកគ្រូអ្នកគ្រូជឿជាក់យ៉ាងមុតមាំលើសមត្ថភាពរបស់ប្អូន។ កុំបោះបង់!`;
+                    aiText = `លទ្ធផលសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិតមធ្យមនៅឡើយ។ ប្អូនជាសិស្សដែលមានសមត្ថភាព គ្រាន់តែត្រូវការបន្ថែមការយកចិត្តទុកដាក់ និងចំណាយពេលរំលឹកមេរៀន ${wkText ? `ពិសេសលើមុខវិជ្ជា ${wkText} ឲ្យបានច្រើនជាងមុនបន្តិច។` : 'ជាប្រចាំបន្ថែមទៀត។'} គ្រប់ភាពជោគជ័យតែងផ្តើមពីការតស៊ូ កុំបោះបង់ លោកគ្រូអ្នកគ្រូគាំទ្រប្អូនជានិច្ច!`;
                 } else {
-                    aiText = `លទ្ធផលសិក្សារបស់ប្អូននៅមានកម្រិតខ្សោយ ដែលទាមទារការប្រឹងប្រែងខ្លាំងជាបន្ទាន់។ សូមកុំអស់សង្ឃឹម គ្រប់ភាពជោគជ័យតែងចាប់ផ្តើមពីការតស៊ូ ${wkText ? `ពិសេសត្រូវពង្រឹងមុខវិជ្ជា ${wkText}។` : '។'} លោកគ្រូអ្នកគ្រូ និងមិត្តភក្តិនៅទីនេះរង់ចាំជួយប្អូនជានិច្ច។ ចាប់ផ្តើមសាជាថ្មីម្តងទៀត!`;
+                    aiText = `លទ្ធផលសិក្សារបស់ប្អូននាខែនេះទាមទារការប្រឹងប្រែងឱ្យអស់ពីលទ្ធភាពជាបន្ទាន់។ ទោះលទ្ធផលមិនសូវល្អក្តី សូមប្អូនកុំទាន់អស់សង្ឃឹម! កំហុសឆ្គងជាមេរៀនឆ្ពោះទៅភាពជោគជ័យ។ ចាប់ពីពេលនេះតទៅ សូមបង្កើនការអានសៀវភៅ និងសួរមិត្តភក្តិ ឬលោកគ្រូអ្នកគ្រូ ${wkText ? `ឲ្យបានច្រើនជាពិសេសលើមុខវិជ្ជា ${wkText}។` : 'ឲ្យបានច្រើន។'} តស៊ូឡើង! ចាប់ផ្តើមសាជាថ្មីម្តងទៀត!`;
                 }
                 
                 let summaryBoxHtml = '';
@@ -538,7 +597,7 @@
                         <div style="text-align:right;"><p>ភេទ ៖ <span>${s.Gender}</span></p><p>ថ្នាក់ទី ៖ <span>${s.OriginalGrade}</span></p><p>ឆ្នាំសិក្សា ៖ <span>២០២៥-២០២៦</span></p></div>
                     </div>
                     ${summaryBoxHtml}
-                    <table class="c-table"><thead><tr><th>ល.រ</th><th class="col-left">មុខវិជ្ជា</th><th>អតិបរមា</th><th>ពិន្ទុ</th><th><span class="text-red-600">ចំណាត់ថ្នាក់</span></th><th>ភាគរយ</th><th>និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody>
+                    <table class="c-table"><thead><tr><th>ល.រ</th><th class="col-left">មុខវិជ្ជា</th><th>អតិបរមា</th><th>ពិន្ទុ</th><th><span style="color: #dc2626 !important;">ចំណាត់ថ្នាក់</span></th><th>ភាគរយ</th><th>និទ្ទេស</th></tr></thead><tbody>${tRows}</tbody>
                     <tfoot>${tFooter}</tfoot></table>
                     <div class="mt-3 p-3 bg-blue-50 border-l-4 border-blue-500 rounded text-[10px] leading-relaxed text-blue-900"><span class="font-black underline">ការវាយតម្លៃរបស់គ្រូបន្ទុកថ្នាក់៖</span> ${aiText}</div>
                     ${getSignaturesHTML(tInfo, cSolar, cLunar)}
@@ -551,61 +610,58 @@
         // ==========================================
         // 🧩 MODULE 2: PREMIUM HONOR ROLL (FLEX-WRAP)
         // ==========================================
-        function buildHonorHTML(cData, allClassesFromConfig, pLabel, cSolar, cLunar) {
+        function buildHonorHTML(cData, activeClasses, pLabel, cSolar, cLunar) {
             let html = "";
-            allClassesFromConfig.forEach((clsKey) => {
-                // រកទិន្នន័យដោយប្រើ cleanKey ដើម្បីឲ្យត្រូវជាមួយឈ្មោះថ្នាក់
+            activeClasses.forEach((clsOriginal) => {
+                let clsKey = cleanKey(clsOriginal);
                 let clsData = cData.filter(s => cleanKey(s.Grade) === clsKey);
-                if(clsData.length === 0) return;
-
-                clsData.sort((a,b) => (parseInt(a.Rank)||999) - (parseInt(b.Rank)||999));
                 
-                // ចាប់យកត្រឹមលេខ៥ តែបើស្ទួនលេខ៥ វានឹងរាប់បញ្ចូលទាំងអស់
-                let topStus = clsData.filter(s => parseInt(s.Rank) > 0 && parseInt(s.Rank) <= 5);
-                if(topStus.length === 0) return;
+                // ប្រើ parseRank ដើម្បីកុំឲ្យ Error បើ rank ជាលេខខ្មែរ ហើយយកត្រឹមលេខ៥ចុះក្រោម
+                let topStus = clsData.filter(s => {
+                    let numRank = parseRank(s.Rank);
+                    return numRank > 0 && numRank <= 5;
+                });
+                
+                // តម្រៀបតាមចំណាត់ថ្នាក់ឲ្យបានត្រឹមត្រូវមុននឹងបង្ហាញ
+                topStus.sort((a,b) => parseRank(a.Rank) - parseRank(b.Rank));
                 
                 let tInfo = teacherMap[clsKey] || {name:''};
-                let displayClass = clsData[0].OriginalGrade || clsKey;
 
                 const generateCard = (student, isTop) => {
-                    const widthClass = isTop ? 'w-[320px]' : 'w-[280px]'; 
-                    const nameSize = isTop ? 'text-[24px]' : 'text-[20px]'; 
-                    const heightClass = isTop ? 'py-8' : 'py-6'; 
-                    const khmerRank = toKhmerNum(student.Rank);
+                    const widthClass = isTop ? 'width: 320px;' : 'width: 280px;'; 
+                    const nameSize = isTop ? 'font-size: 24px;' : 'font-size: 20px;'; 
+                    const heightClass = isTop ? 'padding: 30px 20px;' : 'padding: 20px 20px;'; 
                     
-                    let bgGradient, borderColor, iconHtml;
-                    let numRank = parseInt(student.Rank);
+                    let numRank = parseRank(student.Rank);
+                    const khmerRank = toKhmerNum(numRank);
+                    
+                    let bgGradient, borderColor, iconColor;
                     
                     if (numRank === 1) {
-                        bgGradient = 'bg-gradient-to-r from-yellow-100 via-yellow-400 to-yellow-100';
-                        borderColor = 'border-yellow-600';
-                        iconHtml = '<i class="fa-solid fa-trophy text-yellow-600"></i>';
+                        bgGradient = 'background: #fef08a; background-image: linear-gradient(to right, #fef08a, #facc15, #fef08a);';
+                        borderColor = 'border-color: #ca8a04;'; iconColor = '#ca8a04';
                     } else if (numRank === 2) {
-                        bgGradient = 'bg-gradient-to-r from-slate-100 via-slate-300 to-slate-100';
-                        borderColor = 'border-slate-500';
-                        iconHtml = '<i class="fa-solid fa-medal text-slate-600"></i>';
+                        bgGradient = 'background: #f1f5f9; background-image: linear-gradient(to right, #f1f5f9, #cbd5e1, #f1f5f9);';
+                        borderColor = 'border-color: #475569;'; iconColor = '#475569';
                     } else if (numRank === 3) {
-                        bgGradient = 'bg-gradient-to-r from-orange-100 via-orange-300 to-orange-100';
-                        borderColor = 'border-orange-600';
-                        iconHtml = '<i class="fa-solid fa-medal text-orange-600"></i>';
+                        bgGradient = 'background: #ffedd5; background-image: linear-gradient(to right, #ffedd5, #fdba74, #ffedd5);';
+                        borderColor = 'border-color: #ea580c;'; iconColor = '#c2410c';
                     } else {
-                        bgGradient = 'bg-gradient-to-r from-blue-50 via-blue-200 to-blue-50';
-                        borderColor = 'border-blue-400';
-                        iconHtml = '<i class="fa-solid fa-award text-blue-500"></i>';
+                        bgGradient = 'background: #eff6ff; background-image: linear-gradient(to right, #eff6ff, #bfdbfe, #eff6ff);';
+                        borderColor = 'border-color: #3b82f6;'; iconColor = '#2563eb';
                     }
 
                     return `
-                        <div class="relative ${widthClass} mx-2 mt-6 flex flex-col items-center">
-                            <div class="premium-plaque ${bgGradient} border-[2px] ${borderColor} w-full ${heightClass} px-6 flex items-center justify-center relative overflow-hidden">
-                                <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/50 to-white/0 pointer-events-none"></div>
-                                <h2 class="moul-font ${nameSize} text-red-600 text-center w-full truncate relative z-10 flex items-center justify-center gap-3" style="text-shadow: 1px 1px 0px rgba(255,255,255,0.8);">
-                                    ${iconHtml} ${student.Name}
+                        <div style="position: relative; ${widthClass} margin: 0; display: flex; flex-direction: column; align-items: center;">
+                            <div class="premium-plaque" style="${bgGradient} border: 2px solid; ${borderColor} width: 100%; ${heightClass} display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 12px; box-shadow: inset 0 0 0 3px rgba(255,255,255,0.7), 0 4px 6px rgba(0,0,0,0.1);">
+                                <h2 class="moul-font" style="${nameSize} color: #dc2626; text-align: center; width: 100%; position: relative; z-index: 10; text-shadow: 1px 1px 0px rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; gap: 8px; margin: 0;">
+                                    <i class="fa-solid ${numRank===1?'fa-trophy':(numRank<=3?'fa-medal':'fa-award')}" style="color: ${iconColor};"></i> ${student.Name}
                                 </h2>
                             </div>
-                            <div class="badge-pill absolute -top-5 left-1/2 transform -translate-x-1/2 bg-white border ${borderColor} rounded-full px-5 py-1.5 text-[14px] font-bold text-blue-900 whitespace-nowrap z-20 flex items-center justify-center gap-3">
-                                <span>លេខ <span class="text-red-600 moul-font text-[16px] ml-1">${khmerRank}</span></span>
-                                <span class="w-[1.5px] h-3 bg-slate-300"></span>
-                                <span>និទ្ទេស <span class="text-red-600 moul-font text-[16px] ml-1">${student.Grade_Result}</span></span>
+                            <div class="badge-pill" style="position: absolute; top: -16px; left: 50%; transform: translateX(-50%); background: white; border: 1px solid; ${borderColor} border-radius: 9999px; padding: 4px 16px; font-size: 14px; font-weight: bold; color: #1e3a8a; white-space: nowrap; z-index: 20; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.15);">
+                                <span>លេខ <span class="moul-font" style="color: #dc2626; font-size: 16px; margin-left: 4px;">${khmerRank}</span></span>
+                                <span style="width: 1.5px; height: 12px; background: #cbd5e1;"></span>
+                                <span>និទ្ទេស <span class="moul-font" style="color: #dc2626; font-size: 16px; margin-left: 4px;">${student.Grade_Result}</span></span>
                             </div>
                         </div>
                     `;
@@ -617,14 +673,22 @@
                     <div class="page-border-inner"></div>
                     
                     <div style="position: relative; z-index: 50; padding: 20px;">
-                        ${getHeaderHTML(`🏆 តារាងកិត្តិយស 🏆`, `ថ្នាក់ទី ${displayClass} | ${pLabel}`)}
                         
-                        <!-- ប្រើ Flex-wrap ដើម្បីបត់បែនស្វ័យប្រវត្តិ (gap-y-[1cm] ឃ្លាតបញ្ឈរ 1cm) -->
-                        <div class="w-full flex flex-wrap items-center justify-center gap-x-8 gap-y-[1cm] py-8 relative z-10">
-                            ${topStus.map(s => generateCard(s, parseInt(s.Rank) === 1)).join('')}
+                        <div style="text-align: center; color: #1e3a8a; font-size: 14px; font-weight: 900; line-height: 1.6; margin-bottom: 20px;">
+                            <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
+                            <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
+                            <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
+                        </div>
+                        
+                        <h1 class="moul-font text-center text-red-600" style="font-size: 22px; margin: 30px 0 10px 0;">តារាងកិត្តិយស ${pLabel}</h1>
+                        <h2 class="moul-font text-center text-blue-900" style="font-size: 18px; margin-bottom: 30px;">ថ្នាក់ទី ${clsOriginal} ឆ្នាំសិក្សា ២០២៥-២០២៦</h2>
+                        
+                        <!-- ប្រើ Flex-wrap ដើម្បីបត់បែនស្វ័យប្រវត្តិ (row-gap: 1cm) ទោះលេខ៥ស្ទួនមាន១០នាក់ក៏លោតចូលទាំងអស់ -->
+                        <div class="w-full flex flex-wrap items-center justify-center gap-x-8" style="row-gap: 1cm; padding-top: 20px; position: relative; z-index: 10; min-height: 400px;">
+                            ${topStus.length > 0 ? topStus.map(s => generateCard(s, parseRank(s.Rank) === 1)).join('') : `<p class="text-slate-400 font-bold text-lg mt-10">មិនទាន់មានទិន្នន័យសិស្សសម្រាប់ខែនេះទេ</p>`}
                         </div>
 
-                        <div style="margin-top: 30px;">
+                        <div style="margin-top: 50px;">
                             ${getSignaturesHTML(tInfo, cSolar, cLunar)}
                         </div>
                     </div>
@@ -636,20 +700,21 @@
         // ==========================================
         // 🧩 MODULE 3: RANKING TABLE
         // ==========================================
-        function buildRankingHTML(cData, allClassesFromConfig, pLabel, cSolar, cLunar) {
+        function buildRankingHTML(cData, activeClasses, pLabel, cSolar, cLunar) {
             let html = "";
-            allClassesFromConfig.forEach((clsKey) => {
+            activeClasses.forEach((clsOriginal) => {
+                let clsKey = cleanKey(clsOriginal);
                 let clsData = cData.filter(s => cleanKey(s.Grade) === clsKey);
-                if(clsData.length === 0) return;
-                clsData.sort((a,b) => (parseInt(a.Rank)||999) - (parseInt(b.Rank)||999));
+                if(clsData.length === 0) return; // មិនបង្ហាញទំព័រទទេ
+                
+                clsData.sort((a,b) => parseRank(a.Rank) - parseRank(b.Rank));
 
-                let displayClass = clsData[0].OriginalGrade || clsKey;
                 let activeSubs = SUBJECTS_15.filter(sub => clsData.some(s => s[sub] !== undefined && s[sub] !== null && String(s[sub]).trim() !== '')); 
                 let tInfo = teacherMap[clsKey] || {name:''};
 
                 html += `
                 <div class="print-area portrait-page">
-                    ${getHeaderHTML(`តារាងចំណាត់ថ្នាក់សិស្ស${pLabel}`, `ថ្នាក់ទី ${displayClass} | សិស្សសរុប៖ ${clsData.length} នាក់`)}
+                    ${getHeaderHTML(`តារាងចំណាត់ថ្នាក់សិស្ស${pLabel}`, `ថ្នាក់ទី ${clsOriginal} | សិស្សសរុប៖ ${clsData.length} នាក់`)}
                     <table class="c-table"><thead><tr>
                         <th style="width: 4%;">ល.រ</th>
                         <th class="col-left" style="width: 15%;">ឈ្មោះ</th>
@@ -657,7 +722,7 @@
                 
                 activeSubs.forEach(sub => html += `<th class="sub-col">${sub.substring(0,4)}</th>`);
                 
-                html += `<th style="width: 6%;">មធ្យម</th><th style="width: 6%;">និទ្ទេស</th><th style="width: 7%;"><span class="text-red-600">ចំណាត់ថ្នាក់</span></th></tr></thead><tbody>`;
+                html += `<th style="width: 6%;">មធ្យម</th><th style="width: 6%;">និទ្ទេស</th><th style="width: 7%;"><span style="color: #dc2626 !important;">ចំណាត់ថ្នាក់</span></th></tr></thead><tbody>`;
 
                 clsData.forEach((s, i) => {
                     let displayAvg = s.Semester_Average || s.Average;
@@ -670,7 +735,7 @@
                     
                     html += `<td class="text-blue-700 font-bold">${Number(displayAvg).toFixed(2)}</td>
                              <td class="font-black ${getGrdClass(s.Grade_Result)}">${s.Grade_Result}</td>
-                             <td class="font-black text-red-600">${s.Rank||'-'}</td></tr>`;
+                             <td style="color: #dc2626 !important; font-weight: 900;">${s.Rank||'-'}</td></tr>`;
                 });
                 html += `</tbody></table>
                     ${getSignaturesHTML(tInfo, cSolar, cLunar)}
@@ -689,7 +754,7 @@
                 return "";
             }
 
-            aStudents.sort((a,b) => (parseInt(a.School_Rank) || 9999) - (parseInt(b.School_Rank) || 9999));
+            aStudents.sort((a,b) => parseRank(a.School_Rank) - parseRank(b.School_Rank));
             
             window.excelDataForExport = aStudents; 
             document.getElementById('btn-export-excel').classList.remove('hidden');
