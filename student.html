@@ -60,12 +60,43 @@
             .page-separator::after { content: "✂️ ទំព័របន្ទាប់"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #e2e8f0; padding: 0 15px; color: #475569; font-size: 12px; font-weight: bold; border-radius: 20px; }
         }
 
+        /* 🌟 CSS សម្រាប់ Print ធានាមិនឲ្យឆ្លងទំព័រ (Fit to 1 page exactly) */
         @media print {
-            @page { size: A4 portrait; margin: 0; }
+            @page { size: A4 portrait; margin: 0.5cm; }
             body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
             .no-print, .page-separator { display: none !important; }
             .print-container-wrapper { padding: 0 !important; background: transparent !important; overflow: hidden !important;}
-            .print-area { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; padding: 10mm 15mm !important; width: 100% !important; min-width: 100% !important; min-height: 297mm !important; page-break-inside: avoid; page-break-after: always; }
+            
+            .print-area { 
+                box-shadow: none !important; 
+                margin: 0 !important; 
+                border-radius: 0 !important; 
+                padding: 0 !important; 
+                width: 100% !important; 
+                min-width: 100% !important; 
+                height: 282mm !important; /* Force strict height */
+                max-height: 282mm !important;
+                page-break-inside: avoid !important; 
+                page-break-after: always !important;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between; /* ធ្វើឲ្យទិន្នន័យយឺតពេញ១ទំព័រស្អាត មិនហៀរ */
+            }
+            
+            /* បង្រួមទំហំ Padding និង Margin ក្នុងពេល Print ធានាមិនឲ្យហៀរ */
+            .c-table th, .c-table td { padding: 3px 2px !important; font-size: 10.5px !important; }
+            .c-table { margin-bottom: 2px !important; }
+            .student-info-box { font-size: 11px !important; margin-bottom: 4px !important; }
+            .summary-box { padding: 4px 0 !important; margin-bottom: 6px !important; }
+            .summary-item .s-title { font-size: 9px !important; }
+            .summary-item .s-value { font-size: 15px !important; }
+            #t1-header h1 { font-size: 14px !important; margin: 8px 0 5px 0 !important; }
+            .signatures-area { margin-top: 5px !important; }
+            .stamp-main { width: 240px !important; top: -0.9cm !important; }
+            .sig-main { max-height: 50px !important; }
+            
+            /* AI Feedback Shrink for Print */
+            #t1-ai-feedback { padding: 8px 12px !important; margin-top: 4px !important; font-size: 9.5px !important; }
         }
     </style>
 </head>
@@ -161,11 +192,13 @@
     <div id="results-container" class="print-container-wrapper hidden">
         <!-- ទំព័រទី ១ (តារាងពិន្ទុ) -->
         <div id="t1-page1" class="print-area portrait-page">
-            <div id="t1-header"></div>
-            <div id="t1-summaryArea" class="summary-box"></div>
-            <div id="t1-tableArea"></div>
-            
-            <div id="t1-ai-feedback" class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg text-xs leading-relaxed text-blue-900 font-medium"></div>
+            <div>
+                <div id="t1-header"></div>
+                <div id="t1-summaryArea" class="summary-box"></div>
+                <div id="t1-tableArea"></div>
+                
+                <div id="t1-ai-feedback" class="mt-4 p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg text-xs leading-relaxed text-indigo-900 font-medium"></div>
+            </div>
             
             <div id="t1-signatures"></div>
         </div>
@@ -174,9 +207,11 @@
 
         <!-- ទំព័រទី ២ (ប្រៀបធៀប) -->
         <div id="t1-page2" class="print-area portrait-page">
-            <div id="t1-p2-header"></div>
-            <div id="t1-chartArea" class="mb-4 mt-6"></div>
-            <div id="t1-comparisonTableContainer"></div>
+            <div>
+                <div id="t1-p2-header"></div>
+                <div id="t1-chartArea" class="mb-4 mt-6"></div>
+                <div id="t1-comparisonTableContainer"></div>
+            </div>
             <div id="t1-p2-signatures" style="margin-top: 30px;"></div>
         </div>
     </div>
@@ -311,24 +346,62 @@
             </div>`;
         }
 
+        // =====================================
+        // 🧠 មុខងារ AI បង្កើតមូលវិចារណ៍ស៊ីជម្រៅ (ទំព័រទី១)
+        // =====================================
         function generateAIFeedback(type, sData, strengths, weaknesses) {
-            let strText = strengths.length > 0 ? `<span class="text-blue-700 font-black">${strengths.slice(0,3).join(', ')}</span>` : 'ពុំទាន់មាន';
-            let wkText = weaknesses.length > 0 ? `<span class="text-red-600 font-black">${weaknesses.slice(0,3).join(', ')}</span>` : 'ពុំមានមុខវិជ្ជាណាខ្សោយខ្លាំងទេ';
             let avg = Number(sData.Average);
-            let aiText = "";
+            let g = sData.Grade_Result;
+            
+            let strText = strengths.length > 0 ? `<span class="text-blue-700 font-black">${strengths.join(', ')}</span>` : '';
+            let wkText = weaknesses.length > 0 ? `<span class="text-red-600 font-black">${weaknesses.join(', ')}</span>` : '';
+            
+            let intro = "";
+            let psychology = "";
+            let strategy = "";
 
-            if (type === 'month') {
-                aiText = `<b>💡 មូលវិចារណ៍ការសិក្សាប្រចាំខែ៖</b> ការសិក្សារបស់សិស្សនៅក្នុងខែនេះស្ថិតក្នុងកម្រិត <b>${sData.Grade_Result}</b>។ មុខវិជ្ជាដែលសម្រេចបានលទ្ធផលល្អមាន៖ ${strText}។ ទន្ទឹមនឹងនេះ សូមយកចិត្តទុកដាក់ពង្រឹងបន្ថែមលើមុខវិជ្ជា៖ ${wkText} ដើម្បីកែលម្អចំណាត់ថ្នាក់នៅខែបន្ទាប់។`;
-            } else if (type === 'exam') {
-                aiText = `<b>💡 មូលវិចារណ៍លទ្ធផលប្រឡង៖</b> ឆ្លងកាត់ការប្រឡងឆមាស សិស្សទទួលបាននិទ្ទេស <b>${sData.Grade_Result}</b>។ ការប្រឹងប្រែងលើមុខវិជ្ជា ${strText} ទទួលបានលទ្ធផលជាទីគាប់ចិត្ត។ សូមបន្តខិតខំកែខៃចំណុចខ្វះខាតលើមុខវិជ្ជា ${wkText} សម្រាប់ឆមាសក្រោយ។`;
-            } else if (type === 'semester') {
-                aiText = `<b>💡 មូលវិចារណ៍ប្រចាំឆមាស៖</b> សរុបជារួមក្នុងឆមាសនេះ សិស្សមានមធ្យមភាគ <b>${avg}</b> ស្ថិតក្នុងចំណាត់ថ្នាក់លេខ <b>${sData.Rank}</b>។ លទ្ធផលនេះឆ្លុះបញ្ចាំងពីការខិតខំប្រឹងប្រែងកន្លងមក។ មុខវិជ្ជាគោលដែលរៀនបានល្អគឺ ${strText} ចំណែកមុខវិជ្ជា ${wkText} ទាមទារការហ្វឹកហាត់បន្ថែមជាចាំបាច់។`;
-            } else if (type === 'annual') {
-                aiText = `<b>💡 មូលវិចារណ៍ប្រចាំឆ្នាំ៖</b> ជាលទ្ធផលចុងឆ្នាំ សិស្សបានប្រឡង <b>${avg >= 25 ? 'ជាប់' : 'ធ្លាក់'}</b> ដោយទទួលបានមធ្យមភាគ <b>${avg}</b> (និទ្ទេស ${sData.Grade_Result})។ សាលាសូមកោតសរសើរចំពោះការខិតខំប្រឹងប្រែងពេញមួយឆ្នាំនេះ។ សូមបន្តរក្សាវិន័យ និងខិតខំរៀនសូត្រនៅឆ្នាំសិក្សាបន្តបន្ទាប់ទៀត។`;
+            // ការវាយតម្លៃជារួម និងចិត្តសាស្ត្រ
+            if (avg >= 85) {
+                intro = `ឆ្លងកាត់ការវាយតម្លៃយ៉ាងល្អិតល្អន់ លទ្ធផលរបស់ប្អូនស្ថិតក្នុងកម្រិត <b>ល្អប្រសើរគួរជាទីមោទនៈ (និទ្ទេស ${g})</b>។`;
+                psychology = `ការរក្សាបាននូវមធ្យមភាគខ្ពស់បែបនេះ បង្ហាញពីវិន័យ ការតាំងចិត្ត និងភាពចាស់ទុំក្នុងការសិក្សារបស់ប្អូន។ លោកគ្រូអ្នកគ្រូពិតជាមានមោទនភាពចំពោះលទ្ធផលនេះ។`;
+                strategy = `សូមបន្តធ្វើជាគំរូល្អដល់មិត្តភក្តិ។ កុំភ្លេចថែរក្សាសុខភាព និងបន្តអានសៀវភៅស្រាវជ្រាវបន្ថែមដើម្បីត្រៀមខ្លួនសម្រាប់ការប្រកួតប្រជែងធំៗនៅថ្ងៃមុខ!`;
+            } else if (avg >= 70) {
+                intro = `លទ្ធផលសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិត <b>ល្អបង្គួរ (និទ្ទេស ${g})</b>។`;
+                psychology = `នេះគឺជាសញ្ញាណដ៏ល្អដែលបង្ហាញថាប្អូនមានមូលដ្ឋានគ្រឹះរឹងមាំ ប៉ុន្តែនៅមានសក្តានុពលលាក់កំបាំងជាច្រើនទៀតដែលប្អូនមិនទាន់បានបញ្ចេញអស់។`;
+                strategy = `លោកគ្រូអ្នកគ្រូជឿជាក់ថា ប្អូនអាចឈានដល់កម្រិតកំពូលបាន ប្រសិនបើប្អូនបន្ថែមម៉ោងស្វ័យសិក្សា និងហ៊ានសួររាល់ចម្ងល់។ គោលដៅបន្ទាប់គឺការដណ្ដើមយកនិទ្ទេស A!`;
+            } else if (avg >= 50) {
+                intro = `ការសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិត <b>មធ្យម (និទ្ទេស ${g})</b> នៅឡើយ។`;
+                psychology = `លោកគ្រូអ្នកគ្រូមើលឃើញពីការព្យាយាមរបស់ប្អូន តែលទ្ធផលនេះបញ្ជាក់ថាវិធីសាស្ត្ររៀនសូត្របច្ចុប្បន្នអាចមិនទាន់មានប្រសិទ្ធភាពពេញលេញ។ រាល់ភាពជោគជ័យតែងចាប់ផ្តើមពីការផ្លាស់ប្តូរទម្លាប់តូចៗ។`;
+                strategy = `សូមចាប់ផ្តើមរៀបចំកាលវិភាគសិក្សាឡើងវិញ។ ត្រូវកាត់បន្ថយពេលវេលាលេងទូរស័ព្ទ ហើយងាកមកធ្វើលំហាត់ ឬរៀនជាក្រុមជាមួយមិត្តភក្តិឲ្យបានច្រើន។ កុំបោះបង់! លោកគ្រូអ្នកគ្រូនៅក្បែរប្អូនជានិច្ច។`;
+            } else {
+                intro = `គួរឲ្យសោកស្តាយ លទ្ធផលរបស់ប្អូនស្ថិតក្នុងកម្រិត <b>ខ្សោយ (និទ្ទេស ${g})</b>។`;
+                psychology = `ពិន្ទុថ្ងៃនេះមិនមែនជាការកំណត់វាសនារបស់ប្អូនជារៀងរហូតទេ វាគ្រាន់តែជាការដាស់តឿនឲ្យប្អូនភ្ញាក់រលឹកប៉ុណ្ណោះ។ មនុស្សពូកែមិនមែនមិនធ្លាប់ដួលទេ តែគេចេះក្រោកឈរឡើងវិញ។`;
+                strategy = `ដល់ពេលដែលប្អូនត្រូវផ្លាស់ប្តូរខ្លួនឯងហើយ! សូមទាក់ទងលោកគ្រូអ្នកគ្រូប្រចាំមុខវិជ្ជាដើម្បីសុំការណែនាំបន្ថែម។ ត្រូវជឿជាក់លើខ្លួនឯង ទោះចាប់ផ្តើមយឺត ក៏ប្រសើរជាងមិនព្រមចាប់ផ្តើមសោះ!`;
             }
-            return aiText;
+
+            // ការវិភាគមុខវិជ្ជា
+            let subAnalysis = "";
+            if (strengths.length > 0 && weaknesses.length > 0) {
+                subAnalysis = `ផ្អែកលើទិន្នន័យជាក់ស្តែង ប្អូនមានភាពលេចធ្លោខ្លាំងលើមុខវិជ្ជា ${strText}។ ទន្ទឹមនឹងនេះ មុខវិជ្ជាដែលជាឧបសគ្គរារាំងប្អូនមិនឲ្យបានចំណាត់ថ្នាក់ខ្ពស់គឺ ${wkText}។`;
+            } else if (strengths.length > 0) {
+                subAnalysis = `ភាពលេចធ្លោរបស់ប្អូនគឺមុខវិជ្ជា ${strText} ដែលទទួលបានពិន្ទុយ៉ាងខ្ពស់។ សូមរក្សាសន្ទុះនេះ!`;
+            } else if (weaknesses.length > 0) {
+                subAnalysis = `បញ្ហាចម្បងរបស់ប្អូនគឺប្រឈមមុខនឹងការលំបាកលើមុខវិជ្ជា ${wkText}។ មុខវិជ្ជាទាំងនេះទាមទារការចងចាំ និងការអនុវត្តលំហាត់បន្ថែម។`;
+            }
+
+            return `
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-xl">🤖</span>
+                <p class="font-black text-indigo-900 text-[12px] uppercase">ការវិភាគ និងប្រឹក្សាយោបល់ស៊ីជម្រៅ (AI Analysis)៖</p>
+            </div>
+            <div class="text-[11px] text-slate-700 leading-relaxed text-justify space-y-1.5">
+                <p>${intro} ${psychology}</p>
+                <p>${subAnalysis}</p>
+                <p class="font-bold text-indigo-800 bg-indigo-100/60 p-1.5 rounded border-l-2 border-indigo-500 mt-2">💡 យុទ្ធសាស្ត្របន្ទាប់៖ ${strategy}</p>
+            </div>`;
         }
 
+        // Calculate Rank Locally since we fetch class data
         function getSubjectRank(studentId, subKey, classData) {
             let validScores = classData
                 .map(s => ({ id: s.student_id, score: cleanNum(s[subKey]) }))
@@ -516,7 +589,7 @@
                 let tFootColspan = showSubRank ? 3 : 2;
                 document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead>${tHeaders}</thead><tbody>${tRows}</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-600">${maxTotal || '-'}</td><td class="text-blue-700 font-black text-lg">${totScore}</td><td colspan="${tFootColspan}" class="text-gray-400 text-[10px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
                 
-                // 🌟 AI Feedback Box
+                // 🌟 AI Feedback Box (ស៊ីជម្រៅជាងមុន)
                 let sMapped = mapDbToLegacy(dbS);
                 let aiFeedbackHTML = generateAIFeedback(type, sMapped, strengths, weaknesses);
                 document.getElementById('t1-ai-feedback').innerHTML = aiFeedbackHTML;
@@ -524,7 +597,7 @@
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(dbS.date_solar, dbS.date_lunar, tInfo);
                 
                 // =====================================
-                // P2 Build (ប្រៀបធៀប និង វិភាគដោយ AI)
+                // P2 Build (ប្រៀបធៀប និង វិភាគដោយ AI ទំព័រទី២)
                 // =====================================
                 let histDataRaw = await supaFetch(`student_scores?student_id=eq.${encodeURIComponent(dbS.student_id)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
                 let semDataRaw = await supaFetch(`semester_scores?student_id=eq.${encodeURIComponent(dbS.student_id)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
@@ -591,7 +664,7 @@
                     tb += `</tbody></table>`;
 
                     // =====================================
-                    // 🧠 ប្រព័ន្ធវិភាគ និងប្រឹក្សាដោយ AI
+                    // 🧠 ប្រព័ន្ធវិភាគ និងប្រឹក្សាដោយ AI (ប្រៀបធៀប)
                     // =====================================
                     let aiAnalysisHtml = "";
                     if(availablePeriods.length >= 2) {
@@ -601,7 +674,7 @@
                         let dPrev = histMap[prevPeriod];
 
                         let improved =[];
-                        let declined = [];
+                        let declined =[];
                         let stable = [];
                         let warnings =[];
 
