@@ -3,84 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>បញ្ចូលពិន្ទុសិស្ស</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងសាលា - Mini App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { font-family: 'Kantumruy Pro', sans-serif; background-color: var(--tg-theme-secondary-bg-color, #f1f5f9); color: var(--tg-theme-text-color, #1e293b); padding: 16px; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background-color: var(--tg-theme-secondary-bg-color, #f1f5f9); color: var(--tg-theme-text-color, #1e293b); padding: 10px; padding-bottom: 80px;}
         .card { background-color: var(--tg-theme-bg-color, #ffffff); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .input-group { margin-bottom: 15px; }
         label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: var(--tg-theme-hint-color, #64748b); text-transform: uppercase; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 14px; background-color: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); outline: none; transition: border 0.3s; }
-        input:focus, select:focus { border-color: #3b82f6; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 14px; background-color: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); outline: none; transition: border 0.3s; }
+        input:focus, select:focus, textarea:focus { border-color: #3b82f6; }
         .btn-submit { width: 100%; background-color: var(--tg-theme-button-color, #2563eb); color: var(--tg-theme-button-text-color, #ffffff); padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; border: none; cursor: pointer; transition: opacity 0.3s; }
         .btn-submit:active { opacity: 0.8; }
         .grid-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        /* Tab Styles */
+        .tab-btn { flex: 1; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; color: #64748b; border-bottom: 3px solid transparent; transition: all 0.3s; cursor: pointer;}
+        .tab-btn.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Bottom Navigation Bar */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--tg-theme-bg-color, #ffffff); display: flex; border-top: 1px solid #e2e8f0; padding-bottom: env(safe-area-inset-bottom); z-index: 100;}
     </style>
 </head>
 <body>
 
-    <h2 class="text-xl font-bold text-center mb-6 text-blue-700">បញ្ចូល/កែប្រែទិន្នន័យពិន្ទុ</h2>
-
-    <div class="card">
-        <h3 class="font-bold border-b pb-2 mb-4 text-slate-800">ព័ត៌មានទូទៅ</h3>
-        <div class="input-group">
-            <label>ខែ ឬ ឆមាសវាយតម្លៃ</label>
-            <select id="month">
-                <option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option><option value="មីនា">មីនា</option><option value="មេសា">មេសា</option>
-                <option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option><option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option>
-            </select>
-        </div>
-        <div class="grid-scores">
-            <div class="input-group"><label>អត្តលេខសិស្ស *</label><input type="text" id="stuId" placeholder="ឧ. 424000123" required></div>
-            <div class="input-group"><label>ឆ្នាំសិក្សា</label><input type="text" id="year" value="២០២៥-២០២៦"></div>
-        </div>
-        <div class="input-group"><label>ឈ្មោះសិស្ស</label><input type="text" id="stuName" placeholder="វាយឈ្មោះបើសិស្សថ្មី"></div>
-        <div class="grid-scores">
-            <div class="input-group"><label>ថ្នាក់រៀន</label><input type="text" id="grade" placeholder="ឧ. 10A"></div>
-            <div class="input-group"><label>ភេទ</label><select id="gender"><option value="ប្រុស">ប្រុស</option><option value="ស្រី">ស្រី</option></select></div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h3 class="font-bold border-b pb-2 mb-4 text-slate-800">បញ្ចូលពិន្ទុមុខវិជ្ជា</h3>
-        <div class="grid-scores">
-            <div class="input-group"><label>ភាសាខ្មែរ</label><input type="number" id="khmer" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>គណិតវិទ្យា</label><input type="number" id="math" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>រូបវិទ្យា</label><input type="number" id="physics" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>គីមីវិទ្យា</label><input type="number" id="chemistry" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>ជីវវិទ្យា</label><input type="number" id="biology" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>ប្រវត្តិវិទ្យា</label><input type="number" id="history" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>ភូមិវិទ្យា</label><input type="number" id="geography" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>សីលធម៌</label><input type="number" id="morality" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>ផែនដីវិទ្យា</label><input type="number" id="earth" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>ភាសាអង់គ្លេស</label><input type="number" id="english" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>កីឡា</label><input type="number" id="sport" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>កសិកម្ម</label><input type="number" id="agri" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>បច្ចេកវិទ្យា</label><input type="number" id="tech" placeholder="ពិន្ទុ"></div>
-            <div class="input-group"><label>បំណិន</label><input type="number" id="skill" placeholder="ពិន្ទុ"></div>
-        </div>
+    <!-- 🌟 Tab 1: បញ្ចូលទិន្នន័យពិន្ទុ -->
+    <div id="tab-input" class="tab-content active">
+        <h2 class="text-xl font-bold text-center mb-6 text-blue-700 mt-2">បញ្ចូល/កែប្រែទិន្នន័យពិន្ទុ</h2>
         
-        <div class="grid-scores mt-4 border-t pt-4">
-            <div class="input-group"><label>ពិន្ទុសរុប</label><input type="number" id="total" placeholder="សរុប"></div>
-            <div class="input-group"><label>មធ្យមភាគ</label><input type="number" step="0.01" id="avg" placeholder="មធ្យមភាគ"></div>
-            <div class="input-group"><label>ចំណាត់ថ្នាក់</label><input type="text" id="rank" placeholder="លេខ"></div>
-            <div class="input-group"><label>និទ្ទេសរួម</label><input type="text" id="grd" placeholder="A ដល់ F"></div>
+        <div class="card">
+            <h3 class="font-bold border-b pb-2 mb-4 text-slate-800">ព័ត៌មានទូទៅ</h3>
+            <div class="input-group">
+                <label>ខែ ឬ ឆមាសវាយតម្លៃ</label>
+                <select id="month">
+                    <option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option><option value="មីនា">មីនា</option><option value="មេសា">មេសា</option>
+                    <option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option><option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option>
+                </select>
+            </div>
+            <div class="grid-scores">
+                <div class="input-group"><label>អត្តលេខសិស្ស *</label><input type="text" id="stuId" placeholder="ឧ. 424000123" required></div>
+                <div class="input-group"><label>ឆ្នាំសិក្សា</label><input type="text" id="year" value="២០២៥-២០២៦"></div>
+            </div>
+            <div class="input-group"><label>ឈ្មោះសិស្ស</label><input type="text" id="stuName" placeholder="វាយឈ្មោះបើសិស្សថ្មី"></div>
+            <div class="grid-scores">
+                <div class="input-group"><label>ថ្នាក់រៀន</label><input type="text" id="grade" placeholder="ឧ. 10A"></div>
+                <div class="input-group"><label>ភេទ</label><select id="gender"><option value="ប្រុស">ប្រុស</option><option value="ស្រី">ស្រី</option></select></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="font-bold border-b pb-2 mb-4 text-slate-800">បញ្ចូលពិន្ទុមុខវិជ្ជា</h3>
+            <div class="grid-scores">
+                <div class="input-group"><label>ភាសាខ្មែរ</label><input type="number" id="khmer" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>គណិតវិទ្យា</label><input type="number" id="math" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>រូបវិទ្យា</label><input type="number" id="physics" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>គីមីវិទ្យា</label><input type="number" id="chemistry" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>ជីវវិទ្យា</label><input type="number" id="biology" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>ប្រវត្តិវិទ្យា</label><input type="number" id="history" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>ភូមិវិទ្យា</label><input type="number" id="geography" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>សីលធម៌</label><input type="number" id="morality" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>ផែនដីវិទ្យា</label><input type="number" id="earth" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>ភាសាអង់គ្លេស</label><input type="number" id="english" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>កីឡា</label><input type="number" id="sport" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>កសិកម្ម</label><input type="number" id="agri" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>បច្ចេកវិទ្យា</label><input type="number" id="tech" placeholder="ពិន្ទុ"></div>
+                <div class="input-group"><label>បំណិន</label><input type="number" id="skill" placeholder="ពិន្ទុ"></div>
+            </div>
+            
+            <div class="grid-scores mt-4 border-t pt-4">
+                <div class="input-group"><label>ពិន្ទុសរុប</label><input type="number" id="total" placeholder="សរុប"></div>
+                <div class="input-group"><label>មធ្យមភាគ</label><input type="number" step="0.01" id="avg" placeholder="មធ្យមភាគ"></div>
+                <div class="input-group"><label>ចំណាត់ថ្នាក់</label><input type="text" id="rank" placeholder="លេខ"></div>
+                <div class="input-group"><label>និទ្ទេសរួម</label><input type="text" id="grd" placeholder="A ដល់ F"></div>
+            </div>
+        </div>
+
+        <button class="btn-submit" onclick="submitData()" id="btnSubmit">បញ្ជូនទិន្នន័យ (Submit)</button>
+    </div>
+
+    <!-- 🌟 Tab 2: ផ្ញើលទ្ធផលសិក្សា -->
+    <div id="tab-broadcast-result" class="tab-content">
+        <h2 class="text-xl font-bold text-center mb-6 text-green-700 mt-2">ផ្ញើលទ្ធផលសិក្សា</h2>
+        
+        <div class="card">
+            <p class="text-sm text-slate-500 mb-6">អនុគមន៍នេះនឹងបាញ់លទ្ធផលសិក្សាទៅកាន់គ្រប់សិស្ស និងអាណាព្យាបាលដែលបានភ្ជាប់ Telegram ជាមួយសាលាទាំងអស់។</p>
+            
+            <div class="input-group">
+                <label>ជ្រើសរើសខែ ឬ ឆមាស ដែលត្រូវផ្ញើ៖</label>
+                <select id="broadcastMonth">
+                    <option value="វិច្ឆិកា">វិច្ឆិកា</option><option value="ធ្នូ">ធ្នូ</option><option value="មករា">មករា</option>
+                    <option value="កុម្ភៈ">កុម្ភៈ</option><option value="មីនា">មីនា</option><option value="មេសា">មេសា</option>
+                    <option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option><option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option>
+                    <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option>
+                </select>
+            </div>
+            <button class="btn-submit" style="background-color: #16a34a;" onclick="broadcastResults()" id="btnBroadcastRes">🚀 ចាប់ផ្តើមផ្ញើលទ្ធផល</button>
         </div>
     </div>
 
-    <button class="btn-submit" onclick="submitData()" id="btnSubmit">បញ្ជូនទិន្នន័យ (Submit)</button>
+    <!-- 🌟 Tab 3: ផ្ញើសារជូនដំណឹង -->
+    <div id="tab-broadcast-msg" class="tab-content">
+        <h2 class="text-xl font-bold text-center mb-6 text-purple-700 mt-2">ផ្ញើសេចក្តីជូនដំណឹង</h2>
+        
+        <div class="card">
+            <p class="text-sm text-slate-500 mb-6">សារនេះនឹងត្រូវបាញ់ទៅកាន់គ្រប់អ្នកប្រើប្រាស់ Telegram ទាំងអស់។</p>
+            
+            <div class="input-group">
+                <label>វាយអត្ថបទសាររបស់អ្នកទីនេះ៖</label>
+                <textarea id="broadcastText" rows="6" placeholder="ឧទាហរណ៍៖ សាលាសូមជម្រាបជូនដំណឹងថា ថ្ងៃស្អែកមានការប្រជុំ..."></textarea>
+            </div>
+            <button class="btn-submit" style="background-color: #9333ea;" onclick="broadcastMessage()" id="btnBroadcastMsg">📢 បាញ់សារទៅកាន់គ្រប់គ្នា</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <div class="tab-btn active" id="nav-input" onclick="switchTab('input')">📝 បញ្ចូលពិន្ទុ</div>
+        <div class="tab-btn" id="nav-broadcast-result" onclick="switchTab('broadcast-result')">📤 ផ្ញើលទ្ធផល</div>
+        <div class="tab-btn" id="nav-broadcast-msg" onclick="switchTab('broadcast-msg')">📢 ជូនដំណឹង</div>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Make it full screen
+        tg.expand();
 
+        // ⚠️ កុំភ្លេចយក Web App URL ថ្មីរបស់អ្នកមកដាក់នៅទីនេះ
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0PxE_vbBgco3VNXVBoK16Ddo2NvJTeU1cUkYq4F28QBPB7h5cQVsHZJKtfDCA8apg/exec"; 
+        
         const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
         
-        // Auto fetch student info if ID is typed
+        // 🌟 Tab Switcher Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('nav-' + tabId).classList.add('active');
+        }
+
+        // 🌟 Auto fetch student info if ID is typed
         document.getElementById('stuId').addEventListener('blur', async function() {
             let id = this.value.trim();
             if(id) {
@@ -99,6 +165,7 @@
             }
         });
 
+        // 🌟 Submit Data to Supabase
         async function submitData() {
             let id = document.getElementById('stuId').value.trim();
             let period = document.getElementById('month').value;
@@ -139,28 +206,79 @@
             try {
                 let res = await fetch(`${SUPABASE_URL}/rest/v1/student_scores?on_conflict=student_id,month_name`, {
                     method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'resolution=merge-duplicates'
-                    },
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
                     body: JSON.stringify([payload])
                 });
 
                 if(res.ok) {
                     Swal.fire('ជោគជ័យ!', 'ទិន្នន័យត្រូវបានបញ្ជូនទៅ Database រួចរាល់។', 'success').then(() => {
-                        // Reset scores only, keep ID/Name
                         document.querySelectorAll('.grid-scores input[type="number"]').forEach(el => el.value = '');
                         btn.innerText = "បញ្ជូនទិន្នន័យ (Submit)"; btn.disabled = false;
                     });
-                } else {
-                    throw new Error("Failed to insert");
-                }
+                } else throw new Error("Failed to insert");
             } catch(e) {
                 Swal.fire('Error', 'បរាជ័យក្នុងការបញ្ជូន', 'error');
                 btn.innerText = "បញ្ជូនទិន្នន័យ (Submit)"; btn.disabled = false;
             }
+        }
+
+        // 🌟 Broadcast Results Request to Apps Script
+        async function broadcastResults() {
+            let month = document.getElementById('broadcastMonth').value;
+            
+            Swal.fire({
+                title: 'បញ្ជាក់ការបញ្ជូន',
+                text: `តើលោកគ្រូពិតជាចង់បាញ់លទ្ធផល ${month} ទៅកាន់សិស្សទាំងអស់មែនទេ?`,
+                icon: 'warning', showCancelButton: true, confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    let btn = document.getElementById('btnBroadcastRes');
+                    btn.innerText = "កំពុងបញ្ជាទៅកាន់ Server..."; btn.disabled = true;
+
+                    try {
+                        let res = await fetch(APPS_SCRIPT_URL, {
+                            method: "POST",
+                            body: JSON.stringify({ action: "broadcast_results", month: month })
+                        });
+                        let data = await res.json();
+                        if(data.success) Swal.fire('ជោគជ័យ', `ប្រព័ន្ធបានបញ្ជូនសារទៅកាន់ ${data.count} គណនីរួចរាល់។`, 'success');
+                        else Swal.fire('បញ្ហា', data.message || 'មិនអាចបញ្ជូនបាន', 'error');
+                    } catch(e) { Swal.fire('Error', 'បរាជ័យក្នុងការតភ្ជាប់ទៅកាន់ Server', 'error'); }
+                    
+                    btn.innerText = "🚀 ចាប់ផ្តើមផ្ញើលទ្ធផល"; btn.disabled = false;
+                }
+            });
+        }
+
+        // 🌟 Broadcast Message Request to Apps Script
+        async function broadcastMessage() {
+            let text = document.getElementById('broadcastText').value.trim();
+            if(!text) return Swal.fire('បញ្ជាក់', 'សូមសរសេរសារជាមុនសិន!', 'warning');
+
+            Swal.fire({
+                title: 'បញ្ជាក់ការបញ្ជូនសារ',
+                text: `សារនេះនឹងទៅដល់មនុស្សគ្រប់គ្នាក្នុង Telegram។ តើអ្នកចង់បន្តទេ?`,
+                icon: 'question', showCancelButton: true, confirmButtonText: 'ផ្ញើ', cancelButtonText: 'បោះបង់'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    let btn = document.getElementById('btnBroadcastMsg');
+                    btn.innerText = "កំពុងបញ្ជាទៅកាន់ Server..."; btn.disabled = true;
+
+                    try {
+                        let res = await fetch(APPS_SCRIPT_URL, {
+                            method: "POST",
+                            body: JSON.stringify({ action: "broadcast_message", messageText: text })
+                        });
+                        let data = await res.json();
+                        if(data.success) {
+                            Swal.fire('ជោគជ័យ', `សារត្រូវបានបាញ់ទៅកាន់ ${data.count} គណនីរួចរាល់។`, 'success');
+                            document.getElementById('broadcastText').value = '';
+                        } else Swal.fire('បញ្ហា', data.message || 'មិនអាចបញ្ជូនបាន', 'error');
+                    } catch(e) { Swal.fire('Error', 'បរាជ័យក្នុងការតភ្ជាប់ទៅកាន់ Server', 'error'); }
+                    
+                    btn.innerText = "📢 បាញ់សារទៅកាន់គ្រប់គ្នា"; btn.disabled = false;
+                }
+            });
         }
     </script>
 </body>
