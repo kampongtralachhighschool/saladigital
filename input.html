@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>បញ្ចូលពិន្ទុសិស្ស</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { font-family: 'Kantumruy Pro', sans-serif; background-color: var(--tg-theme-secondary-bg-color, #f1f5f9); color: var(--tg-theme-text-color, #1e293b); padding: 16px; }
+        .card { background-color: var(--tg-theme-bg-color, #ffffff); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: var(--tg-theme-hint-color, #64748b); text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 14px; background-color: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); outline: none; transition: border 0.3s; }
+        input:focus, select:focus { border-color: #3b82f6; }
+        .btn-submit { width: 100%; background-color: var(--tg-theme-button-color, #2563eb); color: var(--tg-theme-button-text-color, #ffffff); padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; border: none; cursor: pointer; transition: opacity 0.3s; }
+        .btn-submit:active { opacity: 0.8; }
+        .grid-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    </style>
+</head>
+<body>
+
+    <h2 class="text-xl font-bold text-center mb-6 text-blue-700">បញ្ចូល/កែប្រែទិន្នន័យពិន្ទុ</h2>
+
+    <div class="card">
+        <h3 class="font-bold border-b pb-2 mb-4 text-slate-800">ព័ត៌មានទូទៅ</h3>
+        <div class="input-group">
+            <label>ខែ ឬ ឆមាសវាយតម្លៃ</label>
+            <select id="month">
+                <option value="មករា">មករា</option><option value="កុម្ភៈ">កុម្ភៈ</option><option value="មីនា">មីនា</option><option value="មេសា">មេសា</option>
+                <option value="ឧសភា">ឧសភា</option><option value="មិថុនា">មិថុនា</option><option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option>
+            </select>
+        </div>
+        <div class="grid-scores">
+            <div class="input-group"><label>អត្តលេខសិស្ស *</label><input type="text" id="stuId" placeholder="ឧ. 424000123" required></div>
+            <div class="input-group"><label>ឆ្នាំសិក្សា</label><input type="text" id="year" value="២០២៥-២០២៦"></div>
+        </div>
+        <div class="input-group"><label>ឈ្មោះសិស្ស</label><input type="text" id="stuName" placeholder="វាយឈ្មោះបើសិស្សថ្មី"></div>
+        <div class="grid-scores">
+            <div class="input-group"><label>ថ្នាក់រៀន</label><input type="text" id="grade" placeholder="ឧ. 10A"></div>
+            <div class="input-group"><label>ភេទ</label><select id="gender"><option value="ប្រុស">ប្រុស</option><option value="ស្រី">ស្រី</option></select></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 class="font-bold border-b pb-2 mb-4 text-slate-800">បញ្ចូលពិន្ទុមុខវិជ្ជា</h3>
+        <div class="grid-scores">
+            <div class="input-group"><label>ភាសាខ្មែរ</label><input type="number" id="khmer" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>គណិតវិទ្យា</label><input type="number" id="math" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>រូបវិទ្យា</label><input type="number" id="physics" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>គីមីវិទ្យា</label><input type="number" id="chemistry" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>ជីវវិទ្យា</label><input type="number" id="biology" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>ប្រវត្តិវិទ្យា</label><input type="number" id="history" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>ភូមិវិទ្យា</label><input type="number" id="geography" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>សីលធម៌</label><input type="number" id="morality" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>ផែនដីវិទ្យា</label><input type="number" id="earth" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>ភាសាអង់គ្លេស</label><input type="number" id="english" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>កីឡា</label><input type="number" id="sport" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>កសិកម្ម</label><input type="number" id="agri" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>បច្ចេកវិទ្យា</label><input type="number" id="tech" placeholder="ពិន្ទុ"></div>
+            <div class="input-group"><label>បំណិន</label><input type="number" id="skill" placeholder="ពិន្ទុ"></div>
+        </div>
+        
+        <div class="grid-scores mt-4 border-t pt-4">
+            <div class="input-group"><label>ពិន្ទុសរុប</label><input type="number" id="total" placeholder="សរុប"></div>
+            <div class="input-group"><label>មធ្យមភាគ</label><input type="number" step="0.01" id="avg" placeholder="មធ្យមភាគ"></div>
+            <div class="input-group"><label>ចំណាត់ថ្នាក់</label><input type="text" id="rank" placeholder="លេខ"></div>
+            <div class="input-group"><label>និទ្ទេសរួម</label><input type="text" id="grd" placeholder="A ដល់ F"></div>
+        </div>
+    </div>
+
+    <button class="btn-submit" onclick="submitData()" id="btnSubmit">បញ្ជូនទិន្នន័យ (Submit)</button>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Make it full screen
+
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
+        
+        // Auto fetch student info if ID is typed
+        document.getElementById('stuId').addEventListener('blur', async function() {
+            let id = this.value.trim();
+            if(id) {
+                try {
+                    let res = await fetch(`${SUPABASE_URL}/rest/v1/student_scores?student_id=eq.${id}&limit=1`, {
+                        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+                    });
+                    let data = await res.json();
+                    if(data.length > 0) {
+                        document.getElementById('stuName').value = data[0].student_name || '';
+                        document.getElementById('grade').value = data[0].grade || '';
+                        document.getElementById('gender').value = data[0].gender || 'ប្រុស';
+                        tg.showAlert('ទាញយកព័ត៌មានសិស្សចាស់បានជោគជ័យ។');
+                    }
+                } catch(e) {}
+            }
+        });
+
+        async function submitData() {
+            let id = document.getElementById('stuId').value.trim();
+            let period = document.getElementById('month').value;
+            if(!id) return Swal.fire('Error', 'សូមបញ្ចូលអត្តលេខសិស្ស', 'error');
+
+            let btn = document.getElementById('btnSubmit');
+            btn.innerText = "កំពុងបញ្ជូន..."; btn.disabled = true;
+
+            let payload = {
+                student_id: id,
+                month_name: period,
+                academic_year: document.getElementById('year').value,
+                student_name: document.getElementById('stuName').value,
+                grade: document.getElementById('grade').value,
+                gender: document.getElementById('gender').value,
+                
+                khmer: document.getElementById('khmer').value || null,
+                math: document.getElementById('math').value || null,
+                physics: document.getElementById('physics').value || null,
+                chemistry: document.getElementById('chemistry').value || null,
+                biology: document.getElementById('biology').value || null,
+                history: document.getElementById('history').value || null,
+                geography: document.getElementById('geography').value || null,
+                morality: document.getElementById('morality').value || null,
+                earth_science: document.getElementById('earth').value || null,
+                english: document.getElementById('english').value || null,
+                sport: document.getElementById('sport').value || null,
+                agriculture: document.getElementById('agri').value || null,
+                technology: document.getElementById('tech').value || null,
+                skill: document.getElementById('skill').value || null,
+                
+                total_score: document.getElementById('total').value || null,
+                average: document.getElementById('avg').value || null,
+                class_rank: document.getElementById('rank').value || null,
+                grade_result: document.getElementById('grd').value || null
+            };
+
+            try {
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/student_scores?on_conflict=student_id,month_name`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify([payload])
+                });
+
+                if(res.ok) {
+                    Swal.fire('ជោគជ័យ!', 'ទិន្នន័យត្រូវបានបញ្ជូនទៅ Database រួចរាល់។', 'success').then(() => {
+                        // Reset scores only, keep ID/Name
+                        document.querySelectorAll('.grid-scores input[type="number"]').forEach(el => el.value = '');
+                        btn.innerText = "បញ្ជូនទិន្នន័យ (Submit)"; btn.disabled = false;
+                    });
+                } else {
+                    throw new Error("Failed to insert");
+                }
+            } catch(e) {
+                Swal.fire('Error', 'បរាជ័យក្នុងការបញ្ជូន', 'error');
+                btn.innerText = "បញ្ជូនទិន្នន័យ (Submit)"; btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
