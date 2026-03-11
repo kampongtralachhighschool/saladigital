@@ -29,7 +29,6 @@
         .student-info-box { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 12px; margin-bottom: 12px; line-height: 1.8;}
         .student-info-box span { color: #0f172a; margin-left: 5px; font-weight: 900;}
 
-        /* 🌟 កែប្រែ Summary Box ឲ្យបង្ហាញបានច្រើនប្រឡោះ */
         .summary-box { display: flex; flex-wrap: wrap; justify-content: space-between; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 0; margin-bottom: 15px; background: white;}
         .summary-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 5px; min-width: 100px;}
         .summary-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 15%; height: 70%; width: 1.5px; background-color: #e2e8f0; }
@@ -92,7 +91,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-end bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-200">
-                <!-- 🌟 បន្ថែមការជ្រើសរើសឆ្នាំសិក្សា -->
+                <!-- 🌟 ជ្រើសរើសឆ្នាំសិក្សា -->
                 <div class="md:col-span-3">
                     <label class="text-[11px] font-black text-slate-500 mb-2 block uppercase tracking-wider ml-1">ឆ្នាំសិក្សា</label>
                     <select id="yearSelect" class="w-full py-3.5 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm text-slate-700 bg-white shadow-sm cursor-pointer">
@@ -102,14 +101,23 @@
                     </select>
                 </div>
 
+                <!-- 🌟 ការវាយតម្លៃ -->
                 <div class="md:col-span-3">
                     <label class="text-[11px] font-black text-slate-500 mb-2 block uppercase tracking-wider ml-1">ការវាយតម្លៃ</label>
                     <select id="monthSelect" class="w-full py-3.5 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm text-slate-700 bg-white shadow-sm cursor-pointer">
-                        <option value="វិច្ឆិកា">ប្រចាំខែ វិច្ឆិកា</option><option value="ធ្នូ">ប្រចាំខែ ធ្នូ</option><option value="មករា">ប្រចាំខែ មករា</option><option value="កុម្ភៈ">ប្រចាំខែ កុម្ភៈ</option>
-                        <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option><option value="ប្រចាំឆមាសទី១">លទ្ធផលប្រចាំឆមាសទី១</option>
-                        <option value="មីនា">ប្រចាំខែ មីនា</option><option value="មេសា">ប្រចាំខែ មេសា</option><option value="ឧសភា">ប្រចាំខែ ឧសភា</option><option value="មិថុនា">ប្រចាំខែ មិថុនា</option>
-                        <option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option><option value="ប្រចាំឆមាសទី២">លទ្ធផលប្រចាំឆមាសទី២</option>
-                        <option value="ប្រចាំឆ្នាំ">លទ្ធផលប្រចាំឆ្នាំ</option>
+                        <option value="ប្រចាំខែ វិច្ឆិកា">ប្រចាំខែ វិច្ឆិកា</option>
+                        <option value="ប្រចាំខែ ធ្នូ">ប្រចាំខែ ធ្នូ</option>
+                        <option value="ប្រចាំខែ មករា">ប្រចាំខែ មករា</option>
+                        <option value="ប្រចាំខែ កុម្ភៈ">ប្រចាំខែ កុម្ភៈ</option>
+                        <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option>
+                        <option value="លទ្ធផលប្រចាំឆមាសទី១">លទ្ធផលប្រចាំឆមាសទី១</option>
+                        <option value="ប្រចាំខែ មីនា">ប្រចាំខែ មីនា</option>
+                        <option value="ប្រចាំខែ មេសា">ប្រចាំខែ មេសា</option>
+                        <option value="ប្រចាំខែ ឧសភា">ប្រចាំខែ ឧសភា</option>
+                        <option value="ប្រចាំខែ មិថុនា">ប្រចាំខែ មិថុនា</option>
+                        <option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                        <option value="លទ្ធផលប្រចាំឆមាសទី២">លទ្ធផលប្រចាំឆមាសទី២</option>
+                        <option value="លទ្ធផលប្រចាំឆ្នាំ">លទ្ធផលប្រចាំឆ្នាំ</option>
                     </select>
                 </div>
 
@@ -141,7 +149,6 @@
         <button onclick="window.print()" class="w-full sm:flex-1 bg-slate-800 text-white py-3.5 rounded-xl font-bold shadow-md hover:bg-slate-900 transition flex justify-center items-center gap-2">
             🖨️ បោះពុម្ពលទ្ធផល (Print)
         </button>
-        <!-- 🌟 ប៊ូតុង Telegram ថ្មី: ចុចទៅបើក Bot អូតូដោយភ្ជាប់ ID ទៅជាមួយ -->
         <button onclick="linkTelegram('student')" class="w-full sm:flex-1 bg-[#0088cc] text-white py-3.5 rounded-xl font-bold shadow-md hover:bg-[#0077b3] transition flex justify-center items-center gap-2">
             💬 ភ្ជាប់ TG សិស្ស
         </button>
@@ -158,7 +165,6 @@
             <div id="t1-summaryArea" class="summary-box"></div>
             <div id="t1-tableArea"></div>
             
-            <!-- 🌟 កន្លែងបង្ហាញមូលវិចារណ៍ AI សម្រាប់គ្រប់ទម្រង់ -->
             <div id="t1-ai-feedback" class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg text-xs leading-relaxed text-blue-900 font-medium"></div>
             
             <div id="t1-signatures"></div>
@@ -189,7 +195,6 @@
         const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
         
         const PRINCIPAL_STAMP_URL = "1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne"; 
-        // 🌟 ឈ្មោះ Bot Telegram របស់សាលា (ឧទាហរណ៍: @kptralach_bot សូមដូរតាមជាក់ស្តែង)
         const TELEGRAM_BOT_USERNAME = "kampongtralach_bot"; 
 
         const SUBJECTS_10 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
@@ -239,7 +244,6 @@
         function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
 
-        // Fetching Functions
         async function supaFetch(endpoint) {
             const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, { headers });
             if (!res.ok) throw new Error("Network Error");
@@ -253,7 +257,7 @@
 
                 let teachRes = await supaFetch(`teacher_info?select=*`);
                 teachRes.forEach(t => { 
-                    if(t.homeroom_class) teacherMap[cleanKey(t.homeroom_class)] = { name: t.teacher_name || 'មិនមានឈ្មោះ', sign: getDriveImgUrl(t.signature_link) }; 
+                    if(t.homeroom_class) teacherMap[cleanKey(t.homeroom_class)] = { name: t.teacher_name || '', sign: getDriveImgUrl(t.signature_link) }; 
                 });
             } catch(e) { console.error("Init Error", e); }
         }
@@ -262,10 +266,15 @@
             if (Object.keys(configMap).length === 0 || Object.keys(teacherMap).length === 0) await fetchInitialData();
         }
 
-        // HTML Generators
+        function mapDbToLegacy(row) {
+            let res = { ID: row.student_id, Name: row.student_name, Gender: row.gender, Grade: row.grade, DOB: row.dob||'', DateSolar: row.date_solar||'', DateLunar: row.date_lunar||'', Total: row.total_score || row.exam_total_score || 0, Average: row.average || row.semester_average || row.annual_average || 0, Rank: row.class_rank, "ចំណាត់ថ្នាក់ក្នុងសាលា": row.school_rank, Grade_Result: row.grade_result || row.final_result || 'F' };
+            SUBJECTS_15.forEach(sub => { res[sub] = row[dbMap[sub]]; });
+            return res;
+        }
+
         function buildPrintHeader(title) {
             return `
-                <div style="width: 100%; position: relative; height: 60px; margin-bottom: 10px;">
+                <div style="position: relative; width: 100%; height: 60px; margin-bottom: 10px;">
                     <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center;">
                         <h2 class="moul-font" style="font-size: 14px; color: #1e3a8a; margin-bottom: 4px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
                         <h2 class="moul-font" style="font-size: 14px; color: #1e3a8a;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
@@ -282,8 +291,8 @@
 
         function getStampHTML(dateSolar, dateLunar, tInfo) {
             let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
-            let pImg = pImgUrl ? `<img src="${pImgUrl}" style="position: absolute; top: -0.7cm; left: calc(50% + 1.0cm); transform: translateX(-50%); width: 285px; max-width: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10;">` : '';
-            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" style="max-height: 65px; max-width: 150px; mix-blend-mode: multiply; object-fit: contain; pointer-events: none;">` : '';
+            let pImg = pImgUrl ? `<img src="${pImgUrl}" class="stamp-main" onerror="this.style.display='none'">` : '';
+            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" class="sig-main" onerror="this.style.display='none'">` : '';
             
             return `
             <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 25px; padding: 0 10px;">
@@ -293,7 +302,7 @@
                     ${pImg}
                 </div>
                 <div style="text-align: center; width: 250px; display: flex; flex-direction: column; align-items: center;">
-                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 2px;">${dateLunar || 'ថ្ងៃ.......................................................'}</p>
+                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 2px;">${dateLunar || '...................................................'}</p>
                     <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 12px;">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a; margin-bottom: 5px;">គ្រូបន្ទុកថ្នាក់</p>
                     <div style="height: 65px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; margin-left: 15px;">${tImg}</div>
@@ -302,7 +311,6 @@
             </div>`;
         }
 
-        // 🌟 AI Feedback Generator based on Result Type
         function generateAIFeedback(type, sData, strengths, weaknesses) {
             let strText = strengths.length > 0 ? `<span class="text-blue-700 font-black">${strengths.slice(0,3).join(', ')}</span>` : 'ពុំទាន់មាន';
             let wkText = weaknesses.length > 0 ? `<span class="text-red-600 font-black">${weaknesses.slice(0,3).join(', ')}</span>` : 'ពុំមានមុខវិជ្ជាណាខ្សោយខ្លាំងទេ';
@@ -321,7 +329,7 @@
             return aiText;
         }
 
-        // 🌟 Calculate Subject Rank locally (since we fetch the whole class)
+        // Calculate Rank Locally since we fetch class data
         function getSubjectRank(studentId, subKey, classData) {
             let validScores = classData
                 .map(s => ({ id: s.student_id, score: cleanNum(s[subKey]) }))
@@ -336,23 +344,25 @@
             return '-';
         }
 
-        // 🌟 MAIN SEARCH EXECUTION 🌟
+        // 🌟 MAIN SEARCH EXECUTION
         async function executeSearch() {
             let q = document.getElementById('searchInput').value.trim();
-            let period = document.getElementById('monthSelect').value;
+            let rawPeriod = document.getElementById('monthSelect').value;
             let academicYear = document.getElementById('yearSelect').value;
             
             if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខ ឬឈ្មោះសិស្សជាមុនសិន!', 'warning');
             
             localStorage.setItem('kpt_last_search_id', q);
-            localStorage.setItem('kpt_last_search_month', period);
+            localStorage.setItem('kpt_last_search_month', rawPeriod);
             showLoading();
             
             await ensureConfigLoaded();
 
+            // 🌟 ដំណើរការកាត់ពាក្យ "ប្រចាំខែ" ចេញ ដើម្បីយកទៅ Query ក្នុង Database បានត្រឹមត្រូវ
+            let period = rawPeriod.replace("ប្រចាំខែ ", "").replace("លទ្ធផល", "").trim();
+
             let table = period.includes("ប្រចាំឆមាស") ? "semester_scores" : (period === "ប្រចាំឆ្នាំ" ? "annual_scores" : "student_scores");
             let pCol = period.includes("ប្រចាំឆមាស") ? "semester_name" : (period === "ប្រចាំឆ្នាំ" ? "academic_year" : "month_name");
-            // For annual, period is the year itself in DB schema
             let reqPeriod = period === "ប្រចាំឆ្នាំ" ? academicYear : period; 
 
             try {
@@ -360,7 +370,7 @@
                 let stuDataRes = await supaFetch(`${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&or=(student_id.eq.${encodeURIComponent(q)},student_name.ilike.%25${encodeURIComponent(q)}%25)&limit=1`);
                 
                 if(!stuDataRes || stuDataRes.length === 0) {
-                    hideLoading(); return Swal.fire('រកមិនឃើញ!', `មិនមានទិន្នន័យរបស់សិស្ស [${q}] សម្រាប់ ${period} ឆ្នាំ ${academicYear} ទេ!`, 'error');
+                    hideLoading(); return Swal.fire('រកមិនឃើញ!', `មិនមានទិន្នន័យរបស់សិស្ស [${q}] សម្រាប់ ${rawPeriod} ឆ្នាំ ${academicYear} ទេ!`, 'error');
                 }
 
                 let dbS = stuDataRes[0];
@@ -371,11 +381,11 @@
                 let gConf = configMap[targetKey] || configMap[gradeNumOnly] || {};
                 let tInfo = teacherMap[targetKey] || teacherMap[gradeNumOnly] || {name:'មិនទាន់កំណត់', sign:''};
 
-                // 2. Fetch Entire Class Data (Need this for Subject Ranks and Total Class Count)
+                // 2. Fetch Entire Class Data
                 let classData = await supaFetch(`${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&grade=eq.${encodeURIComponent(dbS.grade)}&limit=1000`);
                 let totalInClass = classData.length;
 
-                // 3. Fetch Total School Count (Using HEAD request for performance)
+                // 3. Fetch Total School Count
                 let totalInSchool = "-";
                 let schoolCountRes = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&select=student_id`, {
                     headers: { ...headers, 'Prefer': 'count=exact', 'Range-Unit': 'items' },
@@ -411,7 +421,7 @@
                         </div>
                     </div>`;
                 
-                // 🌟 DYNAMIC SUMMARY BOX 🌟
+                // 🌟 DYNAMIC SUMMARY BOX
                 let summaryHtml = "";
                 if(type === 'annual') {
                     summaryHtml = `
@@ -430,25 +440,24 @@
                         <div class="summary-item"><p class="s-title">និទ្ទេស</p><p class="s-value ${getGrdCol(dbS.grade_result)}">${dbS.grade_result || 'F'}</p></div>
                     `;
                 } else {
-                    // Month & Exam
                     let avg = dbS.average || dbS.exam_average || 0;
                     summaryHtml = `
                         <div class="summary-item"><p class="s-title">មធ្យមភាគ</p><p class="s-value">${avg}</p></div>
                         <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p><p class="s-value text-red-600">${dbS.class_rank||'-'}</p><p class="s-sub">សិស្សសរុប ${totalInClass} នាក់</p></div>
-                        <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងសាលា</p><p class="s-value text-orange-500">${dbS.school_rank||'-'}</p><p class="s-sub">សិស្សសរុប ${totalInSchool} នាក់</p></div>
+                        <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់សាលា</p><p class="s-value text-orange-500">${dbS.school_rank||'-'}</p><p class="s-sub">សិស្សសរុប ${totalInSchool} នាក់</p></div>
                         <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value ${getGrdCol(dbS.grade_result)}">${dbS.grade_result || 'F'}</p></div>
                     `;
                 }
                 document.getElementById('t1-summaryArea').innerHTML = summaryHtml;
 
-                // 🌟 DYNAMIC TABLE AREA 🌟
+                // 🌟 DYNAMIC TABLE AREA
                 let showSubRank = (type === 'exam' || type === 'semester' || type === 'annual');
                 let tHeaders = `<tr><th class="w-8">ល.រ</th><th class="col-left w-48">មុខវិជ្ជា</th><th class="w-20">អតិបរមា</th><th class="w-24">ពិន្ទុ</th>`;
                 if(showSubRank) tHeaders += `<th class="w-20 text-red-600">ចំណាត់ថ្នាក់</th>`;
                 tHeaders += `<th class="w-32">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr>`;
 
                 let tRows = ""; let idx=1; let maxTotal = 0;
-                let strengths =[]; let weaknesses = [];
+                let strengths =[]; let weaknesses =[];
 
                 SUBJECTS_15.forEach(sub => {
                     let dbKey = dbMap[sub];
@@ -487,7 +496,7 @@
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(dbS.date_solar, dbS.date_lunar, tInfo);
                 
                 // =====================================
-                // P2 Build (ប្រៀបធៀប - Update for All Types)
+                // P2 Build (ប្រៀបធៀប)
                 // =====================================
                 let histDataRaw = await supaFetch(`student_scores?student_id=eq.${encodeURIComponent(dbS.student_id)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
                 let semDataRaw = await supaFetch(`semester_scores?student_id=eq.${encodeURIComponent(dbS.student_id)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
@@ -541,12 +550,9 @@
             } catch (e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
         }
 
-        // 🌟 Telegram Link ប្រើ Deep Link ទៅ Bot ដោយមិនបាច់វាយឈ្មោះ
         function linkTelegram(type) {
             if(!currentStudentInfo) return Swal.fire('បញ្ជាក់', 'សូមស្វែងរកសិស្សជាមុនសិន!', 'warning');
             
-            // Generate Payload for the Telegram Bot start parameter
-            // Format: type_studentID (e.g. parent_424000123)
             let payload = `${type}_${currentStudentInfo.id}`;
             let botUrl = `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${payload}`;
             
