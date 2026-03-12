@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ផ្ទាំងបញ្ជា Admin - Telegram Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { 
+            font-family: 'Battambang', sans-serif; 
+            background-color: var(--tg-theme-secondary-bg-color, #f3f4f6); 
+            color: var(--tg-theme-text-color, #1f2937); 
+        }
+        .tg-bg { background-color: var(--tg-theme-bg-color, #ffffff); }
+        .tg-button { background-color: var(--tg-theme-button-color, #3b82f6); color: var(--tg-theme-button-text-color, #ffffff); }
+        .tg-input { background-color: var(--tg-theme-bg-color, #ffffff); color: var(--tg-theme-text-color, #1f2937); border-color: var(--tg-theme-hint-color, #d1d5db); }
+    </style>
+</head>
+<body class="p-4 pb-20">
+
+    <div class="max-w-md mx-auto space-y-6">
+        <!-- Header -->
+        <div class="text-center mt-2 mb-6">
+            <h1 class="text-2xl font-bold text-blue-600 mb-1">ផ្ទាំងបញ្ជាសាលារៀន</h1>
+            <p class="text-sm opacity-70">គ្រប់គ្រងការផ្ញើសារ និងពិន្ទុទៅកាន់សិស្ស</p>
+        </div>
+
+        <!-- Broadcast Score Section -->
+        <div class="tg-bg rounded-2xl shadow-sm p-5 border border-gray-100">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <span class="text-xl mr-2">📊</span> ផ្ញើពិន្ទុប្រចាំខែ
+            </h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1 opacity-80">ជ្រើសរើសខែ៖</label>
+                    <select id="monthSelect" class="tg-input w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="មករា">មករា</option>
+                        <option value="កុម្ភៈ">កុម្ភៈ</option>
+                        <option value="មីនា">មីនា</option>
+                        <option value="មេសា">មេសា</option>
+                        <option value="ឧសភា">ឧសភា</option>
+                        <option value="មិថុនា">មិថុនា</option>
+                        <option value="កក្កដា">កក្កដា</option>
+                        <option value="សីហា">សីហា</option>
+                        <option value="កញ្ញា">កញ្ញា</option>
+                        <option value="តុលា">តុលា</option>
+                        <option value="វិច្ឆិកា">វិច្ឆិកា</option>
+                        <option value="ធ្នូ">ធ្នូ</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 opacity-80">ឆ្នាំសិក្សា៖</label>
+                    <input type="text" id="yearInput" value="2025-2026" class="tg-input w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <button onclick="broadcastScore()" id="btnBroadcastScore" class="tg-button w-full font-bold py-3 px-4 rounded-xl flex justify-center items-center shadow-sm transition transform hover:scale-[1.02] active:scale-95">
+                    🚀 បាញ់ពិន្ទុជូនសិស្សទាំងអស់
+                </button>
+            </div>
+        </div>
+
+        <!-- Broadcast Message Section -->
+        <div class="tg-bg rounded-2xl shadow-sm p-5 border border-gray-100">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <span class="text-xl mr-2">📢</span> ផ្ញើសារទូទៅ
+            </h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1 opacity-80">ខ្លឹមសារសារ៖</label>
+                    <textarea id="broadcastText" rows="4" placeholder="សូមសរសេរសារនៅទីនេះ..." class="tg-input w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
+                <button onclick="broadcastMessage()" id="btnBroadcastMsg" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-xl flex justify-center items-center shadow-sm transition transform hover:scale-[1.02] active:scale-95">
+                    ផ្ញើសារទៅកាន់គ្រប់គ្នា
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // ⚠️ ចំណាំ៖ សូមប្ដូរឈ្មោះ Vercel ខាងក្រោមទៅជាឈ្មោះ Vercel ពិតប្រាកដរបស់លោកគ្រូ
+        const API_URL = "https://[ឈ្មោះ-Vercel-លោកគ្រូ].vercel.app/api/admin";
+
+        async function broadcastScore() {
+            let month = document.getElementById('monthSelect').value;
+            let year = document.getElementById('yearInput').value;
+
+            Swal.fire({
+                title: 'បញ្ជាក់ការផ្ញើ',
+                html: `ប្រព័ន្ធនឹងជូនដំណឹងសិស្សទាំងអស់ឲ្យចូលមើលពិន្ទុខែ <b>${month}</b> ឆ្នាំ <b>${year}</b>។ តើលោកគ្រូពិតជាចង់បន្តមែនទេ?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'បន្ត',
+                cancelButtonText: 'បោះបង់'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    let btn = document.getElementById('btnBroadcastScore');
+                    let originalText = btn.innerHTML;
+                    btn.innerHTML = "កំពុងដំណើរការ... ⏳"; 
+                    btn.disabled = true;
+
+                    try {
+                        let res = await fetch(API_URL, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "broadcast_score", month: month, year: year })
+                        });
+                        let data = await res.json();
+                        
+                        if(data.success) {
+                            Swal.fire('ជោគជ័យ', `បានជូនដំណឹងពិន្ទុទៅកាន់ ${data.count} គណនីរួចរាល់។`, 'success');
+                        } else {
+                            Swal.fire('បរាជ័យ', data.message || 'មានបញ្ហាក្នុងការភ្ជាប់', 'error');
+                        }
+                    } catch(e) { 
+                        Swal.fire('Error', 'បរាជ័យក្នុងការតភ្ជាប់ទៅកាន់ Server សូមពិនិត្យមើល Link Vercel', 'error'); 
+                    }
+                    
+                    btn.innerHTML = originalText; 
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        async function broadcastMessage() {
+            let text = document.getElementById('broadcastText').value.trim();
+            if(!text) return Swal.fire('បញ្ជាក់', 'សូមសរសេរសារជាមុនសិន!', 'warning');
+
+            Swal.fire({
+                title: 'បញ្ជាក់ការបញ្ជូនសារ',
+                text: 'សារនេះនឹងត្រូវបាញ់បញ្ជូនទៅដល់អ្នកប្រើប្រាស់គ្រប់គ្នាក្នុង Telegram។',
+                icon: 'warning', 
+                showCancelButton: true, 
+                confirmButtonText: 'ផ្ញើ', 
+                cancelButtonText: 'បោះបង់'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    let btn = document.getElementById('btnBroadcastMsg');
+                    let originalText = btn.innerHTML;
+                    btn.innerHTML = "កំពុងបញ្ជូន... ⏳"; 
+                    btn.disabled = true;
+
+                    try {
+                        let res = await fetch(API_URL, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "broadcast_message", messageText: text })
+                        });
+                        let data = await res.json();
+                        
+                        if(data.success) {
+                            Swal.fire('ជោគជ័យ', `សារត្រូវបានបាញ់ទៅកាន់ ${data.count} គណនីរួចរាល់។`, 'success');
+                            document.getElementById('broadcastText').value = '';
+                        } else {
+                            Swal.fire('បញ្ហា', data.message || 'មិនអាចបញ្ជូនបាន', 'error');
+                        }
+                    } catch(e) { 
+                        Swal.fire('Error', 'បរាជ័យក្នុងការតភ្ជាប់ទៅកាន់ Server សូមពិនិត្យមើល Link Vercel', 'error'); 
+                    }
+                    
+                    btn.innerHTML = originalText; 
+                    btn.disabled = false;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
