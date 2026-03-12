@@ -28,20 +28,6 @@
             <p class="text-sm opacity-70">គ្រប់គ្រងការផ្ញើសារ និងពិន្ទុទៅកាន់សិស្ស</p>
         </div>
 
-        <!-- ⚙️ Settings Section (Added for dynamic Vercel Link) -->
-        <div class="tg-bg rounded-2xl shadow-sm p-5 border border-gray-100 border-l-4 border-l-yellow-400">
-            <h2 class="text-lg font-bold mb-3 flex items-center">
-                <span class="text-xl mr-2">⚙️</span> កំណត់ Link API (Vercel)
-            </h2>
-            <div class="space-y-3">
-                <p class="text-xs opacity-80">សូម Paste Link Vercel របស់លោកគ្រូនៅទីនេះ ពេលលោកគ្រូមានវា៖</p>
-                <input type="text" id="apiUrlInput" placeholder="ឧ. https://school-bot.vercel.app/api/admin" class="tg-input w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-yellow-400 outline-none">
-                <button onclick="saveApiUrl()" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-xl w-full text-sm transition shadow-sm">
-                    💾 រក្សាទុក Link
-                </button>
-            </div>
-        </div>
-
         <!-- Broadcast Score Section -->
         <div class="tg-bg rounded-2xl shadow-sm p-5 border border-gray-100">
             <h2 class="text-lg font-bold mb-4 flex items-center">
@@ -97,39 +83,10 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // ផ្ទុក Link Vercel ដែលធ្លាប់រក្សាទុកពីមុន (ប្រសិនបើមាន)
-        document.addEventListener("DOMContentLoaded", () => {
-            const savedUrl = localStorage.getItem("VERCEL_API_URL");
-            if(savedUrl) {
-                document.getElementById('apiUrlInput').value = savedUrl;
-            }
-        });
-
-        // អនុគមន៍សម្រាប់រក្សាទុក Link
-        function saveApiUrl() {
-            let url = document.getElementById('apiUrlInput').value.trim();
-            if(url && url.startsWith("http")) {
-                localStorage.setItem("VERCEL_API_URL", url);
-                Swal.fire('ជោគជ័យ', 'បានរក្សាទុក Link Vercel រួចរាល់!', 'success');
-            } else {
-                Swal.fire('បញ្ជាក់', 'សូមបញ្ចូល Link Vercel ឲ្យបានត្រឹមត្រូវ (ត្រូវចាប់ផ្តើមដោយ http ឬ https)!', 'warning');
-            }
-        }
-
-        // អនុគមន៍ទាញយក Link បច្ចុប្បន្នដើម្បីប្រើប្រាស់
-        function getApiUrl() {
-            let url = document.getElementById('apiUrlInput').value.trim();
-            if(!url) {
-                Swal.fire('បញ្ជាក់', 'សូមបញ្ចូល និងរក្សាទុក Link Vercel នៅផ្នែកខាងលើជាមុនសិន!', 'warning');
-                return null;
-            }
-            return url;
-        }
+        // 🟢 បានដាក់បញ្ចូល Link Vercel របស់លោកគ្រូដោយស្វ័យប្រវត្តិ 🟢
+        const API_URL = "https://school-telegram-d9p4m2u91-kampongtralachhighschools-projects.vercel.app/api/admin";
 
         async function broadcastScore() {
-            let API_URL = getApiUrl();
-            if(!API_URL) return;
-
             let month = document.getElementById('monthSelect').value;
             let year = document.getElementById('yearInput').value;
 
@@ -161,7 +118,7 @@
                             Swal.fire('បរាជ័យ', data.message || 'មានបញ្ហាក្នុងការភ្ជាប់', 'error');
                         }
                     } catch(e) { 
-                        Swal.fire('Error', 'បរាជ័យក្នុងការតភ្ជាប់។ តើលោកគ្រូប្រាកដថា Link Vercel ត្រឹមត្រូវដែរឬទេ?', 'error'); 
+                        Swal.fire('Error', 'បរាជ័យក្នុងការតភ្ជាប់ទៅកាន់ Server សូមពិនិត្យមើល Link Vercel', 'error'); 
                     }
                     
                     btn.innerHTML = originalText; 
@@ -171,9 +128,6 @@
         }
 
         async function broadcastMessage() {
-            let API_URL = getApiUrl();
-            if(!API_URL) return;
-
             let text = document.getElementById('broadcastText').value.trim();
             if(!text) return Swal.fire('បញ្ជាក់', 'សូមសរសេរសារជាមុនសិន!', 'warning');
 
@@ -206,7 +160,7 @@
                             Swal.fire('បញ្ហា', data.message || 'មិនអាចបញ្ជូនបាន', 'error');
                         }
                     } catch(e) { 
-                        Swal.fire('Error', 'បរាជ័យក្នុងការតភ្ជាប់។ តើលោកគ្រូប្រាកដថា Link Vercel ត្រឹមត្រូវដែរឬទេ?', 'error'); 
+                        Swal.fire('Error', 'បរាជ័យក្នុងការតភ្ជាប់ទៅកាន់ Server សូមពិនិត្យមើល Link Vercel', 'error'); 
                     }
                     
                     btn.innerHTML = originalText; 
