@@ -6,13 +6,13 @@
     <title>លទ្ធផលសិក្សាទូទៅ - វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     
     <style>
         :root { --primary-blue: #1e40af; --khmer-red: #dc2626; }
-        body { font-family: 'Kantumruy Pro', sans-serif; background: #e2e8f0; color: #1e293b; }
+        body { font-family: 'Kantumruy Pro', 'Battambang', sans-serif; background: #e2e8f0; color: #1e293b; }
         .moul-font { font-family: 'Moul', serif; }
         
         .nav-container { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; padding: 10px 20px;}
@@ -49,9 +49,9 @@
         .trend-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; height: 100%; justify-content: flex-end;}
         .trend-bar { width: 22px; border-radius: 4px 4px 0 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
         
-        .signatures-area { display: flex; justify-content: space-between; margin-top: 20px; width: 100%; padding: 0 10px;}
-        .stamp-main { position: absolute; top: -0.7cm; left: calc(50% + 1.0cm); transform: translateX(-50%); width: 285px; max-width: none; max-height: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10; }
-        .sig-main { max-height: 65px; max-width: 150px; mix-blend-mode: multiply; object-fit: contain; pointer-events: none; }
+        .signatures-area { display: flex; justify-content: space-between; margin-top: 15px; width: 100%; padding: 0 10px; position: relative; z-index: 50;}
+        .stamp-main { position: absolute; top: -0.6cm; left: calc(50% + 1.0cm); transform: translateX(-50%); width: 260px; max-width: none; max-height: none; mix-blend-mode: multiply; pointer-events: none; z-index: 10; }
+        .sig-main { max-height: 55px; max-width: 140px; mix-blend-mode: multiply; object-fit: contain; pointer-events: none; }
 
         #qr-reader { border-radius: 12px; overflow: hidden; border: none !important; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); }
 
@@ -60,9 +60,9 @@
             .page-separator::after { content: "✂️ ទំព័របន្ទាប់"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #e2e8f0; padding: 0 15px; color: #475569; font-size: 12px; font-weight: bold; border-radius: 20px; }
         }
 
-        /* 🌟 CSS សម្រាប់ Print ធានាមិនឲ្យឆ្លងទំព័រ (Fit to 1 page exactly) */
+        /* 🌟 CSS Fix ធានាមិនឲ្យព្រីនឆ្លងទំព័រ (Fit perfectly on A4) */
         @media print {
-            @page { size: A4 portrait; margin: 0.5cm; }
+            @page { size: A4 portrait; margin: 5mm; }
             body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
             .no-print, .page-separator { display: none !important; }
             .print-container-wrapper { padding: 0 !important; background: transparent !important; overflow: hidden !important;}
@@ -71,32 +71,29 @@
                 box-shadow: none !important; 
                 margin: 0 !important; 
                 border-radius: 0 !important; 
-                padding: 0 !important; 
+                padding: 5mm 10mm !important; /* បង្រួមគែមខាងក្រៅ */
                 width: 100% !important; 
                 min-width: 100% !important; 
-                height: 282mm !important; /* Force strict height */
-                max-height: 282mm !important;
+                height: 287mm !important; /* កំណត់កម្ពស់ A4 ជាក់លាក់ */
+                max-height: 287mm !important;
                 page-break-inside: avoid !important; 
                 page-break-after: always !important;
                 display: flex;
                 flex-direction: column;
-                justify-content: space-between; /* ធ្វើឲ្យទិន្នន័យយឺតពេញ១ទំព័រស្អាត មិនហៀរ */
+                justify-content: space-between; /* ទាញ Header ទៅលើ, ហត្ថលេខាទៅក្រោម */
             }
             
-            /* បង្រួមទំហំ Padding និង Margin ក្នុងពេល Print ធានាមិនឲ្យហៀរ */
-            .c-table th, .c-table td { padding: 3px 2px !important; font-size: 10.5px !important; }
-            .c-table { margin-bottom: 2px !important; }
-            .student-info-box { font-size: 11px !important; margin-bottom: 4px !important; }
-            .summary-box { padding: 4px 0 !important; margin-bottom: 6px !important; }
-            .summary-item .s-title { font-size: 9px !important; }
-            .summary-item .s-value { font-size: 15px !important; }
-            #t1-header h1 { font-size: 14px !important; margin: 8px 0 5px 0 !important; }
-            .signatures-area { margin-top: 5px !important; }
-            .stamp-main { width: 240px !important; top: -0.9cm !important; }
-            .sig-main { max-height: 50px !important; }
+            /* បង្រួមសមាសធាតុខាងក្នុងកុំឲ្យហៀរ */
+            .c-table th, .c-table td { padding: 3px 2px !important; font-size: 11px !important; }
+            .summary-box { margin-bottom: 8px !important; padding: 5px 0 !important;}
+            .student-info-box { margin-bottom: 8px !important; font-size: 12px !important;}
+            #t1-header h1 { font-size: 15px !important; margin: 10px 0 5px 0 !important;}
             
-            /* AI Feedback Shrink for Print */
-            #t1-ai-feedback { padding: 8px 12px !important; margin-top: 4px !important; font-size: 9.5px !important; }
+            /* បង្រួមប្រអប់ AI កុំឲ្យស៊ីកន្លែងពេក */
+            #t1-ai-feedback { margin-top: 5px !important; padding: 8px 12px !important; }
+            .ai-text-content { font-size: 10.5px !important; line-height: 1.5 !important; margin-top: 2px !important;}
+            
+            .signatures-area { margin-top: 0 !important; padding-bottom: 5mm !important;}
         }
     </style>
 </head>
@@ -197,7 +194,8 @@
                 <div id="t1-summaryArea" class="summary-box"></div>
                 <div id="t1-tableArea"></div>
                 
-                <div id="t1-ai-feedback" class="mt-4 p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg text-xs leading-relaxed text-indigo-900 font-medium"></div>
+                <!-- 🌟 កន្លែងបង្ហាញ AI Feedback -->
+                <div id="t1-ai-feedback" class="mt-4 p-3 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg relative"></div>
             </div>
             
             <div id="t1-signatures"></div>
@@ -238,6 +236,7 @@
 
         let configMap = {}; let teacherMap = {}; let currentStudentInfo = null;
         let html5QrcodeScanner = null;
+        let currentSpeechText = "";
 
         document.addEventListener('DOMContentLoaded', () => {
             const input = document.getElementById("searchInput");
@@ -330,78 +329,115 @@
             let tImg = tInfo.sign ? `<img src="${tInfo.sign}" class="sig-main" onerror="this.style.display='none'">` : '';
             
             return `
-            <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 25px; padding: 0 10px;">
-                <div style="text-align: center; width: 250px; position: relative; min-height: 130px;">
+            <div style="display: flex; justify-content: space-between; width: 100%; padding: 0 10px;">
+                <div style="text-align: center; width: 250px; position: relative; min-height: 120px;">
                     <p style="font-weight: bold; font-size: 12px; margin-bottom: 5px;">បានឃើញ និងឯកភាព</p>
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a;">នាយកសាលា</p>
                     ${pImg}
                 </div>
                 <div style="text-align: center; width: 250px; display: flex; flex-direction: column; align-items: center;">
                     <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 2px;">${dateLunar || '...................................................'}</p>
-                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 12px;">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
+                    <p style="font-weight: bold; font-size: 11px; color: #4b5563; margin-bottom: 10px;">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
                     <p class="moul-font" style="font-size: 12px; color: #1e3a8a; margin-bottom: 5px;">គ្រូបន្ទុកថ្នាក់</p>
-                    <div style="height: 65px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; margin-left: 15px;">${tImg}</div>
-                    <p class="moul-font" style="font-size: 12px; color: #1e3a8a; margin: 0;">${tInfo.name}</p>
+                    <div style="height: 55px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; margin-left: 15px;">${tImg}</div>
+                    <p class="moul-font" style="font-size: 11px; color: #1e3a8a; margin: 0;">${tInfo.name}</p>
                 </div>
             </div>`;
         }
 
         // =====================================
-        // 🧠 មុខងារ AI បង្កើតមូលវិចារណ៍ស៊ីជម្រៅ (ទំព័រទី១)
+        // 🧠 មុខងារ AI វិភាគ និងប្រឹក្សា (ទំព័រទី១)
         // =====================================
         function generateAIFeedback(type, sData, strengths, weaknesses) {
-            let avg = Number(sData.Average);
-            let g = sData.Grade_Result;
+            // ទាញមធ្យមភាគរួមពិតប្រាកដមកគិត
+            let avg = parseFloat(sData.Average) || parseFloat(sData.exam_average) || 0;
+            let g = sData.Grade_Result || 'F';
+            let sName = sData.Name || 'ប្អូន';
             
-            let strText = strengths.length > 0 ? `<span class="text-blue-700 font-black">${strengths.join(', ')}</span>` : '';
-            let wkText = weaknesses.length > 0 ? `<span class="text-red-600 font-black">${weaknesses.join(', ')}</span>` : '';
+            let strText = strengths.length > 0 ? `<span class="text-blue-700 font-bold">${strengths.join(', ')}</span>` : '';
+            let wkText = weaknesses.length > 0 ? `<span class="text-red-600 font-bold">${weaknesses.join(', ')}</span>` : '';
             
             let intro = "";
-            let psychology = "";
             let strategy = "";
+            let voiceText = ""; // សម្រាប់ឲ្យទូរស័ព្ទអាន
 
-            // ការវាយតម្លៃជារួម និងចិត្តសាស្ត្រ
-            if (avg >= 85) {
-                intro = `ឆ្លងកាត់ការវាយតម្លៃយ៉ាងល្អិតល្អន់ លទ្ធផលរបស់ប្អូនស្ថិតក្នុងកម្រិត <b>ល្អប្រសើរគួរជាទីមោទនៈ (និទ្ទេស ${g})</b>។`;
-                psychology = `ការរក្សាបាននូវមធ្យមភាគខ្ពស់បែបនេះ បង្ហាញពីវិន័យ ការតាំងចិត្ត និងភាពចាស់ទុំក្នុងការសិក្សារបស់ប្អូន។ លោកគ្រូអ្នកគ្រូពិតជាមានមោទនភាពចំពោះលទ្ធផលនេះ។`;
-                strategy = `សូមបន្តធ្វើជាគំរូល្អដល់មិត្តភក្តិ។ កុំភ្លេចថែរក្សាសុខភាព និងបន្តអានសៀវភៅស្រាវជ្រាវបន្ថែមដើម្បីត្រៀមខ្លួនសម្រាប់ការប្រកួតប្រជែងធំៗនៅថ្ងៃមុខ!`;
-            } else if (avg >= 70) {
-                intro = `លទ្ធផលសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិត <b>ល្អបង្គួរ (និទ្ទេស ${g})</b>។`;
-                psychology = `នេះគឺជាសញ្ញាណដ៏ល្អដែលបង្ហាញថាប្អូនមានមូលដ្ឋានគ្រឹះរឹងមាំ ប៉ុន្តែនៅមានសក្តានុពលលាក់កំបាំងជាច្រើនទៀតដែលប្អូនមិនទាន់បានបញ្ចេញអស់។`;
-                strategy = `លោកគ្រូអ្នកគ្រូជឿជាក់ថា ប្អូនអាចឈានដល់កម្រិតកំពូលបាន ប្រសិនបើប្អូនបន្ថែមម៉ោងស្វ័យសិក្សា និងហ៊ានសួររាល់ចម្ងល់។ គោលដៅបន្ទាប់គឺការដណ្ដើមយកនិទ្ទេស A!`;
-            } else if (avg >= 50) {
-                intro = `ការសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិត <b>មធ្យម (និទ្ទេស ${g})</b> នៅឡើយ។`;
-                psychology = `លោកគ្រូអ្នកគ្រូមើលឃើញពីការព្យាយាមរបស់ប្អូន តែលទ្ធផលនេះបញ្ជាក់ថាវិធីសាស្ត្ររៀនសូត្របច្ចុប្បន្នអាចមិនទាន់មានប្រសិទ្ធភាពពេញលេញ។ រាល់ភាពជោគជ័យតែងចាប់ផ្តើមពីការផ្លាស់ប្តូរទម្លាប់តូចៗ។`;
-                strategy = `សូមចាប់ផ្តើមរៀបចំកាលវិភាគសិក្សាឡើងវិញ។ ត្រូវកាត់បន្ថយពេលវេលាលេងទូរស័ព្ទ ហើយងាកមកធ្វើលំហាត់ ឬរៀនជាក្រុមជាមួយមិត្តភក្តិឲ្យបានច្រើន។ កុំបោះបង់! លោកគ្រូអ្នកគ្រូនៅក្បែរប្អូនជានិច្ច។`;
-            } else {
-                intro = `គួរឲ្យសោកស្តាយ លទ្ធផលរបស់ប្អូនស្ថិតក្នុងកម្រិត <b>ខ្សោយ (និទ្ទេស ${g})</b>។`;
-                psychology = `ពិន្ទុថ្ងៃនេះមិនមែនជាការកំណត់វាសនារបស់ប្អូនជារៀងរហូតទេ វាគ្រាន់តែជាការដាស់តឿនឲ្យប្អូនភ្ញាក់រលឹកប៉ុណ្ណោះ។ មនុស្សពូកែមិនមែនមិនធ្លាប់ដួលទេ តែគេចេះក្រោកឈរឡើងវិញ។`;
-                strategy = `ដល់ពេលដែលប្អូនត្រូវផ្លាស់ប្តូរខ្លួនឯងហើយ! សូមទាក់ទងលោកគ្រូអ្នកគ្រូប្រចាំមុខវិជ្ជាដើម្បីសុំការណែនាំបន្ថែម។ ត្រូវជឿជាក់លើខ្លួនឯង ទោះចាប់ផ្តើមយឺត ក៏ប្រសើរជាងមិនព្រមចាប់ផ្តើមសោះ!`;
-            }
+// បម្លែង avg ទៅជាលេខសិន ដើម្បីការពារកុំឲ្យលក្ខខណ្ឌដើរខុស (ការពារករណីសិស្សបាន A តែលោតទៅលក្ខខណ្ឌ else)
+const numericAvg = Number(avg); 
 
+// 🌟 ប្រើប្រាស់ចិត្តសាស្ត្រផ្អែកលើមធ្យមភាគ (ពាក្យពេចន៍ស្ថាបនា និងលើកទឹកចិត្ត)
+if (numericAvg >= 80) {
+    intro = `អបអរសាទរ! លទ្ធផលសិក្សារបស់ <span class="font-bold">${sName}</span> ទទួលបាននិទ្ទេស <b class="text-blue-700">${g}</b> ដែលស្ថិតក្នុងកម្រិត <b class="text-blue-700">ល្អប្រសើរ</b>។ ការតាំងចិត្ត និងវិន័យក្នុងការសិក្សារបស់ប្អូន ពិតជាគួរឱ្យកោតសរសើរ។ លោកគ្រូអ្នកគ្រូពិតជាមានមោទនភាពចំពោះប្អូន។`;
+    strategy = `សូមបន្តរក្សាស្នាដៃនេះឱ្យបានល្អ អានសៀវភៅស្រាវជ្រាវបន្ថែម និងចែករំលែកបទពិសោធន៍សិក្សាដ៏ល្អនេះដល់មិត្តរួមថ្នាក់។`;
+    voiceText = `អបអរសាទរ! លទ្ធផលសិក្សារបស់ប្អូនស្ថិតក្នុងកម្រិតល្អប្រសើរណាស់។ លោកគ្រូអ្នកគ្រូពិតជាមានមោទនភាពចំពោះប្អូន។ សូមបន្តប្រឹងប្រែងរក្សាស្នាដៃនេះបន្តទៀតណា។`;
+    
+} else if (numericAvg >= 65) {
+    intro = `លទ្ធផលសិក្សារបស់ <span class="font-bold">${sName}</span> ទទួលបាននិទ្ទេស <b class="text-green-700">${g}</b> ដែលស្ថិតក្នុងកម្រិត <b class="text-green-700">ល្អបង្គួរ</b>។ ប្អូនធ្វើបានល្អ ប៉ុន្តែប្អូននៅមានសក្តានុពលអាចធ្វើបានល្អជាងនេះទៀត ប្រសិនបើបន្ថែមការយកចិត្តទុកដាក់។`;
+    strategy = `លោកគ្រូអ្នកគ្រូលើកទឹកចិត្តឱ្យប្អូនបន្ថែមម៉ោងស្វ័យសិក្សា និងកុំខ្លាចក្នុងការសួរដេញដោលរាល់ចំណុចដែលមិនទាន់យល់ច្បាស់។ គោលដៅបន្ទាប់គឺនិទ្ទេស A!`;
+    voiceText = `ធ្វើបានល្អ! លទ្ធផលរបស់ប្អូនបង្ហាញពីការខិតខំ ប៉ុន្តែប្អូននៅតែអាចរុញច្រានខ្លួនឯងឱ្យទទួលបានលទ្ធផលខ្ពស់ជាងនេះ។ តស៊ូឡើង!`;
+    
+} else if (numericAvg >= 50) {
+    intro = `លទ្ធផលសិក្សារបស់ <span class="font-bold">${sName}</span> ទទួលបាននិទ្ទេស <b class="text-orange-600">${g}</b> ដែលស្ថិតក្នុងកម្រិត <b class="text-orange-600">មធ្យម</b>។ លទ្ធផលនេះបង្ហាញថាប្អូនត្រូវបង្កើនការយកចិត្តទុកដាក់លើការសិក្សាបន្ថែមទៀត ទើបអាចទទួលបានពិន្ទុខ្ពស់។`;
+    strategy = `សូមរៀបចំកាលវិភាគសិក្សាឡើងវិញ យកចិត្តទុកដាក់ស្តាប់គ្រូពន្យល់ និងផ្តោតលើការធ្វើលំហាត់ឱ្យបានច្រើន។ លោកគ្រូអ្នកគ្រូជានិច្ចកាលរង់ចាំជួយណែនាំប្អូន។`;
+    voiceText = `លទ្ធផលរបស់ប្អូនស្ថិតក្នុងកម្រិតមធ្យម។ សូមកុំរួញរា ត្រូវបន្ថែមការយកចិត្តទុកដាក់ និងខិតខំរៀនសូត្រជាប្រចាំ ទើបអាចទទួលបានលទ្ធផលល្អជាងនេះ។`;
+    
+} else {
+    intro = `លទ្ធផលសិក្សារបស់ <span class="font-bold">${sName}</span> ទទួលបាននិទ្ទេស <b class="text-red-600">${g}</b> ដែលស្ថិតក្នុងកម្រិត <b class="text-red-600">ត្រូវខិតខំបន្ថែមជាបន្ទាន់</b>។ ពិន្ទុនេះមិនទាន់ឆ្លើយតបទៅនឹងកម្រិតរំពឹងទុកនៅឡើយទេ ប៉ុន្តែវាមិនមែនជាឧបសគ្គដែលប្អូនមិនអាចជម្នះបានឡើយ។`;
+    strategy = `សូមទាក់ទងលោកគ្រូអ្នកគ្រូប្រចាំមុខវិជ្ជាដើម្បីសុំការណែនាំបន្ថែម។ សូមកុំបាក់ទឹកចិត្ត ហើយចាប់ផ្តើមយកចិត្តទុកដាក់រៀនសូត្រឡើងវិញចាប់ពីថ្ងៃនេះតទៅ។`;
+    voiceText = `លទ្ធផលរបស់ប្អូននាខែនេះតម្រូវឱ្យមានការយកចិត្តទុកដាក់ខ្ពស់។ សូមកុំបាក់ទឹកចិត្ត ត្រូវចាប់ផ្តើមរៀបចំខ្លួន និងប្រឹងប្រែងរៀនសូត្រឡើងវិញ លោកគ្រូអ្នកគ្រូតែងតែនៅក្បែរប្អូនជានិច្ច។`;
+}
             // ការវិភាគមុខវិជ្ជា
             let subAnalysis = "";
             if (strengths.length > 0 && weaknesses.length > 0) {
-                subAnalysis = `ផ្អែកលើទិន្នន័យជាក់ស្តែង ប្អូនមានភាពលេចធ្លោខ្លាំងលើមុខវិជ្ជា ${strText}។ ទន្ទឹមនឹងនេះ មុខវិជ្ជាដែលជាឧបសគ្គរារាំងប្អូនមិនឲ្យបានចំណាត់ថ្នាក់ខ្ពស់គឺ ${wkText}។`;
+                subAnalysis = `ផ្អែកលើទិន្នន័យជាក់ស្តែង ប្អូនមានភាពលេចធ្លោលើមុខវិជ្ជា ${strText}។ ទន្ទឹមនឹងនេះ មុខវិជ្ជាដែលជាឧបសគ្គរារាំងប្អូនមិនឲ្យបានចំណាត់ថ្នាក់ខ្ពស់គឺ ${wkText}។`;
+                voiceText += ` ប្អូនរៀនពូកែខាងមុខវិជ្ជា ${strengths.join(' និង ')}។ ប៉ុន្តែត្រូវខិតខំបន្ថែមលើមុខវិជ្ជា ${weaknesses.join(' និង ')}។`;
             } else if (strengths.length > 0) {
                 subAnalysis = `ភាពលេចធ្លោរបស់ប្អូនគឺមុខវិជ្ជា ${strText} ដែលទទួលបានពិន្ទុយ៉ាងខ្ពស់។ សូមរក្សាសន្ទុះនេះ!`;
+                voiceText += ` ប្អូនរៀនពូកែខាងមុខវិជ្ជា ${strengths.join(' និង ')} សូមបន្តរក្សាស្នាដៃនេះ។`;
             } else if (weaknesses.length > 0) {
-                subAnalysis = `បញ្ហាចម្បងរបស់ប្អូនគឺប្រឈមមុខនឹងការលំបាកលើមុខវិជ្ជា ${wkText}។ មុខវិជ្ជាទាំងនេះទាមទារការចងចាំ និងការអនុវត្តលំហាត់បន្ថែម។`;
+                subAnalysis = `បញ្ហាចម្បងរបស់ប្អូនគឺប្រឈមមុខនឹងការលំបាកលើមុខវិជ្ជា ${wkText} ដែលទាមទារការចងចាំ និងអនុវត្តលំហាត់បន្ថែម។`;
+                voiceText += ` សូមប្រឹងប្រែងបន្ថែមជាបន្ទាន់លើមុខវិជ្ជា ${weaknesses.join(' និង ')}។`;
             }
 
+            currentSpeechText = voiceText; // រក្សាទុកសម្រាប់ប៊ូតុងអាន
+
             return `
-            <div class="flex items-center gap-2 mb-2">
-                <span class="text-xl">🤖</span>
-                <p class="font-black text-indigo-900 text-[12px] uppercase">ការវិភាគ និងប្រឹក្សាយោបល់ស៊ីជម្រៅ (AI Analysis)៖</p>
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🤖</span>
+                    <p class="font-black text-indigo-900 text-[12px] uppercase">ការវិភាគ និងប្រឹក្សា (AI Analysis)៖</p>
+                </div>
+                <button onclick="speakAIText()" class="no-print text-[10px] bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded-full font-bold flex items-center gap-1 transition">
+                    <i class="fa-solid fa-volume-high"></i> ស្ដាប់សំឡេង
+                </button>
             </div>
-            <div class="text-[11px] text-slate-700 leading-relaxed text-justify space-y-1.5">
-                <p>${intro} ${psychology}</p>
-                <p>${subAnalysis}</p>
-                <p class="font-bold text-indigo-800 bg-indigo-100/60 p-1.5 rounded border-l-2 border-indigo-500 mt-2">💡 យុទ្ធសាស្ត្របន្ទាប់៖ ${strategy}</p>
+            <div class="ai-text-content text-[11px] text-slate-700 text-justify">
+                <p>${intro}</p>
+                <p class="mt-1">${subAnalysis}</p>
+                <p class="font-bold text-indigo-800 bg-indigo-100/60 p-1.5 rounded border-l-2 border-indigo-500 mt-1.5">💡 ដំបូន្មានបន្ទាប់៖ ${strategy}</p>
             </div>`;
         }
 
-        // Calculate Rank Locally since we fetch class data
+        // Text-to-Speech Function
+        function speakAIText() {
+            if (!currentSpeechText) return;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // បញ្ឈប់សំឡេងចាស់បើមាន
+                let utterance = new SpeechSynthesisUtterance(currentSpeechText);
+                utterance.lang = 'km-KH'; // កំណត់ភាសាខ្មែរ
+                utterance.rate = 0.9; // ល្បឿនអាន
+                
+                // ព្យាយាមរកសំឡេង Google បើមាន
+                let voices = window.speechSynthesis.getVoices();
+                let khmerVoice = voices.find(voice => voice.lang.includes('km') || voice.lang.includes('KM'));
+                if(khmerVoice) utterance.voice = khmerVoice;
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                Swal.fire('សុំទោស', 'ទូរស័ព្ទឬកម្មវិធីរបស់អ្នកមិនគាំទ្រមុខងារអានសំឡេងទេ!', 'info');
+            }
+        }
+
+        // Calculate Rank Locally
         function getSubjectRank(studentId, subKey, classData) {
             let validScores = classData
                 .map(s => ({ id: s.student_id, score: cleanNum(s[subKey]) }))
@@ -416,35 +452,6 @@
             return '-';
         }
 
-        // QR Code Scanner Functions
-        function toggleScanner() {
-            const container = document.getElementById('qr-reader-container');
-            if (container.classList.contains('hidden')) {
-                container.classList.remove('hidden');
-                html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
-                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-            } else {
-                stopScanner();
-            }
-        }
-
-        function stopScanner() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.clear();
-                document.getElementById('qr-reader-container').classList.add('hidden');
-            }
-        }
-
-        function onScanSuccess(decodedText, decodedResult) {
-            document.getElementById('searchInput').value = decodedText;
-            stopScanner();
-            executeSearch();
-        }
-
-        function onScanFailure(error) {
-            // Ignore ongoing errors while scanning
-        }
-
         // 🌟 MAIN SEARCH EXECUTION
         async function executeSearch() {
             let q = document.getElementById('searchInput').value.trim();
@@ -453,13 +460,13 @@
             
             if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខ ឬឈ្មោះសិស្សជាមុនសិន!', 'warning');
             
+            window.speechSynthesis.cancel(); // Stop any reading
             localStorage.setItem('kpt_last_search_id', q);
             localStorage.setItem('kpt_last_search_month', rawPeriod);
             showLoading();
             
             await ensureConfigLoaded();
 
-            // 🌟 ដំណើរការកាត់ពាក្យ "ប្រចាំខែ" ចេញ ដើម្បីយកទៅ Query ក្នុង Database បានត្រឹមត្រូវ
             let period = rawPeriod.replace("ប្រចាំខែ ", "").replace("លទ្ធផល", "").trim();
 
             let table = period.includes("ប្រចាំឆមាស") ? "semester_scores" : (period === "ប្រចាំឆ្នាំ" ? "annual_scores" : "student_scores");
@@ -526,10 +533,10 @@
                 let summaryHtml = "";
                 if(type === 'annual') {
                     summaryHtml = `
-                        <div class="summary-item"><p class="s-title">មធ្យមភាគ ឆ១</p><p class="s-value">${dbS.sem1_average||0}</p><p class="s-sub">ចំណាត់ថ្នាក់ទី ${dbS.sem1_rank||'-'}</p></div>
-                        <div class="summary-item"><p class="s-title">មធ្យមភាគ ឆ២</p><p class="s-value">${dbS.sem2_average||0}</p><p class="s-sub">ចំណាត់ថ្នាក់ទី ${dbS.sem2_rank||'-'}</p></div>
+                        <div class="summary-item"><p class="s-title">មធ្យមភាគ ឆ១</p><p class="s-value">${dbS.sem1_average||0}</p><p class="s-sub">លេខទី ${dbS.sem1_rank||'-'}</p></div>
+                        <div class="summary-item"><p class="s-title">មធ្យមភាគ ឆ២</p><p class="s-value">${dbS.sem2_average||0}</p><p class="s-sub">លេខទី ${dbS.sem2_rank||'-'}</p></div>
                         <div class="summary-item"><p class="s-title">មធ្យមភាគប្រចាំឆ្នាំ</p><p class="s-value">${dbS.annual_average||0}</p></div>
-                        <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ប្រចាំឆ្នាំ</p><p class="s-value text-red-600">${dbS.class_rank||'-'}</p><p class="s-sub">សិស្សសរុប ${totalInClass} នាក់</p></div>
+                        <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ប្រចាំឆ្នាំ</p><p class="s-value text-red-600">${dbS.class_rank||'-'}</p><p class="s-sub">សិស្សសរុប ${totalInClass}</p></div>
                         <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value ${getGrdCol(dbS.grade_result)}">${dbS.grade_result || 'F'}</p></div>
                     `;
                 } else if (type === 'semester') {
@@ -537,15 +544,15 @@
                         <div class="summary-item"><p class="s-title">ម.ភ ប្រឡងឆមាស</p><p class="s-value">${dbS.exam_average||0}</p></div>
                         <div class="summary-item"><p class="s-title">ម.ភ ខែក្នុងឆមាស</p><p class="s-value">${dbS.monthly_average||0}</p></div>
                         <div class="summary-item"><p class="s-title">មធ្យមភាគប្រចាំឆមាស</p><p class="s-value">${dbS.semester_average||0}</p></div>
-                        <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p><p class="s-value text-red-600">${dbS.class_rank||'-'}</p><p class="s-sub">សិស្សសរុប ${totalInClass} នាក់</p></div>
+                        <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p><p class="s-value text-red-600">${dbS.class_rank||'-'}</p><p class="s-sub">សិស្សសរុប ${totalInClass}</p></div>
                         <div class="summary-item"><p class="s-title">និទ្ទេស</p><p class="s-value ${getGrdCol(dbS.grade_result)}">${dbS.grade_result || 'F'}</p></div>
                     `;
                 } else {
                     let avg = dbS.average || dbS.exam_average || 0;
                     summaryHtml = `
                         <div class="summary-item"><p class="s-title">មធ្យមភាគ</p><p class="s-value">${avg}</p></div>
-                        <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p><p class="s-value text-red-600">${dbS.class_rank||'-'}</p><p class="s-sub">សិស្សសរុប ${totalInClass} នាក់</p></div>
-                        <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់សាលា</p><p class="s-value text-orange-500">${dbS.school_rank||'-'}</p><p class="s-sub">សិស្សសរុប ${totalInSchool} នាក់</p></div>
+                        <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ក្នុងថ្នាក់</p><p class="s-value text-red-600">${dbS.class_rank||'-'}</p><p class="s-sub">សិស្សសរុប ${totalInClass}</p></div>
+                        <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់សាលា</p><p class="s-value text-orange-500">${dbS.school_rank||'-'}</p><p class="s-sub">សិស្សសរុប ${totalInSchool}</p></div>
                         <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value ${getGrdCol(dbS.grade_result)}">${dbS.grade_result || 'F'}</p></div>
                     `;
                 }
@@ -579,17 +586,20 @@
                             let sc = cleanNum(raw); let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
                             tRows += `<tr><td>${idx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="text-blue-700 font-bold text-[13px]">${sc}</td>${sRankHtml}<td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-bold text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
                             
-                            if(pct >= 80) strengths.push(sub);
-                            if(pct <= 50) weaknesses.push(sub);
+                            // AI រាប់តែមុខវិជ្ជាគោលទាំង ១០ ប៉ុណ្ណោះ
+                            if(SUBJECTS_10.includes(sub)) {
+                                if(pct >= 80) strengths.push(sub);
+                                if(pct <= 50) weaknesses.push(sub);
+                            }
                         }
                     }
                 });
                 
                 let totScore = dbS.total_score || dbS.exam_total_score || 0;
                 let tFootColspan = showSubRank ? 3 : 2;
-                document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead>${tHeaders}</thead><tbody>${tRows}</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-600">${maxTotal || '-'}</td><td class="text-blue-700 font-black text-lg">${totScore}</td><td colspan="${tFootColspan}" class="text-gray-400 text-[10px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table>`;
+                document.getElementById('t1-tableArea').innerHTML = `<table class="c-table"><thead>${tHeaders}</thead><tbody>${tRows}</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-600">${maxTotal || '-'}</td><td class="text-blue-700 font-black text-lg">${totScore}</td><td colspan="${tFootColspan}" class="text-gray-400 text-[10px] italic">សមិទ្ធផលសិក្សា</td></tr></tfoot></table>`;
                 
-                // 🌟 AI Feedback Box (ស៊ីជម្រៅជាងមុន)
+                // 🌟 AI Feedback Box (Page 1)
                 let sMapped = mapDbToLegacy(dbS);
                 let aiFeedbackHTML = generateAIFeedback(type, sMapped, strengths, weaknesses);
                 document.getElementById('t1-ai-feedback').innerHTML = aiFeedbackHTML;
@@ -597,7 +607,7 @@
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(dbS.date_solar, dbS.date_lunar, tInfo);
                 
                 // =====================================
-                // P2 Build (ប្រៀបធៀប និង វិភាគដោយ AI ទំព័រទី២)
+                // P2 Build (ប្រៀបធៀប និង វិភាគដោយ AI)
                 // =====================================
                 let histDataRaw = await supaFetch(`student_scores?student_id=eq.${encodeURIComponent(dbS.student_id)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
                 let semDataRaw = await supaFetch(`semester_scores?student_id=eq.${encodeURIComponent(dbS.student_id)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
@@ -614,7 +624,6 @@
                     histMap[r.month_name] = tRes; 
                 });
                 
-                // ជួសជុលបញ្ហាទាញមធ្យមភាគប្រចាំឆមាសខុសនៅទីនេះ
                 semDataRaw.forEach(r => { 
                     let targetAvg = 0;
                     if(r.semester_name && r.semester_name.includes('ប្រឡង')) {
@@ -664,7 +673,7 @@
                     tb += `</tbody></table>`;
 
                     // =====================================
-                    // 🧠 ប្រព័ន្ធវិភាគ និងប្រឹក្សាដោយ AI (ប្រៀបធៀប)
+                    // 🧠 ប្រព័ន្ធវិភាគ និងប្រឹក្សាដោយ AI (P2)
                     // =====================================
                     let aiAnalysisHtml = "";
                     if(availablePeriods.length >= 2) {
@@ -674,7 +683,7 @@
                         let dPrev = histMap[prevPeriod];
 
                         let improved =[];
-                        let declined =[];
+                        let declined = [];
                         let stable = [];
                         let warnings =[];
 
@@ -688,7 +697,7 @@
                                     if(s2 > s1) improved.push(sub);
                                     else if(s2 < s1) {
                                         declined.push(sub);
-                                        if(s2 < (maxS/2)) warnings.push(sub); // បើធ្លាក់ក្រោម ៥០% ត្រូវព្រមាន
+                                        if(s2 < (maxS/2)) warnings.push(sub);
                                     }
                                     else stable.push(sub);
                                 }
@@ -697,10 +706,9 @@
 
                         let diffAvg = (cleanNum(dLast.Average) - cleanNum(dPrev.Average)).toFixed(2);
                         
-                        let aiText = `<div class="flex items-center gap-2 mb-2"><span class="text-xl">🤖</span><p class="font-black text-blue-900 text-[12px] uppercase">ការវិភាគ និងប្រឹក្សាយោបល់ដោយប្រព័ន្ធ៖</p></div>`;
+                        let aiText = `<div class="flex items-center gap-2 mb-2"><span class="text-xl">🤖</span><p class="font-black text-blue-900 text-[12px] uppercase">ការវិភាគចំណុចប្រែប្រួល (AI Analysis)：</p></div>`;
                         aiText += `<div class="text-[11px] text-slate-700 leading-relaxed text-justify px-2">`;
 
-                        // វិភាគមធ្យមភាគរួម
                         if(diffAvg > 0) {
                             aiText += `ធៀបនឹង <b>${prevPeriod}</b> មធ្យមភាគរបស់ប្អូនសម្រាប់ <b>${lastPeriod}</b> ឃើញថាមានការកើនឡើង <b>+${diffAvg}</b> ពិន្ទុ 📈។ លទ្ធផលនេះបង្ហាញពីការខិតខំប្រឹងប្រែងយ៉ាងពិតប្រាកដ លោកគ្រូអ្នកគ្រូសូមកោតសរសើរ! `;
                         } else if(diffAvg < 0) {
@@ -709,21 +717,19 @@
                             aiText += `ធៀបនឹង <b>${prevPeriod}</b> មធ្យមភាគរបស់ប្អូនសម្រាប់ <b>${lastPeriod}</b> គឺរក្សាបានថេរ ⚖️។ `;
                         }
 
-                        // វិភាគតាមមុខវិជ្ជា
                         if(improved.length > 0) {
-                            aiText += `<br><br>🌟 <b>ចំណុចខ្លាំង៖</b> ប្អូនធ្វើបានល្អខ្លាំងដោយមានការរីកចម្រើនលើមុខវិជ្ជា <span class="text-green-600 font-bold">${improved.join(', ')}</span>។ សូមបន្តរក្សាស្នាដៃនេះ។ `;
+                            aiText += `<br><br>🌟 <b>ចំណុចខ្លាំង៖</b> ប្អូនធ្វើបានល្អខ្លាំងដោយមានការរីកចម្រើនពិន្ទុលើមុខវិជ្ជា <span class="text-green-600 font-bold">${improved.join(', ')}</span>។ `;
                         }
                         if(declined.length > 0) {
-                            aiText += `<br>⚠️ <b>ចំណុចត្រូវពង្រឹង៖</b> ទន្ទឹមនឹងនេះ មុខវិជ្ជាដែលមានការថយចុះមាន <span class="text-orange-600 font-bold">${declined.join(', ')}</span>។ `;
+                            aiText += `<br>⚠️ <b>ចំណុចត្រូវពង្រឹង៖</b> ទន្ទឹមនឹងនេះ មុខវិជ្ជាដែលមានការថយចុះពិន្ទុមាន <span class="text-orange-600 font-bold">${declined.join(', ')}</span>។ `;
                         }
                         if(warnings.length > 0) {
                             aiText += `<span class="text-red-600 font-bold underline">ជាពិសេសត្រូវប្រុងប្រយ័ត្នខ្ពស់លើមុខវិជ្ជា ${warnings.join(', ')} ព្រោះពិន្ទុប្អូនស្ថិតក្នុងកម្រិតប្រកាសអាសន្ន។</span> `;
                         }
 
-                        // ការផ្តល់ដំបូន្មាន (Counseling)
                         aiText += `<br><br>💡 <b>យោបល់ប្រឹក្សា៖</b> `;
                         if(warnings.length > 0 || diffAvg < 0) {
-                            aiText += `លោកគ្រូអ្នកគ្រូសូមលើកទឹកចិត្តឲ្យប្អូនកុំបោះបង់។ សូមចំណាយពេលរំលឹកមេរៀនឡើងវិញឲ្យបានច្រើន សាកសួរលោកគ្រូអ្នកគ្រូ ឬរៀនជុំគ្នាជាមួយមិត្តភក្តិ ជាពិសេសលើមុខវិជ្ជាដែលធ្លាក់ចុះ។ យើងជឿជាក់ថាប្អូនពិតជាអាចស្តារលទ្ធផលឡើងវិញបាននៅពេលបន្ទាប់!`;
+                            aiText += `លោកគ្រូអ្នកគ្រូសូមលើកទឹកចិត្តឲ្យប្អូនកុំបោះបង់។ សូមចំណាយពេលរំលឹកមេរៀនឡើងវិញឲ្យបានច្រើន សាកសួរលោកគ្រូអ្នកគ្រូ ឬរៀនជុំគ្នាជាមួយមិត្តភក្តិ។ យើងជឿជាក់ថាប្អូនពិតជាអាចស្តារលទ្ធផលឡើងវិញបាននៅពេលបន្ទាប់!`;
                         } else {
                             aiText += `លទ្ធផលរបស់ប្អូនកំពុងដើរលើផ្លូវត្រូវហើយ។ សូមរក្សាវិន័យនៃការសិក្សានេះជាបន្តទៀត កុំធ្វេសប្រហែសឲ្យសោះ ក្តីជោគជ័យដ៏ធំកំពុងរង់ចាំប្អូននៅខាងមុខ!`;
                         }
@@ -734,7 +740,6 @@
                         aiAnalysisHtml = `<div class="mt-4 p-3 text-center border border-slate-200 bg-slate-50 text-[10px] text-slate-500 rounded-xl">មិនទាន់មានទិន្នន័យគ្រប់គ្រាន់សម្រាប់ប្រព័ន្ធធ្វើការវិភាគប្រៀបធៀបនៅឡើយទេ (ត្រូវការយ៉ាងតិច ២ ខែ/ឆមាស)។</div>`;
                     }
 
-                    // ភ្ជាប់តារាង និងប្រអប់ AI ចូលគ្នា
                     document.getElementById('t1-comparisonTableContainer').innerHTML = tb + aiAnalysisHtml;
                 }
                 
@@ -747,6 +752,7 @@
             } catch (e) { hideLoading(); Swal.fire('បរាជ័យ!', e.message, 'error'); }
         }
 
+        // Telegram Logic Redirect
         function linkTelegram(type) {
             if(!currentStudentInfo) return Swal.fire('បញ្ជាក់', 'សូមស្វែងរកសិស្សជាមុនសិន!', 'warning');
             
@@ -755,7 +761,7 @@
             
             Swal.fire({
                 title: 'ភ្ជាប់ Telegram',
-                text: 'ប្រព័ន្ធនឹងបើកកម្មវិធី Telegram របស់អ្នក ហើយបញ្ជូនទៅកាន់ Bot របស់សាលាដើម្បីភ្ជាប់លេខសម្គាល់ដោយស្វ័យប្រវត្តិ។ សូមចុចប៊ូតុង START នៅក្នុង Telegram!',
+                text: 'ប្រព័ន្ធនឹងបើកកម្មវិធី Telegram របស់អ្នក ហើយបញ្ជូនទៅកាន់ Bot របស់សាលាដើម្បីភ្ជាប់លេខសម្គាល់ដោយស្វ័យប្រវត្តិ។',
                 icon: 'info',
                 showCancelButton: true,
                 confirmButtonText: 'បើក Telegram',
