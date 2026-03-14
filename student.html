@@ -278,6 +278,39 @@
             if (!res.ok) throw new Error("Network Error");
             return await res.json();
         }
+        async function supaFetch(endpoint) {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, { headers });
+            if (!res.ok) throw new Error("Network Error");
+            return await res.json();
+        }
+
+        // 🌟 បន្ថែម Function ថ្មីនេះ ដើម្បីទាញទិន្នន័យលើសពី ១០០០នាក់ (Pagination)
+        async function supaFetchAll(endpoint) {
+            let allData =[];
+            let offset = 0;
+            const limit = 1000;
+            let keepFetching = true;
+            const separator = endpoint.includes('?') ? '&' : '?';
+
+            while (keepFetching) {
+                const url = `${SUPABASE_URL}/rest/v1/${endpoint}${separator}limit=${limit}&offset=${offset}`;
+                const res = await fetch(url, { headers });
+                if (!res.ok) throw new Error("Network Error");
+                const data = await res.json();
+                
+                if (data.length > 0) {
+                    allData = allData.concat(data);
+                    offset += limit;
+                } else {
+                    keepFetching = false;
+                }
+                
+                if (data.length < limit) {
+                    keepFetching = false; // បើទាញបានតិចជាង 1000 មានន័យថាដល់ចុងក្រោយហើយ
+                }
+            }
+            return allData;
+        }
 
         async function fetchInitialData() {
             try {
@@ -507,10 +540,15 @@
                 let totalInClass = classData.length;
                 let femaleInClass = classData.filter(s => ['ស្រី', 'F', 'f', 'ស'].includes(String(s.gender).trim())).length;
 
-                // 3. Fetch Total School Data (For accurate counting)
-                let allSchoolData = await supaFetch(`${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&select=student_id,gender&limit=5000`);
-                let totalInSchool = allSchoolData.length;
-                let femaleInSchool = allSchoolData.filter(s => ['ស្រី', 'F', 'f', 'ស'].includes(String(s.gender).trim())).length;
+                // 🌟 3. Fetch Total School Data (ប្រើ supaFetchAll ទម្លុះដែនកំណត់ 1000 នាក់)
+                let allSchoolData = await supaFetchAll(`${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&select=student_id,gender`);
+                
+                // រក្សាទុកតែ ID ដែលមិនស្ទួន ដើម្បីធានាចំនួនសិស្សពិតប្រាកដ
+                let uniqueSchoolStus = new Map();
+                allSchoolData.forEach(s => uniqueSchoolStus.set(String(s.student_id).trim(), s));
+                
+                let totalInSchool = uniqueSchoolStus.size;
+                let femaleInSchool = Array.from(uniqueSchoolStus.values()).filter(s => ['ស្រី', 'F', 'f', 'ស'].includes(String(s.gender).trim())).length;
 
                 let type = 'month';
                 if(period.includes("ប្រឡងឆមាស")) type = 'exam';
