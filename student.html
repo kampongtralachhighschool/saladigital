@@ -238,18 +238,37 @@
         let html5QrcodeScanner = null;
         let currentSpeechText = "";
 
-        document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
             const input = document.getElementById("searchInput");
-            if(input) { input.addEventListener("keypress", e => { if (e.key === "Enter") { e.preventDefault(); executeSearch(); }}); }
+            if(input) { 
+                input.addEventListener("keypress", e => { 
+                    if (e.key === "Enter") { e.preventDefault(); executeSearch(); }
+                }); 
+            }
             
             fetchInitialData().then(() => {
+                // 🌟 ចាប់យកប៉ារ៉ាម៉ែត្រពី URL ដែលបាញ់មកពី Telegram
                 const urlParams = new URLSearchParams(window.location.search);
                 let sid = urlParams.get('id') || localStorage.getItem('kpt_last_search_id');
                 let smonth = urlParams.get('month') || localStorage.getItem('kpt_last_search_month');
+                
                 if (sid) { 
                     document.getElementById('searchInput').value = sid; 
-                    if(smonth) document.getElementById('monthSelect').value = smonth; 
-                    executeSearch(); 
+                    
+                    // អូតូរើសខែឲ្យចំ
+                    if(smonth) {
+                        let sel = document.getElementById('monthSelect');
+                        for(let i = 0; i < sel.options.length; i++) {
+                            // កាត់ពាក្យមិនចាំបាច់ដើម្បីផ្ទៀងផ្ទាត់ឲ្យត្រូវ
+                            let optVal = sel.options[i].value.replace("ប្រចាំខែ ", "").replace("លទ្ធផល", "").trim();
+                            if(optVal === smonth || sel.options[i].value === smonth) {
+                                sel.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    } 
+                    // ពន្យារពេលបន្តិច ដើម្បីប្រាកដថាទិន្នន័យ Config លោតពេញ ទើបចុចស្វែងរកអូតូ
+                    setTimeout(() => { executeSearch(); }, 300);
                 }
             });
         });
