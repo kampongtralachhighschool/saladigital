@@ -92,7 +92,7 @@
 
         /* Layout Area */
         .header-area { text-align: center; margin-bottom: 10px; z-index: 10; }
-        .students-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 35px; z-index: 10; }
+        .students-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 40px; z-index: 10; }
         .blessing-area { margin-top: auto; margin-bottom: 15px; z-index: 10; width: 100%; }
 
         /* Glassmorphism Student Cards */
@@ -104,7 +104,7 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             position: relative; 
-            width: 380px; 
+            width: 320px; 
             margin-top: 40px; 
         }
 
@@ -141,8 +141,8 @@
         .bronze + .ribbon { background: #78350F; }
         .standard + .ribbon { background: #047857; }
 
-        /* Rank 1 Big Card */
-        .student-card.wide { width: 700px; padding-top: 1.5rem; margin-top: 45px;}
+        /* Rank 1 Big Card (ប្រើតែពេលមានលេខ១ តែម្នាក់គត់) */
+        .student-card.wide { width: 600px; padding-top: 1.5rem; margin-top: 45px;}
         .student-card.wide .medal { width: 90px; height: 90px; font-size: 2.8rem; }
         .student-card.wide .medal-container { top: -55px; }
         .student-card.wide .ribbon { width: 35px; height: 25px; margin-top: -12px;}
@@ -164,7 +164,9 @@
             width: 100%;
         }
 
-        /* PRINT CONFIGURATION */
+        /* ==========================================
+           🌟 PRINT CONFIGURATION
+           ========================================== */
         @media print {
             @page { size: 1080px 1350px; margin: 0; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -185,11 +187,9 @@
                 box-shadow: none !important; border: none !important;
             }
 
-            /* លុប Blur ការពារ Chrome លុបប្រអប់សិស្ស */
             .student-card {
                 background: rgba(255, 255, 255, 0.15) !important; 
-                backdrop-filter: none !important;
-                -webkit-backdrop-filter: none !important;
+                backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
                 border: 1px solid rgba(255, 255, 255, 0.3) !important;
             }
             .blessing-box { background: rgba(255, 255, 255, 0.1) !important; }
@@ -254,11 +254,12 @@
             return String(num).split('').map(d => khmerNums[d] || d).join('');
         };
 
-        // 🌟 ប្រើ Order By student_id ដើម្បីឲ្យ Pagination មិនបាត់សិស្ស
+        // ទាញទិន្នន័យពី Supabase (Pagination)
         async function fetchSupabaseData(table, queryParams) {
             let allData =[]; let offset = 0; const limit = 1000; let keepFetching = true;
             while (keepFetching) {
-                const url = `${SUPABASE_URL}/rest/v1/${table}?${queryParams}&order=student_id.asc&limit=${limit}&offset=${offset}`;
+                // ប្រើ id.asc ដើម្បីកុំឲ្យរំលងទិន្នន័យ
+                const url = `${SUPABASE_URL}/rest/v1/${table}?${queryParams}&order=id.asc&limit=${limit}&offset=${offset}`;
                 const res = await fetch(url, { headers: HEADERS });
                 if (!res.ok) throw new Error("Network Error");
                 const data = await res.json();
@@ -268,8 +269,9 @@
             return allData;
         }
 
+        // Parse Rank
         function parseRank(val) {
-            if (!val) return 9999;
+            if (val === null || val === undefined || val === '') return 9999;
             let str = String(val).trim();
             const kmToEn = { '០':'0', '១':'1', '២':'2', '៣':'3', '៤':'4', '៥':'5', '៦':'6', '៧':'7', '៨':'8', '៩':'9' };
             str = str.replace(/[០-៩]/g, m => kmToEn[m]); 
@@ -315,8 +317,8 @@
                     }
                 });
 
-                // 🌟 ២. ទាញយកតែសិស្សដែលមានចំណាត់ថ្នាក់ ដើម្បីលឿននិងមិនរំលង
-                let data = await fetchSupabaseData(table, `${pCol}=eq.${encodeURIComponent(period)}&academic_year=eq.${encodeURIComponent(year)}&class_rank=not.is.null`);
+                // 🌟 ២. ទាញទិន្នន័យទាំងអស់ក្នុងខែ/ឆមាស (កុំប្រើ class_rank ក្នុង query ជៀសវាង Supabase កាត់ចោល)
+                let data = await fetchSupabaseData(table, `${pCol}=eq.${encodeURIComponent(period)}&academic_year=eq.${encodeURIComponent(year)}`);
                 
                 if(data.length === 0) {
                     Swal.fire('ទទេ!', 'មិនមានទិន្នន័យសម្រាប់ជម្រើសនេះទេ!', 'info');
@@ -340,7 +342,7 @@
                     let cName = String(s.grade).trim().toUpperCase();
                     if(!classesMap[cName]) classesMap[cName] =[];
                     
-                    // ជួសជុលបញ្ហាអត់ឈ្មោះចេញតែវង់ក្រចក
+                    // បំពេញឈ្មោះបើទទេស្អាត
                     if (!s.student_name || s.student_name.trim() === '') {
                         s.student_name = namesDict[String(s.student_id).trim()] || "មិនស្គាល់ឈ្មោះ";
                     }
@@ -373,7 +375,7 @@
         }
 
         // =========================================================
-        // 🎨 DYNAMIC HTML GENERATOR (The Core Engine)
+        // 🎨 DYNAMIC HTML GENERATOR (Smart Grouping)
         // =========================================================
         
         function getMedalConfig(rankNum) {
@@ -383,6 +385,7 @@
             return { color: 'standard', cls: 'rank-other' };
         }
 
+        // 🌟 រៀបចំ Card ឲ្យសិស្ស (លែងបង្ហាញអត្តលេខ)
         function createStudentCard(student, isTop1, widthClass = 'w-[320px]') {
             let rankNum = parseRank(student.class_rank);
             let conf = getMedalConfig(rankNum);
@@ -393,8 +396,8 @@
             let rankKhm = toKhmerNum(rankNum);
             let isA = grd.toUpperCase() === 'A' ? 'a-grade' : '';
 
-            // បង្ហាញទាំងឈ្មោះ ទាំងអត្តលេខ ងាយស្រួលចំណាំ
-            let displayName = `${student.student_name} (${student.student_id})`;
+            // បង្ហាញតែឈ្មោះ
+            let displayName = student.student_name.trim();
 
             if (isTop1) {
                 return `
@@ -419,9 +422,9 @@
                         <div class="medal ${conf.color}"><div class="medal-inner">${rankKhm}</div></div>
                         <div class="ribbon"></div>
                     </div>
-                    <h3 class="font-bold text-[17px] text-white mt-4 text-center w-full drop-shadow-md truncate px-2">${displayName}</h3>
+                    <h3 class="font-bold text-[19px] text-white mt-4 text-center w-full drop-shadow-md truncate px-2">${displayName}</h3>
                     <hr class="divider">
-                    <div class="w-full flex justify-between px-2 text-blue-100 font-bold text-base items-center">
+                    <div class="w-full flex justify-between px-4 text-blue-100 font-bold text-base items-center">
                         <span>មធ្យមភាគ: ${score}</span>
                         <span class="flex items-center gap-2">និទ្ទេស: <span class="grade-badge ${isA}">${grd}</span></span>
                     </div>
@@ -457,30 +460,32 @@
                     <!-- STUDENTS AREA -->
                     <div class="students-area">`;
 
-            let rank1s = students.filter(s => parseRank(s.class_rank) === 1);
-            let rank23s = students.filter(s => parseRank(s.class_rank) === 2 || parseRank(s.class_rank) === 3);
-            let rank45s = students.filter(s => parseRank(s.class_rank) === 4 || parseRank(s.class_rank) === 5);
+            // 🌟 មុខងារបែងចែកតាមលេខស្ទួនដោយស្វ័យប្រវត្តិ (Smart Grouping)
+            let ranksGroup = {};
+            students.forEach(s => {
+                let r = parseRank(s.class_rank);
+                if (!ranksGroup[r]) ranksGroup[r] = [];
+                ranksGroup[r].push(s);
+            });
 
-            if (rank1s.length > 0) {
-                let cardWidth = (rank1s.length === 1) ? 'wide w-[700px]' : 'w-[320px]';
-                html += `<div class="flex justify-center flex-wrap gap-6 w-full">`;
-                rank1s.forEach(s => { html += createStudentCard(s, rank1s.length === 1, cardWidth); });
-                html += `</div>`;
-            }
+            // ទាញយកលេខចំណាត់ថ្នាក់ពីតូចទៅធំ
+            let uniqueRanks = Object.keys(ranksGroup).map(Number).sort((a,b)=>a-b);
 
-            if (rank23s.length > 0) {
-                let cardWidth = (rank23s.length >= 4) ? 'w-[250px]' : 'w-[320px]';
-                html += `<div class="flex justify-center flex-wrap gap-6 w-full">`;
-                rank23s.forEach(s => { html += createStudentCard(s, false, cardWidth); });
+            uniqueRanks.forEach(r => {
+                let stusInRank = ranksGroup[r];
+                
+                // បើលេខ១ មានតែម្នាក់ ឲ្យគូររាងធំ (wide card)
+                let isTop1Single = (r === 1 && stusInRank.length === 1);
+                
+                // បើស្ទួនច្រើន ឲ្យបង្រួមកាតបន្តិចកុំឲ្យហៀរ
+                let cardWidth = isTop1Single ? 'wide w-[600px]' : (stusInRank.length >= 4 ? 'w-[230px]' : 'w-[300px]');
+                
+                html += `<div class="flex justify-center flex-wrap gap-x-8 gap-y-12 w-full mt-2">`;
+                stusInRank.forEach(s => {
+                    html += createStudentCard(s, isTop1Single, cardWidth);
+                });
                 html += `</div>`;
-            }
-
-            if (rank45s.length > 0) {
-                let cardWidth = (rank45s.length >= 4) ? 'w-[250px]' : 'w-[320px]';
-                html += `<div class="flex justify-center flex-wrap gap-6 w-full">`;
-                rank45s.forEach(s => { html += createStudentCard(s, false, cardWidth); });
-                html += `</div>`;
-            }
+            });
 
             html += `
                     </div> <!-- End Students Area -->
@@ -500,12 +505,14 @@
             return html;
         }
 
+        // មុខងារទាញយកជារូបភាព
         function downloadImage(canvasId, className) {
             const element = document.getElementById(canvasId);
             const wrapper = element.parentElement;
             
             Swal.fire({ title: 'កំពុងបង្កើតរូបភាព...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
+            // លុប Scale សិន ទើប html2canvas អាចថតទំហំពេញ 1080x1350 ជោគជ័យ
             const originalTransform = wrapper.style.transform;
             wrapper.style.transform = "scale(1)";
             wrapper.style.width = "1080px";
