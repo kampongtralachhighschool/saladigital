@@ -16,129 +16,211 @@
             --gold-light: #FCEABB;
             
             /* Medal Colors */
-            --c-gold: #eab308;
-            --c-gold-dark: #b45309;
-            --c-silver: #94a3b8;
-            --c-silver-dark: #475569;
-            --c-bronze: #d97706;
-            --c-bronze-dark: #78350f;
-            --c-blue: #3b82f6;
-            --c-blue-dark: #1e3a8a;
+            --c-gold: #eab308; --c-gold-dark: #b45309;
+            --c-silver: #94a3b8; --c-silver-dark: #475569;
+            --c-bronze: #d97706; --c-bronze-dark: #78350f;
+            --c-blue: #3b82f6; --c-blue-dark: #1e3a8a;
         }
-
-        body { font-family: 'Battambang', sans-serif; background-color: #e2e8f0; margin: 0; padding: 0; }
-        
-        .font-moul { 
-            font-family: 'Moul', cursive; 
-            line-height: 1.7 !important; 
-            padding-top: 5px;
-            padding-bottom: 5px;
-        }
-
-        /* Control Panel */
-        .control-panel { background: white; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; border-bottom: 2px solid #cbd5e1; }
-        
-        #render-container { display: flex; flex-direction: column; align-items: center; gap: 40px; padding: 40px 20px; }
-
-        .canvas-wrapper {
-            position: relative;
-            transform: scale(0.65);
-            transform-origin: top center;
-            margin-bottom: -450px; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .btn-download-img {
-            position: absolute; top: -65px; right: 0;
-            background: #16a34a; color: white; padding: 12px 24px;
-            border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer;
-            z-index: 200; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.3s; border: none;
-        }
-        .btn-download-img:hover { background: #15803d; transform: translateY(-2px); }
 
         /* ==========================================
-           1080x1350 Facebook Post Canvas (Light Theme)
+           🌟 ម៉ូដទាំង ១០ (THEME VARIABLES)
            ========================================== */
-        .fb-post-canvas {
-            width: 1080px;
-            height: 1350px;
-            background-color: #fdfdfd;
-            background-image: radial-gradient(circle at 50% 50%, #ffffff 0%, #f8fafc 100%);
-            position: relative;
-            box-sizing: border-box;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            padding: 40px 50px;
-            overflow: hidden;
+        
+        /* 1. Classic Light (ស-ខៀវ) - Default */
+        .theme-1 {
+            --cv-bg: #fdfdfd;
+            --cv-pattern: radial-gradient(circle at 50% 50%, #ffffff 0%, #f8fafc 100%);
+            --txt-school: #1e3a8a; --txt-title: #b91c1c; --txt-blessing: #b45309;
+            --card-bg: #ffffff; --card-border: #e2e8f0; --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            --txt-name: #1e3a8a; --txt-score: #475569;
+            --badge-bg: #fef9c3; --badge-txt: #1e3a8a;
+            --footer-bg: linear-gradient(to right, #fefce8, #ffffff, #fefce8);
         }
 
-        .canvas-border-outer {
-            position: absolute; top: 15px; bottom: 15px; left: 15px; right: 15px;
-            border: 1.5px solid var(--gold-main); pointer-events: none; z-index: 1;
+        /* 2. Royal Blue (ខៀវរាជវាំង) */
+        .theme-2 {
+            --cv-bg: #0f4085;
+            --cv-pattern: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.05) 0%, transparent 50%), linear-gradient(135deg, #051d45 0%, #0f4085 50%, #051d45 100%);
+            --txt-school: #bfdbfe; --txt-title: #FCEABB; --txt-blessing: #FCEABB;
+            --card-bg: rgba(255, 255, 255, 0.08); --card-border: rgba(255,255,255,0.15); --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --txt-name: #ffffff; --txt-score: #e2e8f0;
+            --badge-bg: rgba(255,255,255,0.15); --badge-txt: #FCEABB;
+            --footer-bg: rgba(255, 255, 255, 0.1);
         }
-        .canvas-border-inner {
-            position: absolute; top: 22px; bottom: 22px; left: 22px; right: 22px;
-            border: 1px solid rgba(212, 175, 55, 0.4); pointer-events: none; z-index: 1;
+
+        /* 3. Khmer Red (ក្រហមប្រពៃណី) */
+        .theme-3 {
+            --cv-bg: #7f1d1d;
+            --cv-pattern: radial-gradient(circle at 50% 10%, rgba(220,38,38,0.8) 0%, #450a0a 100%);
+            --txt-school: #fef08a; --txt-title: #ffffff; --txt-blessing: #fef08a;
+            --card-bg: rgba(255, 255, 255, 0.95); --card-border: #fca5a5; --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --txt-name: #7f1d1d; --txt-score: #450a0a;
+            --badge-bg: #fef08a; --badge-txt: #7f1d1d;
+            --footer-bg: rgba(255, 255, 255, 0.15);
         }
+
+        /* 4. Emerald Green (បៃតងត្បូងមរកត) */
+        .theme-4 {
+            --cv-bg: #064e3b;
+            --cv-pattern: linear-gradient(135deg, #064e3b 0%, #047857 100%);
+            --txt-school: #a7f3d0; --txt-title: #FCEABB; --txt-blessing: #FCEABB;
+            --card-bg: rgba(255, 255, 255, 0.1); --card-border: rgba(255,255,255,0.2); --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --txt-name: #ffffff; --txt-score: #d1fae5;
+            --badge-bg: rgba(255,255,255,0.2); --badge-txt: #a7f3d0;
+            --footer-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 5. Imperial Purple (ស្វាយអធិរាជ) */
+        .theme-5 {
+            --cv-bg: #3b0764;
+            --cv-pattern: radial-gradient(circle at 50% 50%, #581c87 0%, #2e1065 100%);
+            --txt-school: #e9d5ff; --txt-title: #FCEABB; --txt-blessing: #e9d5ff;
+            --card-bg: rgba(255, 255, 255, 0.95); --card-border: #d8b4fe; --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            --txt-name: #3b0764; --txt-score: #4c1d95;
+            --badge-bg: #e9d5ff; --badge-txt: #3b0764;
+            --footer-bg: rgba(255, 255, 255, 0.15);
+        }
+
+        /* 6. Dark Knight (ខ្មៅស្រមោល) */
+        .theme-6 {
+            --cv-bg: #0f172a;
+            --cv-pattern: linear-gradient(to bottom right, #1e293b, #020617);
+            --txt-school: #94a3b8; --txt-title: #FCEABB; --txt-blessing: #cbd5e1;
+            --card-bg: rgba(255, 255, 255, 0.05); --card-border: rgba(255,255,255,0.1); --card-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --txt-name: #ffffff; --txt-score: #94a3b8;
+            --badge-bg: rgba(255,255,255,0.1); --badge-txt: #e2e8f0;
+            --footer-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        /* 7. Rose Gold (ផ្កាឈូកមាស) */
+        .theme-7 {
+            --cv-bg: #fff1f2;
+            --cv-pattern: radial-gradient(circle at top right, #ffe4e6, #fecdd3);
+            --txt-school: #881337; --txt-title: #e11d48; --txt-blessing: #881337;
+            --card-bg: #ffffff; --card-border: #fecdd3; --card-shadow: 0 10px 25px rgba(225, 29, 72, 0.1);
+            --txt-name: #9f1239; --txt-score: #4c0519;
+            --badge-bg: #ffe4e6; --badge-txt: #9f1239;
+            --footer-bg: #ffffff;
+        }
+
+        /* 8. Ocean Breeze (ផ្ទៃសមុទ្រ) */
+        .theme-8 {
+            --cv-bg: #ecfeff;
+            --cv-pattern: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
+            --txt-school: #083344; --txt-title: #0284c7; --txt-blessing: #083344;
+            --card-bg: #ffffff; --card-border: #bae6fd; --card-shadow: 0 10px 25px rgba(2, 132, 199, 0.1);
+            --txt-name: #0369a1; --txt-score: #0c4a6e;
+            --badge-bg: #e0f2fe; --badge-txt: #0369a1;
+            --footer-bg: #ffffff;
+        }
+
+        /* 9. Earthy Brown (ត្នោតឈើប្រណីត) */
+        .theme-9 {
+            --cv-bg: #451a03;
+            --cv-pattern: radial-gradient(circle at 50% 50%, #78350f 0%, #422006 100%);
+            --txt-school: #fef3c7; --txt-title: #fde047; --txt-blessing: #fef3c7;
+            --card-bg: rgba(255, 255, 255, 0.95); --card-border: #d97706; --card-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            --txt-name: #78350f; --txt-score: #451a03;
+            --badge-bg: #fef3c7; --badge-txt: #78350f;
+            --footer-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 10. Silver Minimalist (ប្រាក់រលោង) */
+        .theme-10 {
+            --cv-bg: #f8fafc;
+            --cv-pattern: linear-gradient(to right, #f1f5f9, #e2e8f0);
+            --txt-school: #334155; --txt-title: #0f172a; --txt-blessing: #334155;
+            --card-bg: #ffffff; --card-border: #cbd5e1; --card-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            --txt-name: #0f172a; --txt-score: #475569;
+            --badge-bg: #e2e8f0; --badge-txt: #0f172a;
+            --footer-bg: #ffffff;
+        }
+
+        /* ==========================================
+           🌟 រចនាសម្ព័ន្ធទូទៅ
+           ========================================== */
+        body { font-family: 'Battambang', sans-serif; background-color: #e2e8f0; margin: 0; padding: 0; }
+        .font-moul { font-family: 'Moul', cursive; line-height: 1.7 !important; padding-top: 5px; padding-bottom: 5px; }
+
+        /* Lock Screen */
+        #main-ui { display: none; }
+
+        .control-panel { background: white; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; border-bottom: 2px solid #cbd5e1; }
+        #render-container { display: flex; flex-direction: column; align-items: center; gap: 40px; padding: 40px 20px; }
+
+        .canvas-wrapper { position: relative; transform: scale(0.65); transform-origin: top center; margin-bottom: -450px; display: flex; flex-direction: column; align-items: center; }
+
+        .btn-download-img { position: absolute; top: -65px; right: 0; background: #16a34a; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; z-index: 200; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.3s; border: none; }
+        .btn-download-img:hover { background: #15803d; transform: translateY(-2px); }
+
+        /* 1080x1350 Facebook Post Canvas */
+        .fb-post-canvas {
+            width: 1080px; height: 1350px;
+            background-color: var(--cv-bg);
+            background-image: var(--cv-pattern);
+            position: relative; box-sizing: border-box; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; padding: 50px; overflow: hidden;
+            transition: all 0.5s ease; /* ធ្វើឲ្យការប្តូរពណ៌ Smooth */
+        }
+
+        .canvas-border-outer { position: absolute; top: 15px; bottom: 15px; left: 15px; right: 15px; border: 1.5px solid var(--gold-main); pointer-events: none; z-index: 1; }
+        .canvas-border-inner { position: absolute; top: 22px; bottom: 22px; left: 22px; right: 22px; border: 1px solid rgba(212, 175, 55, 0.5); pointer-events: none; z-index: 1; }
         .corner { position: absolute; width: 35px; height: 35px; border: 4px solid var(--gold-main); z-index: 2; pointer-events: none;}
         .c-tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
         .c-tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
         .c-bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
         .c-br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
 
-        /* Layout Area */
         .header-area { text-align: center; margin-bottom: 20px; z-index: 10; margin-top: 10px; }
         .students-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; z-index: 10; margin-top: 10px; width: 100%; }
 
-        .title-school { color: #1e3a8a; font-size: 26px; letter-spacing: 2px; }
+        .title-school { color: var(--txt-school); font-size: 26px; letter-spacing: 2px; transition: color 0.5s;}
         .title-main { 
-            color: #b91c1c; 
-            font-size: 48px; 
-            text-shadow: 2px 2px 0px #fff, -2px -2px 0px #fff, 2px -2px 0px #fff, -2px 2px 0px #fff, 0 6px 12px rgba(0,0,0,0.15); 
+            color: var(--txt-title); font-size: 48px; 
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.3), 0 4px 8px rgba(0,0,0,0.15); 
+            transition: color 0.5s;
         }
 
-        /* 🌟 កាតសិស្ស និង មេដាយ (Style រួម) */
         .student-card {
-            background: #ffffff; border-radius: 16px; 
+            background: var(--card-bg); border-radius: 16px; padding: 2.5rem 1.5rem 1rem 1.5rem;
             display: flex; flex-direction: column; align-items: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            position: relative; border: 1px solid #f1f5f9;
+            box-shadow: var(--card-shadow); position: relative; border: 1px solid var(--card-border);
+            transition: all 0.5s ease;
         }
 
-        .card-top-line {
-            position: absolute; top: 0; left: 0; right: 0; height: 6px;
-            border-top-left-radius: 16px; border-top-right-radius: 16px;
-        }
+        .card-top-line { position: absolute; top: 0; left: 0; right: 0; height: 6px; border-top-left-radius: 16px; border-top-right-radius: 16px; }
         .rank-1 .card-top-line { background: var(--c-gold); }
         .rank-2 .card-top-line { background: var(--c-silver); }
         .rank-3 .card-top-line { background: var(--c-bronze); }
         .rank-other .card-top-line { background: var(--c-blue); }
 
-        .medal-container { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
+        .medal-container { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
         .medal { 
-            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
-            font-family: 'Moul', cursive; color: white;
+            width: 75px; height: 75px; border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            font-family: 'Moul', cursive; font-size: 2.2rem; color: white;
             box-shadow: 0 8px 15px rgba(0,0,0,0.2), inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.5); z-index: 10;
         }
-        
-        .medal.gold { background: radial-gradient(circle, #fde047 0%, #d97706 100%); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); border: 2px solid #fef08a;}
-        .medal.silver { background: radial-gradient(circle, #f1f5f9 0%, #94a3b8 100%); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); border: 2px solid #ffffff;}
-        .medal.bronze { background: radial-gradient(circle, #fcd34d 0%, #b45309 100%); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); border: 2px solid #fde047;}
-        .medal.standard { background: radial-gradient(circle, #60a5fa 0%, #2563eb 100%); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); border: 2px solid #bfdbfe;}
+        .medal.gold { background: radial-gradient(circle, #fde047 0%, #d97706 100%); border: 2px solid #fef08a;}
+        .medal.silver { background: radial-gradient(circle, #f1f5f9 0%, #94a3b8 100%); border: 2px solid #ffffff;}
+        .medal.bronze { background: radial-gradient(circle, #fcd34d 0%, #b45309 100%); border: 2px solid #fde047;}
+        .medal.standard { background: radial-gradient(circle, #60a5fa 0%, #2563eb 100%); border: 2px solid #bfdbfe;}
 
-        .ribbon { clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 70%, 0 100%); z-index: 5; }
+        .ribbon { width: 25px; height: 25px; margin-top: -12px; z-index: 5; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 70%, 0 100%); }
         .rank-1 .ribbon { background: var(--c-gold-dark); }
         .rank-2 .ribbon { background: var(--c-silver-dark); }
         .rank-3 .ribbon { background: var(--c-bronze-dark); }
         .rank-other .ribbon { background: var(--c-blue-dark); }
 
-        hr.divider { border-color: #cbd5e1; width: 100%; border-style: dashed; }
+        hr.divider { border-color: var(--card-border); margin: 15px 0; width: 100%; border-style: dashed; }
         
-        .grade-badge { background: #fef08a; border: 1px solid #fde047; color: #b45309; border-radius: 6px; font-weight: 900; }
-        .info-badge { background: #fef9c3; border: 1px solid #fde047; color: #1e3a8a; padding: 6px 20px; border-radius: 999px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .grade-badge { background: #fef08a; border: 1px solid #fde047; color: #b45309; padding: 2px 12px; border-radius: 6px; font-weight: 900; }
+        .info-badge { background: var(--badge-bg); border: 1px solid rgba(212, 175, 55, 0.4); color: var(--badge-txt); padding: 6px 20px; border-radius: 999px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.5s ease;}
+        
+        .blessing-box { background: var(--footer-bg); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 16px; padding: 15px; text-align: center; width: 100%; transition: all 0.5s ease;}
+        .blessing-text { color: var(--txt-blessing); transition: color 0.5s ease; }
+
+        .stu-name { color: var(--txt-name); transition: color 0.5s ease;}
+        .stu-score { color: var(--txt-score); transition: color 0.5s ease;}
 
         /* PRINT CONFIGURATION */
         @media print {
@@ -148,66 +230,78 @@
             .control-panel, .no-print, .btn-download-img { display: none !important; }
             #render-container { padding: 0 !important; gap: 0 !important; display: block !important; }
             
-            .canvas-wrapper { 
-                margin: 0 auto !important; padding: 0 !important; 
-                transform: none !important; zoom: 1 !important; 
-                display: block !important;
-                page-break-after: always !important;
-                page-break-inside: avoid !important;
-            }
-
-            .fb-post-canvas {
-                width: 1080px !important; height: 1350px !important;
-                box-shadow: none !important; border: none !important;
-            }
+            .canvas-wrapper { margin: 0 auto !important; padding: 0 !important; transform: none !important; zoom: 1 !important; display: block !important; page-break-after: always !important; page-break-inside: avoid !important; }
+            .fb-post-canvas { width: 1080px !important; height: 1350px !important; box-shadow: none !important; border: none !important; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 🌟 CONTROL PANEL -->
-    <div class="control-panel no-print w-full flex flex-col md:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-            <span class="text-3xl">🏆</span>
-            <div>
-                <h1 class="font-bold text-xl text-blue-900 moul-font">តារាងកិត្តិយស (Facebook Format)</h1>
-                <p class="text-xs text-gray-500 font-bold">ទំហំ 1080x1350 px លេខ ១ ដល់ ៥</p>
+    <!-- 🌟 LOCK SCREEN / MAIN UI WRAPPER -->
+    <div id="main-ui">
+        
+        <!-- CONTROL PANEL -->
+        <div class="control-panel no-print w-full flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">🏆</span>
+                <div>
+                    <h1 class="font-bold text-xl text-blue-900 moul-font">តារាងកិត្តិយស (Facebook Format)</h1>
+                    <p class="text-xs text-gray-500 font-bold">ទំហំ 1080x1350 px លេខ ១ ដល់ ៥</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                
+                <!-- 🌟 THEME SWITCHER -->
+                <select id="themeSelect" onchange="changeTheme()" class="px-4 py-2.5 rounded-xl border-2 border-blue-400 font-bold text-sm bg-blue-50 text-blue-800 outline-none">
+                    <option value="theme-1">🤍 ម៉ូដទី១: សរលោង (Default)</option>
+                    <option value="theme-2">💙 ម៉ូដទី២: ខៀវរាជវាំង</option>
+                    <option value="theme-3">❤️ ម៉ូដទី៣: ក្រហមប្រពៃណី</option>
+                    <option value="theme-4">💚 ម៉ូដទី៤: បៃតងមរកត</option>
+                    <option value="theme-5">💜 ម៉ូដទី៥: ស្វាយអធិរាជ</option>
+                    <option value="theme-6">🖤 ម៉ូដទី៦: ខ្មៅស្រមោល</option>
+                    <option value="theme-7">💖 ម៉ូដទី៧: ផ្កាឈូកមាស</option>
+                    <option value="theme-8">🌊 ម៉ូដទី៨: ផ្ទៃសមុទ្រ</option>
+                    <option value="theme-9">🤎 ម៉ូដទី៩: ត្នោតឈើប្រណីត</option>
+                    <option value="theme-10">🤍 ម៉ូដទី១០: ប្រាក់រលោង</option>
+                </select>
+
+                <div class="w-px h-8 bg-gray-300 mx-1"></div>
+
+                <select id="yearSelect" class="px-4 py-2.5 rounded-xl border border-gray-300 font-bold text-sm bg-gray-50">
+                    <option value="២០២៣-២០២៤">២០២៣-២០២៤</option>
+                    <option value="២០២៤-២០២៥">២០២៤-២០២៥</option>
+                    <option value="២០២៥-២០២៦" selected>២០២៥-២០២៦</option>
+                </select>
+
+                <select id="periodSelect" class="px-4 py-2.5 rounded-xl border border-gray-300 font-bold text-sm bg-gray-50">
+                    <option value="មករា">ប្រចាំខែ មករា</option>
+                    <option value="កុម្ភៈ">ប្រចាំខែ កុម្ភៈ</option>
+                    <option value="មីនា">ប្រចាំខែ មីនា</option>
+                    <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option>
+                    <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option>
+                    <option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                    <option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២</option>
+                    <option value="ប្រចាំឆ្នាំ">លទ្ធផលប្រចាំឆ្នាំ</option>
+                </select>
+
+                <button onclick="fetchHonorRollData()" id="btnFetch" class="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl shadow hover:bg-blue-700 transition">
+                    ទាញទិន្នន័យ
+                </button>
+
+                <button onclick="window.print()" id="btnPrint" class="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow hover:bg-red-700 transition hidden">
+                    📄 Save ជា PDF ទាំងអស់
+                </button>
             </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3">
-            <select id="yearSelect" class="px-4 py-2.5 rounded-xl border border-gray-300 font-bold text-sm bg-gray-50">
-                <option value="២០២៣-២០២៤">២០២៣-២០២៤</option>
-                <option value="២០២៤-២០២៥">២០២៤-២០២៥</option>
-                <option value="២០២៥-២០២៦" selected>២០២៥-២០២៦</option>
-            </select>
-
-            <select id="periodSelect" class="px-4 py-2.5 rounded-xl border border-gray-300 font-bold text-sm bg-gray-50">
-                <option value="មករា">ប្រចាំខែ មករា</option>
-                <option value="កុម្ភៈ">ប្រចាំខែ កុម្ភៈ</option>
-                <option value="មីនា">ប្រចាំខែ មីនា</option>
-                <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option>
-                <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option>
-                <option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
-                <option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២</option>
-                <option value="ប្រចាំឆ្នាំ">លទ្ធផលប្រចាំឆ្នាំ</option>
-            </select>
-
-            <button onclick="fetchHonorRollData()" id="btnFetch" class="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl shadow hover:bg-blue-700 transition">
-                ទាញទិន្នន័យ
-            </button>
-
-            <button onclick="window.print()" id="btnPrint" class="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow hover:bg-red-700 transition hidden">
-                📄 Save ជា PDF ទាំងអស់
-            </button>
+        <!-- 🌟 RENDER CONTAINER -->
+        <div id="render-container">
+            <div class="text-center text-gray-400 font-bold mt-20 no-print" id="placeholder-msg">
+                សូមជ្រើសរើសឆ្នាំ និងការវាយតម្លៃ រួចចុចប៊ូតុង "ទាញទិន្នន័យ"
+            </div>
         </div>
-    </div>
 
-    <!-- 🌟 RENDER CONTAINER -->
-    <div id="render-container">
-        <div class="text-center text-gray-400 font-bold mt-20 no-print" id="placeholder-msg">
-            សូមជ្រើសរើសឆ្នាំ និងការវាយតម្លៃ រួចចុចប៊ូតុង "ទាញទិន្នន័យ"
-        </div>
     </div>
 
     <script>
@@ -215,12 +309,42 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc";
         const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
 
+        // 🌟 Security Prompt
+        document.addEventListener("DOMContentLoaded", () => {
+            Swal.fire({
+                title: '🔒 ចូលផ្ទាំងរដ្ឋបាល',
+                input: 'password',
+                inputPlaceholder: 'បញ្ចូលពាក្យសម្ងាត់...',
+                allowOutsideClick: false, allowEscapeKey: false,
+                confirmButtonText: 'ចូលប្រើប្រាស់',
+                confirmButtonColor: '#2563eb',
+                preConfirm: (pwd) => {
+                    if (pwd !== 'H@nm@m64') { Swal.showValidationMessage('ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!'); }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('main-ui').style.display = 'block';
+                }
+            });
+        });
+
+        // Live Theme Switcher
+        function changeTheme() {
+            const selectedTheme = document.getElementById('themeSelect').value;
+            const canvases = document.querySelectorAll('.fb-post-canvas');
+            canvases.forEach(canvas => {
+                // Remove old themes
+                for(let i=1; i<=10; i++) canvas.classList.remove(`theme-${i}`);
+                // Add new theme
+                canvas.classList.add(selectedTheme);
+            });
+        }
+
         const toKhmerNum = (num) => {
             const khmerNums =['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
             return String(num).split('').map(d => khmerNums[d] || d).join('');
         };
 
-        // ទាញទិន្នន័យពី Supabase (Pagination support)
         async function fetchSupabaseData(table, queryParams) {
             let allData =[]; let offset = 0; const limit = 1000; let keepFetching = true;
             while (keepFetching) {
@@ -234,7 +358,6 @@
             return allData;
         }
 
-        // Parse Rank
         function parseRank(val) {
             if (!val) return 9999;
             let str = String(val).trim();
@@ -256,23 +379,15 @@
 
             let period = rawPeriod.replace("ប្រចាំខែ ", "").replace("លទ្ធផល", "").trim();
             
-            let table = "student_scores"; 
-            let pCol = "month_name";
-            
-            if (period.includes("ប្រចាំឆមាស") || period.includes("លទ្ធផលប្រចាំឆមាស")) { 
-                table = "semester_scores"; pCol = "semester_name"; 
-            } else if (period.includes("ប្រចាំឆ្នាំ") || period.includes("លទ្ធផលប្រចាំឆ្នាំ")) { 
-                table = "annual_scores"; pCol = "academic_year"; period = year; 
-            } else {
-                table = "student_scores"; pCol = "month_name";
-            }
+            let table = "student_scores"; let pCol = "month_name";
+            if (period.includes("ប្រចាំឆមាស") || period.includes("លទ្ធផលប្រចាំឆមាស")) { table = "semester_scores"; pCol = "semester_name"; }
+            else if (period.includes("ប្រចាំឆ្នាំ") || period.includes("លទ្ធផលប្រចាំឆ្នាំ")) { table = "annual_scores"; pCol = "academic_year"; period = year; } 
+            else { table = "student_scores"; pCol = "month_name"; }
 
             try {
                 let namesData = await fetchSupabaseData("student_scores", `academic_year=eq.${encodeURIComponent(year)}&select=student_id,student_name`);
                 let namesDict = {};
-                namesData.forEach(s => {
-                    if (s.student_name && s.student_name.trim() !== '') namesDict[String(s.student_id).trim()] = s.student_name;
-                });
+                namesData.forEach(s => { if (s.student_name && s.student_name.trim() !== '') namesDict[String(s.student_id).trim()] = s.student_name; });
 
                 let data = await fetchSupabaseData(table, `${pCol}=eq.${encodeURIComponent(period)}&academic_year=eq.${encodeURIComponent(year)}&class_rank=not.is.null`);
                 
@@ -281,18 +396,13 @@
                     btn.innerHTML = "ទាញទិន្នន័យ"; btn.disabled = false; return;
                 }
 
-                // Filter យកតែលេខ ១ ដល់ លេខ ៥
-                let honorStudents = data.filter(s => {
-                    let r = parseRank(s.class_rank);
-                    return r > 0 && r <= 5;
-                });
+                let honorStudents = data.filter(s => { let r = parseRank(s.class_rank); return r > 0 && r <= 5; });
 
                 if(honorStudents.length === 0) {
                     Swal.fire('ទទេ!', 'មិនទាន់មានសិស្សជាប់ចំណាត់ថ្នាក់លេខ១-៥ ទេ!', 'info');
                     btn.innerHTML = "ទាញទិន្នន័យ"; btn.disabled = false; return;
                 }
 
-                // Group តាមថ្នាក់
                 let classesMap = {};
                 honorStudents.forEach(s => {
                     let cName = String(s.grade).trim().toUpperCase();
@@ -305,28 +415,26 @@
                 container.innerHTML = ""; 
 
                 let sortedClasses = Object.keys(classesMap).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+                let currentTheme = document.getElementById('themeSelect').value;
 
-                // បង្កើត Canvas ម្តងមួយថ្នាក់
                 sortedClasses.forEach((className, idx) => {
                     let students = classesMap[className];
                     students.sort((a,b) => parseRank(a.class_rank) - parseRank(b.class_rank));
-                    
-                    let pageHtml = generateCanvasHTML(className, students, rawPeriod, year, idx);
+                    let pageHtml = generateCanvasHTML(className, students, rawPeriod, year, idx, currentTheme);
                     container.innerHTML += pageHtml;
                 });
 
                 document.getElementById('btnPrint').classList.remove('hidden');
-                Swal.fire('ជោគជ័យ', `ទាញបានទិន្នន័យ ${sortedClasses.length} ថ្នាក់។ លោកអ្នកអាចចុច Save ជា PDF ឥឡូវនេះ។`, 'success');
+                Swal.fire('ជោគជ័យ', `ទាញបានទិន្នន័យ ${sortedClasses.length} ថ្នាក់។ អ្នកអាចប្តូរម៉ូដពណ៌ពីខាងលើបានភ្លាមៗ!`, 'success');
 
             } catch (error) {
-                console.error(error);
                 Swal.fire('បញ្ហា', 'មានកំហុសក្នុងការតភ្ជាប់ប្រព័ន្ធ', 'error');
             }
             btn.innerHTML = "ទាញទិន្នន័យ"; btn.disabled = false;
         }
 
         // =========================================================
-        // 🎨 DYNAMIC HTML GENERATOR (3-Rows Engine)
+        // 🎨 DYNAMIC HTML GENERATOR 
         // =========================================================
         
         function getMedalConfig(rankNum) {
@@ -336,55 +444,34 @@
             return { color: 'standard', cls: 'rank-other' };
         }
 
-        // 🌟 គណនាទំហំកាត ឲ្យសមស្របទៅនឹងចំនួនកាតក្នុងមួយជួរ ដើម្បីកុំឲ្យធ្លាក់
-        function getLayoutConfig(count, isTop1) {
-            if (isTop1 && count === 1) {
-                return { width: '450px', nameSize: '24px', scoreSize: '18px', padding: '3.5rem 1.5rem 1.2rem 1.5rem', mTop: '65px', mSize: '95px', rW: '35px', rH: '30px' };
-            }
-            if (count === 1) return { width: '400px', nameSize: '22px', scoreSize: '16px', padding: '3rem 1.5rem 1rem 1.5rem', mTop: '55px', mSize: '85px', rW: '30px', rH: '25px' };
-            if (count === 2) return { width: '380px', nameSize: '20px', scoreSize: '15px', padding: '2.5rem 1rem 1rem 1rem', mTop: '45px', mSize: '75px', rW: '25px', rH: '25px' };
-            if (count === 3) return { width: '280px', nameSize: '16px', scoreSize: '13px', padding: '2rem 0.5rem 0.8rem 0.5rem', mTop: '40px', mSize: '65px', rW: '20px', rH: '20px' };
-            if (count === 4) return { width: '210px', nameSize: '14px', scoreSize: '12px', padding: '1.8rem 0.5rem 0.8rem 0.5rem', mTop: '35px', mSize: '55px', rW: '18px', rH: '18px' };
-            
-            // ៥ នាក់ឡើងទៅ
-            return { width: '180px', nameSize: '12px', scoreSize: '10px', padding: '1.5rem 0.2rem 0.5rem 0.2rem', mTop: '30px', mSize: '50px', rW: '15px', rH: '15px' };
-        }
-
-        function createStudentCard(student, isTop1, countInRow) {
+        function createStudentCard(student, isTop1, widthClass = 'w-[320px]') {
             let rankNum = parseRank(student.class_rank);
             let conf = getMedalConfig(rankNum);
-            let layout = getLayoutConfig(countInRow, isTop1);
-            
             let score = student.semester_average || student.exam_average || student.average || student.annual_average || '-';
             let grd = student.grade_result || student.final_result || '-';
             let rankKhm = toKhmerNum(rankNum);
-            let isA = grd.toUpperCase() === 'A' ? 'a-grade' : '';
+            let isA = grd.toUpperCase() === 'A' ? 'a-grade text-2xl' : '';
             let displayName = student.student_name.trim();
 
+            let titleSize = isTop1 ? 'text-[24px]' : 'text-[18px]';
+
             return `
-            <div class="student-card ${conf.cls}" style="width: ${layout.width}; padding: ${layout.padding}; margin-top: ${layout.mTop};">
+            <div class="student-card ${widthClass} ${conf.cls}">
                 <div class="card-top-line"></div>
-                <div class="medal-container" style="top: -${parseInt(layout.mSize)/2 + 10}px;">
-                    <div class="medal ${conf.color}" style="width: ${layout.mSize}; height: ${layout.mSize}; font-size: ${parseInt(layout.mSize)/2.5}px;">
-                        <div class="medal-inner">${rankKhm}</div>
-                    </div>
-                    <div class="ribbon" style="width: ${layout.rW}; height: ${layout.rH}; margin-top: -10px;"></div>
+                <div class="medal-container">
+                    <div class="medal ${conf.color}"><div class="medal-inner">${rankKhm}</div></div>
+                    <div class="ribbon"></div>
                 </div>
-                
-                <h3 class="font-bold text-[#1e3a8a] text-center w-full drop-shadow-sm truncate px-1 mt-1" style="font-size: ${layout.nameSize};">
-                    ${displayName}
-                </h3>
-                
-                <hr class="divider my-3">
-                
-                <div class="w-full flex justify-between px-2 text-[#475569] font-bold items-center" style="font-size: ${layout.scoreSize};">
-                    <span>ពិន្ទុ: <span class="text-blue-600">${score}</span></span>
-                    <span class="flex items-center gap-1">និទ្ទេស: <span class="grade-badge ${isA} px-2 py-0.5">${grd}</span></span>
+                <h3 class="font-bold ${titleSize} stu-name mt-4 text-center w-full drop-shadow-sm truncate px-2">${displayName}</h3>
+                <hr class="divider">
+                <div class="w-full flex justify-between px-4 stu-score font-bold text-[15px] items-center">
+                    <span>ពិន្ទុ: <span>${score}</span></span>
+                    <span class="flex items-center gap-2">និទ្ទេស: <span class="grade-badge ${isA}">${grd}</span></span>
                 </div>
             </div>`;
         }
 
-        function generateCanvasHTML(className, students, periodLabel, yearLabel, index) {
+        function generateCanvasHTML(className, students, periodLabel, yearLabel, index, themeClass) {
             let titleDisplay = periodLabel.replace("ប្រចាំខែ", "ខែ").replace("លទ្ធផល", "");
             let canvasId = `canvas-${index}`;
 
@@ -392,7 +479,7 @@
             <div class="canvas-wrapper">
                 <button onclick="downloadImage('${canvasId}', '${className}')" class="btn-download-img">⬇️ ទាញយកជារូបភាពថ្នាក់ ${className}</button>
                 
-                <div id="${canvasId}" class="fb-post-canvas">
+                <div id="${canvasId}" class="fb-post-canvas ${themeClass}">
                     <div class="canvas-border-outer"></div>
                     <div class="canvas-border-inner"></div>
                     <div class="corner c-tl"></div><div class="corner c-tr"></div>
@@ -400,64 +487,49 @@
 
                     <!-- HEADER AREA -->
                     <div class="header-area">
-                        <div class="mb-4 mt-2">
-                            <span class="font-moul text-xl text-white bg-gradient-to-r from-[#1e3a8a] to-[#0f4085] px-10 py-3.5 rounded-full border-2 border-[#D4AF37] shadow-[0_6px_15px_rgba(0,0,0,0.15)] inline-block tracking-widest">
-                                វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច
-                            </span>
-                        </div>
+                        <h2 class="font-moul title-school mb-2">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
                         <h1 class="font-moul title-main mb-6 leading-tight">អបអរសាទរជ័យលាភីចំណាត់ថ្នាក់<br>លេខ១ - លេខ៥</h1>
                         
-                        <div class="flex justify-center gap-4 mt-2">
+                        <div class="flex justify-center gap-6 mt-4">
                             <div class="info-badge">${titleDisplay}</div>
                             <div class="info-badge">ឆ្នាំសិក្សា ${yearLabel}</div>
-                            <div class="info-badge bg-blue-50">ថ្នាក់ទី ${className}</div>
+                            <div class="info-badge">ថ្នាក់ទី ${className}</div>
                         </div>
                     </div>
 
-                    <!-- 🌟 ៣ ជួរដាច់ខាត (Strict 3 Rows) -->
-                    <div class="students-area flex flex-col justify-center gap-y-12 mt-6 w-full px-10">`;
+                    <!-- STUDENTS AREA -->
+                    <div class="students-area">`;
 
-            // បែងចែកជា ៣ ក្រុម
-            let rank1s = students.filter(s => parseRank(s.class_rank) === 1);
-            let rank23s = students.filter(s => parseRank(s.class_rank) === 2 || parseRank(s.class_rank) === 3);
-            let rank45s = students.filter(s => parseRank(s.class_rank) === 4 || parseRank(s.class_rank) === 5);
+            let ranksGroup = {};
+            students.forEach(s => {
+                let r = parseRank(s.class_rank);
+                if (!ranksGroup[r]) ranksGroup[r] = [];
+                ranksGroup[r].push(s);
+            });
 
-            // ជួរទី១ (Row 1)
-            if (rank1s.length > 0) {
-                html += `<div class="flex justify-center flex-wrap gap-4 w-full relative z-30">`;
-                rank1s.forEach(s => { html += createStudentCard(s, true, rank1s.length); });
+            let uniqueRanks = Object.keys(ranksGroup).map(Number).sort((a,b)=>a-b);
+
+            uniqueRanks.forEach(r => {
+                let stusInRank = ranksGroup[r];
+                let isTop1Single = (r === 1 && stusInRank.length === 1);
+                let cardWidth = isTop1Single ? 'w-[450px]' : (stusInRank.length >= 4 ? 'w-[230px]' : 'w-[320px]');
+                
+                html += `<div class="flex justify-center flex-wrap gap-x-10 gap-y-[65px] w-full mt-[50px] relative px-8">`;
+                stusInRank.forEach(s => {
+                    html += createStudentCard(s, isTop1Single, cardWidth);
+                });
                 html += `</div>`;
-            }
-
-            // ជួរទី២ (Row 2)
-            if (rank23s.length > 0) {
-                html += `<div class="flex justify-center flex-wrap gap-6 w-full relative z-20 mt-4">`;
-                rank23s.forEach(s => { html += createStudentCard(s, false, rank23s.length); });
-                html += `</div>`;
-            }
-
-            // ជួរទី៣ (Row 3)
-            if (rank45s.length > 0) {
-                html += `<div class="flex justify-center flex-wrap gap-6 w-full relative z-10 mt-4">`;
-                rank45s.forEach(s => { html += createStudentCard(s, false, rank45s.length); });
-                html += `</div>`;
-            }
+            });
 
             html += `
-                    </div> <!-- End Students Area -->
+                    </div> 
 
-                    <!-- 🌟 FOOTER -->
-                    <div class="w-full mt-auto pt-8 pb-2 z-10">
-                        <div class="bg-gradient-to-r from-[#fefce8] via-white to-[#fefce8] border-[2px] border-[#D4AF37] rounded-2xl p-4 text-center shadow-lg mx-10 relative overflow-hidden">
-                            
-                            <div class="absolute top-1.5 left-1.5 w-3 h-3 border-t-[3px] border-l-[3px] border-[#D4AF37]"></div>
-                            <div class="absolute top-1.5 right-1.5 w-3 h-3 border-t-[3px] border-r-[3px] border-[#D4AF37]"></div>
-                            <div class="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-[3px] border-l-[3px] border-[#D4AF37]"></div>
-                            <div class="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-[3px] border-r-[3px] border-[#D4AF37]"></div>
-                            
-                            <p class="text-[20px] font-moul text-[#b45309] leading-relaxed drop-shadow-sm m-0">
-                                <span class="text-xl">៚</span> សូមជូនពរឱ្យប្អូនៗទទួលបានជោគជ័យក្នុងការសិក្សាបន្តបន្ទាប់ទៀត <br>
-                                និងក្លាយជាកូនល្អ សិស្សល្អ មិត្តល្អ និងពលរដ្ឋល្អក្នុងសង្គម <span class="text-xl">៙</span>
+                    <!-- FOOTER -->
+                    <div class="w-full mt-auto pt-10 pb-4 z-10">
+                        <div class="blessing-box shadow-lg mx-10 relative overflow-hidden">
+                            <p class="text-[22px] font-moul blessing-text leading-relaxed drop-shadow-sm m-0">
+                                សូមជូនពរឱ្យប្អូនៗទទួលបានជោគជ័យក្នុងការសិក្សាបន្តបន្ទាប់ទៀត <br>
+                                និងក្លាយជាកូនល្អ សិស្សល្អ មិត្តល្អ និងពលរដ្ឋល្អក្នុងសង្គម
                             </p>
                         </div>
                     </div>
@@ -467,7 +539,6 @@
             return html;
         }
 
-        // មុខងារទាញយកជារូបភាព
         function downloadImage(canvasId, className) {
             const element = document.getElementById(canvasId);
             const wrapper = element.parentElement;
@@ -483,7 +554,7 @@
                 html2canvas(element, {
                     scale: 2, 
                     useCORS: true,
-                    backgroundColor: '#ffffff', 
+                    backgroundColor: null, // Allow transparent/theme background to show
                     width: 1080,
                     height: 1350,
                     windowWidth: 1080,
