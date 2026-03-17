@@ -12,10 +12,7 @@
     
     <style>
         :root {
-            --gold-main: #D4AF37;
-            --gold-light: #FCEABB;
-            
-            /* Medal Colors */
+            --gold-main: #D4AF37; --gold-light: #FCEABB;
             --c-gold: #eab308; --c-gold-dark: #b45309;
             --c-silver: #94a3b8; --c-silver-dark: #475569;
             --c-bronze: #d97706; --c-bronze-dark: #78350f;
@@ -24,123 +21,123 @@
 
         /* ==========================================
            🌟 ម៉ូដទាំង ១០ (THEME VARIABLES)
+           ពណ៌កំណត់ត្រឹម៖ ស, ប្រផេះ, ខៀវ, ខ្មៅ, ឈាមជ្រូក
            ========================================== */
         
-        /* 1. Classic Light (ស-ខៀវ) - Default */
+        /* 1. White Classic (ស សុទ្ធ) */
         .theme-1 {
-            --cv-bg: #fdfdfd;
-            --cv-pattern: radial-gradient(circle at 50% 50%, #ffffff 0%, #f8fafc 100%);
+            --cv-bg: #ffffff;
+            --cv-pattern: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%);
             --txt-school: #1e3a8a; --txt-title: #b91c1c; --txt-blessing: #b45309;
-            --card-bg: #ffffff; --card-border: #e2e8f0; --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            --txt-name: #1e3a8a; --txt-score: #475569;
+            --card-bg: #ffffff; --card-border: #cbd5e1; --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            --txt-name: #1e3a8a; --txt-score: #475569; --card-radius: 16px;
             --badge-bg: #fef9c3; --badge-txt: #1e3a8a;
-            --footer-bg: linear-gradient(to right, #fefce8, #ffffff, #fefce8);
+            --footer-bg: #ffffff; --border-style: solid;
         }
 
-        /* 2. Royal Blue (ខៀវរាជវាំង) */
+        /* 2. White Elegant (ស ឈាមជ្រូក) */
         .theme-2 {
+            --cv-bg: #fdfdfd;
+            --cv-pattern: linear-gradient(135deg, #ffffff 0%, #ffe4e6 100%);
+            --txt-school: #9f1239; --txt-title: #e11d48; --txt-blessing: #9f1239;
+            --card-bg: rgba(255,255,255,0.9); --card-border: #fecdd3; --card-shadow: 0 10px 30px rgba(159, 18, 57, 0.1);
+            --txt-name: #9f1239; --txt-score: #881337; --card-radius: 0px;
+            --badge-bg: #ffe4e6; --badge-txt: #9f1239;
+            --footer-bg: #fff1f2; --border-style: double;
+        }
+
+        /* 3. Blue Royal (ខៀវ ទឹកប៊ិច) */
+        .theme-3 {
             --cv-bg: #0f4085;
             --cv-pattern: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.05) 0%, transparent 50%), linear-gradient(135deg, #051d45 0%, #0f4085 50%, #051d45 100%);
             --txt-school: #bfdbfe; --txt-title: #FCEABB; --txt-blessing: #FCEABB;
-            --card-bg: rgba(255, 255, 255, 0.08); --card-border: rgba(255,255,255,0.15); --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            --txt-name: #ffffff; --txt-score: #e2e8f0;
+            --card-bg: rgba(255, 255, 255, 0.1); --card-border: rgba(212,175,55,0.5); --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --txt-name: #ffffff; --txt-score: #e2e8f0; --card-radius: 20px;
             --badge-bg: rgba(255,255,255,0.15); --badge-txt: #FCEABB;
-            --footer-bg: rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(255, 255, 255, 0.1); --border-style: solid;
         }
 
-        /* 3. Khmer Red (ក្រហមប្រពៃណី) */
-        .theme-3 {
-            --cv-bg: #7f1d1d;
-            --cv-pattern: radial-gradient(circle at 50% 10%, rgba(220,38,38,0.8) 0%, #450a0a 100%);
-            --txt-school: #fef08a; --txt-title: #ffffff; --txt-blessing: #fef08a;
-            --card-bg: rgba(255, 255, 255, 0.95); --card-border: #fca5a5; --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            --txt-name: #7f1d1d; --txt-score: #450a0a;
-            --badge-bg: #fef08a; --badge-txt: #7f1d1d;
-            --footer-bg: rgba(255, 255, 255, 0.15);
-        }
-
-        /* 4. Emerald Green (បៃតងត្បូងមរកត) */
+        /* 4. Blue Soft (ខៀវ ស) */
         .theme-4 {
-            --cv-bg: #064e3b;
-            --cv-pattern: linear-gradient(135deg, #064e3b 0%, #047857 100%);
-            --txt-school: #a7f3d0; --txt-title: #FCEABB; --txt-blessing: #FCEABB;
-            --card-bg: rgba(255, 255, 255, 0.1); --card-border: rgba(255,255,255,0.2); --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            --txt-name: #ffffff; --txt-score: #d1fae5;
-            --badge-bg: rgba(255,255,255,0.2); --badge-txt: #a7f3d0;
-            --footer-bg: rgba(255, 255, 255, 0.1);
+            --cv-bg: #eff6ff;
+            --cv-pattern: linear-gradient(to bottom right, #dbeafe, #eff6ff);
+            --txt-school: #1e3a8a; --txt-title: #1d4ed8; --txt-blessing: #1e3a8a;
+            --card-bg: #ffffff; --card-border: #bfdbfe; --card-shadow: 0 10px 20px rgba(29, 78, 216, 0.1);
+            --txt-name: #1e40af; --txt-score: #334155; --card-radius: 12px;
+            --badge-bg: #dbeafe; --badge-txt: #1e3a8a;
+            --footer-bg: #ffffff; --border-style: solid;
         }
 
-        /* 5. Imperial Purple (ស្វាយអធិរាជ) */
+        /* 5. Gray Minimalist (ប្រផេះ ស) */
         .theme-5 {
-            --cv-bg: #3b0764;
-            --cv-pattern: radial-gradient(circle at 50% 50%, #581c87 0%, #2e1065 100%);
-            --txt-school: #e9d5ff; --txt-title: #FCEABB; --txt-blessing: #e9d5ff;
-            --card-bg: rgba(255, 255, 255, 0.95); --card-border: #d8b4fe; --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            --txt-name: #3b0764; --txt-score: #4c1d95;
-            --badge-bg: #e9d5ff; --badge-txt: #3b0764;
-            --footer-bg: rgba(255, 255, 255, 0.15);
-        }
-
-        /* 6. Dark Knight (ខ្មៅស្រមោល) */
-        .theme-6 {
-            --cv-bg: #0f172a;
-            --cv-pattern: linear-gradient(to bottom right, #1e293b, #020617);
-            --txt-school: #94a3b8; --txt-title: #FCEABB; --txt-blessing: #cbd5e1;
-            --card-bg: rgba(255, 255, 255, 0.05); --card-border: rgba(255,255,255,0.1); --card-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            --txt-name: #ffffff; --txt-score: #94a3b8;
-            --badge-bg: rgba(255,255,255,0.1); --badge-txt: #e2e8f0;
-            --footer-bg: rgba(255, 255, 255, 0.05);
-        }
-
-        /* 7. Rose Gold (ផ្កាឈូកមាស) */
-        .theme-7 {
-            --cv-bg: #fff1f2;
-            --cv-pattern: radial-gradient(circle at top right, #ffe4e6, #fecdd3);
-            --txt-school: #881337; --txt-title: #e11d48; --txt-blessing: #881337;
-            --card-bg: #ffffff; --card-border: #fecdd3; --card-shadow: 0 10px 25px rgba(225, 29, 72, 0.1);
-            --txt-name: #9f1239; --txt-score: #4c0519;
-            --badge-bg: #ffe4e6; --badge-txt: #9f1239;
-            --footer-bg: #ffffff;
-        }
-
-        /* 8. Ocean Breeze (ផ្ទៃសមុទ្រ) */
-        .theme-8 {
-            --cv-bg: #ecfeff;
-            --cv-pattern: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
-            --txt-school: #083344; --txt-title: #0284c7; --txt-blessing: #083344;
-            --card-bg: #ffffff; --card-border: #bae6fd; --card-shadow: 0 10px 25px rgba(2, 132, 199, 0.1);
-            --txt-name: #0369a1; --txt-score: #0c4a6e;
-            --badge-bg: #e0f2fe; --badge-txt: #0369a1;
-            --footer-bg: #ffffff;
-        }
-
-        /* 9. Earthy Brown (ត្នោតឈើប្រណីត) */
-        .theme-9 {
-            --cv-bg: #451a03;
-            --cv-pattern: radial-gradient(circle at 50% 50%, #78350f 0%, #422006 100%);
-            --txt-school: #fef3c7; --txt-title: #fde047; --txt-blessing: #fef3c7;
-            --card-bg: rgba(255, 255, 255, 0.95); --card-border: #d97706; --card-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            --txt-name: #78350f; --txt-score: #451a03;
-            --badge-bg: #fef3c7; --badge-txt: #78350f;
-            --footer-bg: rgba(255, 255, 255, 0.1);
-        }
-
-        /* 10. Silver Minimalist (ប្រាក់រលោង) */
-        .theme-10 {
-            --cv-bg: #f8fafc;
-            --cv-pattern: linear-gradient(to right, #f1f5f9, #e2e8f0);
-            --txt-school: #334155; --txt-title: #0f172a; --txt-blessing: #334155;
-            --card-bg: #ffffff; --card-border: #cbd5e1; --card-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            --txt-name: #0f172a; --txt-score: #475569;
+            --cv-bg: #f1f5f9;
+            --cv-pattern: repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 10px, #e2e8f0 10px, #e2e8f0 20px);
+            --txt-school: #334155; --txt-title: #0f172a; --txt-blessing: #1e293b;
+            --card-bg: #ffffff; --card-border: #94a3b8; --card-shadow: 4px 4px 0px rgba(0,0,0,0.05);
+            --txt-name: #0f172a; --txt-score: #475569; --card-radius: 8px;
             --badge-bg: #e2e8f0; --badge-txt: #0f172a;
-            --footer-bg: #ffffff;
+            --footer-bg: #ffffff; --border-style: dashed;
+        }
+
+        /* 6. Gray Dark (ប្រផេះ ខ្មៅ) */
+        .theme-6 {
+            --cv-bg: #334155;
+            --cv-pattern: radial-gradient(circle at center, #475569 0%, #1e293b 100%);
+            --txt-school: #cbd5e1; --txt-title: #ffffff; --txt-blessing: #f1f5f9;
+            --card-bg: rgba(15, 23, 42, 0.6); --card-border: #64748b; --card-shadow: 0 15px 25px rgba(0,0,0,0.4);
+            --txt-name: #ffffff; --txt-score: #cbd5e1; --card-radius: 16px;
+            --badge-bg: rgba(255,255,255,0.1); --badge-txt: #ffffff;
+            --footer-bg: rgba(15, 23, 42, 0.8); --border-style: solid;
+        }
+
+        /* 7. Maroon Deep (ក្រហមឈាមជ្រូក ខ្មៅ) */
+        .theme-7 {
+            --cv-bg: #7f1d1d;
+            --cv-pattern: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+            --txt-school: #fef08a; --txt-title: #ffffff; --txt-blessing: #fef08a;
+            --card-bg: rgba(0, 0, 0, 0.4); --card-border: #fca5a5; --card-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --txt-name: #ffffff; --txt-score: #fecaca; --card-radius: 4px;
+            --badge-bg: rgba(255,255,255,0.15); --badge-txt: #fef08a;
+            --footer-bg: rgba(0, 0, 0, 0.5); --border-style: solid;
+        }
+
+        /* 8. Maroon Light (ឈាមជ្រូក ស) */
+        .theme-8 {
+            --cv-bg: #fff1f2;
+            --cv-pattern: radial-gradient(circle at 50% 50%, #ffffff 0%, #ffe4e6 100%);
+            --txt-school: #881337; --txt-title: #be123c; --txt-blessing: #9f1239;
+            --card-bg: #ffffff; --card-border: #fda4af; --card-shadow: 0 8px 20px rgba(159, 18, 57, 0.15);
+            --txt-name: #9f1239; --txt-score: #4c0519; --card-radius: 20px;
+            --badge-bg: #ffe4e6; --badge-txt: #881337;
+            --footer-bg: #ffffff; --border-style: dotted;
+        }
+
+        /* 9. Black Premium (ខ្មៅ មាស) */
+        .theme-9 {
+            --cv-bg: #020617;
+            --cv-pattern: radial-gradient(circle at 50% 0%, #1e293b 0%, #000000 100%);
+            --txt-school: #d4af37; --txt-title: #ffffff; --txt-blessing: #d4af37;
+            --card-bg: rgba(255, 255, 255, 0.03); --card-border: #d4af37; --card-shadow: 0 10px 40px rgba(212, 175, 55, 0.1);
+            --txt-name: #ffffff; --txt-score: #cbd5e1; --card-radius: 0px;
+            --badge-bg: rgba(212, 175, 55, 0.1); --badge-txt: #d4af37;
+            --footer-bg: rgba(255, 255, 255, 0.05); --border-style: solid;
+        }
+
+        /* 10. Black & Silver (ខ្មៅ ប្រាក់) */
+        .theme-10 {
+            --cv-bg: #0f172a;
+            --cv-pattern: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            --txt-school: #cbd5e1; --txt-title: #f1f5f9; --txt-blessing: #cbd5e1;
+            --card-bg: rgba(255, 255, 255, 0.05); --card-border: #94a3b8; --card-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            --txt-name: #f1f5f9; --txt-score: #94a3b8; --card-radius: 12px;
+            --badge-bg: rgba(255,255,255,0.1); --badge-txt: #f1f5f9;
+            --footer-bg: rgba(255, 255, 255, 0.05); --border-style: dashed;
         }
 
         /* ==========================================
            🌟 រចនាសម្ព័ន្ធទូទៅ
            ========================================== */
         body { font-family: 'Battambang', sans-serif; background-color: #e2e8f0; margin: 0; padding: 0; }
-        .font-moul { font-family: 'Moul', cursive; line-height: 1.7 !important; padding-top: 5px; padding-bottom: 5px; }
 
         /* Lock Screen */
         #main-ui { display: none; }
@@ -160,35 +157,36 @@
             background-image: var(--cv-pattern);
             position: relative; box-sizing: border-box; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
             display: flex; flex-direction: column; padding: 50px; overflow: hidden;
-            transition: all 0.5s ease; /* ធ្វើឲ្យការប្តូរពណ៌ Smooth */
+            transition: all 0.5s ease;
         }
 
-        .canvas-border-outer { position: absolute; top: 15px; bottom: 15px; left: 15px; right: 15px; border: 1.5px solid var(--gold-main); pointer-events: none; z-index: 1; }
-        .canvas-border-inner { position: absolute; top: 22px; bottom: 22px; left: 22px; right: 22px; border: 1px solid rgba(212, 175, 55, 0.5); pointer-events: none; z-index: 1; }
-        .corner { position: absolute; width: 35px; height: 35px; border: 4px solid var(--gold-main); z-index: 2; pointer-events: none;}
+        .canvas-border-outer { position: absolute; top: 15px; bottom: 15px; left: 15px; right: 15px; border: 2px var(--border-style) var(--gold-main); pointer-events: none; z-index: 1; }
+        .canvas-border-inner { position: absolute; top: 22px; bottom: 22px; left: 22px; right: 22px; border: 1px var(--border-style) rgba(212, 175, 55, 0.5); pointer-events: none; z-index: 1; }
+        .corner { position: absolute; width: 35px; height: 35px; border: 4px var(--border-style) var(--gold-main); z-index: 2; pointer-events: none;}
         .c-tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
         .c-tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
         .c-bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
         .c-br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
 
-        .header-area { text-align: center; margin-bottom: 20px; z-index: 10; margin-top: 10px; }
-        .students-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; z-index: 10; margin-top: 10px; width: 100%; }
+        .header-area { text-align: center; margin-bottom: 10px; z-index: 10; margin-top: 10px; }
+        .students-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; z-index: 10; width: 100%; }
 
         .title-school { color: var(--txt-school); font-size: 26px; letter-spacing: 2px; transition: color 0.5s;}
         .title-main { 
             color: var(--txt-title); font-size: 48px; 
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.3), 0 4px 8px rgba(0,0,0,0.15); 
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.2), 0 4px 8px rgba(0,0,0,0.15); 
             transition: color 0.5s;
         }
 
+        /* Student Card */
         .student-card {
-            background: var(--card-bg); border-radius: 16px; padding: 2.5rem 1.5rem 1rem 1.5rem;
+            background: var(--card-bg); border-radius: var(--card-radius); padding: 2.2rem 1rem 1rem 1rem;
             display: flex; flex-direction: column; align-items: center;
-            box-shadow: var(--card-shadow); position: relative; border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow); position: relative; border: 1px var(--border-style) var(--card-border);
             transition: all 0.5s ease;
         }
 
-        .card-top-line { position: absolute; top: 0; left: 0; right: 0; height: 6px; border-top-left-radius: 16px; border-top-right-radius: 16px; }
+        .card-top-line { position: absolute; top: 0; left: 0; right: 0; height: 6px; border-top-left-radius: var(--card-radius); border-top-right-radius: var(--card-radius); }
         .rank-1 .card-top-line { background: var(--c-gold); }
         .rank-2 .card-top-line { background: var(--c-silver); }
         .rank-3 .card-top-line { background: var(--c-bronze); }
@@ -213,10 +211,10 @@
 
         hr.divider { border-color: var(--card-border); margin: 15px 0; width: 100%; border-style: dashed; }
         
-        .grade-badge { background: #fef08a; border: 1px solid #fde047; color: #b45309; padding: 2px 12px; border-radius: 6px; font-weight: 900; }
-        .info-badge { background: var(--badge-bg); border: 1px solid rgba(212, 175, 55, 0.4); color: var(--badge-txt); padding: 6px 20px; border-radius: 999px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.5s ease;}
+        .grade-badge { background: #fef08a; border: 1px solid #fde047; color: #b45309; padding: 2px 10px; border-radius: 6px; font-weight: 900; }
+        .info-badge { background: var(--badge-bg); border: 1px var(--border-style) rgba(212, 175, 55, 0.4); color: var(--badge-txt); padding: 6px 20px; border-radius: 999px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.5s ease;}
         
-        .blessing-box { background: var(--footer-bg); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 16px; padding: 15px; text-align: center; width: 100%; transition: all 0.5s ease;}
+        .blessing-box { background: var(--footer-bg); border: 1px var(--border-style) rgba(212, 175, 55, 0.4); border-radius: var(--card-radius); padding: 15px; text-align: center; width: 100%; transition: all 0.5s ease;}
         .blessing-text { color: var(--txt-blessing); transition: color 0.5s ease; }
 
         .stu-name { color: var(--txt-name); transition: color 0.5s ease;}
@@ -237,7 +235,7 @@
 </head>
 <body>
 
-    <!-- 🌟 LOCK SCREEN / MAIN UI WRAPPER -->
+    <!-- 🌟 LOCK SCREEN -->
     <div id="main-ui">
         
         <!-- CONTROL PANEL -->
@@ -246,24 +244,23 @@
                 <span class="text-3xl">🏆</span>
                 <div>
                     <h1 class="font-bold text-xl text-blue-900 moul-font">តារាងកិត្តិយស (Facebook Format)</h1>
-                    <p class="text-xs text-gray-500 font-bold">ទំហំ 1080x1350 px លេខ ១ ដល់ ៥</p>
+                    <p class="text-xs text-gray-500 font-bold">ទំហំ 1080x1350 px ៣ ជួរ</p>
                 </div>
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
-                
-                <!-- 🌟 THEME SWITCHER -->
+                <!-- THEME SWITCHER -->
                 <select id="themeSelect" onchange="changeTheme()" class="px-4 py-2.5 rounded-xl border-2 border-blue-400 font-bold text-sm bg-blue-50 text-blue-800 outline-none">
-                    <option value="theme-1">🤍 ម៉ូដទី១: សរលោង (Default)</option>
-                    <option value="theme-2">💙 ម៉ូដទី២: ខៀវរាជវាំង</option>
-                    <option value="theme-3">❤️ ម៉ូដទី៣: ក្រហមប្រពៃណី</option>
-                    <option value="theme-4">💚 ម៉ូដទី៤: បៃតងមរកត</option>
-                    <option value="theme-5">💜 ម៉ូដទី៥: ស្វាយអធិរាជ</option>
-                    <option value="theme-6">🖤 ម៉ូដទី៦: ខ្មៅស្រមោល</option>
-                    <option value="theme-7">💖 ម៉ូដទី៧: ផ្កាឈូកមាស</option>
-                    <option value="theme-8">🌊 ម៉ូដទី៨: ផ្ទៃសមុទ្រ</option>
-                    <option value="theme-9">🤎 ម៉ូដទី៩: ត្នោតឈើប្រណីត</option>
-                    <option value="theme-10">🤍 ម៉ូដទី១០: ប្រាក់រលោង</option>
+                    <option value="theme-1">🤍 ស សុទ្ធ (Default)</option>
+                    <option value="theme-2">❤️ ស ឈាមជ្រូក</option>
+                    <option value="theme-3">💙 ខៀវ ទឹកប៊ិច</option>
+                    <option value="theme-4">💙 ខៀវ ស</option>
+                    <option value="theme-5">🤍 ប្រផេះ ស</option>
+                    <option value="theme-6">🖤 ប្រផេះ ខ្មៅ</option>
+                    <option value="theme-7">❤️ ឈាមជ្រូក ខ្មៅ</option>
+                    <option value="theme-8">💖 ឈាមជ្រូក ស</option>
+                    <option value="theme-9">🖤 ខ្មៅ មាស</option>
+                    <option value="theme-10">🖤 ខ្មៅ ប្រាក់</option>
                 </select>
 
                 <div class="w-px h-8 bg-gray-300 mx-1"></div>
@@ -290,7 +287,7 @@
                 </button>
 
                 <button onclick="window.print()" id="btnPrint" class="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow hover:bg-red-700 transition hidden">
-                    📄 Save ជា PDF ទាំងអស់
+                    📄 Save ជា PDF
                 </button>
             </div>
         </div>
@@ -324,18 +321,16 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('main-ui').style.display = 'block';
+                    document.body.style.backgroundColor = "#e2e8f0";
                 }
             });
         });
 
-        // Live Theme Switcher
         function changeTheme() {
             const selectedTheme = document.getElementById('themeSelect').value;
             const canvases = document.querySelectorAll('.fb-post-canvas');
             canvases.forEach(canvas => {
-                // Remove old themes
                 for(let i=1; i<=10; i++) canvas.classList.remove(`theme-${i}`);
-                // Add new theme
                 canvas.classList.add(selectedTheme);
             });
         }
@@ -389,14 +384,19 @@
                 let namesDict = {};
                 namesData.forEach(s => { if (s.student_name && s.student_name.trim() !== '') namesDict[String(s.student_id).trim()] = s.student_name; });
 
-                let data = await fetchSupabaseData(table, `${pCol}=eq.${encodeURIComponent(period)}&academic_year=eq.${encodeURIComponent(year)}&class_rank=not.is.null`);
+                // ទាញយកសិស្សទាំងអស់មកសិន ទើបច្រោះតាមក្រោយ ការពារ Database រំលង
+                let data = await fetchSupabaseData(table, `${pCol}=eq.${encodeURIComponent(period)}&academic_year=eq.${encodeURIComponent(year)}`);
                 
                 if(data.length === 0) {
                     Swal.fire('ទទេ!', 'មិនមានទិន្នន័យសម្រាប់ជម្រើសនេះទេ!', 'info');
                     btn.innerHTML = "ទាញទិន្នន័យ"; btn.disabled = false; return;
                 }
 
-                let honorStudents = data.filter(s => { let r = parseRank(s.class_rank); return r > 0 && r <= 5; });
+                // 🌟 Filter យកតែលេខ ១ ដល់ លេខ ៥ ដោយហ្មត់ចត់
+                let honorStudents = data.filter(s => {
+                    let r = parseRank(s.class_rank);
+                    return r > 0 && r <= 5;
+                });
 
                 if(honorStudents.length === 0) {
                     Swal.fire('ទទេ!', 'មិនទាន់មានសិស្សជាប់ចំណាត់ថ្នាក់លេខ១-៥ ទេ!', 'info');
@@ -434,7 +434,7 @@
         }
 
         // =========================================================
-        // 🎨 DYNAMIC HTML GENERATOR 
+        // 🎨 DYNAMIC HTML GENERATOR (3-ROW EXACT RULE)
         // =========================================================
         
         function getMedalConfig(rankNum) {
@@ -444,16 +444,16 @@
             return { color: 'standard', cls: 'rank-other' };
         }
 
-        function createStudentCard(student, isTop1, widthClass = 'w-[320px]') {
+        function createStudentCard(student, isTop1Single, widthClass = 'w-[320px]') {
             let rankNum = parseRank(student.class_rank);
             let conf = getMedalConfig(rankNum);
             let score = student.semester_average || student.exam_average || student.average || student.annual_average || '-';
             let grd = student.grade_result || student.final_result || '-';
             let rankKhm = toKhmerNum(rankNum);
-            let isA = grd.toUpperCase() === 'A' ? 'a-grade text-2xl' : '';
+            let isA = grd.toUpperCase() === 'A' ? 'a-grade' : '';
             let displayName = student.student_name.trim();
 
-            let titleSize = isTop1 ? 'text-[24px]' : 'text-[18px]';
+            let titleSize = isTop1Single ? 'text-[24px]' : 'text-[18px]';
 
             return `
             <div class="student-card ${widthClass} ${conf.cls}">
@@ -462,9 +462,9 @@
                     <div class="medal ${conf.color}"><div class="medal-inner">${rankKhm}</div></div>
                     <div class="ribbon"></div>
                 </div>
-                <h3 class="font-bold ${titleSize} stu-name mt-4 text-center w-full drop-shadow-sm truncate px-2">${displayName}</h3>
+                <h3 class="font-bold ${titleSize} stu-name mt-5 text-center w-full drop-shadow-sm truncate px-2">${displayName}</h3>
                 <hr class="divider">
-                <div class="w-full flex justify-between px-4 stu-score font-bold text-[15px] items-center">
+                <div class="w-full flex justify-between px-4 stu-score font-bold text-[14px] items-center">
                     <span>ពិន្ទុ: <span>${score}</span></span>
                     <span class="flex items-center gap-2">និទ្ទេស: <span class="grade-badge ${isA}">${grd}</span></span>
                 </div>
@@ -487,7 +487,11 @@
 
                     <!-- HEADER AREA -->
                     <div class="header-area">
-                        <h2 class="font-moul title-school mb-2">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
+                        <div class="mb-4 mt-2">
+                            <span class="font-moul text-xl text-white bg-gradient-to-r from-[#1e3a8a] to-[#0f4085] px-10 py-3.5 rounded-full border-2 border-[#D4AF37] shadow-lg inline-block tracking-widest">
+                                វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច
+                            </span>
+                        </div>
                         <h1 class="font-moul title-main mb-6 leading-tight">អបអរសាទរជ័យលាភីចំណាត់ថ្នាក់<br>លេខ១ - លេខ៥</h1>
                         
                         <div class="flex justify-center gap-6 mt-4">
@@ -497,29 +501,37 @@
                         </div>
                     </div>
 
-                    <!-- STUDENTS AREA -->
+                    <!-- STUDENTS AREA (Strict 3 Rows) -->
                     <div class="students-area">`;
 
-            let ranksGroup = {};
-            students.forEach(s => {
-                let r = parseRank(s.class_rank);
-                if (!ranksGroup[r]) ranksGroup[r] = [];
-                ranksGroup[r].push(s);
-            });
+            // បែងចែកសិស្សជា ៣ ក្រុមដាច់ខាត
+            let rank1s = students.filter(s => parseRank(s.class_rank) === 1);
+            let rank23s = students.filter(s => parseRank(s.class_rank) === 2 || parseRank(s.class_rank) === 3);
+            let rank45s = students.filter(s => parseRank(s.class_rank) === 4 || parseRank(s.class_rank) === 5);
 
-            let uniqueRanks = Object.keys(ranksGroup).map(Number).sort((a,b)=>a-b);
-
-            uniqueRanks.forEach(r => {
-                let stusInRank = ranksGroup[r];
-                let isTop1Single = (r === 1 && stusInRank.length === 1);
-                let cardWidth = isTop1Single ? 'w-[450px]' : (stusInRank.length >= 4 ? 'w-[230px]' : 'w-[320px]');
-                
-                html += `<div class="flex justify-center flex-wrap gap-x-10 gap-y-[65px] w-full mt-[50px] relative px-8">`;
-                stusInRank.forEach(s => {
-                    html += createStudentCard(s, isTop1Single, cardWidth);
-                });
+            // ជួរទី១: លេខ ១ (ទោះស្ទួនច្រើនក៏នៅជួរនេះ)
+            if (rank1s.length > 0) {
+                let cardWidth = rank1s.length === 1 ? 'w-[450px]' : (rank1s.length >= 4 ? 'w-[230px]' : 'w-[320px]');
+                html += `<div class="flex justify-center flex-wrap gap-x-8 gap-y-[65px] w-full mt-4 relative z-30 px-6">`;
+                rank1s.forEach(s => { html += createStudentCard(s, rank1s.length === 1, cardWidth); });
                 html += `</div>`;
-            });
+            }
+
+            // ជួរទី២: លេខ ២ & ៣
+            if (rank23s.length > 0) {
+                let cardWidth = rank23s.length >= 4 ? 'w-[230px]' : 'w-[320px]';
+                html += `<div class="flex justify-center flex-wrap gap-x-8 gap-y-[65px] w-full mt-[75px] relative z-20 px-6">`;
+                rank23s.forEach(s => { html += createStudentCard(s, false, cardWidth); });
+                html += `</div>`;
+            }
+
+            // ជួរទី៣: លេខ ៤ & ៥
+            if (rank45s.length > 0) {
+                let cardWidth = rank45s.length >= 4 ? 'w-[230px]' : 'w-[320px]';
+                html += `<div class="flex justify-center flex-wrap gap-x-8 gap-y-[65px] w-full mt-[75px] relative z-10 px-6">`;
+                rank45s.forEach(s => { html += createStudentCard(s, false, cardWidth); });
+                html += `</div>`;
+            }
 
             html += `
                     </div> 
@@ -527,7 +539,7 @@
                     <!-- FOOTER -->
                     <div class="w-full mt-auto pt-10 pb-4 z-10">
                         <div class="blessing-box shadow-lg mx-10 relative overflow-hidden">
-                            <p class="text-[22px] font-moul blessing-text leading-relaxed drop-shadow-sm m-0">
+                            <p class="text-[20px] font-moul blessing-text leading-relaxed drop-shadow-sm m-0">
                                 សូមជូនពរឱ្យប្អូនៗទទួលបានជោគជ័យក្នុងការសិក្សាបន្តបន្ទាប់ទៀត <br>
                                 និងក្លាយជាកូនល្អ សិស្សល្អ មិត្តល្អ និងពលរដ្ឋល្អក្នុងសង្គម
                             </p>
@@ -539,6 +551,7 @@
             return html;
         }
 
+        // មុខងារទាញយកជារូបភាព
         function downloadImage(canvasId, className) {
             const element = document.getElementById(canvasId);
             const wrapper = element.parentElement;
@@ -554,7 +567,7 @@
                 html2canvas(element, {
                     scale: 2, 
                     useCORS: true,
-                    backgroundColor: null, // Allow transparent/theme background to show
+                    backgroundColor: null, 
                     width: 1080,
                     height: 1350,
                     windowWidth: 1080,
