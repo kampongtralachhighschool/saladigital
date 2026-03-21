@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>តារាងកិត្តិយស (A4 Format)</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700;900&family=Moul&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold-main: #D4AF37; --gold-light: #FCEABB; --gold-dark: #B38728;
+            --blue-main: #0f4085; --blue-dark: #0a1930;
+            --card-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            
+            --c-gold: #eab308; --c-gold-dark: #b45309;
+            --c-silver: #94a3b8; --c-silver-dark: #475569;
+            --c-bronze: #d97706; --c-bronze-dark: #78350f;
+            --c-blue: #3b82f6; --c-blue-dark: #1e3a8a;
+        }
+
+        /* ==========================================
+           🌟 ម៉ូដរចនាទាំង ១០ (THEME VARIABLES)
+           ========================================== */
+        .theme-1 {
+            --cv-bg: #fdfdfd; --cv-pattern: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%);
+            --school-btn-bg: linear-gradient(to right, #1e3a8a, #0f4085);
+            --txt-school: #ffffff; --txt-title: #b91c1c; --txt-blessing: #b45309;
+            --card-bg: #ffffff; --card-border: #cbd5e1; --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            --txt-name: #1e3a8a; --txt-score: #475569; --card-radius: 16px;
+            --badge-bg: #fef9c3; --badge-txt: #1e3a8a;
+            --footer-bg: linear-gradient(to right, #fefce8, #ffffff, #fefce8); --border-style: solid;
+        }
+        .theme-2 {
+            --cv-bg: #fdfdfd; --cv-pattern: linear-gradient(135deg, #ffffff 0%, #ffe4e6 100%);
+            --school-btn-bg: linear-gradient(to right, #9f1239, #881337);
+            --txt-school: #ffffff; --txt-title: #e11d48; --txt-blessing: #9f1239;
+            --card-bg: rgba(255,255,255,0.9); --card-border: #fecdd3; --card-shadow: 0 10px 30px rgba(159, 18, 57, 0.1);
+            --txt-name: #9f1239; --txt-score: #881337; --card-radius: 8px;
+            --badge-bg: #ffe4e6; --badge-txt: #9f1239;
+            --footer-bg: linear-gradient(145deg, #ffffff 0%, #fff1f2 100%); --border-style: double;
+        }
+        .theme-3 {
+            --cv-bg: #0f4085; --cv-pattern: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.05) 0%, transparent 50%), linear-gradient(135deg, #051d45 0%, #0f4085 50%, #051d45 100%);
+            --school-btn-bg: linear-gradient(to right, #ffffff, #f1f5f9);
+            --txt-school: #1e3a8a; --txt-title: #FCEABB; --txt-blessing: #FCEABB;
+            --card-bg: rgba(255, 255, 255, 0.1); --card-border: rgba(212,175,55,0.5); --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --txt-name: #ffffff; --txt-score: #e2e8f0; --card-radius: 20px;
+            --badge-bg: rgba(255,255,255,0.15); --badge-txt: #FCEABB;
+            --footer-bg: rgba(255, 255, 255, 0.1); --border-style: solid;
+        }
+        .theme-4 {
+            --cv-bg: #eff6ff; --cv-pattern: linear-gradient(to bottom right, #dbeafe, #eff6ff);
+            --school-btn-bg: linear-gradient(to right, #1d4ed8, #1e40af);
+            --txt-school: #ffffff; --txt-title: #1e3a8a; --txt-blessing: #1e3a8a;
+            --card-bg: #ffffff; --card-border: #bfdbfe; --card-shadow: 0 10px 20px rgba(29, 78, 216, 0.1);
+            --txt-name: #1e40af; --txt-score: #334155; --card-radius: 12px;
+            --badge-bg: #dbeafe; --badge-txt: #1e3a8a;
+            --footer-bg: #ffffff; --border-style: solid;
+        }
+        .theme-5 {
+            --cv-bg: #f1f5f9; --cv-pattern: repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 10px, #e2e8f0 10px, #e2e8f0 20px);
+            --school-btn-bg: linear-gradient(to right, #334155, #1e293b);
+            --txt-school: #ffffff; --txt-title: #0f172a; --txt-blessing: #1e293b;
+            --card-bg: #ffffff; --card-border: #94a3b8; --card-shadow: 4px 4px 0px rgba(0,0,0,0.05);
+            --txt-name: #0f172a; --txt-score: #475569; --card-radius: 8px;
+            --badge-bg: #e2e8f0; --badge-txt: #0f172a;
+            --footer-bg: #ffffff; --border-style: dashed;
+        }
+        .theme-6 {
+            --cv-bg: #334155; --cv-pattern: radial-gradient(circle at center, #475569 0%, #1e293b 100%);
+            --school-btn-bg: linear-gradient(to right, #f8fafc, #e2e8f0);
+            --txt-school: #0f172a; --txt-title: #ffffff; --txt-blessing: #f1f5f9;
+            --card-bg: rgba(15, 23, 42, 0.6); --card-border: #64748b; --card-shadow: 0 15px 25px rgba(0,0,0,0.4);
+            --txt-name: #ffffff; --txt-score: #cbd5e1; --card-radius: 16px;
+            --badge-bg: rgba(255,255,255,0.1); --badge-txt: #ffffff;
+            --footer-bg: rgba(15, 23, 42, 0.8); --border-style: solid;
+        }
+        .theme-7 {
+            --cv-bg: #7f1d1d; --cv-pattern: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+            --school-btn-bg: linear-gradient(to right, #fef08a, #facc15);
+            --txt-school: #7f1d1d; --txt-title: #ffffff; --txt-blessing: #fef08a;
+            --card-bg: rgba(0, 0, 0, 0.4); --card-border: #fca5a5; --card-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --txt-name: #ffffff; --txt-score: #fecaca; --card-radius: 4px;
+            --badge-bg: rgba(255,255,255,0.15); --badge-txt: #fef08a;
+            --footer-bg: rgba(0, 0, 0, 0.5); --border-style: solid;
+        }
+        .theme-8 {
+            --cv-bg: #fff1f2; --cv-pattern: radial-gradient(circle at 50% 50%, #ffffff 0%, #ffe4e6 100%);
+            --school-btn-bg: linear-gradient(to right, #be123c, #9f1239);
+            --txt-school: #ffffff; --txt-title: #be123c; --txt-blessing: #9f1239;
+            --card-bg: #ffffff; --card-border: #fda4af; --card-shadow: 0 8px 20px rgba(159, 18, 57, 0.15);
+            --txt-name: #9f1239; --txt-score: #4c0519; --card-radius: 20px;
+            --badge-bg: #ffe4e6; --badge-txt: #881337;
+            --footer-bg: #ffffff; --border-style: dotted;
+        }
+        .theme-9 {
+            --cv-bg: #020617; --cv-pattern: radial-gradient(circle at 50% 0%, #1e293b 0%, #000000 100%);
+            --school-btn-bg: linear-gradient(to right, #d4af37, #b45309);
+            --txt-school: #ffffff; --txt-title: #ffffff; --txt-blessing: #d4af37;
+            --card-bg: rgba(255, 255, 255, 0.03); --card-border: #d4af37; --card-shadow: 0 10px 40px rgba(212, 175, 55, 0.1);
+            --txt-name: #ffffff; --txt-score: #cbd5e1; --card-radius: 0px;
+            --badge-bg: rgba(212, 175, 55, 0.1); --badge-txt: #d4af37;
+            --footer-bg: rgba(255, 255, 255, 0.05); --border-style: solid;
+        }
+        .theme-10 {
+            --cv-bg: #0f172a; --cv-pattern: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            --school-btn-bg: linear-gradient(to right, #f1f5f9, #cbd5e1);
+            --txt-school: #0f172a; --txt-title: #f1f5f9; --txt-blessing: #cbd5e1;
+            --card-bg: rgba(255, 255, 255, 0.05); --card-border: #94a3b8; --card-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            --txt-name: #f1f5f9; --txt-score: #94a3b8; --card-radius: 12px;
+            --badge-bg: rgba(255,255,255,0.1); --badge-txt: #f1f5f9;
+            --footer-bg: rgba(255, 255, 255, 0.05); --border-style: dashed;
+        }
+
+        /* ==========================================
+           🌟 រចនាសម្ព័ន្ធទូទៅ
+           ========================================== */
+        body { font-family: 'Battambang', sans-serif; background-color: #e2e8f0; margin: 0; padding: 0; }
+        .font-moul { font-family: 'Moul', cursive; line-height: 1.7 !important; padding-top: 5px; padding-bottom: 5px; }
+
+        /* Lock Screen */
+        #main-ui { display: none; }
+
+        .control-panel { background: white; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; border-bottom: 2px solid #cbd5e1; }
+        #render-container { display: flex; flex-direction: column; align-items: center; gap: 40px; padding: 40px 20px; }
+
+        /* តម្រូវ Scale សម្រាប់ផ្ទាំងទំហំ A4 */
+        .canvas-wrapper { position: relative; transform: scale(0.55); transform-origin: top center; margin-bottom: -700px; display: flex; flex-direction: column; align-items: center; }
+
+        .btn-download-img { position: absolute; top: -65px; right: 0; background: #16a34a; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; z-index: 200; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.3s; border: none; }
+        .btn-download-img:hover { background: #15803d; transform: translateY(-2px); }
+
+        /* 🌟 A4 Canvas Size : 1190 x 1684 px */
+        .fb-post-canvas {
+            width: 1190px; height: 1684px;
+            background-color: var(--cv-bg);
+            background-image: var(--cv-pattern);
+            position: relative; box-sizing: border-box; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; padding: 50px; overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .canvas-border-outer { position: absolute; top: 20px; bottom: 20px; left: 20px; right: 20px; border: 3px var(--border-style) var(--gold-main); pointer-events: none; z-index: 1; }
+        .canvas-border-inner { position: absolute; top: 32px; bottom: 32px; left: 32px; right: 32px; border: 1.5px var(--border-style) rgba(212, 175, 55, 0.5); pointer-events: none; z-index: 1; }
+        .corner { position: absolute; width: 50px; height: 50px; border: 6px var(--border-style) var(--gold-main); z-index: 2; pointer-events: none;}
+        .c-tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .c-tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+        .c-bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+        .c-br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+        .title-main { 
+            color: var(--txt-title); font-size: 48px; 
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.2), 0 4px 8px rgba(0,0,0,0.15); 
+            transition: color 0.5s;
+        }
+
+        /* 🌟 កាតសិស្ស និង មេដាយ */
+        .student-card {
+            background: var(--card-bg); border-radius: var(--card-radius); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: var(--card-shadow); position: relative; border: 1.5px var(--border-style) var(--card-border);
+            transition: all 0.5s ease;
+        }
+
+        .card-top-line { position: absolute; top: 0; left: 0; right: 0; height: 8px; border-top-left-radius: var(--card-radius); border-top-right-radius: var(--card-radius); }
+        .rank-1 .card-top-line { background: var(--c-gold); }
+        .rank-2 .card-top-line { background: var(--c-silver); }
+        .rank-3 .card-top-line { background: var(--c-bronze); }
+        .rank-other .card-top-line { background: var(--c-blue); }
+
+        .medal-container { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
+        .medal { 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            font-family: 'Moul', cursive; color: white;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2), inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.5); z-index: 10;
+        }
+        .medal.gold { background: radial-gradient(circle, #fde047 0%, #d97706 100%); border: 3px solid #fef08a;}
+        .medal.silver { background: radial-gradient(circle, #f1f5f9 0%, #94a3b8 100%); border: 3px solid #ffffff;}
+        .medal.bronze { background: radial-gradient(circle, #fcd34d 0%, #b45309 100%); border: 3px solid #fde047;}
+        .medal.standard { background: radial-gradient(circle, #60a5fa 0%, #2563eb 100%); border: 3px solid #bfdbfe;}
+
+        .ribbon { z-index: 5; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 70%, 0 100%); }
+        .rank-1 .ribbon { background: var(--c-gold-dark); }
+        .rank-2 .ribbon { background: var(--c-silver-dark); }
+        .rank-3 .ribbon { background: var(--c-bronze-dark); }
+        .rank-other .ribbon { background: var(--c-blue-dark); }
+
+        hr.divider { border-color: var(--card-border); margin: 12px 0; width: 100%; border-style: dashed; }
+        
+        .grade-badge { background: #fef08a; border: 1px solid #fde047; color: #b45309; border-radius: 6px; font-weight: 900; }
+        
+        .stu-name { color: var(--txt-name); transition: color 0.5s ease;}
+        .stu-score { color: var(--txt-score); transition: color 0.5s ease;}
+
+        /* Stamp and Signatures */
+        .stamp-main { 
+            position: absolute; 
+            top: -10px; /* កែតម្រូវទីតាំងត្រាឲ្យនៅចំកណ្តាលអក្សរ */
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 330px; 
+            max-width: none; 
+            max-height: none; 
+            pointer-events: none; 
+            z-index: 5; /* Z-index ទាបជាងអក្សរ */
+            opacity: 0.95;
+            mix-blend-mode: multiply; 
+            transition: opacity 0.3s ease;
+        }
+        .sig-main { 
+            max-height: 80px; 
+            max-width: 180px; 
+            object-fit: contain; 
+            pointer-events: none; 
+            transition: opacity 0.3s ease;
+        }
+        
+        /* ថ្នាក់សម្រាប់លាក់ត្រា និងហត្ថលេខា */
+        .hide-signatures .sig-element {
+            display: none !important;
+        }
+
+        /* PRINT CONFIGURATION */
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body, html { background: #ffffff !important; margin: 0 !important; padding: 0 !important; }
+            .control-panel, .no-print, .btn-download-img { display: none !important; }
+            #render-container { padding: 0 !important; gap: 0 !important; display: block !important; }
+            
+            .canvas-wrapper { margin: 0 auto !important; padding: 0 !important; transform: none !important; zoom: 1 !important; display: block !important; page-break-after: always !important; page-break-inside: avoid !important; }
+            .fb-post-canvas { width: 1190px !important; height: 1684px !important; box-shadow: none !important; border: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🌟 LOCK SCREEN / MAIN UI WRAPPER -->
+    <div id="main-ui">
+        
+        <!-- CONTROL PANEL -->
+        <div class="control-panel no-print w-full flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">🏆</span>
+                <div>
+                    <h1 class="font-bold text-xl text-blue-900 moul-font">តារាងកិត្តិយស (A4 Format)</h1>
+                    <p class="text-xs text-gray-500 font-bold">ទំហំ A4 (ច្បាប់ ៣ ជួរ)</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                
+                <!-- CHECKBOX: Toggle Signatures -->
+                <div class="flex items-center gap-2 border-2 border-green-400 px-4 py-2.5 rounded-xl bg-green-50 shadow-sm cursor-pointer" onclick="document.getElementById('sigToggle').click()">
+                    <input type="checkbox" id="sigToggle" checked class="w-5 h-5 text-blue-600 rounded cursor-pointer" onchange="toggleSignatures(event)">
+                    <label class="font-bold text-sm text-green-800 cursor-pointer">បង្ហាញត្រា & ហត្ថលេខា</label>
+                </div>
+
+                <div class="w-px h-8 bg-gray-300 mx-1"></div>
+
+                <!-- THEME SWITCHER -->
+                <select id="themeSelect" onchange="changeTheme()" class="px-4 py-2.5 rounded-xl border-2 border-blue-400 font-bold text-sm bg-blue-50 text-blue-800 outline-none">
+                    <option value="theme-1">🤍 ម៉ូដទី១: សរលោង (Default)</option>
+                    <option value="theme-2">❤️ ម៉ូដទី២: ស ឈាមជ្រូក</option>
+                    <option value="theme-3">💙 ម៉ូដទី៣: ខៀវរាជវាំង</option>
+                    <option value="theme-4">💙 ម៉ូដទី៤: ខៀវ ស</option>
+                    <option value="theme-5">🤍 ម៉ូដទី៥: ប្រផេះ ស</option>
+                    <option value="theme-6">🖤 ម៉ូដទី៦: ប្រផេះ ខ្មៅ</option>
+                    <option value="theme-7">❤️ ម៉ូដទី៧: ឈាមជ្រូក ខ្មៅ</option>
+                    <option value="theme-8">💖 ម៉ូដទី៨: ឈាមជ្រូក ស</option>
+                    <option value="theme-9">🖤 ម៉ូដទី៩: ខ្មៅ មាស</option>
+                    <option value="theme-10">🤍 ម៉ូដទី១០: ខ្មៅ ប្រាក់</option>
+                </select>
+
+                <div class="w-px h-8 bg-gray-300 mx-1"></div>
+
+                <select id="yearSelect" class="px-4 py-2.5 rounded-xl border border-gray-300 font-bold text-sm bg-gray-50">
+                    <option value="២០២៣-២០២៤">២០២៣-២០២៤</option>
+                    <option value="២០២៤-២០២៥">២០២៤-២០២៥</option>
+                    <option value="២០២៥-២០២៦" selected>២០២៥-២០២៦</option>
+                </select>
+
+                <select id="periodSelect" class="px-4 py-2.5 rounded-xl border border-gray-300 font-bold text-sm bg-gray-50">
+                    <option value="មករា">ប្រចាំខែ មករា</option>
+                    <option value="កុម្ភៈ">ប្រចាំខែ កុម្ភៈ</option>
+                    <option value="មីនា">ប្រចាំខែ មីនា</option>
+                    <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option>
+                    <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option>
+                    <option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                    <option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២</option>
+                    <option value="ប្រចាំឆ្នាំ">លទ្ធផលប្រចាំឆ្នាំ</option>
+                </select>
+
+                <button onclick="fetchHonorRollData()" id="btnFetch" class="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl shadow hover:bg-blue-700 transition">
+                    ទាញទិន្នន័យ
+                </button>
+
+                <button onclick="window.print()" id="btnPrint" class="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow hover:bg-red-700 transition hidden">
+                    📄 Save ជា PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- 🌟 RENDER CONTAINER -->
+        <div id="render-container">
+            <div class="text-center text-gray-400 font-bold mt-20 no-print" id="placeholder-msg">
+                សូមជ្រើសរើសឆ្នាំ និងការវាយតម្លៃ រួចចុចប៊ូតុង "ទាញទិន្នន័យ"
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc";
+        const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
+
+        const PRINCIPAL_STAMP_URL = "1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne";
+        let teacherMap = {};
+
+        const getDriveImgUrl = (urlOrId) => {
+            if(!urlOrId) return '';
+            if (!urlOrId.includes('http')) return `https://lh3.googleusercontent.com/d/${urlOrId}`;
+            let idMatch = urlOrId.match(/(?:id=|file\/d\/)([\w-]+)/);
+            return idMatch ? `https://lh3.googleusercontent.com/d/${idMatch[1]}` : urlOrId;
+        };
+
+        // 🌟 Security Prompt
+        document.addEventListener("DOMContentLoaded", () => {
+            Swal.fire({
+                title: '🔒 ចូលផ្ទាំងរដ្ឋបាល',
+                input: 'password',
+                inputPlaceholder: 'បញ្ចូលពាក្យសម្ងាត់...',
+                allowOutsideClick: false, allowEscapeKey: false,
+                confirmButtonText: 'ចូលប្រើប្រាស់',
+                confirmButtonColor: '#2563eb',
+                preConfirm: (pwd) => {
+                    if (pwd !== 'H@nm@m64') { Swal.showValidationMessage('ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!'); }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('main-ui').style.display = 'block';
+                    document.body.style.backgroundColor = "#e2e8f0";
+                }
+            });
+        });
+
+        // 🌟 មុខងារ បិទ/បើក ត្រា និង ហត្ថលេខា
+        function toggleSignatures(event) {
+            if(event) event.stopPropagation(); // ការពារការចុចជាន់គ្នាពី Label
+            const isChecked = document.getElementById('sigToggle').checked;
+            const canvases = document.querySelectorAll('.fb-post-canvas');
+            
+            canvases.forEach(canvas => {
+                if (isChecked) {
+                    canvas.classList.remove('hide-signatures');
+                } else {
+                    canvas.classList.add('hide-signatures');
+                }
+            });
+        }
+
+        function changeTheme() {
+            const selectedTheme = document.getElementById('themeSelect').value;
+            const canvases = document.querySelectorAll('.fb-post-canvas');
+            canvases.forEach(canvas => {
+                for(let i=1; i<=10; i++) canvas.classList.remove(`theme-${i}`);
+                canvas.classList.add(selectedTheme);
+            });
+        }
+
+        // 🌟 Function បម្លែងលេខសកលទៅលេខខ្មែរ
+        const toKhmerNum = (str) => {
+            if (str === null || str === undefined) return '';
+            const khmerNums =['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
+            return String(str).replace(/[0-9]/g, match => khmerNums[match]);
+        };
+
+        async function fetchSupabaseData(table, queryParams) {
+            let allData =[]; let offset = 0; const limit = 1000; let keepFetching = true;
+            while (keepFetching) {
+                const url = `${SUPABASE_URL}/rest/v1/${table}?${queryParams}&order=id.asc&limit=${limit}&offset=${offset}`;
+                const res = await fetch(url, { headers: HEADERS });
+                if (!res.ok) throw new Error("Network Error");
+                const data = await res.json();
+                if (data.length > 0) { allData = allData.concat(data); offset += limit; } else { keepFetching = false; }
+                if (data.length < limit) keepFetching = false;
+            }
+            return allData;
+        }
+
+        function parseRank(val) {
+            if (!val) return 9999;
+            let str = String(val).trim();
+            const kmToEn = { '០':'0', '១':'1', '២':'2', '៣':'3', '៤':'4', '៥':'5', '៦':'6', '៧':'7', '៨':'8', '៩':'9' };
+            str = str.replace(/[០-៩]/g, m => kmToEn[m]); 
+            let num = parseInt(str.replace(/\D/g, ''), 10); 
+            return isNaN(num) ? 9999 : num;
+        }
+
+        // =========================================================
+        // 🚀 MAIN FETCH & RENDER LOGIC
+        // =========================================================
+        async function fetchHonorRollData() {
+            let year = document.getElementById('yearSelect').value;
+            let rawPeriod = document.getElementById('periodSelect').value;
+            
+            let btn = document.getElementById('btnFetch');
+            btn.innerHTML = `កំពុងទាញទិន្នន័យ...`; btn.disabled = true;
+
+            let period = rawPeriod.replace("ប្រចាំខែ ", "").replace("លទ្ធផល", "").trim();
+            
+            let table = "student_scores"; let pCol = "month_name";
+            if (period.includes("ប្រចាំឆមាស") || period.includes("លទ្ធផលប្រចាំឆមាស")) { table = "semester_scores"; pCol = "semester_name"; }
+            else if (period.includes("ប្រចាំឆ្នាំ") || period.includes("លទ្ធផលប្រចាំឆ្នាំ")) { table = "annual_scores"; pCol = "academic_year"; period = year; } 
+            else { table = "student_scores"; pCol = "month_name"; }
+
+            try {
+                // 🌟 ០. ទាញពត៌មានគ្រូ (សម្រាប់ហត្ថលេខា និងឈ្មោះគ្រូ)
+                try {
+                    let teachRes = await fetchSupabaseData("teacher_info", "select=*");
+                    teacherMap = {};
+                    teachRes.forEach(t => { 
+                        let cleanClass = String(t.homeroom_class).trim().toUpperCase();
+                        teacherMap[cleanClass] = { name: t.teacher_name || '..................................', sign: getDriveImgUrl(t.signature_link) }; 
+                    });
+                } catch(e) { console.warn("Failed to load teacher info", e); }
+
+                // 🌟 ១. ទាញឈ្មោះដើមទី មកត្រៀមទុកការពារអ្នកអត់ឈ្មោះ និងពិនិត្យភេទ
+                let namesData = await fetchSupabaseData("student_scores", `academic_year=eq.${encodeURIComponent(year)}&select=student_id,student_name,gender`);
+                let namesDict = {};
+                namesData.forEach(s => {
+                    if (s.student_name && s.student_name.trim() !== '') {
+                        namesDict[String(s.student_id).trim()] = { name: s.student_name, gender: s.gender };
+                    }
+                });
+
+                // 🌟 ២. ទាញទិន្នន័យទាំងអស់ក្នុងខែ/ឆមាស 
+                let data = await fetchSupabaseData(table, `${pCol}=eq.${encodeURIComponent(period)}&academic_year=eq.${encodeURIComponent(year)}&class_rank=not.is.null`);
+                
+                if(data.length === 0) {
+                    Swal.fire('ទទេ!', 'មិនមានទិន្នន័យសម្រាប់ជម្រើសនេះទេ!', 'info');
+                    btn.innerHTML = "ទាញទិន្នន័យ"; btn.disabled = false; return;
+                }
+
+                // 🌟 ៣. Filter យកតែលេខ ១ ដល់ លេខ ៥ ដាច់ខាត
+                let honorStudents = data.filter(s => {
+                    let r = parseRank(s.class_rank);
+                    return r > 0 && r <= 5;
+                });
+
+                if(honorStudents.length === 0) {
+                    Swal.fire('ទទេ!', 'មិនទាន់មានសិស្សជាប់ចំណាត់ថ្នាក់លេខ១-៥ ទេ!', 'info');
+                    btn.innerHTML = "ទាញទិន្នន័យ"; btn.disabled = false; return;
+                }
+
+                // 🌟 ៤. Group តាមថ្នាក់
+                let classesMap = {};
+                honorStudents.forEach(s => {
+                    let cName = String(s.grade).trim().toUpperCase();
+                    if(!classesMap[cName]) classesMap[cName] =[];
+                    
+                    if (!s.student_name || s.student_name.trim() === '') {
+                        let fallback = namesDict[String(s.student_id).trim()];
+                        if(fallback) {
+                            s.student_name = fallback.name;
+                            s.gender = s.gender || fallback.gender;
+                        } else {
+                            s.student_name = "មិនស្គាល់ឈ្មោះ";
+                        }
+                    }
+                    classesMap[cName].push(s);
+                });
+
+                let container = document.getElementById('render-container');
+                container.innerHTML = ""; 
+
+                let sortedClasses = Object.keys(classesMap).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+                let currentTheme = document.getElementById('themeSelect').value;
+
+                // បង្កើត Canvas ម្តងមួយថ្នាក់
+                sortedClasses.forEach((className, idx) => {
+                    let students = classesMap[className];
+                    students.sort((a,b) => parseRank(a.class_rank) - parseRank(b.class_rank));
+                    
+                    let pageHtml = generateCanvasHTML(className, students, rawPeriod, year, idx, currentTheme);
+                    container.innerHTML += pageHtml;
+                });
+
+                // ត្រួតពិនិត្យ និងអនុវត្តស្ថានភាពហត្ថលេខាឡើងវិញ បន្ទាប់ពី Render
+                toggleSignatures(); 
+
+                document.getElementById('btnPrint').classList.remove('hidden');
+                Swal.fire('ជោគជ័យ', `ទាញបានទិន្នន័យ ${sortedClasses.length} ថ្នាក់។`, 'success');
+
+            } catch (error) {
+                console.error(error);
+                Swal.fire('បញ្ហា', 'មានកំហុសក្នុងការតភ្ជាប់ប្រព័ន្ធ', 'error');
+            }
+            btn.innerHTML = "ទាញទិន្នន័យ"; btn.disabled = false;
+        }
+
+        // =========================================================
+        // 🎨 DYNAMIC HTML GENERATOR (Strict 3 Rows Engine)
+        // =========================================================
+        
+        function getMedalConfig(rankNum) {
+            if(rankNum === 1) return { color: 'gold', cls: 'rank-1' };
+            if(rankNum === 2) return { color: 'silver', cls: 'rank-2' };
+            if(rankNum === 3) return { color: 'bronze', cls: 'rank-3' };
+            return { color: 'standard', cls: 'rank-other' };
+        }
+
+        function getCardStyle(count, isTop1) {
+            let width = '350px'; let padding = '2.5rem 1.2rem 1.2rem 1.2rem';
+            let nameSize = '20px'; let scoreSize = '16px';
+            let medalSize = '85px'; let medalFont = '2.5rem';
+            let ribbonW = '28px'; let ribbonH = '28px'; let ribbonM = '-14px';
+
+            if (isTop1 && count === 1) {
+                width = '550px'; padding = '3.5rem 1.8rem 1.8rem 1.8rem'; nameSize = '32px'; scoreSize = '22px'; medalSize = '110px'; medalFont = '3.5rem'; ribbonW = '40px'; ribbonH = '30px'; ribbonM = '-15px';
+            } else if (count === 1) {
+                width = '500px'; padding = '3rem 1.8rem 1.5rem 1.8rem'; nameSize = '28px'; scoreSize = '20px'; medalSize = '95px'; medalFont = '3rem'; ribbonW = '35px'; ribbonH = '30px'; ribbonM = '-15px';
+            } else if (count === 2) {
+                width = '460px'; padding = '3rem 1.8rem 1.5rem 1.8rem'; nameSize = '26px'; scoreSize = '18px'; medalSize = '90px'; medalFont = '2.8rem'; ribbonW = '32px'; ribbonH = '30px'; ribbonM = '-15px';
+            } else if (count === 3) {
+                width = '340px'; padding = '2.5rem 1rem 1.2rem 1rem'; nameSize = '20px'; scoreSize = '16px'; medalSize = '80px'; medalFont = '2.4rem'; ribbonW = '26px'; ribbonH = '26px'; ribbonM = '-12px';
+            } else if (count === 4) {
+                width = '260px'; padding = '2rem 0.8rem 1rem 0.8rem'; nameSize = '18px'; scoreSize = '15px'; medalSize = '70px'; medalFont = '1.8rem'; ribbonW = '22px'; ribbonH = '22px'; ribbonM = '-10px';
+            } else if (count >= 5) {
+                width = '200px'; padding = '1.8rem 0.5rem 0.8rem 0.5rem'; nameSize = '16px'; scoreSize = '13px'; medalSize = '60px'; medalFont = '1.5rem'; ribbonW = '18px'; ribbonH = '18px'; ribbonM = '-8px';
+            }
+
+            return { width, padding, nameSize, scoreSize, medalSize, medalFont, ribbonW, ribbonH, ribbonM };
+        }
+
+        // បង្កើត HTML សម្រាប់កាត
+        function createStudentCard(student, isTop1Single, countInRow) {
+            let rankNum = parseRank(student.class_rank);
+            let conf = getMedalConfig(rankNum);
+            let style = getCardStyle(countInRow, isTop1Single);
+            
+            // 🌟 ដាក់ក្បៀស២ខ្ទង់ សម្រាប់មធ្យមភាគ
+            let scoreRaw = student.semester_average || student.exam_average || student.average || student.annual_average;
+            let score = '-';
+            if (scoreRaw !== undefined && scoreRaw !== null && !isNaN(parseFloat(scoreRaw))) {
+                score = parseFloat(scoreRaw).toFixed(2);
+            }
+            score = toKhmerNum(score); 
+            
+            let grd = student.grade_result || student.final_result || '-';
+            let rankKhm = toKhmerNum(rankNum);
+            let isA = grd.toUpperCase() === 'A' ? 'a-grade' : '';
+            
+            // 🌟 កំណត់រូបតំណាងភេទ (ប្រុសពណ៌ខៀវ / ស្រីពណ៌ផ្កាឈូក)
+            let gender = String(student.gender || '').trim().toLowerCase();
+            
+            let femaleIcon = `<svg class="w-[22px] h-[22px] inline-block text-pink-500 ml-1.5" style="vertical-align: -3px;" fill="currentColor" viewBox="0 0 320 512"><path d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V256.9L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6h29.7c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V352H152z"/></svg>`;
+            let maleIcon = `<svg class="w-[22px] h-[22px] inline-block text-blue-500 ml-1.5" style="vertical-align: -3px;" fill="currentColor" viewBox="0 0 448 512"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>`;
+            
+            let genderIcon = '';
+            if (['ស្រី', 'f', 'ស', 'female'].includes(gender)) {
+                genderIcon = femaleIcon;
+            } else if (['ប្រុស', 'm', 'ប', 'male'].includes(gender)) {
+                genderIcon = maleIcon;
+            } else {
+                genderIcon = maleIcon; // លំនាំដើម
+            }
+
+            let displayName = student.student_name.trim() + genderIcon;
+
+            let medalTop = -(parseInt(style.medalSize) / 2 + 5) + 'px';
+
+            return `
+            <div class="student-card ${conf.cls}" style="width: ${style.width}; padding: ${style.padding};">
+                <div class="card-top-line"></div>
+                <div class="medal-container" style="top: ${medalTop};">
+                    <div class="medal ${conf.color}" style="width: ${style.medalSize}; height: ${style.medalSize}; font-size: ${style.medalFont};">
+                        <div class="medal-inner">${rankKhm}</div>
+                    </div>
+                    <div class="ribbon" style="width: ${style.ribbonW}; height: ${style.ribbonH}; margin-top: ${style.ribbonM};"></div>
+                </div>
+                <h3 class="font-bold stu-name mt-3 text-center w-full drop-shadow-sm truncate px-1" style="font-size: ${style.nameSize};">${displayName}</h3>
+                <hr class="divider">
+                <div class="w-full flex justify-between px-3 stu-score font-bold items-center" style="font-size: ${style.scoreSize};">
+                    <span>មធ្យមភាគ: <span class="text-blue-600">${score}</span></span>
+                    <span class="flex items-center gap-1">និទ្ទេស: <span class="grade-badge px-3 py-1 ${isA}">${grd}</span></span>
+                </div>
+            </div>`;
+        }
+
+        function generateCanvasHTML(className, students, periodLabel, yearLabel, index, themeClass) {
+            let rawTitle = periodLabel.replace("លទ្ធផល", "").trim();
+            
+            // 🌟 មុខងារកំណត់ចំណងជើង "ប្រចាំខែ" ដោយស្វ័យប្រវត្តិ
+            let displayTitle = "";
+            if (rawTitle.includes("ឆមាស") || rawTitle.includes("ឆ្នាំ")) {
+                displayTitle = "តារាងកិត្តិយស " + rawTitle;
+            } else {
+                displayTitle = "តារាងកិត្តិយសប្រចាំខែ " + rawTitle;
+            }
+
+            let canvasId = `canvas-${index}`;
+            
+            // បម្លែងទៅលេខខ្មែរ
+            let khClassName = toKhmerNum(className);
+            let khYearLabel = toKhmerNum(yearLabel);
+            let dateSolar = toKhmerNum(students[0]?.date_solar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...');
+            let dateLunar = toKhmerNum(students[0]?.date_lunar || '...................................................');
+            
+            let cleanClass = String(className).trim().toUpperCase();
+            let tInfo = teacherMap[cleanClass] || {name: '..................................', sign: ''};
+            
+            // បន្ថែម Class "sig-element" សម្រាប់មុខងារបិទបើក
+            let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
+            let pImg = pImgUrl ? `<img src="${pImgUrl}" class="stamp-main sig-element" onerror="this.style.display='none'">` : '';
+            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" class="sig-main sig-element" onerror="this.style.display='none'">` : '';
+
+            let html = `
+            <div class="canvas-wrapper">
+                <button onclick="downloadImage('${canvasId}', '${className}')" class="btn-download-img">⬇️ ទាញយកជារូបភាពថ្នាក់ ${className}</button>
+                
+                <div id="${canvasId}" class="fb-post-canvas ${themeClass}">
+                    <div class="khmer-pattern-bg"></div>
+                    <div class="bg-gradient-overlay"></div>
+                    
+                    <div class="canvas-border-outer"></div>
+                    <div class="canvas-border-inner"></div>
+                    <div class="corner c-tl"></div><div class="corner c-tr"></div>
+                    <div class="corner c-bl"></div><div class="corner c-br"></div>
+
+                    <!-- 🌟 HEADER AREA (ទម្រង់ផ្លូវការ) -->
+                    <div class="header-area w-full relative z-20 pt-2 px-6">
+                        <div style="position: relative; width: 100%; height: 140px; margin-bottom: 20px;">
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center;">
+                                <h2 class="font-moul" style="font-size: 20px; color: var(--txt-title); margin-bottom: 6px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+                                <h2 class="font-moul" style="font-size: 20px; color: var(--txt-title);">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
+                            </div>
+                            <div style="position: absolute; top: 80px; left: 0; text-align: left; font-size: 18px; font-weight: 700; color: var(--txt-name); line-height: 1.7;">
+                                <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
+                                <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
+                                <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
+                            </div>
+                        </div>
+
+                        <!-- ចំណងជើងធំ (២ បន្ទាត់) -->
+                        <h1 class="font-moul title-main text-center mb-10 leading-relaxed mt-6">
+                            ${displayTitle}<br>
+                            <span style="font-size: 34px; color: var(--txt-name);">ថ្នាក់ទី ${khClassName} ឆ្នាំសិក្សា ${khYearLabel}</span>
+                        </h1>
+                    </div>
+
+                    <!-- 🌟 STUDENTS AREA (Strict 3 Rows with taller height for A4) -->
+                    <div class="students-area flex flex-col justify-evenly h-[1000px] w-full relative z-10 px-4 mt-6">`;
+
+            // បែងចែកសិស្សជា ៣ ជួរដាច់ខាត (Row 1, Row 2, Row 3)
+            let row1 = students.filter(s => parseRank(s.class_rank) === 1);
+            let row2 = students.filter(s => parseRank(s.class_rank) === 2 || parseRank(s.class_rank) === 3);
+            let row3 = students.filter(s => parseRank(s.class_rank) === 4 || parseRank(s.class_rank) === 5);
+
+            // ជួរទី១
+            if (row1.length > 0) {
+                html += `<div class="w-full flex justify-center gap-6 flex-nowrap mt-4">`;
+                row1.forEach(s => { html += createStudentCard(s, row1.length === 1, row1.length); });
+                html += `</div>`;
+            }
+
+            // ជួរទី២
+            if (row2.length > 0) {
+                html += `<div class="w-full flex justify-center gap-6 flex-nowrap mt-10">`;
+                row2.forEach(s => { html += createStudentCard(s, false, row2.length); });
+                html += `</div>`;
+            }
+
+            // ជួរទី៣
+            if (row3.length > 0) {
+                html += `<div class="w-full flex justify-center gap-6 flex-nowrap mt-10">`;
+                row3.forEach(s => { html += createStudentCard(s, false, row3.length); });
+                html += `</div>`;
+            }
+
+            html += `
+                    </div> 
+
+                    <!-- 🌟 FOOTER (ហត្ថលេខា - អក្សរនៅលើត្រា) -->
+                    <div class="w-full mt-auto mb-16 z-10 flex flex-col items-center">
+                        <div style="display: flex; justify-content: space-between; width: 100%; padding: 0 40px;" class="stu-name relative">
+                            
+                            <!-- ផ្នែកនាយកសាលា (ទម្លាក់ចុះក្រោម ~3cm = 60px) -->
+                            <div style="text-align: center; width: 340px; position: relative; height: 180px; margin-top: 60px;">
+                                ${pImg} <!-- ត្រានៅពីក្រោម -->
+                                
+                                <!-- អក្សរនៅពីលើ (Z-index ខ្ពស់ជាង, គម្លាតធម្មតា) -->
+                                <div style="position: relative; z-index: 20;">
+                                    <p style="font-weight: bold; font-size: 20px; margin-bottom: 2px; color: var(--txt-name);">បានឃើញ និងឯកភាព</p>
+                                    <p class="font-moul" style="font-size: 20px; color: var(--txt-title); margin: 0;">នាយកសាលា</p>
+                                </div>
+                            </div>
+                            
+                            <!-- ផ្នែកគ្រូបន្ទុកថ្នាក់ (រៀបកាលបរិច្ឆេទតាមសំណូមពរ និងពង្រីកប្រអប់ដើម្បីកុំឲ្យធ្លាក់ជួរ) -->
+                            <div style="text-align: center; width: 480px; display: flex; flex-direction: column; align-items: center; position: relative;">
+                                <p style="font-weight: bold; font-size: 17px; margin-bottom: 4px; color: var(--txt-name);">${dateLunar}</p>
+                                <p style="font-weight: bold; font-size: 17px; margin-bottom: 16px; color: var(--txt-name);">${dateSolar}</p>
+                                <p class="font-moul" style="font-size: 19px; color: var(--txt-title); margin-bottom: 5px;">គ្រូបន្ទុកថ្នាក់</p>
+                                <div style="height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">${tImg}</div>
+                                <p class="font-moul" style="font-size: 19px; color: var(--txt-title); margin: 0;">${tInfo.name}</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div> <!-- End fb-post-canvas -->
+            </div> <!-- End canvas-wrapper -->`;
+
+            return html;
+        }
+
+        // មុខងារទាញយកជារូបភាព (High Resolution A4: 1190x1684)
+        function downloadImage(canvasId, className) {
+            const element = document.getElementById(canvasId);
+            const wrapper = element.parentElement;
+            
+            Swal.fire({ title: 'កំពុងបង្កើតរូបភាព...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+            // ដក Scale ចេញសិនទើប html2canvas ថតបានទំហំពេញ
+            const originalTransform = wrapper.style.transform;
+            wrapper.style.transform = "scale(1)";
+            wrapper.style.width = "1190px";
+            wrapper.style.height = "1684px";
+
+            setTimeout(() => {
+                html2canvas(element, {
+                    scale: 2, 
+                    useCORS: true,
+                    backgroundColor: null, 
+                    width: 1190,
+                    height: 1684,
+                    windowWidth: 1190,
+                    windowHeight: 1684,
+                    logging: false
+                }).then(canvas => {
+                    // ដាក់ Scale ដើមវិញ
+                    wrapper.style.transform = originalTransform; 
+                    wrapper.style.width = "";
+                    wrapper.style.height = "";
+                    
+                    const link = document.createElement('a');
+                    link.download = `Honor_Roll_A4_${className}.png`;
+                    link.href = canvas.toDataURL('image/png', 1.0);
+                    link.click();
+                    Swal.close();
+                }).catch(err => {
+                    wrapper.style.transform = originalTransform;
+                    wrapper.style.width = "";
+                    wrapper.style.height = "";
+                    Swal.fire("មានបញ្ហា", "មិនអាចបង្កើតរូបភាពបានទេ", "error");
+                });
+            }, 300); 
+        }
+    </script>
+</body>
+</html>
