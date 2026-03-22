@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ប្រព័ន្ធបោះពុម្ពលទ្ធផលប្រចាំថ្នាក់ (Admin)</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { --primary-blue: #1e40af; --khmer-red: #dc2626; }
+        body { font-family: 'Kantumruy Pro', 'Battambang', sans-serif; background: #e2e8f0; color: #1e293b; margin: 0; padding: 0;}
+        .moul-font { font-family: 'Moul', serif; }
+        
+        #main-ui { display: none; }
+
+        .nav-container { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; padding: 10px 20px;}
+        
+        .class-checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; max-height: 150px; overflow-y: auto; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; background: white;}
+        .class-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;}
+        .class-item:hover { background: #f1f5f9; }
+
+        /* 🌟 PRINT AREA STYLING */
+        .print-container-wrapper { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 20px 0; background: #94a3b8;}
+        
+        .print-area { 
+            background: white; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            width: 210mm; height: 297mm; 
+            padding: 10mm 15mm; box-sizing: border-box;
+            display: block; /* Removed flex stretch to prevent pushing footer to bottom margin */
+            overflow: hidden; 
+            position: relative;
+        }
+
+        .student-info-box { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #1e3a8a; border-left: 4px solid #3b82f6; padding-left: 10px; margin-bottom: 10px; line-height: 1.6;}
+        .student-info-box span { color: #0f172a; margin-left: 5px; font-weight: 900;}
+
+        .summary-box { display: flex; flex-wrap: wrap; justify-content: space-between; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 6px 0; margin-bottom: 10px; background: white;}
+        .summary-item { flex: 1; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 0 5px;}
+        .summary-item:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 15%; height: 70%; width: 1.5px; background-color: #e2e8f0; }
+        .s-title { font-size: 9px; color: #64748b; font-weight: 700; margin-bottom: 2px; line-height: 1.2;}
+        .s-value { font-size: 16px; font-weight: 900; color: #2563eb; line-height: 1; }
+        .s-sub { font-size: 8px; color: #94a3b8; margin-top: 2px;}
+        
+        .c-table { border-collapse: collapse; width: 100%; font-size: 11px; background: white;}
+        .c-table th { padding: 4px 2px; text-align: center; color: #1e3a8a; border-bottom: 2px solid #cbd5e1; border-top: 2px solid #cbd5e1; font-weight: 900; }
+        .c-table td { padding: 4px 2px; text-align: center; border-bottom: 1px solid #f1f5f9; font-weight: 700;}
+        .c-table tbody tr:nth-child(even) { background-color: #f8fafc; }
+        .col-left { text-align: left !important; padding-left: 10px !important; }
+        
+        .bar-bg { width: 100%; background-color: #e2e8f0; height: 5px; border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; }
+        .bar-fill { height: 100%; border-radius: 3px; transition: width 1s; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+        .ai-feedback-box { margin-top: 10px; padding: 8px 12px; background: #eef2ff; border-left: 4px solid #6366f1; border-radius: 0 8px 8px 0; }
+        .ai-text-content { font-size: 10px; line-height: 1.6; color: #334155; text-align: justify; margin-top: 4px;}
+
+        /* 🌟 FOOTER & STAMP CSS */
+        .signatures-area { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; /* Changed to flex-start */
+            width: 100%; 
+            padding: 0 15px; 
+            margin-top: 40px; /* Natural spacing below AI Box, preventing bottom cutoff */
+        }
+        
+        .stamp-main { 
+            position: absolute; 
+            top: 20px; /* ទាញត្រាឡើងលើ ដើម្បីឲ្យអក្សរចំពីលើត្រា */
+            left: 60%; 
+            transform: translateX(-50%); 
+            width: 280px; /* ពង្រីក x1.3 ពី 190px */
+            max-width: none !important; /* 🌟 បន្ទាត់នេះជាគន្លឹះទម្លុះការទប់ទំហំរូប */
+            mix-blend-mode: multiply; 
+            pointer-events: none; 
+            z-index: 5; 
+            opacity: 0.95;
+        }
+        .sig-main { max-height: 60px; max-width: 140px; mix-blend-mode: multiply; object-fit: contain; pointer-events: none; }
+
+        /* 🌟 STRICT PRINT CSS */
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+            .no-print { display: none !important; }
+            
+            .print-container-wrapper { padding: 0 !important; background: transparent !important; display: block !important;}
+            
+            .print-area { 
+                margin: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+                width: 210mm !important; height: 297mm !important; max-height: 297mm !important;
+                padding: 10mm 15mm !important; box-sizing: border-box !important;
+                page-break-after: always !important; page-break-inside: avoid !important;
+                display: block !important;
+            }
+            
+            .c-table th, .c-table td { padding: 3px 2px !important; font-size: 11px !important; }
+            .summary-box { margin-bottom: 8px !important; padding: 5px 0 !important;}
+            .student-info-box { margin-bottom: 8px !important; font-size: 12px !important;}
+            .print-header-title { font-size: 15px !important; margin: 10px 0 5px 0 !important;}
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🌟 MAIN UI WRAPPER -->
+    <div id="main-ui">
+        <nav class="nav-container no-print">
+            <div class="max-w-6xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🖨️</span>
+                    <h1 class="font-bold text-lg text-blue-900 moul-font">ប្រព័ន្ធបោះពុម្ពដុំ (Admin Print)</h1>
+                </div>
+                <span class="font-bold text-red-600 bg-red-50 px-4 py-1.5 rounded-full text-xs border border-red-200">🔒 Admin Mode</span>
+            </div>
+        </nav>
+
+        <!-- Setting Section -->
+        <div class="max-w-6xl mx-auto my-6 no-print px-4">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start mt-2">
+                    
+                    <div class="md:col-span-3">
+                        <label class="text-[11px] font-black text-slate-500 mb-2 block uppercase tracking-wider">ឆ្នាំសិក្សា</label>
+                        <select id="yearSelect" class="w-full py-3 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm bg-slate-50 shadow-sm">
+                            <option value="២០២៣-២០២៤">២០២៣-២០២៤</option>
+                            <option value="២០២៤-២០២៥">២០២៤-២០២៥</option>
+                            <option value="២០២៥-២០២៦" selected>២០២៥-២០២៦</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <label class="text-[11px] font-black text-slate-500 mb-2 block uppercase tracking-wider">ការវាយតម្លៃ</label>
+                        <select id="monthSelect" class="w-full py-3 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm bg-slate-50 shadow-sm">
+                            <option value="ប្រចាំខែ វិច្ឆិកា">ប្រចាំខែ វិច្ឆិកា</option>
+                            <option value="ប្រចាំខែ ធ្នូ">ប្រចាំខែ ធ្នូ</option>
+                            <option value="ប្រចាំខែ មករា">ប្រចាំខែ មករា</option>
+                            <option value="ប្រចាំខែ កុម្ភៈ">ប្រចាំខែ កុម្ភៈ</option>
+                            <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option>
+                            <option value="លទ្ធផលប្រចាំឆមាសទី១">លទ្ធផលប្រចាំឆមាសទី១</option>
+                            <option value="ប្រចាំខែ មីនា">ប្រចាំខែ មីនា</option>
+                            <option value="ប្រចាំខែ មេសា">ប្រចាំខែ មេសា</option>
+                            <option value="ប្រចាំខែ ឧសភា">ប្រចាំខែ ឧសភា</option>
+                            <option value="ប្រចាំខែ មិថុនា">ប្រចាំខែ មិថុនា</option>
+                            <option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                            <option value="លទ្ធផលប្រចាំឆមាសទី២">លទ្ធផលប្រចាំឆមាសទី២</option>
+                            <option value="លទ្ធផលប្រចាំឆ្នាំ">លទ្ធផលប្រចាំឆ្នាំ</option>
+                        </select>
+                    </div>
+
+                    <!-- 🌟 មុខងារចម្រាញ់តាមនិទ្ទេស -->
+                    <div class="md:col-span-2">
+                        <label class="text-[11px] font-black text-slate-500 mb-2 block uppercase tracking-wider">និទ្ទេស</label>
+                        <select id="gradeFilterSelect" class="w-full py-3 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm bg-slate-50 shadow-sm">
+                            <option value="ALL">ទាំងអស់</option>
+                            <option value="A">និទ្ទេស A</option>
+                            <option value="B">និទ្ទេស B</option>
+                            <option value="C">និទ្ទេស C</option>
+                            <option value="D">និទ្ទេស D</option>
+                            <option value="E">និទ្ទេស E</option>
+                            <option value="F">និទ្ទេស F</option>
+                            <option value="ម.ថ">ម.ថ (គ្មានចំណាត់ថ្នាក់)</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-4 border-l pl-5 border-gray-200">
+                        <div class="flex justify-between items-end mb-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">ថ្នាក់ (អាចរើសច្រើន)</label>
+                            <div class="flex gap-2">
+                                <button onclick="selectAllClasses(true)" class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold hover:bg-blue-200">យកទាំងអស់</button>
+                                <button onclick="selectAllClasses(false)" class="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold hover:bg-red-200">ដកវិញ</button>
+                            </div>
+                        </div>
+                        <div id="classCheckboxes" class="class-checkbox-grid">
+                            <span class="text-xs text-gray-400">កំពុងទាញបញ្ជីថ្នាក់...</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-4">
+                    <button onclick="executeBatchPrint()" id="btnFetch" class="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-8 py-3 rounded-xl font-black text-sm shadow-md hover:-translate-y-0.5 transition-all">
+                        ⬇️ ទាញទិន្នន័យដើម្បី Print
+                    </button>
+                    <button onclick="window.print()" id="btnPrint" class="hidden bg-slate-800 text-white px-8 py-3 rounded-xl font-black text-sm shadow-md hover:bg-slate-900 transition-all">
+                        🖨️ បោះពុម្ព (Print Now)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Area -->
+        <div id="results-container" class="print-container-wrapper">
+            <div class="text-center text-gray-400 font-bold mt-20 no-print" id="placeholder-msg">
+                សូមរើសថ្នាក់ រួចចុច "ទាញទិន្នន័យដើម្បី Print"
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center hidden z-[100]">
+        <div class="text-center bg-white p-8 rounded-3xl shadow-2xl min-w-[300px]">
+            <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="font-black text-blue-900 text-lg" id="loadingTitle">កំពុងដំណើរការ...</p>
+            <p class="text-sm font-bold text-gray-500 mt-2" id="loadingProgress">0 / 0</p>
+        </div>
+    </div>
+
+    <script>
+        // 🌟 Security Prompt
+        document.addEventListener("DOMContentLoaded", () => {
+            Swal.fire({
+                title: '🔒 ផ្ទាំងរដ្ឋបាល',
+                input: 'password',
+                inputPlaceholder: 'បញ្ចូលពាក្យសម្ងាត់...',
+                allowOutsideClick: false, allowEscapeKey: false,
+                confirmButtonText: 'ចូល',
+                confirmButtonColor: '#2563eb',
+                preConfirm: (pwd) => {
+                    if (pwd !== 'H@nm@m64') { Swal.showValidationMessage('ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!'); }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('main-ui').style.display = 'block';
+                    fetchInitialData(); 
+                }
+            });
+        });
+
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
+        const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+        
+        const PRINCIPAL_STAMP_URL = "1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne"; 
+
+        const SUBJECTS_10 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស"];
+        const SUBJECTS_15 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
+        const dbMap = { "ភាសាខ្មែរ":"khmer", "សីលធម៌ពលរដ្ឋ":"morality", "ប្រវត្តិវិទ្យា":"history", "ភូមិវិទ្យា":"geography", "គណិតវិទ្យា":"math", "រូបវិទ្យា":"physics", "គីមីវិទ្យា":"chemistry", "ជីវវិទ្យា":"biology", "ផែនដីវិទ្យា":"earth_science", "ភាសាអង់គ្លេស":"english", "កីឡា":"sport", "កសិកម្ម":"agriculture", "បច្ចេកវិទ្យា":"technology", "បំណិន":"skill", "សុខភាព":"health" };
+
+        let configMap = {}; 
+        let teacherMap = {}; 
+
+        // Utilities
+        const cleanKey = (str) => {
+            if(!str) return "";
+            let s = String(str).trim().replace(/ថ្នាក់ទី|ថ្នាក់|ទី/g, '').replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]).replace(/[\s\-_]/g, '').toUpperCase();
+            const kmToEn = { 'ក':'A', 'ខ':'B', 'គ':'C', 'ឃ':'D', 'ង':'E', 'ច':'F', 'ឆ':'G', 'ជ':'H', 'ឈ':'I', 'ញ':'J' };
+            for (let k in kmToEn) s = s.replace(new RegExp(k, 'g'), kmToEn[k]);
+            return s;
+        };
+
+        const getDriveImgUrl = (urlOrId) => {
+            if(!urlOrId) return '';
+            if (!urlOrId.includes('http')) return `https://lh3.googleusercontent.com/d/${urlOrId}`;
+            let idMatch = urlOrId.match(/(?:id=|file\/d\/)([\w-]+)/);
+            return idMatch ? `https://lh3.googleusercontent.com/d/${idMatch[1]}` : urlOrId;
+        };
+
+        const cleanNum = (val) => isNaN(parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]))) ? NaN : parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]));
+        const getGrd = (p) => p>=90?'A':p>=80?'B':p>=70?'C':p>=60?'D':p>=50?'E':'F';
+        const getBarCol = (pct) => pct>=90?'#059669':pct>=80?'#2563eb':pct>=70?'#d97706':pct>=60?'#7c3aed':pct>=50?'#db2777':'#ef4444';
+        const getGrdCol = (g) => g==='A'?'text-red-600':g==='B'?'text-pink-600':g==='C'?'text-orange-600':g==='D'?'text-green-600':g==='E'?'text-blue-600':'text-slate-800';
+
+        function showLoading(title, progress = '') { 
+            document.getElementById('loadingOverlay').classList.remove('hidden'); 
+            if(title) document.getElementById('loadingTitle').innerText = title;
+            document.getElementById('loadingProgress').innerText = progress;
+        }
+        function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+
+        // 🌟 Supabase Pagination Fetch
+        async function supaFetchAll(endpoint) {
+            let allData =[]; let offset = 0; const limit = 1000; let keepFetching = true;
+            const separator = endpoint.includes('?') ? '&' : '?';
+            
+            while (keepFetching) {
+                const url = `${SUPABASE_URL}/rest/v1/${endpoint}${separator}limit=${limit}&offset=${offset}`;
+                const res = await fetch(url, { headers });
+                if (!res.ok) throw new Error("Network Error");
+                const data = await res.json();
+                
+                if (data.length > 0) { 
+                    allData = allData.concat(data); 
+                    offset += limit; 
+                } else { 
+                    keepFetching = false; 
+                }
+                if (data.length < limit) keepFetching = false; 
+            }
+            return allData;
+        }
+
+        async function fetchInitialData() {
+            try {
+                let confRes = await supaFetchAll(`config_max_scores?select=*`);
+                confRes.forEach(c => { if(c.grade_level) configMap[cleanKey(c.grade_level)] = c; });
+
+                let teachRes = await supaFetchAll(`teacher_info?select=*`);
+                let box = document.getElementById('classCheckboxes');
+                box.innerHTML = ''; 
+                
+                let classesArray =[];
+                teachRes.forEach(t => { 
+                    if(t.homeroom_class) {
+                        let cName = String(t.homeroom_class).trim().toUpperCase();
+                        teacherMap[cleanKey(cName)] = { name: t.teacher_name || '.......................', sign: getDriveImgUrl(t.signature_link) }; 
+                        classesArray.push(cName);
+                    }
+                });
+
+                classesArray.sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+                
+                classesArray.forEach(c => {
+                    box.innerHTML += `
+                    <label class="class-item">
+                        <input type="checkbox" value="${c}" class="chk-class cursor-pointer"> ${c}
+                    </label>`;
+                });
+            } catch(e) { console.error("Init Error", e); }
+        }
+
+        function selectAllClasses(check) {
+            document.querySelectorAll('.chk-class').forEach(cb => cb.checked = check);
+        }
+
+        // 🌟 HEADER GENERATOR
+        function buildPrintHeader(title) {
+            return `
+                <div style="position: relative; width: 100%; height: 60px; margin-bottom: 10px;">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center;">
+                        <h2 class="moul-font" style="font-size: 14px; color: #1e3a8a; margin-bottom: 4px;">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+                        <h2 class="moul-font" style="font-size: 14px; color: #1e3a8a;">ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
+                    </div>
+                    <div style="position: absolute; top: 20px; left: 0; text-align: left; font-size: 11px; font-weight: 700; color: #1e3a8a; line-height: 1.6;">
+                        <p>មន្ទីរអប់រំ យុវជន និងកីឡា ខេត្តកំពង់ឆ្នាំង</p>
+                        <p>ការិយាល័យអប់រំ យុវជន និងកីឡា ស្រុកកំពង់ត្រឡាច</p>
+                        <p>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</p>
+                    </div>
+                </div>
+                <h1 class="moul-font text-red-600 text-center print-header-title" style="font-size: 17px; margin: 15px 0 10px 0;">${title}</h1>
+            `;
+        }
+
+        // 🌟 STAMP & SIGNATURE GENERATOR (ជួសជុលស្តង់ដារ)
+        function getStampHTML(dateSolar, dateLunar, tInfo) {
+            let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
+            let pImg = pImgUrl ? `<img src="${pImgUrl}" class="stamp-main" onerror="this.style.display='none'">` : '';
+            let tImg = tInfo.sign ? `<img src="${tInfo.sign}" class="sig-main" onerror="this.style.display='none'">` : '';
+            
+            return `
+            <div class="signatures-area">
+                
+                <!-- ផ្នែកនាយកសាលា -->
+                <div style="text-align: center; width: 200px; position: relative; height: 120px;">
+                    ${pImg} <!-- ត្រានៅពីក្រោម (z-index ទាប) -->
+                    
+                    <!-- អក្សរនៅពីលើត្រា (z-index ខ្ពស់) -->
+                    <div style="position: relative; z-index: 20; padding-top: 40px;">
+                        <p style="font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #0f172a;">បានឃើញ និងឯកភាព</p>
+                        <p class="moul-font" style="font-size: 14px; color: #1e3a8a; margin: 0;">នាយកសាលា</p>
+                    </div>
+                </div>
+
+                <!-- ផ្នែកគ្រូបន្ទុកថ្នាក់ -->
+                <div style="text-align: center; width: 300px; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 20;">
+                    <p style="font-weight: bold; font-size: 12px; color: #334155; margin-bottom: 4px;">${dateLunar || '...................................................'}</p>
+                    <p style="font-weight: bold; font-size: 12px; color: #334155; margin-bottom: 12px;">${dateSolar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...'}</p>
+                    <p class="moul-font" style="font-size: 14px; color: #1e3a8a; margin-bottom: 5px;">គ្រូបន្ទុកថ្នាក់</p>
+                    <div style="height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">${tImg}</div>
+                    <p class="moul-font" style="font-size: 14px; color: #1e3a8a; margin: 0;">${tInfo.name}</p>
+                </div>
+            </div>`;
+        }
+
+        function getSubjectRank(studentId, subKey, classData) {
+            let validScores = classData.map(s => ({ id: s.student_id, score: cleanNum(s[subKey]) })).filter(s => !isNaN(s.score)).sort((a, b) => b.score - a.score);
+            let rank = 1;
+            for(let i=0; i<validScores.length; i++) {
+                if(i > 0 && validScores[i].score < validScores[i-1].score) rank = i + 1;
+                if(validScores[i].id === studentId) return rank;
+            }
+            return '-';
+        }
+
+        // =================================================================
+        // 🌟 CORE EXECUTION: BATCH GENERATE
+        // =================================================================
+        async function executeBatchPrint() {
+            let selectedCheckboxes = document.querySelectorAll('.chk-class:checked');
+            let selectedClasses = Array.from(selectedCheckboxes).map(cb => cb.value);
+            
+            if(selectedClasses.length === 0) return Swal.fire('បញ្ជាក់', 'សូមជ្រើសរើសយ៉ាងហោចណាស់មួយថ្នាក់!', 'warning');
+            
+            let rawPeriod = document.getElementById('monthSelect').value;
+            let academicYear = document.getElementById('yearSelect').value;
+            let gradeFilter = document.getElementById('gradeFilterSelect').value; // យកតម្លៃពី Dropdown និទ្ទេស
+            
+            let period = rawPeriod.replace("ប្រចាំខែ ", "").replace("លទ្ធផល", "").trim();
+            let table = period.includes("ប្រចាំឆមាស") ? "semester_scores" : (period === "ប្រចាំឆ្នាំ" ? "annual_scores" : "student_scores");
+            let pCol = period.includes("ប្រចាំឆមាស") ? "semester_name" : (period === "ប្រចាំឆ្នាំ" ? "academic_year" : "month_name");
+            let reqPeriod = period === "ប្រចាំឆ្នាំ" ? academicYear : period; 
+
+            showLoading("កំពុងទាញទិន្នន័យពី Database...", `ថ្នាក់ដែលរើស: ${selectedClasses.length}`);
+
+            try {
+                // 1. Fetch ALL records for the requested Period and Year
+                let allPeriodData = await supaFetchAll(`${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
+                
+                // 2. Filter based on Selected Classes AND Filter by Grade
+                let validData = allPeriodData.filter(s => {
+                    let matchClass = selectedClasses.includes(String(s.grade).trim().toUpperCase());
+                    if (!matchClass) return false;
+
+                    // 🌟 ដំណើរការ Filter តាមនិទ្ទេស
+                    if (gradeFilter === 'ALL') return true;
+
+                    let stuGrade = String(s.grade_result || s.final_result || '').trim().toUpperCase();
+                    
+                    if (gradeFilter === 'ម.ថ') {
+                        // បើសិនគ្មាននិទ្ទេស ឬ គ្មាន Rank ចាត់ទុកជា ម.ថ / គ្មានចំណាត់ថ្នាក់
+                        return stuGrade === 'ម.ថ' || stuGrade === '' || !s.class_rank;
+                    }
+                    
+                    return stuGrade === gradeFilter;
+                });
+                
+                if(validData.length === 0) {
+                    hideLoading(); 
+                    return Swal.fire('ទទេ!', `មិនមានទិន្នន័យសិស្សសម្រាប់ថ្នាក់ និងនិទ្ទេសដែលជ្រើសរើសទេ។`, 'error');
+                }
+
+                // 3. Prepare School Stats
+                let uniqueSchoolStus = new Map();
+                allPeriodData.forEach(s => uniqueSchoolStus.set(String(s.student_id).trim(), s));
+                let totalInSchool = uniqueSchoolStus.size;
+                let femaleInSchool = Array.from(uniqueSchoolStus.values()).filter(s =>['ស្រី', 'F', 'f', 'ស'].includes(String(s.gender).trim())).length;
+
+                let type = 'month';
+                if(period.includes("ប្រឡងឆមាស")) type = 'exam';
+                else if(period.includes("ប្រចាំឆមាស")) type = 'semester';
+                else if(period === "ប្រចាំឆ្នាំ") type = 'annual';
+
+                let dynamicTitle = "";
+                if(type === 'exam') dynamicTitle = `លទ្ធផលសិក្សារបស់សិស្ស${period}`;
+                else if(type === 'semester') dynamicTitle = `លទ្ធផលសិក្សារបស់សិស្ស${period}`;
+                else if(type === 'annual') dynamicTitle = `លទ្ធផលសិក្សារបស់សិស្សប្រចាំឆ្នាំ`;
+                else dynamicTitle = `លទ្ធផលសិក្សារបស់សិស្សប្រចាំខែ ${period}`;
+
+                let finalHTML = "";
+                let processedCount = 0;
+
+                // 4. Group Valid Data By Class
+                let groupedByClass = {};
+                validData.forEach(s => {
+                    let c = String(s.grade).trim().toUpperCase();
+                    if(!groupedByClass[c]) groupedByClass[c] =[];
+                    groupedByClass[c].push(s);
+                });
+
+                // 5. Loop through each Class, then each Student
+                for (let cName of selectedClasses) {
+                    let classData = groupedByClass[cName] ||[];
+                    if(classData.length === 0) continue;
+
+                    // Sort by Rank implicitly
+                    classData.sort((a,b) => {
+                        let ra = parseInt(String(a.class_rank).replace(/\D/g, '')) || 9999;
+                        let rb = parseInt(String(b.class_rank).replace(/\D/g, '')) || 9999;
+                        return ra - rb;
+                    });
+
+                    // We need original class data count to show "Total in Class" accurately
+                    let originalClassData = allPeriodData.filter(s => String(s.grade).trim().toUpperCase() === cName);
+                    let totalInClass = originalClassData.length;
+                    let femaleInClass = originalClassData.filter(s =>['ស្រី', 'F', 'f', 'ស'].includes(String(s.gender).trim())).length;
+                    
+                    let classSub = `ស.រ ${totalInClass}ន ស្រី ${femaleInClass}ន`;
+                    let schoolSub = `ស.រ ${totalInSchool}ន ស្រី ${femaleInSchool}ន`;
+
+                    let targetKey = cleanKey(cName);
+                    let gConf = configMap[targetKey] || configMap[targetKey.replace(/[^0-9]/g, '')] || {};
+                    let tInfo = teacherMap[targetKey] || teacherMap[targetKey.replace(/[^0-9]/g, '')] || {name:'..................', sign:''};
+
+                    // Loop Students in Class (Only the filtered ones)
+                    for (let dbS of classData) {
+                        processedCount++;
+                        if (processedCount % 10 === 0) {
+                            document.getElementById('loadingProgress').innerText = `កំពុងរៀបចំ... ${processedCount} / ${validData.length} នាក់`;
+                            await new Promise(r => setTimeout(r, 0)); // Yield to UI
+                        }
+
+                        // --- GENERATE SINGLE A4 PAGE ---
+                        let headerHtml = buildPrintHeader(dynamicTitle) + `
+                            <div class="student-info-box">
+                                <div>
+                                    <p>គោត្តនាម-នាម ៖ <span class="moul-font text-blue-800" style="font-size: 14px;">${dbS.student_name}</span></p>
+                                    <p>ថ្ងៃខែឆ្នាំកំណើត ៖ <span>${dbS.dob || '...'}</span></p>
+                                    <p>អត្តលេខ ៖ <span>${dbS.student_id}</span></p>
+                                </div>
+                                <div style="text-align:right;">
+                                    <p>ភេទ ៖ <span>${dbS.gender}</span></p>
+                                    <p>ថ្នាក់ទី ៖ <span>${dbS.grade}</span></p>
+                                    <p>ឆ្នាំសិក្សា ៖ <span>${dbS.academic_year || academicYear}</span></p>
+                                </div>
+                            </div>`;
+
+                        let summaryHtml = "";
+                        if(type === 'annual') {
+                            summaryHtml = `
+                                <div class="summary-item"><p class="s-title">មធ្យមភាគ ឆ១</p><p class="s-value">${dbS.sem1_average||0}</p><p class="s-sub">លេខទី ${dbS.sem1_rank||'-'}</p></div>
+                                <div class="summary-item"><p class="s-title">មធ្យមភាគ ឆ២</p><p class="s-value">${dbS.sem2_average||0}</p><p class="s-sub">លេខទី ${dbS.sem2_rank||'-'}</p></div>
+                                <div class="summary-item"><p class="s-title">មធ្យមភាគប្រចាំឆ្នាំ</p><p class="s-value">${dbS.annual_average||0}</p></div>
+                                <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ប្រចាំឆ្នាំ</p><p class="s-value text-red-600">${dbS.class_rank||'-'}</p><p class="s-sub">${classSub}</p></div>
+                                <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value ${getGrdCol(dbS.grade_result)}">${dbS.grade_result || 'F'}</p></div>`;
+                        } else if (type === 'semester') {
+                            summaryHtml = `
+                                <div class="summary-item"><p class="s-title">ម.ភ ប្រឡងឆមាស</p><p class="s-value text-[16px]">${dbS.exam_average||0}</p></div>
+                                <div class="summary-item"><p class="s-title">ម.ភ ខែក្នុងឆមាស</p><p class="s-value text-[16px]">${dbS.monthly_average||0}</p></div>
+                                <div class="summary-item"><p class="s-title">មធ្យមភាគប្រចាំឆមាស</p><p class="s-value text-[16px]">${dbS.semester_average||0}</p></div>
+                                <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ថ្នាក់</p><p class="s-value text-red-600 text-[16px]">${dbS.class_rank||'-'}</p><p class="s-sub">${classSub}</p></div>
+                                <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់សាលា</p><p class="s-value text-orange-500 text-[16px]">${dbS.school_rank||'-'}</p><p class="s-sub">${schoolSub}</p></div>
+                                <div class="summary-item"><p class="s-title">និទ្ទេស</p><p class="s-value ${getGrdCol(dbS.grade_result)} text-[16px]">${dbS.grade_result || 'F'}</p></div>`;
+                        } else {
+                            let avg = dbS.average || dbS.exam_average || 0;
+                            summaryHtml = `
+                                <div class="summary-item"><p class="s-title">មធ្យមភាគ</p><p class="s-value">${avg}</p></div>
+                                <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់ថ្នាក់</p><p class="s-value text-red-600">${dbS.class_rank||'-'}</p><p class="s-sub">${classSub}</p></div>
+                                <div class="summary-item"><p class="s-title">ចំណាត់ថ្នាក់សាលា</p><p class="s-value text-orange-500">${dbS.school_rank||'-'}</p><p class="s-sub">${schoolSub}</p></div>
+                                <div class="summary-item"><p class="s-title">និទ្ទេសរួម</p><p class="s-value ${getGrdCol(dbS.grade_result)}">${dbS.grade_result || 'F'}</p></div>`;
+                        }
+                        summaryHtml = `<div class="summary-box">${summaryHtml}</div>`;
+
+                        let showSubRank = (type === 'exam' || type === 'semester' || type === 'annual');
+                        let tHeaders = `<tr><th class="w-8">ល.រ</th><th class="col-left w-48">មុខវិជ្ជា</th><th class="w-20">អតិបរមា</th><th class="w-24">ពិន្ទុ</th>`;
+                        if(showSubRank) tHeaders += `<th class="w-20 text-red-600">ចំណាត់ថ្នាក់</th>`;
+                        tHeaders += `<th class="w-32">ភាគរយ</th><th class="w-16">និទ្ទេស</th></tr>`;
+
+                        let tRows = ""; let sIdx=1; let maxTotal = 0;
+                        let strengths =[]; let weaknesses =[];
+
+                        SUBJECTS_15.forEach(sub => {
+                            let dbKey = dbMap[sub];
+                            if(dbS[dbKey] !== undefined && dbS[dbKey] !== null && dbS[dbKey] !== "") {
+                                let raw = String(dbS[dbKey]).trim(); 
+                                let ms = 50; if (gConf[dbKey]) ms = cleanNum(gConf[dbKey]);
+                                if (raw !== "") maxTotal += ms; 
+                                
+                                let sRankHtml = "";
+                                if(showSubRank) {
+                                    let r = getSubjectRank(dbS.student_id, dbKey, originalClassData);
+                                    sRankHtml = `<td class="font-black text-red-600">${r}</td>`;
+                                }
+
+                                if(raw.toUpperCase() === "ABS" || raw.toUpperCase() === "ម.ថ" || isNaN(cleanNum(raw))) {
+                                    tRows += `<tr><td>${sIdx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="text-red-500 font-bold">${raw}</td>${sRankHtml}<td colspan="2">-</td></tr>`;
+                                } else {
+                                    let sc = cleanNum(raw); let pct = Math.min((sc/ms)*100,100); let g = getGrd(pct);
+                                    tRows += `<tr><td>${sIdx++}</td><td class="col-left font-bold text-slate-800">${sub}</td><td>${ms}</td><td class="text-blue-700 font-bold text-[13px]">${sc}</td>${sRankHtml}<td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${getBarCol(pct)}"></div></div></td><td class="font-bold text-[13px] ${getGrdCol(g)}">${g}</td></tr>`;
+                                    if(SUBJECTS_10.includes(sub)) {
+                                        if(pct >= 80) strengths.push(sub);
+                                        if(pct <= 50) weaknesses.push(sub);
+                                    }
+                                }
+                            }
+                        });
+                        
+                        let totScore = dbS.total_score || dbS.exam_total_score || 0;
+                        let tFootColspan = showSubRank ? 3 : 2;
+                        let tableHtml = `<div><table class="c-table"><thead>${tHeaders}</thead><tbody>${tRows}</tbody><tfoot><tr class="bg-slate-100 border-t-2 border-slate-300"><td colspan="2" class="col-left text-right font-bold py-2">ពិន្ទុសរុប</td><td class="font-bold text-gray-600">${maxTotal || '-'}</td><td class="text-blue-700 font-black text-lg">${totScore}</td><td colspan="${tFootColspan}" class="text-gray-400 text-[10px] italic">សមិទ្ធផលសិក្សាគិតជាភាគរយ</td></tr></tfoot></table></div>`;
+                        
+                        // AI Feedback Generator
+                        let aiFeedbackHTML = "";
+                        let avg = parseFloat(dbS.average) || parseFloat(dbS.exam_average) || parseFloat(dbS.annual_average) || 0;
+                        let sName = dbS.student_name || 'ប្អូន';
+                        let strText = strengths.length > 0 ? `<span class="text-blue-700 font-black">${strengths.join(', ')}</span>` : '';
+                        let wkText = weaknesses.length > 0 ? `<span class="text-red-600 font-black">${weaknesses.join(', ')}</span>` : '';
+                        let intro = ""; let subAnalysis = "";
+                        
+                        if (avg >= 80) intro = `អបអរសាទរ! លទ្ធផលសិក្សារបស់ <span class="font-bold">${sName}</span> ស្ថិតក្នុងកម្រិត <b class="text-blue-700">ល្អប្រសើរ</b>។ ការតាំងចិត្តរបស់អ្នកពិតជាគួរឱ្យកោតសរសើរ។`;
+                        else if (avg >= 65) intro = `លទ្ធផលសិក្សារបស់ <span class="font-bold">${sName}</span> ស្ថិតក្នុងកម្រិត <b class="text-green-700">ល្អបង្គួរ</b>។ ប្អូនអាចធ្វើបានល្អជាងនេះទៀត ប្រសិនបើបន្ថែមការយកចិត្តទុកដាក់។`;
+                        else if (avg >= 50) intro = `លទ្ធផលសិក្សារបស់ <span class="font-bold">${sName}</span> ស្ថិតក្នុងកម្រិត <b class="text-orange-600">មធ្យម</b>។ សូមបង្កើនការយកចិត្តទុកដាក់លើការសិក្សាបន្ថែមទៀត។`;
+                        else intro = `លទ្ធផលសិក្សារបស់ <span class="font-bold">${sName}</span> ស្ថិតក្នុងកម្រិត <b class="text-red-600">ត្រូវខិតខំបន្ថែមជាបន្ទាន់</b>។ សូមកុំបាក់ទឹកចិត្ត ហើយចាប់ផ្តើមរៀនសូត្រឡើងវិញ។`;
+
+                        if (strengths.length > 0 && weaknesses.length > 0) subAnalysis = `ប្អូនមានភាពលេចធ្លោលើមុខវិជ្ជា ${strText}។ ទន្ទឹមនឹងនេះ មុខវិជ្ជាដែលត្រូវប្រឹងបន្ថែមគឺ ${wkText}។`;
+                        else if (strengths.length > 0) subAnalysis = `ភាពលេចធ្លោរបស់ប្អូនគឺមុខវិជ្ជា ${strText}។ សូមរក្សាសន្ទុះនេះ!`;
+                        else if (weaknesses.length > 0) subAnalysis = `បញ្ហាចម្បងរបស់ប្អូនគឺប្រឈមមុខនឹងការលំបាកលើមុខវិជ្ជា ${wkText} សូមប្រឹងប្រែងបន្ថែម។`;
+
+                        aiFeedbackHTML = `
+                            <div class="ai-feedback-box">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-lg leading-none">🤖</span>
+                                    <p class="font-black text-indigo-900 text-[11px] uppercase m-0">ការវិភាគ (AI Analysis)៖</p>
+                                </div>
+                                <div class="ai-text-content"><p>${intro} ${subAnalysis}</p></div>
+                            </div>`;
+
+                        let sigHtml = getStampHTML(dbS.date_solar, dbS.date_lunar, tInfo);
+
+                        // 🌟 PUTTING IT ALL TOGETHER AS 1 STRICT PAGE
+                        let pageHtml = `
+                            <div class="print-area">
+                                <div class="content-wrapper">${headerHtml}${summaryHtml}${tableHtml}${aiFeedbackHTML}</div>
+                                ${sigHtml}
+                            </div>
+                        `;
+                        finalHTML += pageHtml;
+                    }
+                }
+
+                document.getElementById('results-container').innerHTML = finalHTML;
+                document.getElementById('results-container').classList.remove('hidden');
+                document.getElementById('btnPrint').classList.remove('hidden');
+                
+                hideLoading();
+                Swal.fire('រួចរាល់', `បានរៀបចំសិស្សសរុប ${processedCount} នាក់។ លោកគ្រូអាចចុច Print បានហើយ។`, 'success');
+            } catch (e) { 
+                hideLoading(); 
+                Swal.fire('បរាជ័យ!', e.message, 'error'); 
+            }
+        }
+    </script>
+</body>
+</html>
