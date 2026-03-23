@@ -107,7 +107,6 @@
                 <p class="font-bold text-gray-500 text-sm">ប្រព័ន្ធស្វែងរកលទ្ធផលសិក្សាសិស្ស (សុវត្ថិភាពខ្ពស់)</p>
             </div>
 
-            <!-- 🌟 អាប់ដេតប្រអប់ស្វែងរក -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-end bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-200">
                 <div class="md:col-span-3">
                     <label class="text-[11px] font-black text-slate-500 mb-2 block uppercase tracking-wider ml-1">ឆ្នាំសិក្សា</label>
@@ -145,9 +144,20 @@
                     </button>
                 </div>
 
+                <!-- 🌟 អាប់ដេតប្រអប់ ថ្ងៃ/ខែ/ឆ្នាំកំណើត (Dropdowns) 🌟 -->
                 <div class="md:col-span-3">
                     <label class="text-[11px] font-black text-slate-500 mb-2 block uppercase tracking-wider ml-1">ថ្ងៃខែឆ្នាំកំណើត</label>
-                    <input type="date" id="dobInput" class="w-full py-3.5 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm text-slate-700 bg-white shadow-sm cursor-pointer">
+                    <div class="flex gap-1 sm:gap-2">
+                        <select id="dobDay" class="w-1/3 py-3.5 px-1 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-[13px] text-center bg-white shadow-sm cursor-pointer">
+                            <option value="" disabled selected>ថ្ងៃ</option>
+                        </select>
+                        <select id="dobMonth" class="w-1/3 py-3.5 px-1 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-[13px] text-center bg-white shadow-sm cursor-pointer">
+                            <option value="" disabled selected>ខែ</option>
+                        </select>
+                        <select id="dobYear" class="w-1/3 py-3.5 px-1 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-[13px] text-center bg-white shadow-sm cursor-pointer">
+                            <option value="" disabled selected>ឆ្នាំ</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="md:col-span-9 flex flex-col sm:flex-row items-center gap-3 bg-white p-2 rounded-xl border border-gray-200 shadow-sm mt-2 md:mt-0">
@@ -231,14 +241,15 @@
         let configMap = {}; let teacherMap = {}; let currentStudentInfo = null; let html5QrcodeScanner = null; let currentSpeechText = "";
         
         let mySchoolData = { poe_name: "មន្ទីរអប់រំ យុវជន និងកីឡា", doe_name: "ការិយាល័យអប់រំ យុវជន និងកីឡា", school_name: "វិទ្យាល័យ", principal_name: "នាយកសាលា", school_logo_url: "", school_stamp_url: "" };
-
         let currentCaptchaAnswer = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
             generateCaptcha(); 
+            initDateDropdowns(); // 🌟 បង្កើតជម្រើសថ្ងៃខែឆ្នាំ
+
             const input = document.getElementById("searchInput");
             const capInput = document.getElementById("captchaInput");
-            if(input) input.addEventListener("keypress", e => { if (e.key === "Enter") { document.getElementById("dobInput").focus(); }});
+            if(input) input.addEventListener("keypress", e => { if (e.key === "Enter") { document.getElementById("dobDay").focus(); }});
             if(capInput) capInput.addEventListener("keypress", e => { if (e.key === "Enter") { e.preventDefault(); executeSearch(); }});
             
             fetchInitialData().then(() => {
@@ -247,6 +258,18 @@
                 if (sid) { document.getElementById('searchInput').value = sid; }
             });
         });
+
+        // 🌟 មុខងារបញ្ចូលលេខថ្ងៃខែឆ្នាំ ចូលទៅក្នុង Dropdown
+        function initDateDropdowns() {
+            const daySel = document.getElementById('dobDay');
+            for(let i=1; i<=31; i++) { let v = i<10 ? '0'+i : ''+i; daySel.innerHTML += `<option value="${v}">${v}</option>`; }
+            
+            const monthSel = document.getElementById('dobMonth');
+            for(let i=1; i<=12; i++) { let v = i<10 ? '0'+i : ''+i; monthSel.innerHTML += `<option value="${v}">${v}</option>`; }
+            
+            const yearSel = document.getElementById('dobYear');
+            for(let i=2020; i>=1990; i--) { yearSel.innerHTML += `<option value="${i}">${i}</option>`; }
+        }
 
         function generateCaptcha() {
             let n1 = Math.floor(Math.random() * 10) + 1;
@@ -367,14 +390,16 @@
 
         async function executeSearch() {
             let q_id = document.getElementById('searchInput').value.trim();
-            let q_dob = document.getElementById('dobInput').value; 
+            let dd = document.getElementById('dobDay').value; 
+            let mm = document.getElementById('dobMonth').value; 
+            let yyyy = document.getElementById('dobYear').value; 
             let q_captcha = document.getElementById('captchaInput').value.trim();
             
             let rawPeriod = document.getElementById('monthSelect').value;
             let academicYear = document.getElementById('yearSelect').value;
             
             if(!q_id) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខសិស្ស!', 'warning');
-            if(!q_dob) return Swal.fire('បញ្ជាក់', 'សូមជ្រើសរើសថ្ងៃខែឆ្នាំកំណើត!', 'warning');
+            if(!dd || !mm || !yyyy) return Swal.fire('បញ្ជាក់', 'សូមជ្រើសរើស ថ្ងៃ ខែ ឆ្នាំ កំណើតឲ្យបានត្រឹមត្រូវ!', 'warning');
             
             if(!q_captcha || parseInt(q_captcha) !== currentCaptchaAnswer) {
                 generateCaptcha(); 
@@ -392,14 +417,20 @@
             let pCol = period.includes("ប្រចាំឆមាស") ? "semester_name" : (period === "ប្រចាំឆ្នាំ" ? "academic_year" : "month_name");
             let reqPeriod = period === "ប្រចាំឆ្នាំ" ? academicYear : period; 
 
-            let dParts = q_dob.split('-');
-            let dFormat1 = `${dParts[0]}-${dParts[1]}-${dParts[2]}`; // 2008-05-12
-            let dFormat2 = `${dParts[2]}/${dParts[1]}/${dParts[0]}`; // 12/05/2008
-            let dFormat3 = `${dParts[2]}-${dParts[1]}-${dParts[0]}`; // 12-05-2008
+            // 🌟 បំប្លែងទម្រង់ថ្ងៃខែឲ្យគ្របដណ្តប់គ្រប់ទម្រង់ក្នុង Excel (មាន/អត់ លេខសូន្យ)
+            let d_noZero = parseInt(dd).toString(); // លុបសូន្យចេញបើមាន
+            let m_noZero = parseInt(mm).toString();
+
+            let f1 = `${yyyy}-${mm}-${dd}`; // 2009-03-05
+            let f2 = `${dd}/${mm}/${yyyy}`; // 05/03/2009
+            let f3 = `${d_noZero}/${m_noZero}/${yyyy}`; // 5/3/2009
+            let f4 = `${dd}-${mm}-${yyyy}`; // 05-03-2009
+            let f5 = `${d_noZero}-${m_noZero}-${yyyy}`; // 5-3-2009
 
             try {
-                // ១. ស្វែងរកសិស្សជាក់លាក់ (Authenticate)
-                let queryUrl = `${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&student_id=eq.${encodeURIComponent(q_id)}&or=(dob.eq.${encodeURIComponent(dFormat1)},dob.eq.${encodeURIComponent(dFormat2)},dob.eq.${encodeURIComponent(dFormat3)})&limit=1`;
+                // ស្វែងរកដោយសុវត្ថិភាព ផ្ទៀងផ្ទាត់គ្រប់ទម្រង់កាលបរិច្ឆេទ
+                let queryUrl = `${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&student_id=eq.${encodeURIComponent(q_id)}&or=(dob.eq.${encodeURIComponent(f1)},dob.eq.${encodeURIComponent(f2)},dob.eq.${encodeURIComponent(f3)},dob.eq.${encodeURIComponent(f4)},dob.eq.${encodeURIComponent(f5)})&limit=1`;
+                
                 let stuDataRes = await supaFetch(queryUrl);
                 
                 if(!stuDataRes || stuDataRes.length === 0) {
@@ -414,13 +445,13 @@
                 let gConf = configMap[targetKey] || configMap[gradeNumOnly] || {};
                 let tInfo = teacherMap[targetKey] || teacherMap[gradeNumOnly] || {name:'មិនទាន់កំណត់', sign:''};
 
-                // ២. 🛡️ ទាញយកពិន្ទុថ្នាក់ដោយសុវត្ថិភាព (លាក់ឈ្មោះ និង ថ្ងៃកំណើតអ្នកដទៃ)
-                let cols = "student_id,gender," + Object.values(dbMap).join(","); // ទាញតែអត្តលេខ ភេទ និងពិន្ទុ
+                // ទាញពិន្ទុថ្នាក់ដោយសុវត្ថិភាព (លាក់ឈ្មោះ និង ថ្ងៃកំណើតអ្នកដទៃ)
+                let cols = "student_id,gender," + Object.values(dbMap).join(","); 
                 let classData = await supaFetch(`${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&grade=eq.${encodeURIComponent(dbS.grade)}&select=${cols}&limit=1000`);
                 let totalInClass = classData.length;
                 let femaleInClass = classData.filter(s => ['ស្រី', 'F', 'f', 'ស'].includes(String(s.gender).trim())).length;
 
-                // ៣. 🛡️ ទាញទិន្នន័យសាលាសរុប (ទាញតែ អត្តលេខ និង ភេទ)
+                // ទាញទិន្នន័យសាលាសរុប (ទាញតែ អត្តលេខ និង ភេទ)
                 let allSchoolData = await supaFetchAll(`${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&select=student_id,gender`);
                 let uniqueSchoolStus = new Map();
                 allSchoolData.forEach(s => uniqueSchoolStus.set(String(s.student_id).trim(), s));
@@ -466,7 +497,6 @@
                         
                         let sRankHtml = ""; 
                         if(showSubRank) {
-                            // គណនាចំណាត់ថ្នាក់មកវិញ ដោយសុវត្ថិភាព
                             let r = getSubjectRank(dbS.student_id, dbKey, classData);
                             sRankHtml = `<td class="font-black text-red-600">${r}</td>`;
                         }
@@ -489,7 +519,7 @@
                 document.getElementById('t1-ai-feedback').innerHTML = aiFeedbackHTML;
                 document.getElementById('t1-signatures').innerHTML = getStampHTML(dbS.date_solar, dbS.date_lunar, tInfo);
                 
-                // 🌟 P2 ទាញយកតែប្រវត្តិពិន្ទុ "សិស្សម្នាក់នេះ" ប៉ុណ្ណោះ
+                // P2
                 let histDataRaw = await supaFetch(`student_scores?student_id=eq.${encodeURIComponent(dbS.student_id)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
                 let semDataRaw = await supaFetch(`semester_scores?student_id=eq.${encodeURIComponent(dbS.student_id)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
                 
@@ -512,7 +542,6 @@
                     availablePeriods.forEach(m => { let shortName = m.replace('ប្រឡងឆមាស','ប្រ.ឆ').replace('ប្រចាំឆមាស','ឆមាស'); tb+=`<th class="border-r border-slate-300" style="font-size:10px;">${shortName}</th>`; }); tb += `</tr></thead><tbody>`;
                     SUBJECTS_10.forEach((sub, i) => { tb += `<tr><td class="border-r border-slate-200">${i+1}</td><td class="col-left font-bold text-slate-800 border-r border-slate-200">${sub}</td>`; let maxS = 50; if(dbMap[sub] && gConf[dbMap[sub]]) maxS = cleanNum(gConf[dbMap[sub]]); tb += `<td class="text-slate-400 font-bold border-r border-slate-200">${maxS}</td>`; availablePeriods.forEach(m => { let d = histMap[m]; if(d && d[sub] && !isNaN(cleanNum(d[sub]))) { let sc = cleanNum(d[sub]); let pct = Math.min((sc/maxS)*100, 100); let g = getGrd(pct); tb += `<td class="font-black border-r border-slate-200 ${getGrdCol(g)} text-[11px]">${sc} <span class="text-[9px] text-slate-400 font-bold">(${g})</span></td>`; } else tb += `<td class="text-slate-300 border-r border-slate-200">-</td>`; }); tb += `</tr>`; }); tb += `</tbody></table>`;
                     
-                    // 🧠 ប្រព័ន្ធវិភាគ និងប្រឹក្សាដោយ AI (P2)
                     let aiAnalysisHtml = "";
                     if(availablePeriods.length >= 2) {
                         let lastPeriod = availablePeriods[availablePeriods.length - 1]; let prevPeriod = availablePeriods[availablePeriods.length - 2];
