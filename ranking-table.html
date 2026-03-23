@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>តារាងចំណាត់ថ្នាក់ប្រចាំថ្នាក់ (Admin Print)</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700;900&family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { --primary-blue: #0f172a; --khmer-red: #dc2626; --tb-border: #0f172a; --tb-header-bg: #f8fafc; --tb-text-blue: #1e3a8a;}
+        body { font-family: 'Battambang', sans-serif; background: #e2e8f0; color: #1e293b; margin: 0; padding: 0;}
+        .moul-font { font-family: 'Moul', serif; }
+        
+        #main-ui { display: none; } 
+
+        .nav-container { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; padding: 10px 20px;}
+        
+        .class-checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; max-height: 150px; overflow-y: auto; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; background: white;}
+        .class-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;}
+        .class-item:hover { background: #f1f5f9; }
+
+        /* 🌟 PRINT AREA STYLING */
+        .print-container-wrapper { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 20px 0; background: #cbd5e1;}
+        
+        .print-page { 
+            background: white; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            padding: 10mm 10mm; box-sizing: border-box;
+            position: relative;
+        }
+
+        .print-page-landscape { width: 297mm; min-height: 210mm; }
+        .print-page-portrait { width: 210mm; min-height: 297mm; }
+
+        /* 🌟 HEADER STYLES (COMPACT) */
+        .print-header { position: relative; width: 100%; height: 100px; margin-bottom: 10px;}
+        .ph-center { position: absolute; top: 0; left: 0; width: 100%; text-align: center; }
+        .ph-center h2 { font-family: 'Moul', serif; font-size: 13px; color: var(--tb-text-blue); margin-bottom: 0px;}
+        .ph-center .title { font-family: 'Moul', serif; font-size: 16px; color: var(--tb-text-blue); margin-top: 5px;}
+        
+        .ph-left { position: absolute; top: 20px; left: 0; text-align: left; display: flex; align-items: center; gap: 8px;}
+        .ph-left img { width: 55px; height: 55px; object-fit: contain; }
+        .ph-left-text h3 { font-family: 'Moul', serif; font-size: 12px; color: var(--tb-text-blue); margin-bottom: 5px;}
+        .ph-left-text p { font-family: 'Moul', serif; font-size: 12px; color: var(--tb-text-blue); font-weight: bold;}
+
+        /* 🌟 MAIN RANKING TABLE (COMPACT) */
+        .rank-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; table-layout: auto;}
+        .rank-table th, .rank-table td { border: 1px solid var(--tb-border); text-align: center; vertical-align: middle; color: var(--tb-text-blue); font-weight: bold;}
+        
+        .rank-table th { background-color: var(--tb-header-bg); font-family: 'Battambang', sans-serif; white-space: normal; line-height: 1.2;}
+        .rank-table td.col-name { text-align: left; padding-left: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        
+        .score-cell { white-space: nowrap !important; letter-spacing: -0.5px;}
+        
+        /* ពណ៌អក្សរ */
+        .f-red { color: #dc2626 !important; } .f-pink { color: #db2777 !important; } .f-orange { color: #d97706 !important; }
+        .f-green { color: #16a34a !important; } .f-blue { color: #2563eb !important; } .f-black { color: #000000 !important; }
+        
+        /* Landscape Compact */
+        .print-page-landscape .rank-table { font-size: 11px; }
+        .print-page-landscape .rank-table th { font-size: 10px; padding: 4px 1px;}
+        .print-page-landscape .rank-table td { padding: 3px 1px; }
+        .print-page-landscape .col-name { max-width: 150px; }
+
+        /* Portrait Compact */
+        .print-page-portrait .rank-table { font-size: 9.5px; } 
+        .print-page-portrait .rank-table th { font-size: 8.5px; padding: 2px 1px;}
+        .print-page-portrait .rank-table td { padding: 2px 1px; }
+        .print-page-portrait .col-name { max-width: 90px; }
+
+        /* 🌟 SUMMARY BOX (COMPACT CARDS) */
+        .footer-wrapper { display: flex; flex-direction: column; align-items: stretch; margin-top: 10px; page-break-inside: avoid; gap: 15px;}
+        
+        .summary-container { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; background: #f8fafc; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .summary-header { text-align: center; font-family: 'Moul', serif; color: #1e3a8a; margin-bottom: 8px; font-size: 12px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        
+        .grade-card { background: white; border-radius: 6px; padding: 6px 2px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-top: 3px solid #94a3b8; }
+        .grade-card.g-A { border-top-color: #dc2626; }
+        .grade-card.g-B { border-top-color: #db2777; }
+        .grade-card.g-C { border-top-color: #d97706; }
+        .grade-card.g-D { border-top-color: #16a34a; }
+        .grade-card.g-E { border-top-color: #2563eb; }
+        .grade-card.g-F { border-top-color: #000000; }
+        .grade-card.g-NA { border-top-color: #64748b; background: #f1f5f9;}
+        
+        .gc-title { font-weight: 900; font-size: 14px; margin-bottom: 2px; font-family: 'Battambang', sans-serif;}
+        .gc-stat { font-size: 9px; color: #475569; line-height: 1.4; font-weight: bold;}
+        .gc-stat span { font-weight: 900; color: #0f172a; font-size: 10px;}
+
+        /* 🌟 Signatures (COMPACT) */
+        .sig-box { width: 100%; display: flex; justify-content: space-around; align-items: flex-start; padding-top: 5px; position: relative; z-index: 10;}
+        .sig-item { text-align: center; width: 220px; position: relative;}
+        .sig-item p { font-weight: bold; font-size: 12px; color: var(--tb-text-blue); margin-bottom: 2px;}
+        .sig-item .m-font { font-family: 'Moul', serif; margin-bottom: 10px; font-size: 12px;}
+        
+        /* Stamps Layout */
+        .stamp-main { position: absolute; top: -20px; left: 65%; transform: translateX(-50%); width: 280px; max-width: none; mix-blend-mode: multiply; pointer-events: none; z-index: 5; opacity: 0.95;}
+        .sig-main { max-height: 50px; max-width: 120px; mix-blend-mode: multiply; object-fit: contain; pointer-events: none; }
+        .sig-text-top { position: relative; z-index: 20; } 
+        
+        .hide-signatures .sig-element { display: none !important; }
+
+        /* 🌟 STRICT PRINT CSS */
+        @media print {
+            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+            .no-print { display: none !important; }
+            .print-container-wrapper { padding: 0 !important; background: transparent !important; }
+            
+            .print-page { 
+                margin: 0 !important; box-shadow: none !important;
+                width: 100% !important; min-height: 100% !important;
+                padding: 0 !important; border: none !important;
+                page-break-after: always !important; 
+            }
+            .print-page:last-child { page-break-after: auto !important; }
+            .rank-table thead { display: table-header-group; }
+            .rank-table tr { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🌟 MAIN UI WRAPPER -->
+    <div id="main-ui">
+        <nav class="nav-container no-print">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">📋</span>
+                    <h1 class="font-bold text-lg text-blue-900 moul-font">តារាងចំណាត់ថ្នាក់ (Admin Print)</h1>
+                </div>
+                <span class="font-bold text-red-600 bg-red-50 px-4 py-1.5 rounded-full text-xs border border-red-200">🔒 Admin Mode</span>
+            </div>
+        </nav>
+
+        <!-- Setting Section -->
+        <div class="max-w-7xl mx-auto my-6 no-print px-4">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start mt-2">
+                    <div class="md:col-span-3">
+                        <label class="text-[11px] font-black text-slate-500 mb-2 block uppercase tracking-wider">ឆ្នាំសិក្សា</label>
+                        <select id="yearSelect" class="w-full py-3 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm bg-slate-50 shadow-sm">
+                            <option value="២០២៣-២០២៤">២០២៣-២០២៤</option>
+                            <option value="២០២៤-២០២៥">២០២៤-២០២៥</option>
+                            <option value="២០២៥-២០២៦" selected>២០២៥-២០២៦</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <label class="text-[11px] font-black text-slate-500 mb-2 block uppercase tracking-wider">ការវាយតម្លៃ</label>
+                        <select id="monthSelect" class="w-full py-3 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm bg-slate-50 shadow-sm">
+                            <option value="ប្រចាំខែ វិច្ឆិកា">ប្រចាំខែ វិច្ឆិកា</option>
+                            <option value="ប្រចាំខែ ធ្នូ">ប្រចាំខែ ធ្នូ</option>
+                            <option value="ប្រចាំខែ មករា">ប្រចាំខែ មករា</option>
+                            <option value="ប្រចាំខែ កុម្ភៈ">ប្រចាំខែ កុម្ភៈ</option>
+                            <option value="ប្រឡងឆមាសទី១">ប្រឡងឆមាសទី១</option>
+                            <option value="លទ្ធផលប្រចាំឆមាសទី១">លទ្ធផលប្រចាំឆមាសទី១</option>
+                            <option value="ប្រចាំខែ មីនា">ប្រចាំខែ មីនា</option>
+                            <option value="ប្រចាំខែ មេសា">ប្រចាំខែ មេសា</option>
+                            <option value="ប្រចាំខែ ឧសភា">ប្រចាំខែ ឧសភា</option>
+                            <option value="ប្រចាំខែ មិថុនា">ប្រចាំខែ មិថុនា</option>
+                            <option value="ប្រឡងឆមាសទី២">ប្រឡងឆមាសទី២</option>
+                            <option value="លទ្ធផលប្រចាំឆមាសទី២">លទ្ធផលប្រចាំឆមាសទី២</option>
+                            <option value="លទ្ធផលប្រចាំឆ្នាំ">លទ្ធផលប្រចាំឆ្នាំ</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="text-[11px] font-black text-slate-500 mb-2 block uppercase tracking-wider">ទម្រង់ក្រដាស (A4)</label>
+                        <select id="layoutSelect" class="w-full py-3 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm bg-slate-50 shadow-sm" onchange="updatePrintStyles()">
+                            <option value="landscape" selected>ផ្តេក (Landscape) + និទ្ទេស</option>
+                            <option value="portrait">បញ្ឈរ (Portrait)</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-4 border-l pl-5 border-gray-200">
+                        <div class="flex justify-between items-end mb-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">ជ្រើសរើសថ្នាក់ដែលចង់ Print</label>
+                            <div class="flex gap-2">
+                                <button onclick="selectAllClasses(true)" class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold hover:bg-blue-200">យកទាំងអស់</button>
+                                <button onclick="selectAllClasses(false)" class="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold hover:bg-red-200">ដកវិញ</button>
+                            </div>
+                        </div>
+                        <div id="classCheckboxes" class="class-checkbox-grid">
+                            <span class="text-xs text-gray-400">កំពុងទាញបញ្ជីថ្នាក់...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-between items-center border-t border-gray-100 pt-4">
+                    <div class="flex items-center gap-2 border-2 border-green-400 px-4 py-2 rounded-xl bg-green-50 cursor-pointer" onclick="document.getElementById('sigToggle').click()">
+                        <input type="checkbox" id="sigToggle" checked class="w-5 h-5 text-blue-600 rounded cursor-pointer" onchange="toggleSignatures(event)">
+                        <label class="font-bold text-sm text-green-800 cursor-pointer">បង្ហាញត្រា & ហត្ថលេខា</label>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button onclick="executeTableGeneration()" class="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-8 py-3 rounded-xl font-black text-sm shadow-md hover:-translate-y-0.5 transition-all">
+                            ⬇️ ទាញតារាងចំណាត់ថ្នាក់
+                        </button>
+                        <button onclick="window.print()" id="btnPrint" class="hidden bg-slate-800 text-white px-8 py-3 rounded-xl font-black text-sm shadow-md hover:bg-slate-900 transition-all">
+                            🖨️ បោះពុម្ព (Print)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Area -->
+        <div id="results-container" class="print-container-wrapper">
+            <div class="text-center text-gray-400 font-bold mt-20 no-print" id="placeholder-msg">
+                សូមរើសថ្នាក់ រួចចុច "ទាញតារាងចំណាត់ថ្នាក់"
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center hidden z-[100]">
+        <div class="text-center bg-white p-8 rounded-3xl shadow-2xl min-w-[300px]">
+            <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="font-black text-blue-900 text-lg" id="loadingTitle">កំពុងដំណើរការ...</p>
+            <p class="text-sm font-bold text-gray-500 mt-2" id="loadingProgress">សូមរង់ចាំបន្តិច</p>
+        </div>
+    </div>
+
+    <script>
+        // 🌟 Security Prompt
+        document.addEventListener("DOMContentLoaded", () => {
+            Swal.fire({
+                title: '🔒 ផ្ទាំងរដ្ឋបាល',
+                input: 'password',
+                inputPlaceholder: 'បញ្ចូលពាក្យសម្ងាត់...',
+                allowOutsideClick: false, allowEscapeKey: false,
+                confirmButtonText: 'ចូល',
+                confirmButtonColor: '#2563eb',
+                preConfirm: (pwd) => {
+                    if (pwd !== 'H@nm@m64') { Swal.showValidationMessage('ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!'); }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('main-ui').style.display = 'block';
+                    fetchInitialData(); 
+                    updatePrintStyles(); 
+                }
+            });
+        });
+
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
+        const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+        
+        const PRINCIPAL_STAMP_URL = "1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne"; 
+        const SCHOOL_LOGO_URL = "https://i.ibb.co/XZ1mpn5R/Logo-04.png";
+
+        const SUBJECTS_15 =["ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", "ផែនដីវិទ្យា", "ភាសាអង់គ្លេស", "កីឡា", "កសិកម្ម", "បច្ចេកវិទ្យា", "បំណិន", "សុខភាព"];
+        
+        const subShortNames = {
+            "ភាសាខ្មែរ":"ភាសាខ្មែរ", "សីលធម៌ពលរដ្ឋ":"សីលធម៌", "ប្រវត្តិវិទ្យា":"ប្រវត្តិ", "ភូមិវិទ្យា":"ភូមិ", 
+            "គណិតវិទ្យា":"គណិត", "រូបវិទ្យា":"រូប", "គីមីវិទ្យា":"គីមី", "ជីវវិទ្យា":"ជីវៈ", "ផែនដីវិទ្យា":"ផែនដី", 
+            "ភាសាអង់គ្លេស":"អង់គ្លេស", "កីឡា":"កីឡា", "កសិកម្ម":"កសិកម្ម", "បច្ចេកវិទ្យា":"បច្ចេក.", "បំណិន":"បំណិន", "សុខភាព":"សុខភាព"
+        };
+        
+        const dbMap = { "ភាសាខ្មែរ":"khmer", "សីលធម៌ពលរដ្ឋ":"morality", "ប្រវត្តិវិទ្យា":"history", "ភូមិវិទ្យា":"geography", "គណិតវិទ្យា":"math", "រូបវិទ្យា":"physics", "គីមីវិទ្យា":"chemistry", "ជីវវិទ្យា":"biology", "ផែនដីវិទ្យា":"earth_science", "ភាសាអង់គ្លេស":"english", "កីឡា":"sport", "កសិកម្ម":"agriculture", "បច្ចេកវិទ្យា":"technology", "បំណិន":"skill", "សុខភាព":"health" };
+
+        let configMap = {}; 
+        let teacherMap = {}; 
+
+        const cleanKey = (str) => {
+            if(!str) return "";
+            let s = String(str).trim().replace(/ថ្នាក់ទី|ថ្នាក់|ទី/g, '').replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]).replace(/[\s\-_]/g, '').toUpperCase();
+            const kmToEn = { 'ក':'A', 'ខ':'B', 'គ':'C', 'ឃ':'D', 'ង':'E', 'ច':'F', 'ឆ':'G', 'ជ':'H', 'ឈ':'I', 'ញ':'J' };
+            for (let k in kmToEn) s = s.replace(new RegExp(k, 'g'), kmToEn[k]);
+            return s;
+        };
+
+        const getDriveImgUrl = (urlOrId) => {
+            if(!urlOrId) return '';
+            if (!urlOrId.includes('http')) return `https://lh3.googleusercontent.com/d/${urlOrId}`;
+            let idMatch = urlOrId.match(/(?:id=|file\/d\/)([\w-]+)/);
+            return idMatch ? `https://lh3.googleusercontent.com/d/${idMatch[1]}` : urlOrId;
+        };
+
+        const toKhmerNum = (str) => {
+            if (str === null || str === undefined || str === '') return '';
+            const khmerNums =['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
+            return String(str).replace(/[0-9]/g, match => khmerNums[match]);
+        };
+
+        const cleanNum = (val) => isNaN(parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]))) ? NaN : parseFloat(String(val).replace(/[០-៩]/g, d => "0123456789"["០១២៣៤៥៦៧៨៩".indexOf(d)]));
+
+        const getGrd = (p) => p >= 90 ? 'A' : p >= 80 ? 'B' : p >= 70 ? 'C' : p >= 60 ? 'D' : p >= 50 ? 'E' : 'F';
+        
+        const getGrdCol = (g) => {
+            if (g === 'A') return 'f-red';        
+            if (g === 'B') return 'f-pink';       
+            if (g === 'C') return 'f-orange';     
+            if (g === 'D') return 'f-green';      
+            if (g === 'E') return 'f-blue';       
+            return 'f-black';                     
+        };
+
+        function parseRank(val) {
+            if (!val) return 9999;
+            let str = String(val).trim();
+            const kmToEn = { '០':'0', '១':'1', '២':'2', '៣':'3', '៤':'4', '៥':'5', '៦':'6', '៧':'7', '៨':'8', '៩':'9' };
+            str = str.replace(/[០-៩]/g, m => kmToEn[m]); 
+            let num = parseInt(str.replace(/\D/g, ''), 10); 
+            return isNaN(num) ? 9999 : num;
+        }
+
+        const formatAvg = (val) => {
+            if (val === null || val === undefined || String(val).trim() === '') return '';
+            let num = parseFloat(val);
+            return isNaN(num) ? val : num.toFixed(2);
+        };
+
+        function showLoading(title, progress = '') { 
+            document.getElementById('loadingOverlay').classList.remove('hidden'); 
+            if(title) document.getElementById('loadingTitle').innerText = title;
+            document.getElementById('loadingProgress').innerText = progress;
+        }
+        function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+
+        function toggleSignatures(event) {
+            if(event) event.stopPropagation(); 
+            const isChecked = document.getElementById('sigToggle').checked;
+            const pages = document.querySelectorAll('.print-page');
+            pages.forEach(p => {
+                if (isChecked) p.classList.remove('hide-signatures');
+                else p.classList.add('hide-signatures');
+            });
+        }
+
+        function updatePrintStyles() {
+            let layout = document.getElementById('layoutSelect').value;
+            let styleId = 'dynamic-print-orientation';
+            let styleEl = document.getElementById(styleId);
+            
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = styleId;
+                document.head.appendChild(styleEl);
+            }
+            
+            if (layout === 'landscape') {
+                styleEl.innerHTML = `@media print { @page { size: A4 landscape; margin: 10mm; } }`;
+            } else {
+                styleEl.innerHTML = `@media print { @page { size: A4 portrait; margin: 10mm; } }`;
+            }
+        }
+
+        async function supaFetchAll(endpoint) {
+            let allData =[]; let offset = 0; const limit = 1000; let keepFetching = true;
+            const separator = endpoint.includes('?') ? '&' : '?';
+            while (keepFetching) {
+                const url = `${SUPABASE_URL}/rest/v1/${endpoint}${separator}limit=${limit}&offset=${offset}`;
+                const res = await fetch(url, { headers });
+                if (!res.ok) throw new Error("Network Error");
+                const data = await res.json();
+                if (data.length > 0) { allData = allData.concat(data); offset += limit; } 
+                else { keepFetching = false; }
+                if (data.length < limit) keepFetching = false; 
+            }
+            return allData;
+        }
+
+        async function fetchInitialData() {
+            try {
+                let confRes = await supaFetchAll(`config_max_scores?select=*`);
+                confRes.forEach(c => { if(c.grade_level) configMap[cleanKey(c.grade_level)] = c; });
+
+                let teachRes = await supaFetchAll(`teacher_info?select=*`);
+                let box = document.getElementById('classCheckboxes');
+                box.innerHTML = ''; 
+                let classesArray =[];
+                teachRes.forEach(t => { 
+                    if(t.homeroom_class) {
+                        let cName = String(t.homeroom_class).trim().toUpperCase();
+                        teacherMap[cleanKey(cName)] = { name: t.teacher_name || '.......................', sign: getDriveImgUrl(t.signature_link) }; 
+                        classesArray.push(cName);
+                    }
+                });
+                classesArray.sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+                classesArray.forEach(c => {
+                    box.innerHTML += `<label class="class-item"><input type="checkbox" value="${c}" class="chk-class cursor-pointer"> ${c}</label>`;
+                });
+            } catch(e) { console.error("Init Error", e); }
+        }
+
+        function selectAllClasses(check) {
+            document.querySelectorAll('.chk-class').forEach(cb => cb.checked = check);
+        }
+
+        // =================================================================
+        // 🌟 CORE GENERATOR
+        // =================================================================
+        async function executeTableGeneration() {
+            let selectedCheckboxes = document.querySelectorAll('.chk-class:checked');
+            let selectedClasses = Array.from(selectedCheckboxes).map(cb => cb.value);
+            
+            if(selectedClasses.length === 0) return Swal.fire('បញ្ជាក់', 'សូមជ្រើសរើសយ៉ាងហោចណាស់មួយថ្នាក់!', 'warning');
+            
+            let rawPeriod = document.getElementById('monthSelect').value;
+            let academicYear = document.getElementById('yearSelect').value;
+            let layout = document.getElementById('layoutSelect').value; 
+            
+            // កំណត់ប្រភេទរបាយការណ៍ (Condition)
+            let isSemesterResult = rawPeriod.includes("លទ្ធផលប្រចាំឆមាស");
+            let isAnnualResult = rawPeriod === "លទ្ធផលប្រចាំឆ្នាំ";
+            let isRegular = !isSemesterResult && !isAnnualResult; // ប្រឡងខែ ឬ ឆមាសធម្មតា ដែលមានមុខវិជ្ជា
+            
+            let period = rawPeriod.replace("ប្រចាំខែ ", "").replace("លទ្ធផល", "").trim();
+            let table = period.includes("ប្រចាំឆមាស") ? "semester_scores" : (period === "ប្រចាំឆ្នាំ" ? "annual_scores" : "student_scores");
+            let pCol = period.includes("ប្រចាំឆមាស") ? "semester_name" : (period === "ប្រចាំឆ្នាំ" ? "academic_year" : "month_name");
+            let reqPeriod = period === "ប្រចាំឆ្នាំ" ? academicYear : period; 
+
+            showLoading("កំពុងទាញទិន្នន័យពី Database...", `ថ្នាក់ដែលរើស: ${selectedClasses.length}`);
+
+            try {
+                let allPeriodData = await supaFetchAll(`${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}`);
+                let validData = allPeriodData.filter(s => selectedClasses.includes(String(s.grade).trim().toUpperCase()));
+                
+                if(validData.length === 0) {
+                    hideLoading(); 
+                    return Swal.fire('ទទេ!', `មិនមានទិន្នន័យសិស្សសម្រាប់ថ្នាក់ដែលជ្រើសរើសទេ។`, 'error');
+                }
+
+                let displayTitle = "";
+                if (rawPeriod.includes("ឆមាស") || rawPeriod.includes("ឆ្នាំ")) {
+                    displayTitle = "តារាងចំណាត់ថ្នាក់" + rawPeriod.replace("លទ្ធផល", "");
+                } else {
+                    displayTitle = "តារាងចំណាត់ថ្នាក់ប្រចាំខែ " + period;
+                }
+
+                let finalHTML = "";
+                
+                let groupedByClass = {};
+                validData.forEach(s => {
+                    let c = String(s.grade).trim().toUpperCase();
+                    if(!groupedByClass[c]) groupedByClass[c] =[];
+                    groupedByClass[c].push(s);
+                });
+
+                for (let cName of selectedClasses) {
+                    let classData = groupedByClass[cName] ||[];
+                    if(classData.length === 0) continue;
+
+                    classData.sort((a,b) => {
+                        let ra = parseRank(a.class_rank);
+                        let rb = parseRank(b.class_rank);
+                        return ra - rb;
+                    });
+
+                    let activeSubjects =[];
+                    if (isRegular) {
+                        SUBJECTS_15.forEach(sub => {
+                            let dbKey = dbMap[sub];
+                            let hasScore = classData.some(s => s[dbKey] !== null && s[dbKey] !== undefined && String(s[dbKey]).trim() !== '');
+                            if(hasScore) activeSubjects.push({ name: sub, dbKey: dbKey, short: subShortNames[sub] });
+                        });
+                    }
+
+                    let khClassName = toKhmerNum(cName);
+                    let khYear = toKhmerNum(academicYear);
+                    let targetKey = cleanKey(cName);
+                    
+                    let dateSolar = classData[0]?.date_solar || '...........................................';
+                    let dateLunar = classData[0]?.date_lunar || '...........................................';
+                    
+                    let gradeConfig = configMap[targetKey] || configMap[targetKey.replace(/[^0-9]/g, '')] || {};
+                    let tInfo = teacherMap[targetKey] || teacherMap[targetKey.replace(/[^0-9]/g, '')] || {name:'..................', sign:''};
+
+                    let pageHeaderHTML = `
+                        <div class="print-header">
+                            <div class="ph-center">
+                                <h2>ព្រះរាជាណាចក្រកម្ពុជា</h2>
+                                <h2>ជាតិ សាសនា ព្រះមហាក្សត្រ</h2>
+                                <h2 style="margin-top: -5px;">❧<span style="font-size:10px;">🙦🙤</span>☙</h2>
+                                <h1 class="title">${displayTitle}</h1>
+                                <h2>ឆ្នាំសិក្សា ${khYear}</h2>
+                            </div>
+                            <div class="ph-left">
+                                <img src="${SCHOOL_LOGO_URL}" alt="Logo" onerror="this.style.display='none'">
+                                <div class="ph-left-text">
+                                    <h3>វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h3>
+                                    <p>ថ្នាក់ទី ${khClassName}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // 🌟 កំណត់ Header (th) តាមប្រភេទតារាង
+                    let thHTML = `<tr>
+                        <th style="width: 30px;">ល.រ</th>
+                        <th style="width: 140px; text-align: left; padding-left: 8px;">គោត្តនាម នាម</th>
+                        <th style="width: 35px;">ភេទ</th>`;
+
+                    if (isSemesterResult) {
+                        thHTML += `
+                        <th style="width: 80px;">ថ្ងៃខែកំណើត</th>
+                        <th style="width: 60px;">ម.ប្រឡងឆមាស</th>
+                        <th style="width: 60px;">ម.ខែក្នុងឆមាស</th>
+                        <th style="width: 65px;">ម.ប្រចាំឆមាស</th>
+                        <th style="width: 50px;">ចំណាត់ថ្នាក់</th>
+                        <th style="width: 45px;">និទ្ទេស</th>
+                        <th style="width: 80px;">ផ្សេងៗ</th></tr>`;
+                    } else if (isAnnualResult) {
+                        thHTML += `
+                        <th style="width: 80px;">ថ្ងៃខែកំណើត</th>
+                        <th style="width: 60px;">ម.ប្រចាំឆ១</th>
+                        <th style="width: 60px;">ម.ប្រចាំឆ២</th>
+                        <th style="width: 65px;">ម.ប្រចាំឆ្នាំ</th>
+                        <th style="width: 50px;">ចំណាត់ថ្នាក់</th>
+                        <th style="width: 45px;">និទ្ទេស</th>
+                        <th style="width: 120px;">លទ្ធផល</th></tr>`;
+                    } else {
+                        // Regular Subjects Table
+                        activeSubjects.forEach(sub => { thHTML += `<th style="width: ${layout === 'landscape' ? '65px' : '35px'};">${sub.short}</th>`; });
+                        thHTML += `
+                        <th style="width: 45px;">សរុប</th>
+                        <th style="width: 45px;">ម.ភ</th>
+                        <th style="width: 35px;">ចំ.ថ្នាក់</th>
+                        <th style="width: 40px;">និទ្ទេស</th></tr>`;
+                    }
+
+                    let trHTML = "";
+                    let stats = { A:{t:0,f:0}, B:{t:0,f:0}, C:{t:0,f:0}, D:{t:0,f:0}, E:{t:0,f:0}, F:{t:0,f:0}, NA:{t:0,f:0} };
+                    let totStu = classData.length;
+                    let totFem = 0;
+
+                    classData.forEach((s, idx) => {
+                        let isF =['ស្រី','F','f','ស'].includes(String(s.gender).trim().toLowerCase());
+                        
+                        let totalRaw = s.total_score || s.exam_total_score || '';
+                        let avgRaw = s.average || s.exam_average || s.semester_average || s.annual_average || '';
+                        let grd = String(s.grade_result || s.final_result || '').toUpperCase().trim();
+                        
+                        let isUnranked = false;
+                        if (grd === 'ម.ថ' || grd === '' || (!totalRaw && !avgRaw && isRegular)) {
+                            isUnranked = true;
+                            grd = 'ម.ថ'; 
+                        }
+
+                        if(isF) totFem++;
+                        if(isUnranked) {
+                            stats.NA.t++;
+                            if(isF) stats.NA.f++;
+                        } else if(['A','B','C','D','E','F'].includes(grd)) {
+                            stats[grd].t++;
+                            if(isF) stats[grd].f++;
+                        } else {
+                            stats.NA.t++;
+                            if(isF) stats.NA.f++;
+                            grd = 'ម.ថ';
+                            isUnranked = true;
+                        }
+
+                        let tr = `<tr>
+                            <td>${toKhmerNum(idx + 1)}</td>
+                            <td class="col-name">${s.student_name}</td>
+                            <td>${s.gender}</td>`;
+                        
+                        // តម្រៀប Format ថ្ងៃខែកំណើតបើសិនមាន
+                        let dobText = s.date_of_birth || s.dob || '';
+                        if (dobText && dobText.includes('-') && dobText.split('-')[0].length === 4) {
+                            let parts = dobText.split('-');
+                            dobText = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                        }
+
+                        if (isUnranked) {
+                            if (isSemesterResult || isAnnualResult) {
+                                tr += `<td class="score-cell">${dobText}</td>`;
+                                tr += `<td colspan="4" class="f-red font-bold" style="letter-spacing: 2px;">គ្មានចំណាត់ថ្នាក់</td>`;
+                                tr += `<td class="text-slate-500 score-cell font-bold">ម.ថ</td>`;
+                                tr += `<td></td>`; // Column ចុងក្រោយទុកចំហ
+                            } else {
+                                let colspanCount = activeSubjects.length + 3; 
+                                tr += `<td colspan="${colspanCount}" class="f-red font-bold" style="letter-spacing: 2px;">គ្មានចំណាត់ថ្នាក់</td>`;
+                                tr += `<td class="text-slate-500 score-cell font-bold">ម.ថ</td>`;
+                            }
+                        } else {
+                            if (isSemesterResult) {
+                                let exAvg = formatAvg(s.exam_average);
+                                let moAvg = formatAvg(s.monthly_average);
+                                let seAvg = formatAvg(s.semester_average || avgRaw);
+                                let rmk = s.remark || s.note || '';
+                                let rankVal = parseRank(s.class_rank);
+                                let rankText = rankVal > 1000 ? '' : rankVal;
+                                let finalGrdColor = getGrdCol(grd);
+
+                                tr += `
+                                    <td class="score-cell">${dobText}</td>
+                                    <td class="f-black score-cell">${exAvg}</td>
+                                    <td class="f-black score-cell">${moAvg}</td>
+                                    <td class="f-black score-cell">${seAvg}</td>
+                                    <td class="score-cell font-bold" style="color: #dc2626 !important;">${rankText}</td>
+                                    <td class="${finalGrdColor} score-cell font-bold">${grd}</td>
+                                    <td class="score-cell text-[10px]">${rmk}</td>`;
+
+                            } else if (isAnnualResult) {
+                                let s1Avg = formatAvg(s.sem1_average || s.semester1_average);
+                                let s2Avg = formatAvg(s.sem2_average || s.semester2_average);
+                                let anAvg = formatAvg(s.annual_average || avgRaw);
+                                let resText = s.result || s.final_result_text || s.remark || '';
+                                let rankVal = parseRank(s.class_rank);
+                                let rankText = rankVal > 1000 ? '' : rankVal;
+                                let finalGrdColor = getGrdCol(grd);
+
+                                tr += `
+                                    <td class="score-cell">${dobText}</td>
+                                    <td class="f-black score-cell">${s1Avg}</td>
+                                    <td class="f-black score-cell">${s2Avg}</td>
+                                    <td class="f-black score-cell">${anAvg}</td>
+                                    <td class="score-cell font-bold" style="color: #dc2626 !important;">${rankText}</td>
+                                    <td class="${finalGrdColor} score-cell font-bold">${grd}</td>
+                                    <td class="score-cell text-[10px] f-black font-bold" style="text-align: left; padding-left: 4px;">${resText}</td>`;
+
+                            } else {
+                                // Regular Exam/Monthly Table
+                                if(avgRaw && !isNaN(parseFloat(avgRaw))) avgRaw = parseFloat(avgRaw).toFixed(2);
+                                
+                                activeSubjects.forEach(sub => {
+                                    let scoreRaw = s[sub.dbKey];
+                                    let scoreHTML = "";
+                                    
+                                    if(scoreRaw === null || scoreRaw === undefined || String(scoreRaw).trim() === '') {
+                                        scoreHTML = '';
+                                    } else if(isNaN(cleanNum(scoreRaw))) {
+                                        scoreHTML = `<span class="f-red">${scoreRaw}</span>`;
+                                    } else {
+                                        let scNum = cleanNum(scoreRaw);
+                                        let ms = 50; 
+                                        if (gradeConfig[sub.dbKey] && !isNaN(cleanNum(gradeConfig[sub.dbKey]))) {
+                                            ms = cleanNum(gradeConfig[sub.dbKey]);
+                                        }
+                                        
+                                        scoreHTML = `<span class="f-black">${scNum}</span>`;
+                                        
+                                        if (layout === 'landscape') {
+                                            let pct = Math.min((scNum / ms) * 100, 100);
+                                            let subGrade = getGrd(pct);
+                                            let subColor = getGrdCol(subGrade);
+                                            scoreHTML += ` <span class="font-black ${subColor}" style="font-size: 10px;">(${subGrade})</span>`;
+                                        }
+                                    }
+                                    tr += `<td class="score-cell">${scoreHTML}</td>`;
+                                });
+
+                                let rankVal = parseRank(s.class_rank);
+                                let rankText = rankVal > 1000 ? '' : rankVal;
+                                let finalGrdColor = getGrdCol(grd);
+
+                                tr += `
+                                    <td class="f-black score-cell">${totalRaw}</td>
+                                    <td class="f-black score-cell">${avgRaw}</td>
+                                    <td class="score-cell font-bold" style="color: #dc2626 !important;">${rankText}</td>
+                                    <td class="${finalGrdColor} score-cell font-bold">${grd}</td>`;
+                            }
+                        }
+                        tr += `</tr>`;
+                        trHTML += tr;
+                    });
+
+                    const calcPct = (val, total) => total > 0 ? ((val/total)*100).toFixed(2) : '0.00';
+                    
+                    let summaryHTML = `
+                        <div class="summary-container">
+                            <div class="summary-header">របាយការណ៍សង្ខេបលទ្ធផលសិក្សា (សិស្សសរុប៖ ${totStu} នាក់, ស្រី៖ ${totFem} នាក់)</div>
+                            <div class="summary-grid">
+                                <div class="grade-card g-A"><div class="gc-title f-red">A</div>
+                                    <div class="gc-stat" style="margin-bottom: 3px;">សរុប៖ <span>${stats.A.t} នាក់ (${calcPct(stats.A.t, totStu)}%)</span></div>
+                                    <div class="gc-stat">ស្រី៖ <span>${stats.A.f} នាក់ (${calcPct(stats.A.f, totFem)}%)</span></div>
+                                </div>
+                                <div class="grade-card g-B"><div class="gc-title f-pink">B</div>
+                                    <div class="gc-stat" style="margin-bottom: 3px;">សរុប៖ <span>${stats.B.t} នាក់ (${calcPct(stats.B.t, totStu)}%)</span></div>
+                                    <div class="gc-stat">ស្រី៖ <span>${stats.B.f} នាក់ (${calcPct(stats.B.f, totFem)}%)</span></div>
+                                </div>
+                                <div class="grade-card g-C"><div class="gc-title f-orange">C</div>
+                                    <div class="gc-stat" style="margin-bottom: 3px;">សរុប៖ <span>${stats.C.t} នាក់ (${calcPct(stats.C.t, totStu)}%)</span></div>
+                                    <div class="gc-stat">ស្រី៖ <span>${stats.C.f} នាក់ (${calcPct(stats.C.f, totFem)}%)</span></div>
+                                </div>
+                                <div class="grade-card g-D"><div class="gc-title f-green">D</div>
+                                    <div class="gc-stat" style="margin-bottom: 3px;">សរុប៖ <span>${stats.D.t} នាក់ (${calcPct(stats.D.t, totStu)}%)</span></div>
+                                    <div class="gc-stat">ស្រី៖ <span>${stats.D.f} នាក់ (${calcPct(stats.D.f, totFem)}%)</span></div>
+                                </div>
+                                <div class="grade-card g-E"><div class="gc-title f-blue">E</div>
+                                    <div class="gc-stat" style="margin-bottom: 3px;">សរុប៖ <span>${stats.E.t} នាក់ (${calcPct(stats.E.t, totStu)}%)</span></div>
+                                    <div class="gc-stat">ស្រី៖ <span>${stats.E.f} នាក់ (${calcPct(stats.E.f, totFem)}%)</span></div>
+                                </div>
+                                <div class="grade-card g-F"><div class="gc-title f-black">F</div>
+                                    <div class="gc-stat" style="margin-bottom: 3px;">សរុប៖ <span>${stats.F.t} នាក់ (${calcPct(stats.F.t, totStu)}%)</span></div>
+                                    <div class="gc-stat">ស្រី៖ <span>${stats.F.f} នាក់ (${calcPct(stats.F.f, totFem)}%)</span></div>
+                                </div>
+                                <div class="grade-card g-NA"><div class="gc-title text-slate-500">ម.ថ</div>
+                                    <div class="gc-stat" style="margin-bottom: 3px;">សរុប៖ <span>${stats.NA.t} នាក់ (${calcPct(stats.NA.t, totStu)}%)</span></div>
+                                    <div class="gc-stat">ស្រី៖ <span>${stats.NA.f} នាក់ (${calcPct(stats.NA.f, totFem)}%)</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
+                    let pImg = pImgUrl ? `<img src="${pImgUrl}" class="stamp-main sig-element" onerror="this.style.display='none'">` : '';
+                    let tImg = tInfo.sign ? `<img src="${tInfo.sign}" class="sig-main sig-element" onerror="this.style.display='none'">` : '';
+                    
+                    let sigsHTML = `
+                        <div class="sig-box">
+                            <!-- Principal -->
+                            <div class="sig-item" style="position: relative; top: 20px; left: -40px;">
+                                ${pImg}
+                                <div class="sig-text-top">
+                                    <p>បានឃើញ និងឯកភាព</p>
+                                    <p class="m-font">នាយកសាលា</p>
+                                </div>
+                            </div>
+                            <!-- Teacher -->
+                            <div class="sig-item" style="width: auto; min-width: 300px;">
+                                <p style="font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #1e3a8a; white-space: nowrap;">${dateLunar}</p>
+                                <p style="font-weight: bold; font-size: 14px; margin-bottom: 12px; color: #1e3a8a; white-space: nowrap;">${dateSolar}</p>
+                                <p class="m-font" style="font-size: 16px; color: #1e3a8a; margin-bottom: 5px;">គ្រូបន្ទុកថ្នាក់</p>
+                                <div style="height: 50px; display:flex; justify-content:center; align-items:center;">${tImg}</div>
+                                <p class="m-font" style="margin-top:5px; font-size: 16px;">${tInfo.name}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    let layoutClass = layout === 'landscape' ? 'print-page-landscape' : 'print-page-portrait';
+                    let classPage = `
+                    <div class="print-page ${layoutClass}">
+                        ${pageHeaderHTML}
+                        <table class="rank-table">
+                            <thead>${thHTML}</thead>
+                            <tbody>${trHTML}</tbody>
+                        </table>
+                        <div class="footer-wrapper">
+                            ${summaryHTML}
+                            ${sigsHTML}
+                        </div>
+                    </div>`;
+
+                    finalHTML += classPage;
+                }
+
+                document.getElementById('results-container').innerHTML = finalHTML;
+                document.getElementById('results-container').classList.remove('hidden');
+                document.getElementById('btnPrint').classList.remove('hidden');
+                
+                toggleSignatures(); 
+                
+                hideLoading();
+                Swal.fire('រួចរាល់', `ទាញតារាងចំណាត់ថ្នាក់បានជោគជ័យ។`, 'success');
+            } catch (e) { 
+                hideLoading(); 
+                Swal.fire('បរាជ័យ!', e.message, 'error'); 
+            }
+        }
+    </script>
+</body>
+</html>
