@@ -394,9 +394,9 @@
             
             // ក្នុងករណីឈ្មោះឪពុកម្តាយមានជាប់អាយុ ឬលេខ
             let dispFather = toKhmerNum(s.father_name || '---');
-            let dispFatherJob = s.father_job ? toKhmerNum(`(${s.father_job})`) : '';
+            let dispFatherJob = s.father_job ? toKhmerNum(`មុខរបរ ${s.father_job}`) : '';
             let dispMother = toKhmerNum(s.mother_name || '---');
-            let dispMotherJob = s.mother_job ? toKhmerNum(`(${s.mother_job})`) : '';
+            let dispMotherJob = s.mother_job ? toKhmerNum(`មុខរបរ ${s.mother_job}`) : '';
 
 
             let photoHtml = s.photo_url 
