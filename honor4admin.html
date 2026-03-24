@@ -199,14 +199,14 @@
         /* Stamp and Signatures */
         .stamp-main { 
             position: absolute; 
-            top: -10px; /* កែតម្រូវទីតាំងត្រាឲ្យនៅចំកណ្តាលអក្សរ */
+            top: -10px;
             left: 50%; 
             transform: translateX(-50%); 
             width: 330px; 
             max-width: none; 
             max-height: none; 
             pointer-events: none; 
-            z-index: 5; /* Z-index ទាបជាងអក្សរ */
+            z-index: 5;
             opacity: 0.95;
             mix-blend-mode: multiply; 
             transition: opacity 0.3s ease;
@@ -219,21 +219,65 @@
             transition: opacity 0.3s ease;
         }
         
-        /* ថ្នាក់សម្រាប់លាក់ត្រា និងហត្ថលេខា */
         .hide-signatures .sig-element {
             display: none !important;
         }
 
-        /* PRINT CONFIGURATION */
+        /* ==========================================
+           🖨️ PRINT CONFIGURATION (Fixed Cross-Page)
+           ========================================== */
         @media print {
             @page { size: A4 portrait; margin: 0; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            body, html { background: #ffffff !important; margin: 0 !important; padding: 0 !important; }
-            .control-panel, .no-print, .btn-download-img { display: none !important; }
-            #render-container { padding: 0 !important; gap: 0 !important; display: block !important; }
             
-            .canvas-wrapper { margin: 0 auto !important; padding: 0 !important; transform: none !important; zoom: 1 !important; display: block !important; page-break-after: always !important; page-break-inside: avoid !important; }
-            .fb-post-canvas { width: 1190px !important; height: 1684px !important; box-shadow: none !important; border: none !important; }
+            body, html { 
+                background: #ffffff !important; 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                width: 100% !important; 
+                height: 100% !important; 
+            }
+            .control-panel, .no-print, .btn-download-img { display: none !important; }
+            
+            #render-container { 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                gap: 0 !important; 
+                display: block !important; 
+                width: 100% !important; 
+            }
+            
+            .canvas-wrapper { 
+                margin: 0 auto !important; 
+                padding: 0 !important; 
+                transform: none !important; 
+                zoom: 0.665 !important; /* បង្រួមស្វ័យប្រវត្តិដើម្បីឲ្យចូលខ្នាត A4 ឥតខ្ចោះ (1190px * 0.665 = ~791px) */
+                display: block !important; 
+                page-break-after: always !important; 
+                page-break-inside: avoid !important; 
+                width: 1190px !important; 
+                height: 1684px !important; 
+                overflow: hidden !important; 
+            }
+
+            /* Support សម្រាប់ Browser ជំនាន់ចាស់ដែលមិនគាំទ្រ zoom (ឧទាហរណ៍: Firefox ចាស់) */
+            @supports not (zoom: 1) {
+                .canvas-wrapper {
+                    transform: scale(0.665) !important;
+                    transform-origin: top left !important;
+                    width: 792px !important; 
+                    height: 1120px !important; 
+                }
+            }
+
+            .fb-post-canvas { 
+                width: 1190px !important; 
+                height: 1684px !important; 
+                box-shadow: none !important; 
+                border: none !important; 
+                margin: 0 !important;
+                position: relative !important;
+            }
         }
     </style>
 </head>
@@ -351,7 +395,7 @@
 
         // 🌟 មុខងារ បិទ/បើក ត្រា និង ហត្ថលេខា
         function toggleSignatures(event) {
-            if(event) event.stopPropagation(); // ការពារការចុចជាន់គ្នាពី Label
+            if(event) event.stopPropagation();
             const isChecked = document.getElementById('sigToggle').checked;
             const canvases = document.querySelectorAll('.fb-post-canvas');
             
@@ -373,7 +417,6 @@
             });
         }
 
-        // 🌟 Function បម្លែងលេខសកលទៅលេខខ្មែរ
         const toKhmerNum = (str) => {
             if (str === null || str === undefined) return '';
             const khmerNums =['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
@@ -402,9 +445,6 @@
             return isNaN(num) ? 9999 : num;
         }
 
-        // =========================================================
-        // 🚀 MAIN FETCH & RENDER LOGIC
-        // =========================================================
         async function fetchHonorRollData() {
             let year = document.getElementById('yearSelect').value;
             let rawPeriod = document.getElementById('periodSelect').value;
@@ -420,7 +460,6 @@
             else { table = "student_scores"; pCol = "month_name"; }
 
             try {
-                // 🌟 ០. ទាញពត៌មានគ្រូ (សម្រាប់ហត្ថលេខា និងឈ្មោះគ្រូ)
                 try {
                     let teachRes = await fetchSupabaseData("teacher_info", "select=*");
                     teacherMap = {};
@@ -430,7 +469,6 @@
                     });
                 } catch(e) { console.warn("Failed to load teacher info", e); }
 
-                // 🌟 ១. ទាញឈ្មោះដើមទី មកត្រៀមទុកការពារអ្នកអត់ឈ្មោះ និងពិនិត្យភេទ
                 let namesData = await fetchSupabaseData("student_scores", `academic_year=eq.${encodeURIComponent(year)}&select=student_id,student_name,gender`);
                 let namesDict = {};
                 namesData.forEach(s => {
@@ -439,7 +477,6 @@
                     }
                 });
 
-                // 🌟 ២. ទាញទិន្នន័យទាំងអស់ក្នុងខែ/ឆមាស 
                 let data = await fetchSupabaseData(table, `${pCol}=eq.${encodeURIComponent(period)}&academic_year=eq.${encodeURIComponent(year)}&class_rank=not.is.null`);
                 
                 if(data.length === 0) {
@@ -447,7 +484,6 @@
                     btn.innerHTML = "ទាញទិន្នន័យ"; btn.disabled = false; return;
                 }
 
-                // 🌟 ៣. Filter យកតែលេខ ១ ដល់ លេខ ៥ ដាច់ខាត
                 let honorStudents = data.filter(s => {
                     let r = parseRank(s.class_rank);
                     return r > 0 && r <= 5;
@@ -458,7 +494,6 @@
                     btn.innerHTML = "ទាញទិន្នន័យ"; btn.disabled = false; return;
                 }
 
-                // 🌟 ៤. Group តាមថ្នាក់
                 let classesMap = {};
                 honorStudents.forEach(s => {
                     let cName = String(s.grade).trim().toUpperCase();
@@ -482,7 +517,6 @@
                 let sortedClasses = Object.keys(classesMap).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
                 let currentTheme = document.getElementById('themeSelect').value;
 
-                // បង្កើត Canvas ម្តងមួយថ្នាក់
                 sortedClasses.forEach((className, idx) => {
                     let students = classesMap[className];
                     students.sort((a,b) => parseRank(a.class_rank) - parseRank(b.class_rank));
@@ -491,7 +525,6 @@
                     container.innerHTML += pageHtml;
                 });
 
-                // ត្រួតពិនិត្យ និងអនុវត្តស្ថានភាពហត្ថលេខាឡើងវិញ បន្ទាប់ពី Render
                 toggleSignatures(); 
 
                 document.getElementById('btnPrint').classList.remove('hidden');
@@ -504,10 +537,6 @@
             btn.innerHTML = "ទាញទិន្នន័យ"; btn.disabled = false;
         }
 
-        // =========================================================
-        // 🎨 DYNAMIC HTML GENERATOR (Strict 3 Rows Engine)
-        // =========================================================
-        
         function getMedalConfig(rankNum) {
             if(rankNum === 1) return { color: 'gold', cls: 'rank-1' };
             if(rankNum === 2) return { color: 'silver', cls: 'rank-2' };
@@ -538,13 +567,11 @@
             return { width, padding, nameSize, scoreSize, medalSize, medalFont, ribbonW, ribbonH, ribbonM };
         }
 
-        // បង្កើត HTML សម្រាប់កាត
         function createStudentCard(student, isTop1Single, countInRow) {
             let rankNum = parseRank(student.class_rank);
             let conf = getMedalConfig(rankNum);
             let style = getCardStyle(countInRow, isTop1Single);
             
-            // 🌟 ដាក់ក្បៀស២ខ្ទង់ សម្រាប់មធ្យមភាគ
             let scoreRaw = student.semester_average || student.exam_average || student.average || student.annual_average;
             let score = '-';
             if (scoreRaw !== undefined && scoreRaw !== null && !isNaN(parseFloat(scoreRaw))) {
@@ -556,7 +583,6 @@
             let rankKhm = toKhmerNum(rankNum);
             let isA = grd.toUpperCase() === 'A' ? 'a-grade' : '';
             
-            // 🌟 កំណត់រូបតំណាងភេទ (ប្រុសពណ៌ខៀវ / ស្រីពណ៌ផ្កាឈូក)
             let gender = String(student.gender || '').trim().toLowerCase();
             
             let femaleIcon = `<svg class="w-[22px] h-[22px] inline-block text-pink-500 ml-1.5" style="vertical-align: -3px;" fill="currentColor" viewBox="0 0 320 512"><path d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V256.9L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6h29.7c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V352H152z"/></svg>`;
@@ -568,7 +594,7 @@
             } else if (['ប្រុស', 'm', 'ប', 'male'].includes(gender)) {
                 genderIcon = maleIcon;
             } else {
-                genderIcon = maleIcon; // លំនាំដើម
+                genderIcon = maleIcon;
             }
 
             let displayName = student.student_name.trim() + genderIcon;
@@ -596,7 +622,6 @@
         function generateCanvasHTML(className, students, periodLabel, yearLabel, index, themeClass) {
             let rawTitle = periodLabel.replace("លទ្ធផល", "").trim();
             
-            // 🌟 មុខងារកំណត់ចំណងជើង "ប្រចាំខែ" ដោយស្វ័យប្រវត្តិ
             let displayTitle = "";
             if (rawTitle.includes("ឆមាស") || rawTitle.includes("ឆ្នាំ")) {
                 displayTitle = "តារាងកិត្តិយស " + rawTitle;
@@ -606,7 +631,6 @@
 
             let canvasId = `canvas-${index}`;
             
-            // បម្លែងទៅលេខខ្មែរ
             let khClassName = toKhmerNum(className);
             let khYearLabel = toKhmerNum(yearLabel);
             let dateSolar = toKhmerNum(students[0]?.date_solar || 'កំពង់ត្រឡាច, ថ្ងៃទី.......ខែ.......ឆ្នាំ២០២...');
@@ -615,7 +639,6 @@
             let cleanClass = String(className).trim().toUpperCase();
             let tInfo = teacherMap[cleanClass] || {name: '..................................', sign: ''};
             
-            // បន្ថែម Class "sig-element" សម្រាប់មុខងារបិទបើក
             let pImgUrl = getDriveImgUrl(PRINCIPAL_STAMP_URL);
             let pImg = pImgUrl ? `<img src="${pImgUrl}" class="stamp-main sig-element" onerror="this.style.display='none'">` : '';
             let tImg = tInfo.sign ? `<img src="${tInfo.sign}" class="sig-main sig-element" onerror="this.style.display='none'">` : '';
@@ -633,7 +656,7 @@
                     <div class="corner c-tl"></div><div class="corner c-tr"></div>
                     <div class="corner c-bl"></div><div class="corner c-br"></div>
 
-                    <!-- 🌟 HEADER AREA (ទម្រង់ផ្លូវការ) -->
+                    <!-- 🌟 HEADER AREA -->
                     <div class="header-area w-full relative z-20 pt-2 px-6">
                         <div style="position: relative; width: 100%; height: 140px; margin-bottom: 20px;">
                             <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center;">
@@ -647,36 +670,31 @@
                             </div>
                         </div>
 
-                        <!-- ចំណងជើងធំ (២ បន្ទាត់) -->
                         <h1 class="font-moul title-main text-center mb-10 leading-relaxed mt-6">
                             ${displayTitle}<br>
                             <span style="font-size: 34px; color: var(--txt-name);">ថ្នាក់ទី ${khClassName} ឆ្នាំសិក្សា ${khYearLabel}</span>
                         </h1>
                     </div>
 
-                    <!-- 🌟 STUDENTS AREA (Strict 3 Rows with taller height for A4) -->
+                    <!-- 🌟 STUDENTS AREA -->
                     <div class="students-area flex flex-col justify-evenly h-[1000px] w-full relative z-10 px-4 mt-6">`;
 
-            // បែងចែកសិស្សជា ៣ ជួរដាច់ខាត (Row 1, Row 2, Row 3)
             let row1 = students.filter(s => parseRank(s.class_rank) === 1);
             let row2 = students.filter(s => parseRank(s.class_rank) === 2 || parseRank(s.class_rank) === 3);
             let row3 = students.filter(s => parseRank(s.class_rank) === 4 || parseRank(s.class_rank) === 5);
 
-            // ជួរទី១
             if (row1.length > 0) {
                 html += `<div class="w-full flex justify-center gap-6 flex-nowrap mt-4">`;
                 row1.forEach(s => { html += createStudentCard(s, row1.length === 1, row1.length); });
                 html += `</div>`;
             }
 
-            // ជួរទី២
             if (row2.length > 0) {
                 html += `<div class="w-full flex justify-center gap-6 flex-nowrap mt-10">`;
                 row2.forEach(s => { html += createStudentCard(s, false, row2.length); });
                 html += `</div>`;
             }
 
-            // ជួរទី៣
             if (row3.length > 0) {
                 html += `<div class="w-full flex justify-center gap-6 flex-nowrap mt-10">`;
                 row3.forEach(s => { html += createStudentCard(s, false, row3.length); });
@@ -686,22 +704,18 @@
             html += `
                     </div> 
 
-                    <!-- 🌟 FOOTER (ហត្ថលេខា - អក្សរនៅលើត្រា) -->
+                    <!-- 🌟 FOOTER -->
                     <div class="w-full mt-auto mb-16 z-10 flex flex-col items-center">
                         <div style="display: flex; justify-content: space-between; width: 100%; padding: 0 40px;" class="stu-name relative">
                             
-                            <!-- ផ្នែកនាយកសាលា (ទម្លាក់ចុះក្រោម ~3cm = 60px) -->
                             <div style="text-align: center; width: 340px; position: relative; height: 180px; margin-top: 60px;">
-                                ${pImg} <!-- ត្រានៅពីក្រោម -->
-                                
-                                <!-- អក្សរនៅពីលើ (Z-index ខ្ពស់ជាង, គម្លាតធម្មតា) -->
+                                ${pImg} 
                                 <div style="position: relative; z-index: 20;">
                                     <p style="font-weight: bold; font-size: 20px; margin-bottom: 2px; color: var(--txt-name);">បានឃើញ និងឯកភាព</p>
                                     <p class="font-moul" style="font-size: 20px; color: var(--txt-title); margin: 0;">នាយកសាលា</p>
                                 </div>
                             </div>
                             
-                            <!-- ផ្នែកគ្រូបន្ទុកថ្នាក់ (រៀបកាលបរិច្ឆេទតាមសំណូមពរ និងពង្រីកប្រអប់ដើម្បីកុំឲ្យធ្លាក់ជួរ) -->
                             <div style="text-align: center; width: 480px; display: flex; flex-direction: column; align-items: center; position: relative;">
                                 <p style="font-weight: bold; font-size: 17px; margin-bottom: 4px; color: var(--txt-name);">${dateLunar}</p>
                                 <p style="font-weight: bold; font-size: 17px; margin-bottom: 16px; color: var(--txt-name);">${dateSolar}</p>
@@ -713,20 +727,18 @@
                         </div>
                     </div>
 
-                </div> <!-- End fb-post-canvas -->
-            </div> <!-- End canvas-wrapper -->`;
+                </div>
+            </div>`;
 
             return html;
         }
 
-        // មុខងារទាញយកជារូបភាព (High Resolution A4: 1190x1684)
         function downloadImage(canvasId, className) {
             const element = document.getElementById(canvasId);
             const wrapper = element.parentElement;
             
             Swal.fire({ title: 'កំពុងបង្កើតរូបភាព...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
-            // ដក Scale ចេញសិនទើប html2canvas ថតបានទំហំពេញ
             const originalTransform = wrapper.style.transform;
             wrapper.style.transform = "scale(1)";
             wrapper.style.width = "1190px";
@@ -743,7 +755,6 @@
                     windowHeight: 1684,
                     logging: false
                 }).then(canvas => {
-                    // ដាក់ Scale ដើមវិញ
                     wrapper.style.transform = originalTransform; 
                     wrapper.style.width = "";
                     wrapper.style.height = "";
