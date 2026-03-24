@@ -386,8 +386,8 @@
             let dispId = toKhmerNum(s.student_id || '---');
             let dispClass = toKhmerNum(s.class_name || '---');
             let dispYear = toKhmerNum(s.academic_year || '២០២៥-២០២៦');
-            let dispPob = toKhmerNum(s.pob || 'មិនមានទិន្នន័យ');
-            let dispAddress = toKhmerNum(s.address || 'មិនមានទិន្នន័យ');
+            let dispPob = toKhmerNum(s.place_birth || 'មិនមានទិន្នន័យ');
+            let dispAddress = toKhmerNum(s.current_address || 'មិនមានទិន្នន័យ');
             
             // បម្លែងថ្ងៃខែឆ្នាំកំណើតទៅជាទម្រង់ខ្មែរ (ឧ. ១៧ មិថុនា ១៩៩១)
             let dobKh = formatKhmerDOB(s.dob);
