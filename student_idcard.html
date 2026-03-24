@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ប្រព័ន្ធបោះពុម្ពកាតសិស្ស - ID Card Generator</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;600;700&family=Moul&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        body { font-family: 'Battambang', sans-serif; background-color: #f0fdf4; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px; }
+        .font-moul { font-family: 'Moul', serif; }
+        .font-kantumruy { font-family: 'Kantumruy Pro', sans-serif; }
+        .wave-bg { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        
+        /* កំណត់ Watermark ឲ្យនៅចំកណ្តាល និងព្រាលៗ */
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.08; width: 65%; pointer-events: none; z-index: 0; }
+
+        /* Custom Scrollbar for Dropdown */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+
+        /* -------------------------------------
+           Card Sizing (Standard CR80 54x85.6mm)
+        ------------------------------------- */
+        .card-scale-wrapper {
+            width: 54mm;
+            height: 85.6mm;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background: white;
+            border: 1px solid #d1d5db; 
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .card-content {
+            width: 320px;
+            height: 510px;
+            /* 54mm = 204px. 204 / 320 = 0.6375 scale */
+            transform: scale(0.6375);
+            transform-origin: top left;
+            position: absolute;
+            top: 0; left: 0;
+            background: white;
+        }
+
+        /* -------------------------------------
+           Print Layout Setup for A4
+        ------------------------------------- */
+        @media screen {
+            .a4-page { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; }
+            .card-pair { display: flex; gap: 5px; flex-direction: row; }
+        }
+
+        @media print {
+            @page { size: A4 landscape; margin: 10mm; }
+            body { background: white; margin: 0; }
+            .no-print { display: none !important; }
+            
+            /* Group 3 students per A4 Page */
+            .a4-page {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 5mm;
+                page-break-after: always;
+                padding-top: 5mm;
+            }
+            .a4-page:last-child { page-break-after: auto; }
+            
+            .card-pair {
+                display: flex;
+                gap: 2mm; /* Fold line gap between front and back */
+                page-break-inside: avoid;
+                margin-bottom: 5mm;
+            }
+            .card-scale-wrapper { box-shadow: none; border: 1px dashed #9ca3af; } /* Dashed for cutting guide */
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-4">
+
+    <!-- Control Panel -->
+    <div class="w-full max-w-5xl bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 no-print mb-8">
+        <h1 class="text-2xl md:text-3xl font-moul text-blue-900 mb-2 text-center">ប្រព័ន្ធបោះពុម្ពកាតសិស្ស</h1>
+        <p class="text-center text-gray-500 font-bold mb-6 text-sm" id="schoolNameLabel">កំពុងទាញទិន្នន័យសាលា...</p>
+        
+        <!-- កន្លែងកំណត់ថ្ងៃខែចេញកាត ផុតសុពលភាព និងថ្ងៃខែក្រោយកាត -->
+        <div class="mb-6 bg-yellow-50 p-4 rounded-xl border border-yellow-200">
+            <h2 class="font-bold text-yellow-800 mb-3 flex items-center gap-2">📅 កំណត់កាលបរិច្ឆេទ និងទីកន្លែង</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">ថ្ងៃចេញកាត (មុខ)</label>
+                    <input type="date" id="input-issue-date" class="w-full py-2 px-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-500 outline-none shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">ថ្ងៃផុតសុពលភាព (មុខ)</label>
+                    <input type="date" id="input-expiry-date" class="w-full py-2 px-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-500 outline-none shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">ទីកន្លែងធ្វើកាត (ក្រោយ)</label>
+                    <input type="text" id="input-back-location" value="កំពង់ត្រឡាច," class="w-full py-2 px-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-500 outline-none shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">ថ្ងៃខែឆ្នាំ (ក្រោយ)</label>
+                    <input type="text" id="input-back-date" class="w-full py-2 px-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-500 outline-none shadow-sm">
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-6 mb-6">
+            <!-- រកសិស្សម្នាក់ -->
+            <div class="flex-1 bg-blue-50 p-5 rounded-xl border border-blue-100 relative">
+                <h2 class="font-bold text-blue-800 mb-3 flex items-center gap-2">👤 បោះពុម្ពសិស្សម្នាក់</h2>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="searchId" class="w-full py-3 px-4 rounded-lg border border-gray-300 font-bold focus:ring-2 focus:ring-blue-500 outline-none shadow-sm" placeholder="អត្តលេខសិស្ស (ឧ. 024025026)">
+                    <button onclick="fetchCard('single')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition shrink-0">ទាញយក</button>
+                </div>
+            </div>
+
+            <!-- រកមួយថ្នាក់ (អនុញ្ញាតរើសច្រើន) -->
+            <div class="flex-1 bg-green-50 p-5 rounded-xl border border-green-100">
+                <h2 class="font-bold text-green-800 mb-3 flex items-center gap-2">👥 បោះពុម្ពតាមថ្នាក់ (រើសបានច្រើន)</h2>
+                <div class="flex flex-col sm:flex-row gap-2 relative">
+                    <!-- Custom Multi Select Dropdown -->
+                    <div class="w-full relative">
+                        <button type="button" onclick="toggleDropdown()" class="w-full py-3 px-4 rounded-lg border border-gray-300 font-bold bg-white text-left focus:ring-2 focus:ring-green-500 outline-none shadow-sm flex justify-between items-center">
+                            <span id="dropdownLabel" class="text-gray-500">ជ្រើសរើសថ្នាក់ទី...</span>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <!-- Dropdown List -->
+                        <div id="gradeDropdown" class="hidden absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-48 overflow-y-auto custom-scrollbar">
+                            <div class="p-2 flex flex-col gap-1" id="gradeListContainer">
+                                <div class="p-2 text-center text-gray-500 text-sm italic">កំពុងទាញបញ្ជីថ្នាក់...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="fetchCard('batch')" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition shrink-0">ទាញយក</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Print Action -->
+        <div id="printActions" class="hidden flex justify-center mt-4">
+            <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 px-8 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2 text-lg">
+                🖨️ បោះពុម្ពកាតឥឡូវនេះ (Print)
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="hidden flex-col items-center justify-center mb-8 no-print h-32">
+        <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-3 shadow-lg"></div>
+        <span class="font-black text-blue-900 tracking-wide text-lg">កំពុងដំណើរការទិន្នន័យ...</span>
+    </div>
+
+    <!-- Area សម្រាប់បង្ហាញកាតដែលត្រៀម Print -->
+    <div id="printArea" class="w-full pb-10"></div>
+
+    <script>
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc"; 
+        const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
+
+        // អញ្ញាតរក្សាទុកទិន្នន័យសាលា
+        let mySchoolData = { 
+            poe_name: "មន្ទីរអប់រំ យុវជន និងកីឡា", 
+            doe_name: "ខេត្តកំពង់ឆ្នាំង", 
+            school_name: "វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច", 
+            principal_name: "នាយកសាលា", 
+            school_logo_url: "", 
+            school_stamp_url: "" 
+        };
+
+        // មុខងារបំប្លែងគ្រប់លេខអង់គ្លេសទាំងអស់ ទៅជាលេខខ្មែរ
+        const toKhmerNum = (str) => {
+            if (str === null || str === undefined) return '';
+            const khmerNums = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
+            return String(str).replace(/[0-9]/g, match => khmerNums[match]);
+        };
+
+        // ពេលបើក Web ភ្លាម ទាញទិន្នន័យសាលា បញ្ជីថ្នាក់ទី និងកំណត់ថ្ងៃខែ
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchInitialData();
+            
+            // កំណត់ថ្ងៃខែ Default លើ Form
+            let today = new Date();
+            document.getElementById('input-issue-date').value = today.toISOString().split('T')[0];
+            
+            let nextYear = new Date();
+            nextYear.setFullYear(today.getFullYear() + 1);
+            document.getElementById('input-expiry-date').value = nextYear.toISOString().split('T')[0];
+
+            // បញ្ចូលថ្ងៃខែខ្មែរសម្រាប់ខ្នងកាតស្វ័យប្រវត្តិ
+            let khmerMonths = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+            let dayKh = toKhmerNum(String(today.getDate()).padStart(2, '0'));
+            let yearKh = toKhmerNum(String(today.getFullYear()));
+            document.getElementById('input-back-date').value = `ថ្ងៃទី ${dayKh} ខែ ${khmerMonths[today.getMonth()]} ឆ្នាំ ${yearKh}`;
+            
+            // បិទ Dropdown ពេលចុចខាងក្រៅ
+            document.addEventListener('click', function(event) {
+                const dropdown = document.getElementById('gradeDropdown');
+                const button = dropdown.previousElementSibling;
+                if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        });
+
+        const getDriveImgUrl = (urlOrId) => {
+            if(!urlOrId) return '';
+            if (!urlOrId.includes('http')) return `https://lh3.googleusercontent.com/d/${urlOrId}`;
+            let idMatch = urlOrId.match(/(?:id=|file\/d\/)([\w-]+)/);
+            return idMatch ? `https://lh3.googleusercontent.com/d/${idMatch[1]}` : urlOrId;
+        };
+
+        function getKhmerDateFormatted(dateString) {
+            if(!dateString) return '---';
+            let d = new Date(dateString);
+            if(isNaN(d)) return '---';
+            let khmerMonths =["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+            let day = toKhmerNum(String(d.getDate()).padStart(2, '0'));
+            let year = toKhmerNum(String(d.getFullYear()));
+            return `${day} ${khmerMonths[d.getMonth()]} ${year}`;
+        }
+
+        async function fetchInitialData() {
+            try {
+                // ១. ទាញទិន្នន័យសាលា
+                let schoolRes = await fetch(`${SUPABASE_URL}/rest/v1/school_data?select=*&limit=1`, { headers });
+                let sData = await schoolRes.json();
+                if (sData && sData.length > 0) {
+                    mySchoolData = { ...mySchoolData, ...sData[0] };
+                    document.getElementById('schoolNameLabel').innerText = mySchoolData.school_name || "វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច";
+                }
+
+                // ២. ទាញបញ្ជីថ្នាក់ពី student_profile
+                let gradeRes = await fetch(`${SUPABASE_URL}/rest/v1/student_profile?select=class_name`, { headers });
+                let gradeData = await gradeRes.json();
+                
+                let uniqueGrades = [...new Set(gradeData.map(item => item.class_name))].filter(Boolean).sort();
+                
+                let gradeContainer = document.getElementById('gradeListContainer');
+                if(uniqueGrades.length > 0) {
+                    let html = '';
+                    uniqueGrades.forEach(g => {
+                        html += `
+                        <label class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer border-b border-gray-100 last:border-0">
+                            <input type="checkbox" value="${g}" class="grade-checkbox w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500" onchange="updateDropdownLabel()">
+                            <span class="font-bold text-gray-700">${g}</span>
+                        </label>`;
+                    });
+                    gradeContainer.innerHTML = html;
+                } else {
+                    gradeContainer.innerHTML = `<div class="p-2 text-center text-red-500 text-sm">មិនទាន់មានទិន្នន័យថ្នាក់ទេ</div>`;
+                }
+
+            } catch (e) {
+                console.error("កំហុសក្នុងការទាញទិន្នន័យដើម:", e);
+            }
+        }
+
+        function toggleDropdown() { document.getElementById('gradeDropdown').classList.toggle('hidden'); }
+
+        function updateDropdownLabel() {
+            const checkboxes = document.querySelectorAll('.grade-checkbox:checked');
+            const label = document.getElementById('dropdownLabel');
+            if (checkboxes.length === 0) {
+                label.innerText = 'ជ្រើសរើសថ្នាក់ទី...'; label.classList.add('text-gray-500'); label.classList.remove('text-green-700');
+            } else if (checkboxes.length === 1) {
+                label.innerText = `ថ្នាក់៖ ${checkboxes[0].value}`; label.classList.remove('text-gray-500'); label.classList.add('text-green-700');
+            } else {
+                label.innerText = `បានជ្រើសរើស ${checkboxes.length} ថ្នាក់`; label.classList.remove('text-gray-500'); label.classList.add('text-green-700');
+            }
+        }
+
+        function parseDateForQR(dobString) {
+            let dd = "", mm = "", yyyy = "";
+            if(!dobString) return { dd, mm, yyyy };
+            if(dobString.includes('/')) { let p = dobString.split('/'); dd = p[0]; mm = p[1]; yyyy = p[2]; } 
+            else if(dobString.includes('-')) {
+                let p = dobString.split('-');
+                if(p[0].length === 4) { yyyy = p[0]; mm = p[1]; dd = p[2]; } else { dd = p[0]; mm = p[1]; yyyy = p[2]; }
+            }
+            return { dd, mm, yyyy };
+        }
+
+        // មុខងារសម្រាប់បម្លែង 17/6/1991 ទៅជា ១៧ មិថុនា ១៩៩១ (ប្រើលេខខ្មែរ)
+        function formatKhmerDOB(dobString) {
+            let { dd, mm, yyyy } = parseDateForQR(dobString);
+            if (!dd || !mm || !yyyy) return toKhmerNum(dobString) || '---';
+            let khmerMonths = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+            let monthIndex = parseInt(mm, 10) - 1;
+            let monthStr = khmerMonths[monthIndex] || mm;
+            return `${toKhmerNum(dd)} ${monthStr} ${toKhmerNum(yyyy)}`;
+        }
+
+        async function fetchCard(mode) {
+            let query = "";
+            if (mode === 'single') {
+                const id = document.getElementById('searchId').value.trim();
+                if(!id) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខសិស្ស', 'warning');
+                query = `student_id=eq.${encodeURIComponent(id)}&limit=1`;
+            } else {
+                const checkboxes = document.querySelectorAll('.grade-checkbox:checked');
+                const selectedGrades = Array.from(checkboxes).map(cb => cb.value);
+                if(selectedGrades.length === 0) return Swal.fire('បញ្ជាក់', 'សូមជ្រើសរើសថ្នាក់យ៉ាងតិចមួយ', 'warning');
+                let gradeParam = selectedGrades.map(encodeURIComponent).join(',');
+                query = `class_name=in.(${gradeParam})&order=class_name,student_name`;
+                document.getElementById('gradeDropdown').classList.add('hidden');
+            }
+
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('loading').classList.add('flex');
+            document.getElementById('printArea').innerHTML = '';
+            document.getElementById('printActions').classList.add('hidden');
+
+            try {
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/student_profile?${query}`, { headers });
+                let data = await res.json();
+
+                if(!data || data.length === 0) {
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('loading').classList.remove('flex');
+                    return Swal.fire('រកមិនឃើញ', 'មិនមានទិន្នន័យទេ! សូមឆែកមើលអត្តលេខ ឬថ្នាក់ទីម្ដងទៀត។', 'error');
+                }
+
+                renderCardsToPrintArea(data);
+                
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('loading').classList.remove('flex');
+                document.getElementById('printActions').classList.remove('hidden');
+
+            } catch (error) {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('loading').classList.remove('flex');
+                Swal.fire('បរាជ័យ', error.message, 'error');
+            }
+        }
+
+        function renderCardsToPrintArea(students) {
+            let container = document.getElementById('printArea');
+            let html = '';
+            const STUDENTS_PER_PAGE = 3; 
+
+            // ទាញយកថ្ងៃខែពី Input ទាំងមុខ និងក្រោយ
+            let issueVal = document.getElementById('input-issue-date').value;
+            let expiryVal = document.getElementById('input-expiry-date').value;
+            let backLocationVal = document.getElementById('input-back-location').value;
+            let backDateVal = document.getElementById('input-back-date').value;
+            
+            // បំប្លែងជាទម្រង់ខ្មែរ (កាតមុខ)
+            let issueDateKh = getKhmerDateFormatted(issueVal);
+            let expiryDateKh = getKhmerDateFormatted(expiryVal);
+
+            for(let i = 0; i < students.length; i += STUDENTS_PER_PAGE) {
+                let group = students.slice(i, i + STUDENTS_PER_PAGE);
+                html += `<div class="a4-page">`;
+                group.forEach(s => { html += generateCardHTML(s, issueDateKh, expiryDateKh, backLocationVal, backDateVal); });
+                html += `</div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function generateCardHTML(s, issueDateKh, expiryDateKh, backLocationVal, backDateVal) {
+            // =========================================================================
+            // QR CODE LOGIC (រក្សាទិន្នន័យលេខសកលដដែល ដើម្បីធានាការ Scan ចូលប្រព័ន្ធ)
+            // =========================================================================
+            let dateParts = parseDateForQR(s.dob);
+            let isUpper = String(s.class_name).includes('11') || String(s.class_name).includes('12');
+            let pType = isUpper ? 'b' : 's';
+            let qrObj = { id: s.student_id, dd: dateParts.dd, mm: dateParts.mm, yyyy: dateParts.yyyy, p: pType };
+            let base64Data = btoa(JSON.stringify(qrObj));
+            let qrFinalData = "https://www.kp-tralach.org/student.html?qr=" + base64Data; 
+            let qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrFinalData)}`;
+
+            // =========================================================================
+            // DISPLAY LOGIC (បម្លែងលេខទាំងអស់ទៅជាលេខខ្មែរ សម្រាប់បង្ហាញលើកាតប៉ុណ្ណោះ)
+            // =========================================================================
+            let dispId = toKhmerNum(s.student_id || '---');
+            let dispClass = toKhmerNum(s.class_name || '---');
+            let dispYear = toKhmerNum(s.academic_year || '២០២៥-២០២៦');
+            let dispPob = toKhmerNum(s.pob || 'មិនមានទិន្នន័យ');
+            let dispAddress = toKhmerNum(s.address || 'មិនមានទិន្នន័យ');
+            
+            // បម្លែងថ្ងៃខែឆ្នាំកំណើតទៅជាទម្រង់ខ្មែរ (ឧ. ១៧ មិថុនា ១៩៩១)
+            let dobKh = formatKhmerDOB(s.dob);
+            
+            // ក្នុងករណីឈ្មោះឪពុកម្តាយមានជាប់អាយុ ឬលេខ
+            let dispFather = toKhmerNum(s.father_name || '---');
+            let dispFatherJob = s.father_job ? toKhmerNum(`(${s.father_job})`) : '';
+            let dispMother = toKhmerNum(s.mother_name || '---');
+            let dispMotherJob = s.mother_job ? toKhmerNum(`(${s.mother_job})`) : '';
+
+
+            let photoHtml = s.photo_url 
+                ? `<img src="${getDriveImgUrl(s.photo_url)}" class="absolute inset-0 w-full h-full object-cover">` 
+                : `<svg class="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>`;
+
+            // Logo សាលា
+            let logoUrl = mySchoolData.school_logo_url ? getDriveImgUrl(mySchoolData.school_logo_url) : "https://cdn-icons-png.flaticon.com/512/8066/8066063.png";
+            let logoHtml = `<img src="${logoUrl}" class="w-full h-full object-contain">`;
+
+            let stampHtml = mySchoolData.school_stamp_url
+                ? `<img src="${getDriveImgUrl(mySchoolData.school_stamp_url)}" class="absolute h-[85px] opacity-85 mix-blend-multiply pointer-events-none" style="top:-35px;" onerror="this.style.display='none'">`
+                : ``;
+
+            return `
+            <div class="card-pair">
+                <!-- ================= មុខកាត ================= -->
+                <div class="card-scale-wrapper">
+                    <div class="card-content">
+                        <div class="absolute w-full h-full bg-white rounded-[20px] overflow-hidden">
+                            <div class="absolute top-0 w-full h-[200px] wave-bg rounded-b-[40%] z-0"></div>
+                            
+                            <!-- Logo Watermark មុខកាត -->
+                            <div class="watermark flex items-center justify-center">
+                                ${logoHtml}
+                            </div>
+
+                            <div class="relative z-10 flex flex-col h-full">
+                                <div class="flex flex-col items-center pt-3 px-2 text-white w-full">
+                                    <div class="text-center mb-2 w-full drop-shadow-md">
+                                        <p class="text-[11px] font-moul text-yellow-300 tracking-wide mb-0.5">មន្ទីរអប់រំ យុវជន និងកីឡា</p>
+                                        <p class="text-[10px] font-moul text-yellow-300 tracking-wide">ខេត្តកំពង់ឆ្នាំង</p>
+                                    </div>
+                                    <div class="flex items-center justify-center gap-2 w-full pl-1">
+                                        <!-- Logo -->
+                                        <div class="w-12 h-12 flex items-center justify-center shrink-0">
+                                            ${logoHtml}
+                                        </div>
+                                        <div class="flex flex-col items-center text-center">
+                                            <h2 class="text-[10.5px] font-moul tracking-wider drop-shadow-md leading-tight">វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច</h2>
+                                            <h3 class="text-[6px] font-bold uppercase tracking-widest leading-tight mt-1 text-blue-100 drop-shadow-md">HUN SEN KAMPONG TRALACH HIGH SCHOOL</h3>
+                                            <p class="text-[7px] font-kantumruy text-yellow-300 mt-1 italic drop-shadow-md">"វិន័យ ចំណេះដឹង សីលធម៌ នវានុវត្តន៍"</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-3">
+                                    <span class="bg-yellow-400 text-blue-900 font-moul text-[12px] px-5 py-1 rounded-full shadow-sm">ប័ណ្ណសម្គាល់សិស្ស</span>
+                                </div>
+
+                                <div class="flex justify-center mt-3">
+                                    <div class="w-[90px] h-[120px] bg-gray-100 rounded-xl border-[3px] border-white shadow-lg overflow-hidden relative flex flex-col items-center justify-center z-20">
+                                        ${photoHtml}
+                                    </div>
+                                </div>
+
+                                <!-- ព័ត៌មាន (លេខត្រូវបានបម្លែងជាខ្មែរ) -->
+                                <div class="px-5 mt-3 flex-grow relative font-kantumruy text-[11px] text-gray-800 flex flex-col">
+                                    <div class="flex flex-col gap-[3px] w-[75%]">
+                                        <div class="flex"><span class="w-20 font-bold text-blue-900">អត្តលេខ</span><span class="font-bold text-red-600">៖ ${dispId}</span></div>
+                                        <div class="flex"><span class="w-20 font-bold text-blue-900">ឈ្មោះសិស្ស</span><span class="font-moul text-[11px] text-blue-800">៖ ${s.student_name || '---'}</span></div>
+                                        <div class="flex"><span class="w-20 font-bold text-blue-900">ភេទ</span><span>៖ ${s.gender || '---'}</span></div>
+                                        <div class="flex"><span class="w-20 font-bold text-blue-900">ថ្ងៃកំណើត</span><span>៖ ${dobKh}</span></div>
+                                        <div class="flex"><span class="w-20 font-bold text-blue-900">ថ្នាក់ទី</span><span>៖ <strong class="text-blue-700">${dispClass}</strong></span></div>
+                                        <div class="flex"><span class="w-20 font-bold text-blue-900">ឆ្នាំសិក្សា</span><span>៖ ${dispYear}</span></div>
+                                    </div>
+                                    
+                                    <!-- ថ្ងៃចេញកាត & សុពលភាព ទម្លាក់មកក្រោម (mt-auto) -->
+                                    <div class="mt-auto mb-3 flex flex-col gap-[3px] w-[75%]">
+                                        <div class="flex"><span class="w-20 font-bold text-blue-900">ថ្ងៃចេញកាត</span><span>៖ ${issueDateKh}</span></div>
+                                        <div class="flex"><span class="w-20 font-bold text-blue-900">ផុតសុពលភាព</span><span class="font-bold text-red-600">៖ ${expiryDateKh}</span></div>
+                                    </div>
+                                    
+                                    <!-- QR Code (រក្សាទុកតម្លៃ Base64 ដើម) -->
+                                    <div class="absolute bottom-4 right-5 w-[70px] h-[70px] bg-white p-1 rounded-lg shadow-md border border-gray-200">
+                                        <img src="${qrImgUrl}" alt="QR" class="w-full h-full rounded-md object-contain">
+                                    </div>
+                                </div>
+                                <div class="h-3 w-full bg-blue-600 rounded-b-[20px]"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= ក្រោយកាត ================= -->
+                <div class="card-scale-wrapper">
+                    <div class="card-content">
+                        <div class="absolute w-full h-full bg-white rounded-[20px] overflow-hidden flex flex-col">
+                            
+                            <div class="w-full h-12 wave-bg flex items-center justify-center shrink-0 z-10 relative">
+                                <h2 class="font-moul text-white text-[14px] tracking-wide">ព័ត៌មានលម្អិតបន្ថែម</h2>
+                            </div>
+
+                            <!-- Logo Watermark ក្រោយកាត -->
+                            <div class="watermark flex items-center justify-center">
+                                ${logoHtml}
+                            </div>
+
+                            <div class="p-4 flex flex-col h-full font-kantumruy text-[12px] text-gray-800 relative z-10">
+                                <div class="space-y-2.5">
+                                    <div>
+                                        <span class="font-bold text-blue-900 flex items-center gap-1">📍 ទីកន្លែងកំណើត៖</span>
+                                        <p class="pl-4 text-gray-600 leading-snug border-l-2 border-blue-200 ml-2 mt-0.5">${dispPob}</p>
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-blue-900 flex items-center gap-1">👪 ព័ត៌មានមាតាបិតា៖</span>
+                                        <div class="pl-4 border-l-2 border-blue-200 ml-2 mt-0.5 space-y-0.5">
+                                            <div class="flex"><span class="w-16 text-gray-700">ឪពុកឈ្មោះ</span>៖ ${dispFather} <span class="ml-1 text-gray-500">${dispFatherJob}</span></div>
+                                            <div class="flex"><span class="w-16 text-gray-700">ម្ដាយឈ្មោះ</span>៖ ${dispMother} <span class="ml-1 text-gray-500">${dispMotherJob}</span></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-blue-900 flex items-center gap-1">🏠 ទីលំនៅបច្ចុប្បន្ន៖</span>
+                                        <p class="pl-4 text-gray-600 leading-snug border-l-2 border-blue-200 ml-2 mt-0.5">${dispAddress}</p>
+                                    </div>
+                                </div>
+
+                                <!-- កន្លែងបង្ហាញកាលបរិច្ឆេទ ២ជួរ និងត្រានាយក -->
+                                <div class="mt-auto flex flex-col items-center text-[11px] font-battambang relative">
+                                    <p class="text-gray-800 relative z-0 leading-tight">${backLocationVal}</p>
+                                    <p class="text-gray-800 relative z-0 leading-tight">${backDateVal}</p>
+                                    <p class="font-moul text-[12px] mt-1 text-blue-900 relative z-0">នាយកសាលា</p>
+                                    
+                                    <div class="relative w-full flex justify-center h-[50px] mt-1">
+                                        <div class="absolute z-10 left-1/2 -translate-x-1/2 w-full flex justify-center">
+                                            ${stampHtml}
+                                        </div>
+                                        <div class="absolute z-20 left-1/2 -translate-x-1/4 top-5 pointer-events-none">
+                                            <span class="font-moul text-[11px] text-blue-900" style="text-shadow: 1px 1px 0px white, -1px -1px 0px white;">
+                                                ${mySchoolData.principal_name || ''}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- អាសយដ្ឋានសាលានៅបាតកាត -->
+                            <div class="bg-blue-600 text-white text-center py-2.5 px-2 w-full mt-auto rounded-b-[20px] shrink-0 z-20 relative">
+                                <p class="font-battambang font-bold text-[10px] leading-tight drop-shadow-sm">អាសយដ្ឋានសាលារៀន៖ ភូមិសាលាលេខ៥ ឃុំអូរឫស្សី ស្រុកកំពង់ត្រឡាច ខេត្តកំពង់ឆ្នាំង</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+    </script>
+</body>
+</html>
