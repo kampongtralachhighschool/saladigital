@@ -144,7 +144,6 @@
                     </button>
                 </div>
 
-                <!-- 🌟 អាប់ដេតប្រអប់ ថ្ងៃ/ខែ/ឆ្នាំកំណើត (Dropdowns) 🌟 -->
                 <div class="md:col-span-3">
                     <label class="text-[11px] font-black text-slate-500 mb-2 block uppercase tracking-wider ml-1">ថ្ងៃខែឆ្នាំកំណើត</label>
                     <div class="flex gap-1 sm:gap-2">
@@ -242,24 +241,54 @@
         
         let mySchoolData = { poe_name: "មន្ទីរអប់រំ យុវជន និងកីឡា", doe_name: "ការិយាល័យអប់រំ យុវជន និងកីឡា", school_name: "វិទ្យាល័យ", principal_name: "នាយកសាលា", school_logo_url: "", school_stamp_url: "" };
         let currentCaptchaAnswer = 0;
+        let isAutoScan = false; // អញ្ញាតថ្មីសម្រាប់សម្គាល់ការ Scan QR
 
         document.addEventListener('DOMContentLoaded', () => {
             generateCaptcha(); 
-            initDateDropdowns(); // 🌟 បង្កើតជម្រើសថ្ងៃខែឆ្នាំ
+            initDateDropdowns();
 
             const input = document.getElementById("searchInput");
             const capInput = document.getElementById("captchaInput");
             if(input) input.addEventListener("keypress", e => { if (e.key === "Enter") { document.getElementById("dobDay").focus(); }});
             if(capInput) capInput.addEventListener("keypress", e => { if (e.key === "Enter") { e.preventDefault(); executeSearch(); }});
             
+            // ចាប់យក QR Data ពី URL (បើមាន)
+            const urlParams = new URLSearchParams(window.location.search);
+            let qrData = urlParams.get('qr');
+
+            if (qrData) {
+                try {
+                    const decodedString = atob(qrData); // បំប្លែង Base64 មក JSON
+                    const data = JSON.parse(decodedString);
+
+                    if(data.id && data.dd && data.mm && data.yyyy) {
+                        // បំពេញ Form អូតូ
+                        document.getElementById('searchInput').value = data.id;
+                        document.getElementById('dobDay').value = data.dd;
+                        document.getElementById('dobMonth').value = data.mm;
+                        document.getElementById('dobYear').value = data.yyyy;
+
+                        isAutoScan = true; // អនុញ្ញាតឲ្យរំលង Captcha
+                        showLoading();
+
+                        // រង់ចាំទាញទិន្នន័យសាលារួច សឹមដំណើរការស្វែងរក
+                        fetchInitialData().then(() => {
+                            setTimeout(() => executeSearch(), 300);
+                        });
+                        return; // មិនឲ្យកូដខាងក្រោមដើរ
+                    }
+                } catch (e) {
+                    console.error("កំហុសក្នុងការអានទិន្នន័យ QR", e);
+                }
+            }
+
+            // បើគ្មាន QR ទេ ដំណើរការធម្មតា
             fetchInitialData().then(() => {
-                const urlParams = new URLSearchParams(window.location.search);
                 let sid = urlParams.get('id') || localStorage.getItem('kpt_last_search_id');
                 if (sid) { document.getElementById('searchInput').value = sid; }
             });
         });
 
-        // 🌟 មុខងារបញ្ចូលលេខថ្ងៃខែឆ្នាំ ចូលទៅក្នុង Dropdown
         function initDateDropdowns() {
             const daySel = document.getElementById('dobDay');
             for(let i=1; i<=31; i++) { let v = i<10 ? '0'+i : ''+i; daySel.innerHTML += `<option value="${v}">${v}</option>`; }
@@ -385,7 +414,31 @@
 
         function toggleScanner() { const container = document.getElementById('qr-reader-container'); if (container.classList.contains('hidden')) { container.classList.remove('hidden'); html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: {width: 250, height: 250} }, false); html5QrcodeScanner.render(onScanSuccess, onScanFailure); } else { stopScanner(); } }
         function stopScanner() { if (html5QrcodeScanner) { html5QrcodeScanner.clear(); document.getElementById('qr-reader-container').classList.add('hidden'); } }
-        function onScanSuccess(decodedText) { document.getElementById('searchInput').value = decodedText; stopScanner(); }
+        
+        // កែប្រែអនុគមន៍ Scan កាមេរ៉ាខាងក្នុង App ឲ្យស្គាល់កូដ Base64
+        function onScanSuccess(decodedText) { 
+            try {
+                let payload = decodedText.includes('?qr=') ? decodedText.split('?qr=')[1] : decodedText;
+                const data = JSON.parse(atob(payload));
+
+                if(data.id && data.dd && data.mm && data.yyyy) {
+                    document.getElementById('searchInput').value = data.id;
+                    document.getElementById('dobDay').value = data.dd;
+                    document.getElementById('dobMonth').value = data.mm;
+                    document.getElementById('dobYear').value = data.yyyy;
+
+                    isAutoScan = true;
+                    stopScanner();
+                    executeSearch();
+                } else {
+                    throw new Error("Invalid format");
+                }
+            } catch(e) {
+                // បើស្កេនប៉ះអត្តលេខធម្មតា
+                document.getElementById('searchInput').value = decodedText;
+                stopScanner();
+            }
+        }
         function onScanFailure(error) { }
 
         async function executeSearch() {
@@ -401,11 +454,15 @@
             if(!q_id) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខសិស្ស!', 'warning');
             if(!dd || !mm || !yyyy) return Swal.fire('បញ្ជាក់', 'សូមជ្រើសរើស ថ្ងៃ ខែ ឆ្នាំ កំណើតឲ្យបានត្រឹមត្រូវ!', 'warning');
             
-            if(!q_captcha || parseInt(q_captcha) !== currentCaptchaAnswer) {
-                generateCaptcha(); 
-                document.getElementById('captchaInput').value = '';
-                return Swal.fire('ខុសហើយ!', 'ចម្លើយផ្ទៀងផ្ទាត់គណិតវិទ្យាមិនត្រឹមត្រូវទេ! សូមគណនាម្តងទៀត។', 'error');
+            // រំលងការគិតលេខ Captcha បើស្កេនតាមរយៈ QR
+            if (!isAutoScan) {
+                if(!q_captcha || parseInt(q_captcha) !== currentCaptchaAnswer) {
+                    generateCaptcha(); 
+                    document.getElementById('captchaInput').value = '';
+                    return Swal.fire('ខុសហើយ!', 'ចម្លើយផ្ទៀងផ្ទាត់គណិតវិទ្យាមិនត្រឹមត្រូវទេ! សូមគណនាម្តងទៀត។', 'error');
+                }
             }
+            isAutoScan = false; // Reset សម្រាប់ឲ្យគាត់ស្វែងរកលើកក្រោយដោយដៃវិញ
 
             window.speechSynthesis.cancel(); 
             localStorage.setItem('kpt_last_search_id', q_id);
@@ -417,18 +474,16 @@
             let pCol = period.includes("ប្រចាំឆមាស") ? "semester_name" : (period === "ប្រចាំឆ្នាំ" ? "academic_year" : "month_name");
             let reqPeriod = period === "ប្រចាំឆ្នាំ" ? academicYear : period; 
 
-            // 🌟 បំប្លែងទម្រង់ថ្ងៃខែឲ្យគ្របដណ្តប់គ្រប់ទម្រង់ក្នុង Excel (មាន/អត់ លេខសូន្យ)
-            let d_noZero = parseInt(dd).toString(); // លុបសូន្យចេញបើមាន
+            let d_noZero = parseInt(dd).toString(); 
             let m_noZero = parseInt(mm).toString();
 
-            let f1 = `${yyyy}-${mm}-${dd}`; // 2009-03-05
-            let f2 = `${dd}/${mm}/${yyyy}`; // 05/03/2009
-            let f3 = `${d_noZero}/${m_noZero}/${yyyy}`; // 5/3/2009
-            let f4 = `${dd}-${mm}-${yyyy}`; // 05-03-2009
-            let f5 = `${d_noZero}-${m_noZero}-${yyyy}`; // 5-3-2009
+            let f1 = `${yyyy}-${mm}-${dd}`; 
+            let f2 = `${dd}/${mm}/${yyyy}`; 
+            let f3 = `${d_noZero}/${m_noZero}/${yyyy}`; 
+            let f4 = `${dd}-${mm}-${yyyy}`; 
+            let f5 = `${d_noZero}-${m_noZero}-${yyyy}`; 
 
             try {
-                // ស្វែងរកដោយសុវត្ថិភាព ផ្ទៀងផ្ទាត់គ្រប់ទម្រង់កាលបរិច្ឆេទ
                 let queryUrl = `${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&student_id=eq.${encodeURIComponent(q_id)}&or=(dob.eq.${encodeURIComponent(f1)},dob.eq.${encodeURIComponent(f2)},dob.eq.${encodeURIComponent(f3)},dob.eq.${encodeURIComponent(f4)},dob.eq.${encodeURIComponent(f5)})&limit=1`;
                 
                 let stuDataRes = await supaFetch(queryUrl);
@@ -445,13 +500,11 @@
                 let gConf = configMap[targetKey] || configMap[gradeNumOnly] || {};
                 let tInfo = teacherMap[targetKey] || teacherMap[gradeNumOnly] || {name:'មិនទាន់កំណត់', sign:''};
 
-                // ទាញពិន្ទុថ្នាក់ដោយសុវត្ថិភាព (លាក់ឈ្មោះ និង ថ្ងៃកំណើតអ្នកដទៃ)
                 let cols = "student_id,gender," + Object.values(dbMap).join(","); 
                 let classData = await supaFetch(`${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&grade=eq.${encodeURIComponent(dbS.grade)}&select=${cols}&limit=1000`);
                 let totalInClass = classData.length;
-                let femaleInClass = classData.filter(s => ['ស្រី', 'F', 'f', 'ស'].includes(String(s.gender).trim())).length;
+                let femaleInClass = classData.filter(s =>['ស្រី', 'F', 'f', 'ស'].includes(String(s.gender).trim())).length;
 
-                // ទាញទិន្នន័យសាលាសរុប (ទាញតែ អត្តលេខ និង ភេទ)
                 let allSchoolData = await supaFetchAll(`${table}?${pCol}=eq.${encodeURIComponent(reqPeriod)}&academic_year=eq.${encodeURIComponent(academicYear)}&select=student_id,gender`);
                 let uniqueSchoolStus = new Map();
                 allSchoolData.forEach(s => uniqueSchoolStus.set(String(s.student_id).trim(), s));
