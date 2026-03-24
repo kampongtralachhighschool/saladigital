@@ -13,7 +13,6 @@
         body { font-family: 'Battambang', sans-serif; background-color: #f0fdf4; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px; }
         .font-moul { font-family: 'Moul', serif; }
         .font-kantumruy { font-family: 'Kantumruy Pro', sans-serif; }
-        .wave-bg { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
         
         /* កំណត់ Watermark ឲ្យនៅចំកណ្តាល និងព្រាលៗ */
         .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.08; width: 65%; pointer-events: none; z-index: 0; }
@@ -30,13 +29,15 @@
             width: 54mm;
             height: 85.6mm;
             position: relative;
-            overflow: hidden;
             border-radius: 8px; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             background: white;
             border: 1px solid #d1d5db; 
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+            /* ការពារការរត់ចេញក្រៅពេល Save PDF */
+            overflow: hidden;
+            clip-path: inset(0 round 8px);
         }
 
         .card-content {
@@ -59,28 +60,35 @@
         }
 
         @media print {
-            @page { size: A4 landscape; margin: 10mm; }
-            body { background: white; margin: 0; }
+            /* កំណត់ Landscape និងបំបាត់គែម Margin ទាំងអស់ */
+            @page { size: A4 landscape; margin: 0mm; }
+            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
             
-            /* Group 3 students per A4 Page */
+            /* រៀបចំឲ្យចូល ៥គូ (សិស្ស ៥នាក់) ពេញមួយសន្លឹក A4 ផ្ដេក */
             .a4-page {
                 display: flex;
-                flex-direction: column;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
                 align-items: center;
-                gap: 5mm;
+                align-content: center;
+                gap: 4mm;
+                width: 297mm;
+                height: 210mm;
                 page-break-after: always;
-                padding-top: 5mm;
+                box-sizing: border-box;
+                padding: 0;
+                margin: 0;
             }
-            .a4-page:last-child { page-break-after: auto; }
             
             .card-pair {
                 display: flex;
-                gap: 2mm; /* Fold line gap between front and back */
+                flex-direction: column; /* តម្រៀបមុខ និងក្រោយជាជួរឈរ ដើម្បីដាក់បាន ៥ជួរ */
+                gap: 2mm; 
                 page-break-inside: avoid;
-                margin-bottom: 5mm;
             }
-            .card-scale-wrapper { box-shadow: none; border: 1px dashed #9ca3af; } /* Dashed for cutting guide */
+            .card-scale-wrapper { box-shadow: none; border: 1px dashed #9ca3af; } /* Dashed សម្រាប់ងាយស្រួលកាត់ */
         }
     </style>
 </head>
@@ -105,7 +113,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">ទីកន្លែងធ្វើកាត (ក្រោយ)</label>
-                    <input type="text" id="input-back-location" value="កំពង់ត្រឡាច," class="w-full py-2 px-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-500 outline-none shadow-sm">
+                    <input type="text" id="input-back-location" value="បញ្ចូលកាលបរិច្ឆេទ" class="w-full py-2 px-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-500 outline-none shadow-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">ថ្ងៃខែឆ្នាំ (ក្រោយ)</label>
@@ -181,7 +189,7 @@
         // មុខងារបំប្លែងគ្រប់លេខអង់គ្លេសទាំងអស់ ទៅជាលេខខ្មែរ
         const toKhmerNum = (str) => {
             if (str === null || str === undefined) return '';
-            const khmerNums = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
+            const khmerNums =['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
             return String(str).replace(/[0-9]/g, match => khmerNums[match]);
         };
 
@@ -198,7 +206,7 @@
             document.getElementById('input-expiry-date').value = nextYear.toISOString().split('T')[0];
 
             // បញ្ចូលថ្ងៃខែខ្មែរសម្រាប់ខ្នងកាតស្វ័យប្រវត្តិ
-            let khmerMonths = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+            let khmerMonths =["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
             let dayKh = toKhmerNum(String(today.getDate()).padStart(2, '0'));
             let yearKh = toKhmerNum(String(today.getFullYear()));
             document.getElementById('input-back-date').value = `ថ្ងៃទី ${dayKh} ខែ ${khmerMonths[today.getMonth()]} ឆ្នាំ ${yearKh}`;
@@ -244,7 +252,7 @@
                 let gradeRes = await fetch(`${SUPABASE_URL}/rest/v1/student_profile?select=class_name`, { headers });
                 let gradeData = await gradeRes.json();
                 
-                let uniqueGrades = [...new Set(gradeData.map(item => item.class_name))].filter(Boolean).sort();
+                let uniqueGrades =[...new Set(gradeData.map(item => item.class_name))].filter(Boolean).sort();
                 
                 let gradeContainer = document.getElementById('gradeListContainer');
                 if(uniqueGrades.length > 0) {
@@ -295,7 +303,7 @@
         function formatKhmerDOB(dobString) {
             let { dd, mm, yyyy } = parseDateForQR(dobString);
             if (!dd || !mm || !yyyy) return toKhmerNum(dobString) || '---';
-            let khmerMonths = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+            let khmerMonths =["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
             let monthIndex = parseInt(mm, 10) - 1;
             let monthStr = khmerMonths[monthIndex] || mm;
             return `${toKhmerNum(dd)} ${monthStr} ${toKhmerNum(yyyy)}`;
@@ -347,7 +355,8 @@
         function renderCardsToPrintArea(students) {
             let container = document.getElementById('printArea');
             let html = '';
-            const STUDENTS_PER_PAGE = 3; 
+            // ដាក់សិស្ស ៥នាក់ (១០កាត) ក្នុងមួយសន្លឹក A4 Landscape អោយអស់គែមក្រដាស
+            const STUDENTS_PER_PAGE = 5; 
 
             // ទាញយកថ្ងៃខែពី Input ទាំងមុខ និងក្រោយ
             let issueVal = document.getElementById('input-issue-date').value;
@@ -407,8 +416,9 @@
             let logoUrl = mySchoolData.school_logo_url ? getDriveImgUrl(mySchoolData.school_logo_url) : "https://cdn-icons-png.flaticon.com/512/8066/8066063.png";
             let logoHtml = `<img src="${logoUrl}" class="w-full h-full object-contain">`;
 
+            // ទំហំត្រាបង្រួមចុះ 1.3 ដង មកត្រឹម 135px (-55px ដើម្បីតម្រឹមកណ្តាលជាមួយនាយក)
             let stampHtml = mySchoolData.school_stamp_url
-                ? `<img src="${getDriveImgUrl(mySchoolData.school_stamp_url)}" class="absolute h-[170px] opacity-85 mix-blend-multiply pointer-events-none" style="top:-75px;" onerror="this.style.display='none'">`
+                ? `<img src="${getDriveImgUrl(mySchoolData.school_stamp_url)}" class="absolute h-[135px] w-auto object-contain opacity-85 mix-blend-multiply pointer-events-none" style="top:-55px;" onerror="this.style.display='none'">`
                 : ``;
 
             return `
@@ -416,21 +426,25 @@
                 <!-- ================= មុខកាត ================= -->
                 <div class="card-scale-wrapper">
                     <div class="card-content">
-                        <div class="absolute w-full h-full bg-white rounded-[20px] overflow-hidden">
-                            <div class="absolute top-0 w-full h-[200px] wave-bg rounded-b-[40%] z-0"></div>
+                        <div class="absolute w-full h-full bg-white rounded-[20px] overflow-hidden flex flex-col z-0">
                             
+                            <!-- ផ្ទៃក្រោយក្បាច់ទី១ ព្រាលៗ (Front Background) -->
+                            <div class="absolute inset-0 z-0 pointer-events-none rounded-[20px]" style="background-image: url('https://i.ibb.co/vCqbKLvn/pngtree-thai-retro-pattern-exotic-border-luxurious-gold-element-khmer-red-curtain-png-image-6641285.png'); background-size: cover; background-position: center; opacity: 0.15;"></div>
+
+                            <!-- រូបក្បាលលើទី១ (Header - SVG Base64) - បង្រួមក្រឡាមកត្រឹម 30px និងមានពណ៌ព្រាលៗពីលើ -->
+                            <div class="absolute top-0 w-full h-[200px] rounded-b-[40%] z-0" style="background-image: linear-gradient(to bottom, rgba(4, 20, 38, 0.2) 0%, rgba(2, 11, 20, 0.95) 100%), url('data:image/svg+xml;base64,CiAgICAgICAgPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDEwMCAxMDAiPgogICAgICAgICAgICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzAxNDM4ZSIvPgogICAgICAgICAgICAKICAgICAgICAgICAgPGcgZmlsbD0iIzBmMmM0ZCIgb3BhY2l0eT0iMC44Ij4KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgPCEtLSBGdW5jdGlvbiB0byBkcmF3IHRoZSBmbG93ZXIgbW90aWYgLS0+CiAgICAgICAgICAgICAgICA8ZGVmcz4KICAgICAgICAgICAgICAgICAgICA8ZyBpZD0iZmxvd2VyIj4KICAgICAgICAgICAgICAgICAgICAgICAgPCEtLSBDb25uZWN0aW5nIGRpYWdvbmFsIGdyaWQgbGluZXMgLS0+CiAgICAgICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0gLTUwIC01MCBMIDUwIDUwIE0gLTUwIDUwIEwgNTAgLTUwIiBzdHJva2U9IiMwZjJjNGQiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC4zIi8+CiAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICA8IS0tIE1haW4gNCBwZXRhbHMgLS0+CiAgICAgICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0gMCAtMzUgQyAxMCAtMTUsIDE1IC0xMCwgMzUgMCBDIDE1IDEwLCAxMCAxNSwgMCAzNSBDIC0xMCAxNSwgLTE1IDEwLCAtMzUgMCBDIC0xNSAtMTAsIC0xMCAtMTUsIDAgLTM1IFoiIC8+CiAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICA8IS0tIElubmVyIHN0YXIgY3V0b3V0IChiYWNrZ3JvdW5kIGNvbG9yKSB0byBjcmVhdGUgaG9sbG93IGVmZmVjdCAtLT4KICAgICAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTSAwIC0xNSBMIDQgLTQgTCAxNSAwIEwgNCA0IEwgMCAxNSBMIC00IDQgTCAtMTUgMCBMIC00IC00IFoiIGZpbGw9IiMwMTQzOGUiLz4KICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgIDwhLS0gQ2VudGVyIGRvdCAtLT4KICAgICAgICAgICAgICAgICAgICAgICAgPGNpcmNsZSBjeD0iMCIgY3k9IjAiIHI9IjIuNSIgLz4KICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgIDwhLS0gQ29ybmVyIHNtYWxsIGRlY29yYXRpdmUgZG90cyAtLT4KICAgICAgICAgICAgICAgICAgICAgICAgPGNpcmNsZSBjeD0iMCIgY3k9Ii00MiIgcj0iMS41IiAvPgogICAgICAgICAgICAgICAgICAgICAgICA8Y2lyY2xlIGN4PSI0MiIgY3k9IjAiIHI9IjEuNSIgLz4KICAgICAgICAgICAgICAgICAgICAgICAgPGNpcmNsZSBjeD0iMCIgY3k9IjQyIiByPSIxLjUiIC8+CiAgICAgICAgICAgICAgICAgICAgICAgIDxjaXJjbGUgY3g9Ii00MiIgY3k9IjAiIHI9IjEuNSIgLz4KICAgICAgICAgICAgICAgICAgICA8L2c+CiAgICAgICAgICAgICAgICA8L2RlZnM+CgogICAgICAgICAgICAgICAgPCEtLSBQbGFjZSBmbG93ZXJzIGluIGEgc3RhZ2dlcmVkIGdyaWQgZm9yIHNlYW1sZXNzIHJlcGVhdGluZyAtLT4KICAgICAgICAgICAgICAgIDx1c2UgaHJlZj0iI2Zsb3dlciIgeD0iNTAiIHk9IjUwIiAvPgogICAgICAgICAgICAgICAgPHVzZSBocmVmPSIjZmxvd2VyIiB4PSIwIiB5PSIwIiAvPgogICAgICAgICAgICAgICAgPHVzZSBocmVmPSIjZmxvd2VyIiB4PSIxMDAiIHk9IjAiIC8+CiAgICAgICAgICAgICAgICA8dXNlIGhyZWY9IiNmbG93ZXIiIHg9IjAiIHk9IjEwMCIgLz4KICAgICAgICAgICAgICAgIDx1c2UgaHJlZj0iI2Zsb3dlciIgeD0iMTAwIiB5PSIxMDAiIC8+CiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgPC9nPgogICAgICAgIDwvc3ZnPgogICAgICAgIA=='); background-size: 100% 100%, 30px 30px; background-position: center, center;"></div> 
                             <!-- Logo Watermark មុខកាត -->
-                            <div class="watermark flex items-center justify-center">
+                            <div class="watermark flex items-center justify-center z-0">
                                 ${logoHtml}
                             </div>
 
-                            <div class="relative z-10 flex flex-col h-full">
+                            <div class="relative z-10 flex flex-col flex-grow">
                                 <div class="flex flex-col items-center pt-3 px-2 text-white w-full">
                                     <div class="text-center mb-2 w-full drop-shadow-md">
-                                        <p class="text-[11px] font-moul text-yellow-300 tracking-wide mb-0.5">មន្ទីរអប់រំ យុវជន និងកីឡា</p>
-                                        <p class="text-[10px] font-moul text-yellow-300 tracking-wide">ខេត្តកំពង់ឆ្នាំង</p>
+                                        <p class="text-[13px] font-moul text-yellow-300 tracking-wide mb-0.5">មន្ទីរអប់រំ យុវជន និងកីឡា</p>
+                                        <p class="text-[12px] font-moul text-yellow-300 tracking-wide">ខេត្តកំពង់ឆ្នាំង</p>
                                     </div>
-                                    <div class="flex items-center justify-center gap-2 w-full pl-1">
+                                    <div class="flex items-center justify-center gap-2 w-full pl-1 mt-1">
                                         <!-- Logo -->
                                         <div class="w-12 h-12 flex items-center justify-center shrink-0">
                                             ${logoHtml}
@@ -455,7 +469,7 @@
 
                                 <!-- ព័ត៌មាន (លេខត្រូវបានបម្លែងជាខ្មែរ) -->
                                 <div class="px-5 mt-3 flex-grow relative font-kantumruy text-[11px] text-gray-800 flex flex-col">
-                                    <div class="flex flex-col gap-[3px] w-[75%]">
+                                    <div class="flex flex-col gap-[4px] w-[70%]">
                                         <div class="flex"><span class="w-20 font-bold text-blue-900">អត្តលេខ</span><span class="font-bold text-red-600">៖ ${dispId}</span></div>
                                         <div class="flex"><span class="w-20 font-bold text-blue-900">ឈ្មោះសិស្ស</span><span class="font-moul text-[11px] text-blue-800">៖ ${s.student_name || '---'}</span></div>
                                         <div class="flex"><span class="w-20 font-bold text-blue-900">ភេទ</span><span>៖ ${s.gender || '---'}</span></div>
@@ -464,19 +478,25 @@
                                         <div class="flex"><span class="w-20 font-bold text-blue-900">ឆ្នាំសិក្សា</span><span>៖ ${dispYear}</span></div>
                                     </div>
                                     
-                                    <!-- ថ្ងៃចេញកាត & សុពលភាព ទម្លាក់មកក្រោម (mt-auto) -->
-                                    <div class="mt-auto mb-3 flex flex-col gap-[3px] w-[75%]">
-                                        <div class="flex"><span class="w-20 font-bold text-blue-900">ថ្ងៃចេញកាត</span><span>៖ ${issueDateKh}</span></div>
-                                        <div class="flex"><span class="w-20 font-bold text-blue-900">ផុតសុពលភាព</span><span class="font-bold text-red-600">៖ ${expiryDateKh}</span></div>
-                                    </div>
-                                    
-                                    <!-- QR Code (រក្សាទុកតម្លៃ Base64 ដើម) -->
-                                    <div class="absolute bottom-4 right-5 w-[70px] h-[70px] bg-white p-1 rounded-lg shadow-md border border-gray-200">
+                                    <!-- QR Code រំកិលទៅខាងលើស្មើជួរឈ្មោះអត្តលេខ -->
+                                    <div class="absolute top-0 right-5 w-[75px] h-[75px] bg-white p-1 rounded-lg shadow-md border border-gray-200 z-20">
                                         <img src="${qrImgUrl}" alt="QR" class="w-full h-full rounded-md object-contain">
                                     </div>
                                 </div>
-                                <div class="h-3 w-full bg-blue-600 rounded-b-[20px]"></div>
                             </div>
+                            
+                            <!-- ក្រុងជើងទំព័រមុខកាត (Front Footer Background) -->
+                            <div class="h-[50px] w-full rounded-b-[20px] flex flex-row items-center justify-between px-6 shrink-0 z-20 shadow-inner mt-auto relative" style="background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.8)), url('https://i.ibb.co/FkwQ8npw/7d1574c69b70bc292ddb4e5e7e517d72.jpg') center/cover;">
+                                <div class="relative z-10 flex flex-col items-center justify-center font-kantumruy text-center">
+                                    <span class="text-[9px] text-blue-100 mb-0.5">ថ្ងៃចេញកាត</span>
+                                    <span class="text-[11px] font-bold text-white leading-none">${issueDateKh}</span>
+                                </div>
+                                <div class="relative z-10 flex flex-col items-center justify-center font-kantumruy text-center">
+                                    <span class="text-[9px] text-blue-100 mb-0.5">ផុតសុពលភាព</span>
+                                    <span class="text-[11px] font-bold text-yellow-300 leading-none">${expiryDateKh}</span>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -484,14 +504,18 @@
                 <!-- ================= ក្រោយកាត ================= -->
                 <div class="card-scale-wrapper">
                     <div class="card-content">
-                        <div class="absolute w-full h-full bg-white rounded-[20px] overflow-hidden flex flex-col">
+                        <div class="absolute w-full h-full bg-white rounded-[20px] overflow-hidden flex flex-col z-0">
                             
-                            <div class="w-full h-12 wave-bg flex items-center justify-center shrink-0 z-10 relative">
+                            <!-- ផ្ទៃក្រោយទី២ ព្រាលៗ (Back Background) -->
+                            <div class="absolute inset-0 z-0 pointer-events-none rounded-[20px]" style="background-image: url('https://i.ibb.co/vCqbKLvn/pngtree-thai-retro-pattern-exotic-border-luxurious-gold-element-khmer-red-curtain-png-image-6641285.png'); background-size: cover; background-position: center; opacity: 0.15;"></div>
+
+                            <!-- រូបក្បាលលើ (Header Back) -->
+                            <div class="w-full h-12 flex items-center justify-center shrink-0 z-10 relative rounded-t-[20px]" style="background-image: url('https://i.ibb.co/6k4tgq7/81c0bdca8146589d53be3b25277019dc.jpg'); background-size: cover; background-position: center;">
                                 <h2 class="font-moul text-white text-[14px] tracking-wide">ព័ត៌មានលម្អិតបន្ថែម</h2>
                             </div>
 
                             <!-- Logo Watermark ក្រោយកាត -->
-                            <div class="watermark flex items-center justify-center">
+                            <div class="watermark flex items-center justify-center z-0">
                                 ${logoHtml}
                             </div>
 
@@ -513,7 +537,7 @@
                                         <p class="pl-4 text-gray-600 leading-snug border-l-2 border-blue-200 ml-2 mt-0.5">${dispAddress}</p>
                                     </div>
                                     <!-- កូដសម្រាប់ប្រអប់បទបញ្ជាផ្ទៃក្នុង / លក្ខខណ្ឌប្រើប្រាស់ -->
-                                    <div class="mt-3.5 bg-blue-50/60 border border-blue-200/80 rounded-lg p-2.5 shadow-sm relative z-10">
+                                    <div class="mt-3 bg-blue-50/60 border border-blue-200/80 rounded-lg p-2 shadow-sm relative z-10">
                                         <h3 class="font-bold text-blue-900 text-[10px] mb-1.5 flex items-center gap-1">
                                             <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                                             លក្ខខណ្ឌប្រើប្រាស់ប័ណ្ណ
@@ -554,10 +578,13 @@
                                 </div>
                             </div>
                             
-                            <!-- អាសយដ្ឋានសាលានៅបាតកាត -->
-                            <div class="bg-blue-600 text-white text-center py-2.5 px-2 w-full mt-auto rounded-b-[20px] shrink-0 z-20 relative">
-                                <p class="font-battambang font-bold text-[10px] leading-tight drop-shadow-sm">🏠អាសយដ្ឋាន៖ ភូមិសាលាលេខ៥ ឃុំអូរឫស្សី ស្រុកកំពង់ត្រឡាច ខេត្តកំពង់ឆ្នាំង</p>
+                            <!-- អាសយដ្ឋានសាលានៅបាតកាត (Back Footer Background) -->
+                            <div class="h-[50px] w-full text-white rounded-b-[20px] flex items-center justify-center shrink-0 z-20 relative px-2 shadow-inner mt-auto" style="background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.8)), url('https://i.ibb.co/FkwQ8npw/7d1574c69b70bc292ddb4e5e7e517d72.jpg') center/cover;">
+                                <p class="relative z-10 font-battambang font-bold text-[10px] text-center drop-shadow-sm">
+                                    🏠 អាសយដ្ឋាន៖ ភូមិសាលាលេខ៥ ឃុំអូរឫស្សី ស្រុកកំពង់ត្រឡាច ខេត្តកំពង់ឆ្នាំង
+                                </p>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
