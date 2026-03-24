@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;900&family=Moul&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- បន្ថែម Library សម្រាប់ Scan QR -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
     
     <style>
         :root { --primary-blue: #1e40af; --khmer-red: #dc2626; }
@@ -50,7 +52,6 @@
         .bar-fill { height: 100%; border-radius: 3px; transition: width 1s; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
         .signatures-area { display: flex; justify-content: space-between; margin-top: 30px; width: 100%; padding: 0 10px;}
-        .sig-block { width: 45%; text-align: center; position: relative; min-height: 140px;}
         
         .stamp-main { 
             position: absolute; 
@@ -73,6 +74,8 @@
             pointer-events: none;
             z-index: 10;
         }
+
+        #qr-reader { border-radius: 12px; overflow: hidden; border: none !important; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); }
 
         @media print {
             @page { size: A4 portrait; margin: 0; }
@@ -102,17 +105,14 @@
             <p class="font-bold text-yellow-700 text-sm bg-yellow-50 inline-block px-4 py-1 rounded-full border border-yellow-200 mb-2">ប្រព័ន្ធវាយតម្លៃតាមស្តង់ដារបាក់ឌុប</p>
         </div>
 
-<!-- 🌟 ប៊ូតុងមុខងារ (ដាក់នៅខាងក្រៅ ស្រួលចុច) -->
+        <!-- 🌟 ប៊ូតុងមុខងារ -->
         <div class="flex flex-col sm:flex-row justify-center gap-4 mb-8 px-4">
-            
             <a href="calculator.html" target="_blank" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3.5 rounded-xl font-black text-[15px] shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">
                 🧮 សាកល្បងគណនាពិន្ទុគោលដៅ
             </a>
-            
             <button onclick="goToGeneralResults()" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-white text-blue-700 border-2 border-blue-600 px-8 py-3.5 rounded-xl font-black text-[15px] shadow-md hover:bg-blue-50 hover:-translate-y-0.5 transition-all">
                 👁️ មើលលទ្ធផលទូទៅ (១៥មុខ)
             </button>
-            
         </div>
 
         <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
@@ -133,6 +133,11 @@
                 <div class="md:col-span-5 relative">
                     <label class="text-xs font-black text-slate-500 mb-2 block uppercase tracking-wider ml-1">២. អត្តលេខ ឬ ឈ្មោះសិស្ស</label>
                     <input type="text" id="searchInput" class="w-full py-3.5 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-yellow-400 font-bold text-sm bg-white shadow-sm transition" placeholder="ឧ. 024025026 ឬ ហុន ម៉ុម">
+                    
+                    <!-- ប៊ូតុង Camera Scan កូដ QR -->
+                    <button onclick="toggleScanner()" class="absolute bottom-1 right-1 p-2.5 flex items-center bg-gray-100 hover:bg-yellow-100 text-yellow-600 rounded-lg transition border border-gray-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                    </button>
                 </div>
 
                 <div class="md:col-span-3">
@@ -141,15 +146,24 @@
                     </button>
                 </div>
             </div>
+
+            <!-- កន្លែងបង្ហាញកាមេរ៉ា -->
+            <div id="qr-reader-container" class="mt-4 hidden animate-fade-in">
+                <div class="flex justify-between items-center mb-2 px-2">
+                    <span class="font-bold text-sm text-yellow-800">📷 ដាក់កាមេរ៉ាចំកូដ QR / Barcode</span>
+                    <button onclick="stopScanner()" class="text-red-500 font-bold text-sm hover:text-red-700 bg-red-50 px-3 py-1 rounded-lg">បិទកាមេរ៉ា ✕</button>
+                </div>
+                <div id="qr-reader" class="w-full mx-auto border-2 border-yellow-200 rounded-xl"></div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Output Actions (បោះពុម្ព & លទ្ធផលទូទៅ) -->
+    <!-- Output Actions -->
     <div id="t3-actions" class="no-print mt-4 mb-6 hidden flex-col md:flex-row justify-center gap-4 max-w-4xl mx-auto px-4">
         <button onclick="window.print()" class="w-full md:w-1/2 bg-yellow-600 text-white py-3.5 rounded-xl font-bold shadow-md hover:-translate-y-1 transition flex justify-center items-center gap-2">
             🖨️ បោះពុម្ព (Print)
         </button>
-
     </div>
 
     <!-- Results Area -->
@@ -191,6 +205,10 @@
         const dbMap = { "ភាសាខ្មែរ":"khmer", "សីលធម៌ពលរដ្ឋ":"morality", "ប្រវត្តិវិទ្យា":"history", "ភូមិវិទ្យា":"geography", "គណិតវិទ្យា":"math", "រូបវិទ្យា":"physics", "គីមីវិទ្យា":"chemistry", "ជីវវិទ្យា":"biology", "ផែនដីវិទ្យា":"earth_science", "ភាសាអង់គ្លេស":"english" };
 
         let configMap = {}; let teacherMap = {};
+        
+        // អថេរសម្រាប់ Scanner និងកត់ចំណាំការ Scan អូតូ
+        let html5QrcodeScanner = null;
+        let isAutoScan = false;
 
         const cleanKey = (str) => {
             if(!str) return "";
@@ -230,8 +248,33 @@
                 });
             }
             
+            // 🌟 ចាប់យក QR Data ពី URL (បើមាន)
+            const urlParams = new URLSearchParams(window.location.search);
+            let qrData = urlParams.get('qr');
+
+            if (qrData) {
+                try {
+                    const decodedString = atob(qrData);
+                    const data = JSON.parse(decodedString);
+
+                    if(data.id) {
+                        document.getElementById('searchInput').value = data.id;
+                        isAutoScan = true;
+                        showLoading();
+                        
+                        // រង់ចាំទាញ Config សាលារួច សឹមដំណើរការស្វែងរក
+                        fetchInitialData().then(() => {
+                            setTimeout(() => executeSearch(), 300);
+                        });
+                        return; // មិនឲ្យដំណើរការកូដខាងក្រោម
+                    }
+                } catch (e) {
+                    console.error("កំហុសក្នុងការអានទិន្នន័យ QR", e);
+                }
+            }
+
+            // បើគ្មាន QR ដំណើរការធម្មតា
             fetchInitialData().then(() => {
-                const urlParams = new URLSearchParams(window.location.search);
                 let sid = urlParams.get('id') || localStorage.getItem('kpt_last_search_id');
                 let smonth = urlParams.get('month') || localStorage.getItem('kpt_last_search_month');
                 if (sid) { 
@@ -241,6 +284,46 @@
                 }
             });
         });
+
+        // 🌟 មុខងារ Scanner ថ្មី
+        function toggleScanner() { 
+            const container = document.getElementById('qr-reader-container'); 
+            if (container.classList.contains('hidden')) { 
+                container.classList.remove('hidden'); 
+                html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: {width: 250, height: 250} }, false); 
+                html5QrcodeScanner.render(onScanSuccess, (err) => {}); 
+            } else { 
+                stopScanner(); 
+            } 
+        }
+
+        function stopScanner() { 
+            if (html5QrcodeScanner) { 
+                html5QrcodeScanner.clear(); 
+                document.getElementById('qr-reader-container').classList.add('hidden'); 
+            } 
+        }
+
+        function onScanSuccess(decodedText) { 
+            try {
+                let payload = decodedText.includes('?qr=') ? decodedText.split('?qr=')[1] : decodedText;
+                const data = JSON.parse(atob(payload));
+
+                if(data.id) {
+                    document.getElementById('searchInput').value = data.id;
+                    isAutoScan = true;
+                    stopScanner();
+                    executeSearch();
+                } else {
+                    throw new Error("Invalid format");
+                }
+            } catch(e) {
+                // បើស្កេនប៉ះអត្តលេខធម្មតា
+                document.getElementById('searchInput').value = decodedText;
+                stopScanner();
+                executeSearch();
+            }
+        }
 
         async function supaFetch(endpoint) {
             const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, { headers });
@@ -268,10 +351,20 @@
             }
         }
 
+        // 🌟 កែប្រែមុខងារបញ្ជូនទៅទំព័រ student.html ឲ្យយក QR code ទៅជាមួយ
         function goToGeneralResults() {
             let id = document.getElementById('searchInput').value.trim();
             let month = document.getElementById('monthSelect').value;
-            window.location.href = `student.html?id=${id}&month=${month}`;
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            let qrData = urlParams.get('qr');
+            
+            // បើមានភ្ជាប់មកជាមួយកូដ QR ពីដំបូង បញ្ជូនវាទៅវិញ ដើម្បីឲ្យវាឆ្លង Captcha ងាយស្រួល
+            if(qrData) {
+                window.location.href = `student.html?qr=${qrData}&month=${month}`;
+            } else {
+                window.location.href = `student.html?id=${id}&month=${month}`;
+            }
         }
 
         function buildPrintHeader(title) {
@@ -324,6 +417,7 @@
             
             if(!q) return Swal.fire('បញ្ជាក់', 'សូមបញ្ចូលអត្តលេខ ឬឈ្មោះសិស្សជាមុនសិន!', 'warning');
             
+            isAutoScan = false; // Reset ក្រោយពេលស្វែងរករួចរាល់
             localStorage.setItem('kpt_last_search_id', q);
             localStorage.setItem('kpt_last_search_month', period);
             showLoading();
