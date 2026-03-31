@@ -16,7 +16,7 @@
 
     <div class="max-w-3xl w-full bg-white rounded-xl shadow-2xl overflow-hidden">
         
-        <!-- Header: បង្ហាញឈ្មោះពេល Login រួច -->
+        <!-- Header -->
         <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
             <h1 class="text-xl font-bold">តេស្តគណិតវិទ្យា (៤៥ ពិន្ទុ)</h1>
             <div id="user-info" class="hidden flex items-center bg-indigo-800 px-4 py-1 rounded-full border border-indigo-500">
@@ -43,15 +43,12 @@
                     <div class="grid grid-cols-3 gap-2">
                         <select id="dob-day" class="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                             <option value="">ថ្ងៃ</option>
-                            <!-- JS នឹងបង្កើត 1-31 -->
                         </select>
                         <select id="dob-month" class="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                             <option value="">ខែ</option>
-                            <!-- JS នឹងបង្កើត 1-12 -->
                         </select>
                         <select id="dob-year" class="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                             <option value="">ឆ្នាំ</option>
-                            <!-- JS នឹងបង្កើត 1990-2015 -->
                         </select>
                     </div>
                 </div>
@@ -66,10 +63,9 @@
             <!-- 2. Quiz Screen -->
             <div id="quiz-screen" class="hidden">
                 <div class="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <span class="text-sm font-bold text-gray-600 bg-white px-3 py-1 rounded border shadow-sm" id="question-progress">សំណួរទី 1/25</span>
-                    <div class="text-right">
-                        <span class="text-xs text-gray-500 block">ពិន្ទុបច្ចុប្បន្ន</span>
-                        <span class="text-lg font-bold text-indigo-600" id="score-display">0.00</span>
+                    <span class="text-sm font-bold text-gray-600 bg-white px-3 py-1 rounded border shadow-sm" id="question-progress">សំណួរទី 1/?</span>
+                    <div class="text-right flex items-center bg-red-50 px-3 py-1 rounded-full border border-red-200">
+                        <span class="text-sm font-bold text-red-600" id="timer-display">⏱️ កំពុងផ្ទុកម៉ោង...</span>
                     </div>
                 </div>
                 
@@ -79,9 +75,16 @@
                     <!-- ជម្រើសនឹងលោតនៅទីនេះ -->
                 </div>
 
-                <div class="mt-8 text-right border-t pt-4">
-                    <button id="next-btn" onclick="nextQuestion()" disabled class="bg-gray-300 text-gray-500 font-bold py-3 px-8 rounded-lg cursor-not-allowed transition duration-200">
+                <div class="mt-8 flex justify-between border-t pt-4">
+                    <button id="prev-btn" onclick="prevQuestion()" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg transition duration-200">
+                        ⬅️ ថយក្រោយ
+                    </button>
+                    <div class="flex-grow"></div>
+                    <button id="next-btn" onclick="nextQuestion()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-200">
                         បន្ទាប់ ➡️
+                    </button>
+                    <button id="submit-btn" onclick="confirmSubmit()" class="hidden bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-200">
+                        បញ្ចប់ការប្រឡង 🏁
                     </button>
                 </div>
             </div>
@@ -89,12 +92,27 @@
             <!-- 3. Result Screen -->
             <div id="result-screen" class="hidden text-center space-y-6">
                 <h2 class="text-3xl font-bold text-gray-800">លទ្ធផលរបស់អ្នក</h2>
-                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 inline-block w-full max-w-sm">
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 w-full mx-auto max-w-md">
                     <div class="text-6xl font-bold text-indigo-600 mb-2" id="final-score">0.00</div>
-                    <p class="text-gray-500 font-bold text-lg">/ 45.00 ពិន្ទុ</p>
-                    <div class="mt-4 flex justify-center space-x-4 text-sm">
-                        <span class="text-green-600 font-bold" id="correct-count">ត្រូវ: 0</span>
-                        <span class="text-red-600 font-bold" id="wrong-count">ខុស: 0</span>
+                    <p class="text-gray-500 font-bold text-lg" id="max-score-display">/ 45.00 ពិន្ទុ</p>
+                    
+                    <div class="mt-4 p-3 bg-indigo-100 rounded-lg border border-indigo-300 text-indigo-800">
+                        <h3 class="text-2xl font-bold" id="grade-display">និទ្ទេស: A (ល្អណាស់)</h3>
+                    </div>
+
+                    <div class="mt-6 flex justify-between space-x-2 text-sm bg-white p-4 rounded-lg shadow-sm border">
+                        <span class="text-green-600 font-bold flex flex-col items-center">
+                            <span class="text-2xl" id="correct-count">0</span>
+                            <span>ត្រឹមត្រូវ</span>
+                        </span>
+                        <span class="text-red-500 font-bold flex flex-col items-center">
+                            <span class="text-2xl" id="wrong-count">0</span>
+                            <span>ខុស</span>
+                        </span>
+                        <span class="text-yellow-600 font-bold flex flex-col items-center">
+                            <span class="text-2xl" id="skip-count">0</span>
+                            <span>មិនឆ្លើយ</span>
+                        </span>
                     </div>
                 </div>
                 
@@ -105,78 +123,107 @@
         </div>
     </div>
 
-    <script>
-        // === ដាក់ URL របស់ Google Apps Script ទីនេះ (ប្តូរវាពេល Deploy កូដ Google Script រួច) ===
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQkXudSEVtyp79fIq12WfNL9yDtqbdq0vzvJLtce4HyJzjcz_fPFSrUu3MVKPexYSRUA/exec'; 
+    <!-- Modal សម្រាប់បញ្ជាក់ការ Submit -->
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">តើអ្នកពិតជាចង់បញ្ចប់មែនទេ?</h3>
+            <p class="text-gray-600 mb-6" id="unanswered-warning">អ្នកនៅសល់សំណួរមិនទាន់ឆ្លើយ។</p>
+            <div class="flex space-x-3">
+                <button onclick="closeConfirmModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg transition duration-200">បន្តធ្វើតេស្ត</button>
+                <button onclick="calculateAndSubmit()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">បញ្ចប់ត្រឹមនេះ</button>
+            </div>
+        </div>
+    </div>
 
-        // === ការកំណត់ពិន្ទុ ===
-        const TOTAL_QUESTIONS = 25;
+    <script>
+        // === ដាក់ URL របស់ Google Apps Script ទីនេះ ===
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQy9lxcnHaabjsiXb_1b2ezlYSu0sMV3bqT_uhLycoJ3h8sjfHJ09nojVUH5xjyXf5yg/exec'; 
+
+        // === ការកំណត់ពិន្ទុទូទៅ ===
         const MAX_SCORE = 45;
-        const PTS_PER_CORRECT = MAX_SCORE / TOTAL_QUESTIONS; // 1.8 
-        const PENALTY_PCT = 0.0025; // 0.25%
-        const PTS_DEDUCT = MAX_SCORE * PENALTY_PCT; // 0.1125
+        
+        // === ទិន្នន័យសំណួរងាយស្រួល Copy & Paste ===
+        const rawQuestionsText = `
+        ១. ដោះស្រាយសមីការ x² - 5x + 6 = 0
+        * x = 2, x = 3
+        - x = -2, x = -3
+        - x = 1, x = 6
+        - x = -1, x = -6
+
+        ២. ដោះស្រាយសមីការ 2x² - 7x + 3 = 0
+        * x = 3, x = 1/2
+        - x = -3, x = -1/2
+        - x = 1, x = 3/2
+        - x = -1, x = -3/2
+
+        ៣. ដោះស្រាយសមីការ x² + 4x - 5 = 0
+        * x = 1, x = -5
+        - x = -1, x = 5
+        - x = 1, x = 5
+        - x = -1, x = -5
+        `; // លោកគ្រូអាច Paste សំណួរទាំង២៥ បញ្ចូលទីនេះបាន
+
+        // === បំប្លែង និង ច្របល់ជម្រើសសំណួរម្តងគត់តាំងពីដើម ===
+        function parseQuizText(text) {
+            const data = [];
+            const blocks = text.trim().split(/\n\s*\n/); 
+            for(let block of blocks) {
+                const lines = block.trim().split('\n').map(l => l.trim()).filter(l => l);
+                if(lines.length < 2) continue;
+                
+                const q = lines[0];
+                const options = [];
+                
+                for(let i=1; i<lines.length; i++) {
+                    let textLine = lines[i];
+                    let isCorrect = false;
+                    if(textLine.startsWith('*')) {
+                        isCorrect = true;
+                        textLine = textLine.substring(1).trim();
+                    } else if(textLine.startsWith('-')) {
+                        textLine = textLine.substring(1).trim();
+                    }
+                    options.push({t: textLine, c: isCorrect});
+                }
+                // ច្របល់ជម្រើសនៅទីនេះស្រាប់តែម្តង
+                let shuffledOptions = options.sort(() => Math.random() - 0.5);
+                data.push({q: q, options: shuffledOptions});
+            }
+            return data;
+        }
+
+        const quizData = parseQuizText(rawQuestionsText);
+        const TOTAL_QUESTIONS = quizData.length;
+        const PTS_PER_CORRECT = MAX_SCORE / TOTAL_QUESTIONS; 
+        const PENALTY_PTS = PTS_PER_CORRECT * 0.25; // ដក ២៥% បើខុស
 
         // === អថេរផ្ទុកទិន្នន័យ ===
         let currentStudent = { id: "", name: "" };
         let currentQuestionIndex = 0;
-        let currentScore = 0;
-        let correctAnswers = 0;
-        let wrongAnswers = 0;
-        let hasAnswered = false;
-        let quizDetails = [];
+        let userAnswers = new Array(TOTAL_QUESTIONS).fill(null); // ទុកផ្ទុកចម្លើយសិស្ស
         let deviceInfo = "";
-
-        // === ទិន្នន័យសំណួរទាំង ២៥ ===
-        const quizData = [
-            // I. សមីការដឺក្រេទី២
-            { q: "១. ដោះស្រាយសមីការ x² - 5x + 6 = 0", options: [{t: "x = 2, x = 3", c: true}, {t: "x = -2, x = -3", c: false}, {t: "x = 1, x = 6", c: false}, {t: "x = -1, x = -6", c: false}] },
-            { q: "២. ដោះស្រាយសមីការ 2x² - 7x + 3 = 0", options: [{t: "x = 3, x = 1/2", c: true}, {t: "x = -3, x = -1/2", c: false}, {t: "x = 1, x = 3/2", c: false}, {t: "x = -1, x = -3/2", c: false}] },
-            { q: "៣. ដោះស្រាយសមីការ x² + 4x - 5 = 0", options: [{t: "x = 1, x = -5", c: true}, {t: "x = -1, x = 5", c: false}, {t: "x = 1, x = 5", c: false}, {t: "x = -1, x = -5", c: false}] },
-            { q: "៤. ដោះស្រាយសមីការ 3x² - 10x + 8 = 0", options: [{t: "x = 2, x = 4/3", c: true}, {t: "x = -2, x = -4/3", c: false}, {t: "x = 4, x = 2/3", c: false}, {t: "គ្មានឫសពិត", c: false}] },
-            { q: "៥. ដោះស្រាយសមីការ x² - 2x - 8 = 0", options: [{t: "x = 4, x = -2", c: true}, {t: "x = -4, x = 2", c: false}, {t: "x = 2, x = 4", c: false}, {t: "x = -2, x = -4", c: false}] },
-            { q: "៦. ដោះស្រាយសមីការ -x² + 6x - 8 = 0", options: [{t: "x = 2, x = 4", c: true}, {t: "x = -2, x = -4", c: false}, {t: "x = 1, x = 8", c: false}, {t: "គ្មានឫសពិត", c: false}] },
-            { q: "៧. ដោះស្រាយសមីការ x² - 4x + 4 = 0", options: [{t: "x = 2", c: true}, {t: "x = -2", c: false}, {t: "x = 4", c: false}, {t: "គ្មានឫសពិត", c: false}] },
-            { q: "៨. ដោះស្រាយសមីការ 4x² - 12x + 9 = 0", options: [{t: "x = 3/2", c: true}, {t: "x = -3/2", c: false}, {t: "x = 2/3", c: false}, {t: "x = 3, x = 2", c: false}] },
-            { q: "៩. ដោះស្រាយសមីការ 9x² + 6x + 1 = 0", options: [{t: "x = -1/3", c: true}, {t: "x = 1/3", c: false}, {t: "x = 3", c: false}, {t: "x = -3", c: false}] },
-            { q: "១០. ដោះស្រាយសមីការ x² + 10x + 25 = 0", options: [{t: "x = -5", c: true}, {t: "x = 5", c: false}, {t: "x = 10", c: false}, {t: "x = 25", c: false}] },
-            { q: "១១. ដោះស្រាយសមីការ 16x² - 8x + 1 = 0", options: [{t: "x = 1/4", c: true}, {t: "x = -1/4", c: false}, {t: "x = 4", c: false}, {t: "x = -4", c: false}] },
-            { q: "១២. ដោះស្រាយសមីការ x² + x + 1 = 0", options: [{t: "គ្មានឫសពិត", c: true}, {t: "x = 1", c: false}, {t: "x = -1", c: false}, {t: "x = 0", c: false}] },
-            { q: "១៣. ដោះស្រាយសមីការ 2x² - 3x + 4 = 0", options: [{t: "គ្មានឫសពិត", c: true}, {t: "x = 1, x = 2", c: false}, {t: "x = -1, x = -2", c: false}, {t: "x = 3/2", c: false}] },
-            { q: "១៤. ដោះស្រាយសមីការ x² + 2x + 5 = 0", options: [{t: "គ្មានឫសពិត", c: true}, {t: "x = 1, x = 5", c: false}, {t: "x = -1, x = -5", c: false}, {t: "x = 5", c: false}] },
-            { q: "១៥. ដោះស្រាយសមីការ 3x² + x + 2 = 0", options: [{t: "គ្មានឫសពិត", c: true}, {t: "x = 1, x = 2/3", c: false}, {t: "x = -1, x = -2/3", c: false}, {t: "x = 2", c: false}] },
-            
-            // II. សមីការរង្វង់
-            { q: "១៦. រកកាំ r នៃរង្វង់ x² + y² = 16", options: [{t: "r = 4", c: true}, {t: "r = 16", c: false}, {t: "r = 8", c: false}, {t: "r = 2", c: false}] },
-            { q: "១៧. សមីការរង្វង់ផ្ចិត O(0,0), កាំ r = 5 គឺ៖", options: [{t: "x² + y² = 25", c: true}, {t: "x² + y² = 5", c: false}, {t: "(x-5)² + y² = 0", c: false}, {t: "x² + y² = 10", c: false}] },
-            { q: "១៨. សមីការរង្វង់ផ្ចិត I(2,-3), កាំ r = 4 គឺ៖", options: [{t: "(x-2)² + (y+3)² = 16", c: true}, {t: "(x+2)² + (y-3)² = 16", c: false}, {t: "(x-2)² + (y+3)² = 4", c: false}, {t: "x² + y² = 16", c: false}] },
-            { q: "១៩. រកផ្ចិត I និងកាំ r នៃរង្វង់ (x+1)² + (y-4)² = 9", options: [{t: "I(-1, 4), r = 3", c: true}, {t: "I(1, -4), r = 3", c: false}, {t: "I(-1, 4), r = 9", c: false}, {t: "I(1, -4), r = 9", c: false}] },
-            { q: "២០. រកផ្ចិត I និងកាំ r នៃ x² + y² - 4x + 6y - 12 = 0", options: [{t: "I(2, -3), r = 5", c: true}, {t: "I(-2, 3), r = 5", c: false}, {t: "I(2, -3), r = 25", c: false}, {t: "I(-2, 3), r = 25", c: false}] },
-            { q: "២១. រកផ្ចិត I និងកាំ r នៃ x² + y² + 2x - 8y + 8 = 0", options: [{t: "I(-1, 4), r = 3", c: true}, {t: "I(1, -4), r = 3", c: false}, {t: "I(-1, 4), r = 9", c: false}, {t: "I(1, -4), r = 9", c: false}] },
-            { q: "២២. រកផ្ចិត I និងកាំ r នៃ 2x² + 2y² - 8x + 12y + 2 = 0", options: [{t: "I(2, -3), r = 2√3", c: true}, {t: "I(-2, 3), r = 2√3", c: false}, {t: "I(2, -3), r = 12", c: false}, {t: "I(4, -6), r = 2√3", c: false}] },
-            { q: "២៣. សមីការរង្វង់មានអង្កត់ផ្ចិត AB, A(1,2) B(5,6) គឺ៖", options: [{t: "(x-3)² + (y-4)² = 8", c: true}, {t: "(x+3)² + (y+4)² = 8", c: false}, {t: "(x-3)² + (y-4)² = 16", c: false}, {t: "(x-4)² + (y-4)² = 8", c: false}] },
-            { q: "២៤. សមីការរង្វង់ផ្ចិត I(3,2) ប៉ះអ័ក្សអាប់ស៊ីស (Ox) គឺ៖", options: [{t: "(x-3)² + (y-2)² = 4", c: true}, {t: "(x-3)² + (y-2)² = 9", c: false}, {t: "(x+3)² + (y+2)² = 4", c: false}, {t: "(x-2)² + (y-3)² = 4", c: false}] },
-            { q: "២៥. សមីការរង្វង់កាត់ 3 ចំណុច A(0,0), B(4,0), C(0,6) គឺ៖", options: [{t: "(x-2)² + (y-3)² = 13", c: true}, {t: "(x-2)² + (y-3)² = 26", c: false}, {t: "(x+2)² + (y+3)² = 13", c: false}, {t: "x² + y² = 13", c: false}] }
-        ];
+        
+        // ម៉ោង
+        let timeRemaining = 0; // គិតជាវិនាទី
+        let timerInterval = null;
 
         // === Setup UI ពេលបើកដំបូង ===
         window.onload = () => {
-            // បង្កើតជម្រើសថ្ងៃ
+            document.getElementById('max-score-display').innerText = `/ ${MAX_SCORE.toFixed(2)} ពិន្ទុ`;
+
             let dayHtml = '<option value="">ថ្ងៃ</option>';
             for(let i=1; i<=31; i++) dayHtml += `<option value="${i}">${i}</option>`;
             document.getElementById('dob-day').innerHTML = dayHtml;
 
-            // បង្កើតជម្រើសខែ
             let monthHtml = '<option value="">ខែ</option>';
             for(let i=1; i<=12; i++) monthHtml += `<option value="${i}">${i}</option>`;
             document.getElementById('dob-month').innerHTML = monthHtml;
 
-            // បង្កើតជម្រើសឆ្នាំ (៣០ឆ្នាំចុះ)
             let yearHtml = '<option value="">ឆ្នាំ</option>';
             let currentYr = new Date().getFullYear();
             for(let i=currentYr-30; i<=currentYr-5; i++) yearHtml += `<option value="${i}">${i}</option>`;
             document.getElementById('dob-year').innerHTML = yearHtml;
 
-            // ប្រមូលព័ត៌មានឧបករណ៍ (ចាប់ Model ទូរស័ព្ទ / កុំព្យូទ័រ ដើម្បីការពារបន្លំ)
             deviceInfo = navigator.userAgent + " | " + window.innerWidth + "x" + window.innerHeight;
         };
 
@@ -191,36 +238,41 @@
 
             if(!id || !d || !m || !y) {
                 errorDiv.innerText = "សូមបំពេញព័ត៌មានឲ្យបានគ្រប់ជ្រុងជ្រោយ!";
-                errorDiv.classList.remove('hidden');
-                return;
+                errorDiv.classList.remove('hidden'); return;
             }
-
-            // ទម្រង់ថ្ងៃខែដែលនឹងបញ្ជូនទៅ Google Script (មិនមាន 0 មុខ)
-            const dob = `${parseInt(d)}/${parseInt(m)}/${parseInt(y)}`;
 
             btn.innerText = "កំពុងផ្ទៀងផ្ទាត់សិស្ស...";
             btn.disabled = true;
             errorDiv.classList.add('hidden');
 
-            // ផ្ញើទៅ Google Sheet ឲ្យឆែកមើល
+            // ផ្ញើទាំងលេខថ្ងៃខែឆ្នាំដាច់ពីគ្នា ដើម្បីឲ្យ backend ងាយស្រួលផ្ទៀងផ្ទាត់
+            const payload = { 
+                action: "login", 
+                id: id, 
+                dobParts: { d: parseInt(d), m: parseInt(m), y: parseInt(y) } 
+            };
+
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: "login", id: id, dob: dob })
+                body: JSON.stringify(payload)
             })
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    // បើត្រឹមត្រូវ អនុញ្ញាតឲ្យចូល
                     currentStudent.id = id;
                     currentStudent.name = data.name;
                     document.getElementById('display-name').innerText = data.name;
                     document.getElementById('user-info').classList.remove('hidden');
                     document.getElementById('login-screen').classList.add('hidden');
                     document.getElementById('quiz-screen').classList.remove('hidden');
+                    
+                    // ចាប់ផ្តើមម៉ោង (យកពី API បើអត់មានកំណត់យក 60 នាទី)
+                    let mins = data.timeLimit ? parseInt(data.timeLimit) : 60;
+                    startTimer(mins);
+                    
                     loadQuestion();
                 } else {
-                    // បើខុស
                     errorDiv.innerText = data.message;
                     errorDiv.classList.remove('hidden');
                     btn.innerText = "ផ្ទៀងផ្ទាត់ និងចាប់ផ្តើម";
@@ -235,13 +287,37 @@
             });
         }
 
+        // === មុខងារម៉ោង (Timer) ===
+        function startTimer(minutes) {
+            timeRemaining = minutes * 60;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    alert("អស់ម៉ោង! ប្រព័ន្ធនឹងបញ្ចប់ការប្រឡងរបស់អ្នកដោយស្វ័យប្រវត្តិ។");
+                    closeConfirmModal();
+                    calculateAndSubmit();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            let m = Math.floor(timeRemaining / 60);
+            let s = timeRemaining % 60;
+            let display = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = `⏱️ ${display}`;
+            
+            // ដូរពណ៌បើជិតអស់ម៉ោង (ក្រោម ៥នាទី)
+            if(timeRemaining < 300) {
+                document.getElementById('timer-display').classList.add('animate-pulse');
+            }
+        }
+
         // === មុខងារដំណើរការតេស្ត ===
         function loadQuestion() {
-            hasAnswered = false;
-            const btn = document.getElementById('next-btn');
-            btn.disabled = true;
-            btn.className = "bg-gray-300 text-gray-500 font-bold py-3 px-8 rounded-lg cursor-not-allowed transition duration-200";
-
             const qInfo = quizData[currentQuestionIndex];
             document.getElementById('question-text').innerText = qInfo.q;
             document.getElementById('question-progress').innerText = `សំណួរទី ${currentQuestionIndex + 1} / ${TOTAL_QUESTIONS}`;
@@ -249,85 +325,147 @@
             const optionsDiv = document.getElementById('options-container');
             optionsDiv.innerHTML = '';
             
-            // ច្របល់ចម្លើយ
-            let shuffledOptions = [...qInfo.options].sort(() => Math.random() - 0.5);
-
-            shuffledOptions.forEach((opt) => {
+            qInfo.options.forEach((opt, index) => {
                 const btnObj = document.createElement('button');
                 btnObj.innerHTML = `<span class="math-font">${opt.t}</span>`;
+                
+                // Style ធម្មតា
                 btnObj.className = 'w-full text-left p-4 border-2 border-gray-200 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 transition duration-200 font-medium text-gray-700 bg-white shadow-sm';
-                btnObj.onclick = () => selectAnswer(opt, btnObj, shuffledOptions);
+                
+                // បើសិនជាធ្លាប់ជ្រើសរើសហើយ ដាក់ពណ៌ចំណាំ
+                if(userAnswers[currentQuestionIndex] === index) {
+                    btnObj.classList.add('bg-indigo-100', 'border-indigo-500', 'text-indigo-800', 'ring-2', 'ring-indigo-300');
+                    btnObj.classList.remove('border-gray-200');
+                }
+
+                btnObj.onclick = () => selectAnswer(index, btnObj);
                 optionsDiv.appendChild(btnObj);
             });
+
+            // រៀបចំប៊ូតុង ថយក្រោយ / បន្ទាប់ / បញ្ចប់
+            document.getElementById('prev-btn').classList.toggle('hidden', currentQuestionIndex === 0);
+            
+            if (currentQuestionIndex === TOTAL_QUESTIONS - 1) {
+                document.getElementById('next-btn').classList.add('hidden');
+                document.getElementById('submit-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('next-btn').classList.remove('hidden');
+                document.getElementById('submit-btn').classList.add('hidden');
+            }
         }
 
-        function selectAnswer(selectedOpt, btnElement, allOpts) {
-            if (hasAnswered) return;
-            hasAnswered = true;
-
+        function selectAnswer(optIndex, btnElement) {
+            // កត់ត្រាចម្លើយចូល Array
+            userAnswers[currentQuestionIndex] = optIndex;
+            
+            // ដកពណ៌ចេញពីគ្រប់ប៊ូតុង
             const buttons = document.getElementById('options-container').children;
-            let isCorrect = selectedOpt.c;
-
-            // ប្តូរពណ៌ពេលចុច
             for (let i = 0; i < buttons.length; i++) {
-                buttons[i].classList.remove('hover:border-indigo-400', 'hover:bg-indigo-50');
-                buttons[i].disabled = true;
-                if (allOpts[i].c) {
-                    buttons[i].classList.add('bg-green-100', 'border-green-500', 'text-green-800'); // បង្ហាញចម្លើយត្រូវ
-                }
+                buttons[i].classList.remove('bg-indigo-100', 'border-indigo-500', 'text-indigo-800', 'ring-2', 'ring-indigo-300');
+                buttons[i].classList.add('border-gray-200');
             }
 
-            if (!isCorrect) {
-                btnElement.classList.add('bg-red-100', 'border-red-500', 'text-red-800'); // បង្ហាញចម្លើយខុស
-            }
-
-            // គណនាពិន្ទុ (ត្រូវបូក ខុសដក)
-            if (isCorrect) {
-                currentScore += PTS_PER_CORRECT;
-                correctAnswers++;
-            } else {
-                currentScore -= PTS_DEDUCT;
-                wrongAnswers++;
-            }
-
-            document.getElementById('score-display').innerText = currentScore.toFixed(2);
-            quizDetails.push(`Q${currentQuestionIndex+1}: ${isCorrect ? 'ត្រូវ' : 'ខុស'}`);
-
-            // បើកប៊ូតុងទៅមុខ
-            const nextBtn = document.getElementById('next-btn');
-            nextBtn.disabled = false;
-            nextBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-200";
-            if (currentQuestionIndex === TOTAL_QUESTIONS - 1) {
-                nextBtn.innerText = "បញ្ចប់ការប្រឡង 🏁";
-            }
+            // ដាក់ពណ៌ឲ្យប៊ូតុងដែលទើបចុច
+            btnElement.classList.add('bg-indigo-100', 'border-indigo-500', 'text-indigo-800', 'ring-2', 'ring-indigo-300');
+            btnElement.classList.remove('border-gray-200');
         }
 
         function nextQuestion() {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < TOTAL_QUESTIONS) {
+            if (currentQuestionIndex < TOTAL_QUESTIONS - 1) {
+                currentQuestionIndex++;
                 loadQuestion();
-            } else {
-                showResultsAndSubmit();
             }
         }
 
-        function showResultsAndSubmit() {
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function confirmSubmit() {
+            // រាប់ចំនួនសំណួរមិនទាន់ឆ្លើយ
+            let unanswered = userAnswers.filter(ans => ans === null).length;
+            const warningText = document.getElementById('unanswered-warning');
+            
+            if (unanswered > 0) {
+                warningText.innerText = `អ្នកនៅសល់សំណួរចំនួន ${unanswered} ទៀតដែលមិនទាន់បានរើសចម្លើយ! (មិនរើសមិនបានពិន្ទុ តែមិនដកពិន្ទុ)`;
+                warningText.classList.add('text-red-600');
+            } else {
+                warningText.innerText = "អ្នកបានឆ្លើយគ្រប់សំណួរទាំងអស់ហើយ។ តើអ្នកចង់បញ្ចប់តេស្តមែនទេ?";
+                warningText.classList.remove('text-red-600');
+                warningText.classList.add('text-green-600');
+            }
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+        }
+
+        // === គណនាពិន្ទុ និង បញ្ជូនទិន្នន័យ ===
+        function calculateAndSubmit() {
+            closeConfirmModal();
+            clearInterval(timerInterval); // បញ្ឈប់ម៉ោង
+
+            let correctCount = 0;
+            let wrongCount = 0;
+            let skippedCount = 0;
+            let finalScore = 0;
+            let quizDetails = [];
+
+            // គណនា
+            userAnswers.forEach((ansIndex, qIndex) => {
+                if (ansIndex === null) {
+                    skippedCount++;
+                    quizDetails.push(`Q${qIndex+1}: Skip`);
+                } else {
+                    let isCorrect = quizData[qIndex].options[ansIndex].c;
+                    if (isCorrect) {
+                        correctCount++;
+                        finalScore += PTS_PER_CORRECT;
+                        quizDetails.push(`Q${qIndex+1}: Right`);
+                    } else {
+                        wrongCount++;
+                        finalScore -= PENALTY_PTS; // ដក២៥%
+                        quizDetails.push(`Q${qIndex+1}: Wrong`);
+                    }
+                }
+            });
+
+            // កុំឲ្យពិន្ទុធ្លាក់ក្រោមសូន្យ
+            if(finalScore < 0) finalScore = 0;
+
+            // គណនានិទ្ទេស (ភាគរយ)
+            let percentage = (finalScore / MAX_SCORE) * 100;
+            let grade = "";
+            if(percentage >= 90) grade = "A (ល្អណាស់)";
+            else if(percentage >= 80) grade = "B (ល្អ)";
+            else if(percentage >= 70) grade = "C (ល្អបង្គួរ)";
+            else if(percentage >= 60) grade = "D (មធ្យម)";
+            else if(percentage >= 50) grade = "E (ខ្សោយ)";
+            else grade = "F (ធ្លាក់)";
+
+            // បង្ហាញលទ្ធផលលើអេក្រង់
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
             
-            document.getElementById('final-score').innerText = currentScore.toFixed(2);
-            document.getElementById('correct-count').innerText = `ត្រូវ: ${correctAnswers}`;
-            document.getElementById('wrong-count').innerText = `ខុស: ${wrongAnswers}`;
+            document.getElementById('final-score').innerText = finalScore.toFixed(2);
+            document.getElementById('grade-display').innerText = `និទ្ទេស: ${grade}`;
+            document.getElementById('correct-count').innerText = correctCount;
+            document.getElementById('wrong-count').innerText = wrongCount;
+            document.getElementById('skip-count').innerText = skippedCount;
 
-            // ត្រៀមទិន្នន័យបញ្ជូនទៅ Google Sheets
+            // ផ្ញើទៅ Google Sheet
             const payload = {
                 action: "submit",
                 studentId: currentStudent.id,
                 studentName: currentStudent.name,
-                finalScore: currentScore.toFixed(2),
-                correctCount: correctAnswers,
-                wrongCount: wrongAnswers,
-                deviceInfo: deviceInfo, // ផ្ទុកព័ត៌មានទូរស័ព្ទ/កុំព្យូទ័រការពារបន្លំ
+                finalScore: finalScore.toFixed(2),
+                correctCount: correctCount,
+                wrongCount: wrongCount,
+                deviceInfo: deviceInfo,
                 details: quizDetails.join(', ')
             };
 
@@ -341,18 +479,14 @@
                 const statusDiv = document.getElementById('submission-status');
                 if(data.success) {
                     statusDiv.className = "text-sm font-bold p-4 rounded-lg mt-4 bg-green-100 text-green-800";
-                    statusDiv.innerHTML = "✅ លទ្ធផលរបស់អ្នកត្រូវបានរក្សាទុកដោយជោគជ័យទៅក្នុងប្រព័ន្ធ!";
-                } else {
-                    throw new Error("Backend error");
-                }
-            })
-            .catch(err => {
+                    statusDiv.innerHTML = "✅ លទ្ធផលរបស់អ្នកត្រូវបានរក្សាទុកជោគជ័យ។ អាចចាកចេញពីប្រព័ន្ធបាន។";
+                } else { throw new Error("Backend error"); }
+            }).catch(err => {
                 const statusDiv = document.getElementById('submission-status');
                 statusDiv.className = "text-sm font-bold p-4 rounded-lg mt-4 bg-red-100 text-red-800";
-                statusDiv.innerHTML = "❌ មានបញ្ហាក្នុងការរក្សាទុក។ សូមប្រាប់លោកគ្រូ ឬអ្នកគ្រប់គ្រង។";
+                statusDiv.innerHTML = "❌ មានបញ្ហាក្នុងការរក្សាទុក។ សូមប្រាប់លោកគ្រូ។";
             });
         }
     </script>
 </body>
 </html>
-```
