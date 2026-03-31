@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ប្រព័ន្ធបញ្ចូលពិន្ទុរបស់វិទ្យាល័យហ៊ុនសែនកំពង់ត្រឡាច</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- ភ្ជាប់ api.js ដើម្បីទាញយក Link -->
+  <script src="api.js"></script>
+  
+  <style>
+    body { background-color: #f0f2f5; font-family: 'Kantumruy Pro', sans-serif; }
+    #appSection { display: none; }
+    
+    .login-card { border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+    .login-header { background: linear-gradient(135deg, #0d6efd, #0dcaf0); padding: 30px; text-align: center; color: white; }
+    .school-logo { width: 100px; height: auto; margin-bottom: 15px; border-radius: 50%; padding: 5px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    
+    .score-input { width: 80px; text-align: center; font-weight: bold; text-transform: uppercase; background-color: #e9ecef;}
+    .score-input:focus { background-color: #fff; box-shadow: 0 0 5px rgba(13, 110, 253, 0.5); border-color: #0d6efd; }
+    
+    .footer-note { font-size: 0.9rem; color: #6c757d; text-align: center; margin-top: 20px; }
+    .telegram-link { color: #0088cc; text-decoration: none; font-weight: bold; }
+    .telegram-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <!-- ផ្ទាំង Login -->
+  <div class="container mt-5 pt-3" id="loginSection">
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-sm-8">
+        <div class="card login-card">
+          <div class="login-header">
+            <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" alt="School Logo" class="school-logo">
+            <h4 class="mb-0 fw-bold">ប្រព័ន្ធបញ្ចូលពិន្ទុ</h4>
+            <p class="mb-0" style="font-size: 0.9rem;">វិទ្យាល័យហ៊ុនសែនកំពង់ត្រឡាច</p>
+          </div>
+          <div class="card-body p-4">
+            <div id="loginError" class="alert alert-danger d-none text-center" style="font-size: 0.9rem;"></div>
+            
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+              <input type="text" id="username" class="form-control" placeholder="ឈ្មោះគណនី (Username)">
+            </div>
+            
+            <div class="input-group mb-4">
+              <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+              <input type="password" id="password" class="form-control" placeholder="លេខសម្ងាត់ (Password)">
+            </div>
+            
+            <button class="btn btn-primary w-100 fw-bold py-2" onclick="login()"><i class="fa-solid fa-right-to-bracket"></i> ចូលប្រព័ន្ធ</button>
+            
+            <div class="footer-note">
+              ករណីមិនអាចចូលប្រព័ន្ធបាន<br>សូមទាក់ទង <b>លោក ហុន ម៉ុម</b> តាមរយៈ 
+              <a href="https://t.me/Mrhonmom" target="_blank" class="telegram-link"><i class="fa-brands fa-telegram"></i> @Mrhonmom</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ផ្ទាំង App បញ្ចូលពិន្ទុ -->
+  <div class="container-fluid mt-4" id="appSection">
+    <div class="card shadow-sm p-4 border-0" style="border-radius: 12px;">
+      <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h4 class="text-primary mb-0"><i class="fa-solid fa-file-pen"></i> ផ្ទាំងបញ្ជូលពិន្ទុ <small class="text-muted" style="font-size: 1rem;">| អ្នកប្រើ៖ <span id="userDisplay" class="text-danger fw-bold"></span></small></h4>
+        <button class="btn btn-outline-danger btn-sm" onclick="location.reload()"><i class="fa-solid fa-power-off"></i> ចាកចេញ</button>
+      </div>
+      
+      <div class="row g-2 mb-3">
+        <div class="col-md-3">
+          <select id="roomSelect" class="form-select"><option>កំពុងទាញទិន្នន័យ...</option></select>
+        </div>
+        <div class="col-md-3">
+          <select id="subjectSelect" class="form-select"><option>កំពុងទាញទិន្នន័យ...</option></select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-success w-100" onclick="fetchStudents()" id="btnFetch"><i class="fa-solid fa-cloud-arrow-down"></i> ទាញបញ្ជីសិស្ស</button>
+        </div>
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input type="text" id="searchInput" class="form-control" placeholder="ស្វែងរកឈ្មោះសិស្ស..." onkeyup="searchTable()">
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info py-2" style="font-size: 0.9rem;">
+        💡 <b>គន្លឹះ៖</b> អាចវាយអក្សរ <b>A</b> (អវត្តមាន) ឫ <b>P</b> (សុំច្បាប់) បាន។ ប្រើប៊ូតុង <b>Tab</b>, <b>Enter</b> ឫ <b>Space</b> ដើម្បីលោតទៅប្រអប់សិស្សបន្ទាប់។
+      </div>
+
+      <div class="table-responsive" style="max-height: 60vh; border-radius: 8px; border: 1px solid #dee2e6;">
+        <table class="table table-hover mb-0 sticky-top">
+          <thead class="table-dark">
+            <tr>
+              <th width="60" class="text-center">តុ</th>
+              <th width="120">អត្តលេខ</th>
+              <th>ឈ្មោះសិស្ស</th>
+              <th width="80">ភេទ</th>
+              <th width="80">ថ្នាក់</th>
+              <th width="150" class="text-center">ពិន្ទុ</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="6" class="text-center text-muted py-4">សូមរើសបន្ទប់ និងមុខវិជ្ជា រួចចុចទាញបញ្ជីសិស្ស</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4 text-end">
+        <button class="btn btn-primary px-5 py-2 fw-bold" onclick="saveData()" id="btnSave" style="display:none;"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកពិន្ទុ</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // មុខងារ API
+    async function callAPI(payload) {
+      if(typeof API_URL === 'undefined' || API_URL === "ដាក់_LINK_GOOGLE_APP_SCRIPT_របស់អ្នក_នៅទីនេះ") {
+        alert("សូមកំណត់ API_URL នៅក្នុង File api.js ជាមុនសិន!"); return {error: "No API Link"};
+      }
+      try {
+        let response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        return await response.json();
+      } catch (error) { return { error: "បរាជ័យក្នុងការភ្ជាប់ទៅ Server របស់ Google!" }; }
+    }
+
+    async function login() {
+      let u = document.getElementById('username').value;
+      let p = document.getElementById('password').value;
+      if(!u || !p) return alert("សូមបញ្ជូលឈ្មោះ និងលេខសម្ងាត់!");
+
+      let btn = document.querySelector('#loginSection button');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងផ្ទៀងផ្ទាត់...'; btn.disabled = true;
+      
+      let res = await callAPI({ action: "login", username: u, password: p });
+      
+      if(res.success) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('appSection').style.display = 'block';
+        document.getElementById('userDisplay').innerText = res.username;
+        loadDropdowns();
+      } else {
+        let errBox = document.getElementById('loginError');
+        errBox.innerText = res.error; errBox.classList.remove('d-none');
+        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> ចូលប្រព័ន្ធ'; btn.disabled = false;
+      }
+    }
+
+    async function loadDropdowns() {
+      let res = await callAPI({ action: "getDropdowns" });
+      if(res.rooms) {
+        document.getElementById('roomSelect').innerHTML = '<option value="">-- រើសបន្ទប់ --</option>' + res.rooms.map(r => `<option value="${r}">បន្ទប់ទី ${r}</option>`).join('');
+        document.getElementById('subjectSelect').innerHTML = '<option value="">-- រើសមុខវិជ្ជា --</option>' + res.subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+      }
+    }
+
+    async function fetchStudents() {
+      let room = document.getElementById('roomSelect').value;
+      let subject = document.getElementById('subjectSelect').value;
+      if(!room || !subject) return alert("សូមជ្រើសរើសបន្ទប់ និងមុខវិជ្ជា!");
+
+      let btn = document.getElementById('btnFetch');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញ...'; btn.disabled = true;
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="text-center py-4">កំពុងដំណើរការទាញទិន្នន័យ...</td></tr>';
+
+      let res = await callAPI({ action: "getStudents", room: room, subject: subject });
+      let tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      if(!res || res.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">គ្មានទិន្នន័យសិស្សក្នុងបន្ទប់នេះទេ!</td></tr>';
+        document.getElementById('btnSave').style.display = 'none';
+      } else {
+        res.forEach((stu, index) => {
+          let val = stu.score !== "" ? stu.score : "";
+          let bg = stu.score !== "" ? "table-warning" : "";
+          
+          let row = `<tr class="search-row ${bg}">
+            <td class="text-center align-middle">${stu.desk}</td>
+            <td class="stu-id align-middle text-muted">${stu.id}</td>
+            <td class="stu-name align-middle fw-bold">${stu.name}</td>
+            <td class="align-middle">${stu.gender}</td>
+            <td class="stu-class align-middle">${stu.className}</td>
+            <td class="text-center">
+              <input type="text" class="form-control score-input mx-auto" data-index="${index}" data-max="${stu.maxScore}" value="${val}" oninput="validateInput(this)" placeholder="ទទេ">
+              <small class="text-muted" style="font-size:0.7rem;">អតិបរមា: ${stu.maxScore}</small>
+            </td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+        document.getElementById('btnSave').style.display = 'inline-block';
+        setupKeyboardAndPaste(); 
+      }
+      btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> ទាញបញ្ជីសិស្ស'; btn.disabled = false;
+    }
+
+    // Validation (អនុញ្ញាតលេខ និង A, P)
+    function validateInput(input) {
+      let val = input.value.toUpperCase();
+      let max = parseFloat(input.getAttribute('data-max'));
+      if(val === 'A' || val === 'P' || val === '') { input.value = val; return; }
+      
+      val = val.replace(/[^0-9.]/g, ''); // លុបអក្សរផ្សេងៗចេញ
+      if(parseFloat(val) > max) { alert(`ពិន្ទុមិនអាចលើសពី ${max} ឡើយ!`); val = max; }
+      input.value = val;
+    }
+
+    // មុខងារ Enter, Space ដើម្បីលោតទៅប្រអប់បន្ទាប់ និងមុខងារ Paste ពី Excel
+    function setupKeyboardAndPaste() {
+      const inputs = document.querySelectorAll('.score-input');
+      
+      inputs.forEach((input, i) => {
+        // Keyboard: Enter ឫ Space
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault(); // ការពារកុំឲ្យដកឃ្លា
+            if(i + 1 < inputs.length) {
+              inputs[i + 1].focus();
+              inputs[i + 1].select(); // Select អក្សរចាស់បើមាន
+            }
+          }
+        });
+
+        // Paste Excel
+        input.addEventListener('paste', function(e) {
+          e.preventDefault();
+          let pasteData = (e.clipboardData || window.clipboardData).getData('text');
+          let rows = pasteData.trim().split('\n');
+          let dataIdx = 0;
+          
+          for(let j = i; j < inputs.length; j++) {
+            if(inputs[j].closest('tr').style.display !== "none" && dataIdx < rows.length) {
+              inputs[j].value = rows[dataIdx].trim().toUpperCase();
+              validateInput(inputs[j]);
+              dataIdx++;
+            }
+          }
+        });
+      });
+    }
+
+    async function saveData() {
+      let room = document.getElementById('roomSelect').value;
+      let subject = document.getElementById('subjectSelect').value;
+      let rows = document.querySelectorAll('.search-row');
+      let payload = [];
+
+      rows.forEach(row => {
+        payload.push({
+          room: room, subject: subject,
+          id: row.querySelector('.stu-id').innerText,
+          name: row.querySelector('.stu-name').innerText,
+          className: row.querySelector('.stu-class').innerText,
+          score: row.querySelector('.score-input').value.trim()
+        });
+      });
+
+      let btn = document.getElementById('btnSave');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងរក្សាទុក...'; btn.disabled = true;
+
+      let res = await callAPI({ action: "saveScores", payload: payload });
+      if(res.success) {
+        alert(res.message);
+        fetchStudents(); // Refresh ឲ្យចេញពណ៌លឿង (Update)
+      } else alert(res.error);
+      
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> រក្សាទុកពិន្ទុ'; btn.disabled = false;
+    }
+
+    function searchTable() {
+      let filter = document.getElementById("searchInput").value.toUpperCase();
+      let rows = document.querySelectorAll(".search-row");
+      rows.forEach(row => { row.style.display = row.innerText.toUpperCase().includes(filter) ? "" : "none"; });
+    }
+  </script>
+</body>
+</html>
