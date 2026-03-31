@@ -25,28 +25,19 @@
             
             <div class="p-6 md:p-12 max-w-md mx-auto">
                 <div class="text-center mb-6">
-                    <h2 class="text-xl font-bold text-gray-800">ផ្ទៀងផ្ទាត់ព័ត៌មានសិស្ស</h2>
+                    <h2 class="text-xl font-bold text-gray-800">ផ្ទៀងផ្ទាត់អត្តលេខសិស្ស</h2>
                 </div>
                 <form id="loginForm" class="space-y-4">
                     <div>
-                        <label class="block text-gray-700 font-bold mb-2">អត្តលេខសិស្ស ឬ ឈ្មោះពេញ</label>
-                        <input type="text" id="loginInput" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" placeholder="ឧទាហរណ៍: 4250000551 ឬ កង រិទ្ធិកា">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-gray-700 font-bold mb-2">ថ្ងៃខែឆ្នាំកំណើត</label>
-                        <div class="grid grid-cols-3 gap-2">
-                            <!-- Dropdown ថ្ងៃខែឆ្នាំ -->
-                            <select id="dobDay" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center cursor-pointer"></select>
-                            <select id="dobMonth" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center cursor-pointer"></select>
-                            <select id="dobYear" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center cursor-pointer"></select>
-                        </div>
+                        <label class="block text-gray-700 font-bold mb-2 text-center text-lg">សូមបញ្ចូលអត្តលេខរបស់អ្នក</label>
+                        <input type="number" id="loginInput" required class="w-full px-4 py-4 rounded-xl border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-center text-2xl font-bold tracking-widest" placeholder="ឧ. 4250000551">
+                        <p class="text-sm text-gray-500 mt-3 text-center">ប្រព័ន្ធនឹងទាញឈ្មោះរបស់អ្នកពីបញ្ជីដោយស្វ័យប្រវត្តិ</p>
                     </div>
 
                     <div id="loginError" class="hidden text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 text-sm font-bold text-center"></div>
 
-                    <button type="submit" id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 text-lg mt-2">
-                        ចូលប្រឡង ⏱️
+                    <button type="submit" id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-xl shadow-md transition duration-200 text-lg mt-4">
+                        ផ្ទៀងផ្ទាត់អត្តលេខ 🔍
                     </button>
                 </form>
             </div>
@@ -108,7 +99,7 @@
 
     <script>
         // ⚠️ ប្តូរ URL Google Script របស់អ្នកនៅទីនេះ
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxox5LLMPOCN8kW4AF0WkOQXM6xKu2gzNG4eFUZ1l1lY9jbK-lpgdzXy2nRtR3EUGw4vA/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUCONuTiewkAdvNk3vnsb5Aa8Uz9gMm0cG9Kadi4bRC8_PvAsBC-9cjngyHvo4lwMhqg/exec"; 
 
         let currentStudent = { id: "", name: "" };
         let timeRemaining = 0;
@@ -116,7 +107,6 @@
         let isSubmitted = false;
         let flatQuestionsData = []; 
 
-        // ទិន្នន័យសំណួរ (២៥ សំណួរ)
         const quizData = [
             {
                 section: "ផ្នែកទី១៖ លំហាត់សមីការដឺក្រេទី២ មានមួយអញ្ញាត",
@@ -154,25 +144,6 @@
                 ]
             }
         ];
-
-        // ជួសជុលបញ្ហា Dropdown ថ្ងៃខែ ឲ្យលោតលេខច្បាស់លាស់ ១០០%
-        document.addEventListener("DOMContentLoaded", function() {
-            // បំពេញថ្ងៃ (១ ដល់ ៣១)
-            let dHtml = '<option value="" disabled selected>ថ្ងៃ</option>';
-            for(let i=1; i<=31; i++) dHtml += `<option value="${i}">${i}</option>`;
-            document.getElementById('dobDay').innerHTML = dHtml;
-
-            // បំពេញខែ (១ ដល់ ១២)
-            let mHtml = '<option value="" disabled selected>ខែ</option>';
-            for(let i=1; i<=12; i++) mHtml += `<option value="${i}">${i}</option>`;
-            document.getElementById('dobMonth').innerHTML = mHtml;
-
-            // បំពេញឆ្នាំ (១០ ឆ្នាំមុន ដល់ ២៥ ឆ្នាំមុន)
-            let yHtml = '<option value="" disabled selected>ឆ្នាំ</option>';
-            let curYr = new Date().getFullYear();
-            for(let i=curYr-25; i<=curYr-5; i++) yHtml += `<option value="${i}">${i}</option>`;
-            document.getElementById('dobYear').innerHTML = yHtml;
-        });
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -236,17 +207,14 @@
             document.getElementById('totalDisplay').innerText = flatQuestionsData.length;
         }
 
-        // មុខងារ Login ទាក់ទងទៅ Google Script
+        // មុខងារ Login ផ្ទៀងផ្ទាត់តែអត្តលេខ រួចបង្ហាញឈ្មោះឲ្យសិស្សផ្ទៀងផ្ទាត់
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const loginInput = document.getElementById('loginInput').value.trim();
-            const d = document.getElementById('dobDay').value;
-            const m = document.getElementById('dobMonth').value;
-            const y = document.getElementById('dobYear').value;
             const errorDiv = document.getElementById('loginError');
             const btn = document.getElementById('loginBtn');
 
-            btn.innerHTML = "កំពុងផ្ទៀងផ្ទាត់... ⏳";
+            btn.innerHTML = "កំពុងស្វែងរកទិន្នន័យ... ⏳";
             btn.disabled = true;
             errorDiv.classList.add('hidden');
 
@@ -255,36 +223,45 @@
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({
                     action: "login",
-                    id: loginInput,
-                    dobParts: { d: d, m: m, y: y }
+                    id: loginInput
                 })
             })
             .then(res => res.json())
             .then(data => {
-                btn.innerHTML = "ចូលប្រឡង ⏱️";
+                btn.innerHTML = "ផ្ទៀងផ្ទាត់អត្តលេខ 🔍";
                 btn.disabled = false;
                 
                 if(data.success) {
-                    currentStudent.id = data.id || loginInput;
-                    currentStudent.name = data.name;
-                    
-                    document.getElementById('loginSection').classList.add('hidden');
-                    document.getElementById('quizSection').classList.remove('hidden');
-                    
-                    let timeMins = data.timeLimit || 60;
-                    document.getElementById('displayStudentName').innerText = `${currentStudent.name} (${timeMins} នាទី)`;
-                    
-                    timeRemaining = timeMins * 60;
-                    initQuiz();
-                    startTimer();
-                    window.scrollTo(0, 0);
+                    // លោតសួរផ្ទៀងផ្ទាត់ឈ្មោះ (Confirmation)
+                    let isCorrectName = confirm(`តើអ្នកពិតជាសិស្សឈ្មោះ៖ ${data.name} មែនទេ?\n\n- បើពិតប្រាកដមែន សូមចុច [OK] ដើម្បីចាប់ផ្តើមប្រឡង។\n- បើមិនមែនទេ សូមចុច [Cancel] រួចវាយអត្តលេខម្តងទៀត។`);
+
+                    if(isCorrectName) {
+                        currentStudent.id = data.id;
+                        currentStudent.name = data.name;
+                        
+                        document.getElementById('loginSection').classList.add('hidden');
+                        document.getElementById('quizSection').classList.remove('hidden');
+                        
+                        let timeMins = data.timeLimit || 60;
+                        document.getElementById('displayStudentName').innerText = `${currentStudent.name} (${timeMins} នាទី)`;
+                        
+                        timeRemaining = timeMins * 60;
+                        initQuiz();
+                        startTimer();
+                        window.scrollTo(0, 0);
+                    } else {
+                        // បើសិស្សចុច Cancel គឺឲ្យគេវាយលេខម្ដងទៀត
+                        document.getElementById('loginInput').value = "";
+                        document.getElementById('loginInput').focus();
+                    }
+
                 } else {
                     errorDiv.innerText = data.message;
                     errorDiv.classList.remove('hidden');
                 }
             })
             .catch(err => {
-                btn.innerHTML = "ចូលប្រឡង ⏱️";
+                btn.innerHTML = "ផ្ទៀងផ្ទាត់អត្តលេខ 🔍";
                 btn.disabled = false;
                 errorDiv.innerText = "មានបញ្ហាបណ្តាញអ៊ីនធឺណិត ឬ URL Google Script ខុស!";
                 errorDiv.classList.remove('hidden');
@@ -298,7 +275,7 @@
                 updateTimerUI();
                 if (timeRemaining <= 0) {
                     clearInterval(timerInterval);
-                    alert("អស់ម៉ោង! ប្រព័ន្ធបញ្ជូនចម្លើយដោយស្វ័យប្រវត្តិ។");
+                    alert("អស់ម៉ោង! ប្រព័ន្ធនឹងបញ្ជូនចម្លើយដោយស្វ័យប្រវត្តិ។");
                     closeConfirmModal();
                     processSubmission();
                 }
