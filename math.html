@@ -36,9 +36,10 @@
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">ថ្ងៃខែឆ្នាំកំណើត</label>
                         <div class="grid grid-cols-3 gap-2">
-                            <select id="dobDay" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center"></select>
-                            <select id="dobMonth" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center"></select>
-                            <select id="dobYear" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center"></select>
+                            <!-- Dropdown ថ្ងៃខែឆ្នាំ -->
+                            <select id="dobDay" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center cursor-pointer"></select>
+                            <select id="dobMonth" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center cursor-pointer"></select>
+                            <select id="dobYear" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center cursor-pointer"></select>
                         </div>
                     </div>
 
@@ -107,7 +108,7 @@
 
     <script>
         // ⚠️ ប្តូរ URL Google Script របស់អ្នកនៅទីនេះ
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxe_2te43MC1I8ozXs7k__-0MyJPAQ_zv3iPfrxoHhHeTN1Bsy4s5xWeWHjx6libwcGIA/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxox5LLMPOCN8kW4AF0WkOQXM6xKu2gzNG4eFUZ1l1lY9jbK-lpgdzXy2nRtR3EUGw4vA/exec"; 
 
         let currentStudent = { id: "", name: "" };
         let timeRemaining = 0;
@@ -154,21 +155,24 @@
             }
         ];
 
-        // រៀបចំ Dropdown ថ្ងៃខែពេលទំព័របើក
-        window.onload = () => {
-            let dHtml = '<option value="">ថ្ងៃ</option>';
+        // ជួសជុលបញ្ហា Dropdown ថ្ងៃខែ ឲ្យលោតលេខច្បាស់លាស់ ១០០%
+        document.addEventListener("DOMContentLoaded", function() {
+            // បំពេញថ្ងៃ (១ ដល់ ៣១)
+            let dHtml = '<option value="" disabled selected>ថ្ងៃ</option>';
             for(let i=1; i<=31; i++) dHtml += `<option value="${i}">${i}</option>`;
             document.getElementById('dobDay').innerHTML = dHtml;
 
-            let mHtml = '<option value="">ខែ</option>';
+            // បំពេញខែ (១ ដល់ ១២)
+            let mHtml = '<option value="" disabled selected>ខែ</option>';
             for(let i=1; i<=12; i++) mHtml += `<option value="${i}">${i}</option>`;
             document.getElementById('dobMonth').innerHTML = mHtml;
 
-            let yHtml = '<option value="">ឆ្នាំ</option>';
+            // បំពេញឆ្នាំ (១០ ឆ្នាំមុន ដល់ ២៥ ឆ្នាំមុន)
+            let yHtml = '<option value="" disabled selected>ឆ្នាំ</option>';
             let curYr = new Date().getFullYear();
             for(let i=curYr-25; i<=curYr-5; i++) yHtml += `<option value="${i}">${i}</option>`;
             document.getElementById('dobYear').innerHTML = yHtml;
-        };
+        });
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -248,7 +252,7 @@
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // ការពារបញ្ហា CORS ជាមួយ Google Script
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({
                     action: "login",
                     id: loginInput,
@@ -267,7 +271,7 @@
                     document.getElementById('loginSection').classList.add('hidden');
                     document.getElementById('quizSection').classList.remove('hidden');
                     
-                    let timeMins = data.timeLimit || 60; // បើក្នុង sheet គ្មាន ដាក់៦០នាទី
+                    let timeMins = data.timeLimit || 60;
                     document.getElementById('displayStudentName').innerText = `${currentStudent.name} (${timeMins} នាទី)`;
                     
                     timeRemaining = timeMins * 60;
