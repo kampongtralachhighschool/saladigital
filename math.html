@@ -3,29 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ប្រព័ន្ធប្រឡងគណិតវិទ្យា (៦០ នាទី)</title>
+    <title>ប្រព័ន្ធប្រឡងគណិតវិទ្យា</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Battambang', sans-serif;
-            background-color: #f3f4f6;
-        }
-        /* ពិសេសសម្រាប់ Font គណិតវិទ្យា */
-        .math-font { 
-            font-family: 'Cambria Math', 'Times New Roman', Times, serif; 
-            font-size: 1.15rem; 
-            letter-spacing: 0.5px;
-        }
+        body { font-family: 'Battambang', sans-serif; background-color: #f3f4f6; }
+        .math-font { font-family: 'Cambria Math', 'Times New Roman', Times, serif; font-size: 1.15rem; letter-spacing: 0.5px; }
         .hidden { display: none !important; }
-        
-        /* ធ្វើឲ្យ Timer នៅជាប់ផ្នែកខាងលើរហូតពេល Scroll */
-        .sticky-header {
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            backdrop-filter: blur(8px);
-        }
+        .sticky-header { position: sticky; top: 0; z-index: 40; backdrop-filter: blur(8px); }
     </style>
 </head>
 <body class="text-gray-800 antialiased min-h-screen flex flex-col">
@@ -33,34 +18,41 @@
     <div class="max-w-4xl w-full mx-auto flex-grow flex flex-col md:py-8 py-0">
         <!-- ផ្នែកទី១៖ ព័ត៌មានសិស្ស (Login Section) -->
         <div id="loginSection" class="bg-white md:rounded-2xl shadow-xl overflow-hidden my-auto">
-            <div class="bg-blue-700 text-white p-8 text-center">
+            <div class="bg-blue-700 text-white p-6 md:p-8 text-center">
                 <h1 class="text-2xl md:text-3xl font-bold mb-2">ប្រព័ន្ធប្រឡងគណិតវិទ្យា</h1>
-                <p class="opacity-90">សមីការដឺក្រេទី២ និង សមីការរង្វង់ (រយៈពេល ៦០ នាទី)</p>
+                <p class="opacity-90">សមីការដឺក្រេទី២ និង សមីការរង្វង់</p>
             </div>
             
-            <div class="p-8 md:p-12 max-w-md mx-auto">
+            <div class="p-6 md:p-12 max-w-md mx-auto">
                 <div class="text-center mb-6">
-                    <h2 class="text-xl font-bold text-gray-800">សូមបំពេញព័ត៌មានមុនពេលប្រឡង</h2>
+                    <h2 class="text-xl font-bold text-gray-800">ផ្ទៀងផ្ទាត់ព័ត៌មានសិស្ស</h2>
                 </div>
-                <form id="loginForm" class="space-y-5">
+                <form id="loginForm" class="space-y-4">
                     <div>
-                        <label class="block text-gray-700 font-bold mb-2">អត្តលេខសិស្ស (ID)</label>
-                        <input type="text" id="studentId" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" placeholder="ឧទាហរណ៍: 001">
+                        <label class="block text-gray-700 font-bold mb-2">អត្តលេខសិស្ស ឬ ឈ្មោះពេញ</label>
+                        <input type="text" id="loginInput" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" placeholder="ឧទាហរណ៍: 4250000551 ឬ កង រិទ្ធិកា">
                     </div>
+                    
                     <div>
-                        <label class="block text-gray-700 font-bold mb-2">ឈ្មោះពេញ</label>
-                        <input type="text" id="studentName" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" placeholder="ឧទាហរណ៍: សុខ សាន់">
+                        <label class="block text-gray-700 font-bold mb-2">ថ្ងៃខែឆ្នាំកំណើត</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <select id="dobDay" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center"></select>
+                            <select id="dobMonth" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center"></select>
+                            <select id="dobYear" required class="px-2 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white text-center"></select>
+                        </div>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 text-lg mt-4">
-                        ចាប់ផ្ដើមប្រឡង ⏱️
+
+                    <div id="loginError" class="hidden text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 text-sm font-bold text-center"></div>
+
+                    <button type="submit" id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 text-lg mt-2">
+                        ចូលប្រឡង ⏱️
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- ផ្នែកទី២៖ កម្រងសំណួរ (Quiz Section - លាក់ជាបណ្ដោះអាសន្ន) -->
+        <!-- ផ្នែកទី២៖ កម្រងសំណួរ (Quiz Section) -->
         <div id="quizSection" class="hidden bg-white md:rounded-2xl shadow-xl overflow-hidden pb-10">
-            <!-- របារព័ត៌មាន និង ម៉ោង (Sticky) -->
             <div class="sticky-header bg-white/95 border-b shadow-sm flex flex-col sm:flex-row justify-between items-center p-4 gap-3">
                 <div class="flex items-center bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100">
                     <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
@@ -68,27 +60,26 @@
                 </div>
                 
                 <div class="flex items-center justify-center bg-red-50 px-4 py-2 rounded-full border border-red-200 min-w-[120px]">
-                    <span class="text-lg md:text-xl font-bold text-red-600 tracking-wider" id="timerDisplay">⏱️ 60:00</span>
+                    <span class="text-lg md:text-xl font-bold text-red-600 tracking-wider" id="timerDisplay">⏱️ រៀបចំម៉ោង...</span>
                 </div>
             </div>
             
             <form id="quizForm" class="p-4 md:p-8 space-y-8 mt-2">
                 <div id="quizContent"></div>
-                
                 <div class="border-t border-gray-200 pt-8 mt-8 flex justify-center">
                     <button type="button" onclick="confirmSubmit()" id="submitQuizBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-10 md:px-16 rounded-xl shadow-lg transition duration-300 text-lg flex items-center">
-                        បញ្ចប់ការប្រឡង 🏁
+                        បញ្ជូនចម្លើយ 🏁
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal បញ្ជាក់មុនពេល Submit -->
+    <!-- Modal បញ្ជាក់ការ Submit -->
     <div id="confirmModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl">
             <h2 class="text-xl font-bold mb-4 text-gray-800">តើអ្នកពិតជាចង់បញ្ជូនចម្លើយមែនទេ?</h2>
-            <p id="unansweredWarning" class="text-gray-600 mb-6 text-sm">សូមពិនិត្យចម្លើយឡើងវិញ មុននឹងបញ្ជូន។</p>
+            <p id="unansweredWarning" class="text-gray-600 mb-6 text-sm"></p>
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 <button type="button" onclick="closeConfirmModal()" class="w-full sm:flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg transition">ត្រលប់វិញ</button>
                 <button type="button" onclick="processSubmission()" class="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition">បញ្ជូនចម្លើយ</button>
@@ -96,46 +87,35 @@
         </div>
     </div>
 
-    <!-- ផ្នែកទី៣៖ Modal លទ្ធផល -->
+    <!-- Modal លទ្ធផល -->
     <div id="resultModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 backdrop-blur-md">
         <div class="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
             <h2 class="text-2xl font-bold mb-2 text-gray-800">ការប្រឡងត្រូវបានបញ្ចប់!</h2>
-            <p class="text-gray-500 mb-6 text-sm">លទ្ធផលរបស់អ្នកត្រូវបានកត់ត្រា។</p>
             
-            <div class="bg-gray-50 rounded-xl p-6 border border-gray-100 mb-6">
+            <div class="bg-gray-50 rounded-xl p-6 border border-gray-100 mb-6 mt-4">
                 <div class="text-sm font-bold text-gray-500 mb-1">ពិន្ទុរបស់អ្នក</div>
                 <div id="scoreDisplay" class="text-6xl font-extrabold text-blue-600 mb-2">0</div>
                 <div class="text-gray-500 font-bold text-lg mb-4">/ <span id="totalDisplay">25</span> ពិន្ទុ</div>
-                
-                <div class="inline-block px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-bold border border-blue-200" id="gradeMessage">
-                    កំពុងគណនា...
-                </div>
             </div>
             
-            <!-- កន្លែងបង្ហាញស្ថានភាពនៃការបញ្ជូនទៅ Google Sheet -->
             <div id="submission-status" class="text-sm font-bold p-4 rounded-lg bg-yellow-50 text-yellow-700 border border-yellow-200">
                 <div class="animate-spin inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full mr-2 mb-[-2px]"></div>
-                កំពុងរក្សាទុកទិន្នន័យទៅកាន់ប្រព័ន្ធ... 
+                កំពុងរក្សាទុកទិន្នន័យទៅកាន់លោកគ្រូ... 
             </div>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // ⚠️ កន្លែងត្រូវដូរ URL Google Apps Script 
-        // ==========================================
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCPRwkSOLfWcKnvJeh1UqGxSc4R2FKnhbGM42a7eqslrEviMXku_aMsaX1gvItSM7bKw/exec"; 
-        const TIME_LIMIT_MINUTES = 60; // កំណត់ម៉ោងប្រឡង (៦០នាទី)
+        // ⚠️ ប្តូរ URL Google Script របស់អ្នកនៅទីនេះ
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxe_2te43MC1I8ozXs7k__-0MyJPAQ_zv3iPfrxoHhHeTN1Bsy4s5xWeWHjx6libwcGIA/exec"; 
 
         let currentStudent = { id: "", name: "" };
-        let timeRemaining = TIME_LIMIT_MINUTES * 60;
+        let timeRemaining = 0;
         let timerInterval = null;
         let isSubmitted = false;
-        
-        // ដើម្បីការពារកុំឲ្យសិស្សមើលចម្លើយក្នុង Inspect Element យើងរក្សាទុកចម្លើយត្រូវក្នុង Array នេះ
         let flatQuestionsData = []; 
 
-        // ទិន្នន័យសំណួរ (Hardcoded ផ្អែកតាមកូដរបស់អ្នក)
+        // ទិន្នន័យសំណួរ (២៥ សំណួរ)
         const quizData = [
             {
                 section: "ផ្នែកទី១៖ លំហាត់សមីការដឺក្រេទី២ មានមួយអញ្ញាត",
@@ -174,7 +154,22 @@
             }
         ];
 
-        // មុខងារសម្រាប់លាយចម្លើយ (Shuffle options)
+        // រៀបចំ Dropdown ថ្ងៃខែពេលទំព័របើក
+        window.onload = () => {
+            let dHtml = '<option value="">ថ្ងៃ</option>';
+            for(let i=1; i<=31; i++) dHtml += `<option value="${i}">${i}</option>`;
+            document.getElementById('dobDay').innerHTML = dHtml;
+
+            let mHtml = '<option value="">ខែ</option>';
+            for(let i=1; i<=12; i++) mHtml += `<option value="${i}">${i}</option>`;
+            document.getElementById('dobMonth').innerHTML = mHtml;
+
+            let yHtml = '<option value="">ឆ្នាំ</option>';
+            let curYr = new Date().getFullYear();
+            for(let i=curYr-25; i<=curYr-5; i++) yHtml += `<option value="${i}">${i}</option>`;
+            document.getElementById('dobYear').innerHTML = yHtml;
+        };
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -183,21 +178,18 @@
             return array;
         }
 
-        // រៀបចំ Render សំណួរចូល HTML
         function initQuiz() {
             const quizContainer = document.getElementById('quizContent');
-            let globalQuestionIndex = 0;
+            let globalIndex = 0;
 
             quizData.forEach((section) => {
-                const sectionDiv = document.createElement('div');
-                sectionDiv.className = "mb-8";
-                sectionDiv.innerHTML = `<h2 class="text-xl font-bold text-blue-800 border-b-2 border-blue-200 pb-2 mb-6">${section.section}</h2>`;
-                quizContainer.appendChild(sectionDiv);
+                const secDiv = document.createElement('div');
+                secDiv.className = "mb-8";
+                secDiv.innerHTML = `<h2 class="text-xl font-bold text-blue-800 border-b-2 border-blue-200 pb-2 mb-6">${section.section}</h2>`;
+                quizContainer.appendChild(secDiv);
 
                 section.questions.forEach((q) => {
-                    // រក្សាទុកចម្លើយត្រូវ (index 0 គឺជាចម្លើយត្រូវនៅក្នុង Array ដើម)
-                    const correctText = q.options[0]; 
-                    flatQuestionsData.push({ id: globalQuestionIndex, correctAnswer: correctText });
+                    flatQuestionsData.push({ id: globalIndex, correctAnswer: q.options[0] });
 
                     const qDiv = document.createElement('div');
                     qDiv.className = "mb-6 bg-gray-50 p-4 md:p-6 rounded-xl border border-gray-100 shadow-sm";
@@ -207,12 +199,9 @@
                     qText.innerText = q.q;
                     qDiv.appendChild(qText);
 
-                    // ចម្លង Option និង Shuffle
-                    const optionsToShuffle = [...q.options];
-                    const shuffledOptions = shuffleArray(optionsToShuffle);
-
-                    const optionsContainer = document.createElement('div');
-                    optionsContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-3";
+                    const shuffledOptions = shuffleArray([...q.options]);
+                    const optContainer = document.createElement('div');
+                    optContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-3";
 
                     shuffledOptions.forEach((optText) => {
                         const label = document.createElement('label');
@@ -220,8 +209,7 @@
                         
                         const input = document.createElement('input');
                         input.type = "radio";
-                        input.name = `question_${globalQuestionIndex}`;
-                        // យើងដាក់ Value ជារបស់ Text ផ្ទាល់ មិនដាក់ "correct" ឬ "wrong" ទេដើម្បីសុវត្ថិភាព
+                        input.name = `question_${globalIndex}`;
                         input.value = optText; 
                         input.className = "w-4 h-4 text-blue-600 form-radio mr-3 focus:ring-blue-500";
                         
@@ -229,58 +217,86 @@
                         span.innerText = optText;
                         span.className = "text-gray-700 font-medium math-font mt-1";
 
-                        label.appendChild(input);
-                        label.appendChild(span);
-                        optionsContainer.appendChild(label);
+                        label.appendChild(input); label.appendChild(span); optContainer.appendChild(label);
 
-                        // ប្ដូរពណ៌ស៊ុមពេលចុចជ្រើសរើស
                         input.addEventListener('change', () => {
-                            const allLabels = optionsContainer.querySelectorAll('.option-label');
+                            const allLabels = optContainer.querySelectorAll('.option-label');
                             allLabels.forEach(l => l.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50', 'border-blue-500'));
                             label.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50', 'border-blue-500');
                         });
                     });
 
-                    qDiv.appendChild(optionsContainer);
-                    sectionDiv.appendChild(qDiv);
-                    globalQuestionIndex++;
+                    qDiv.appendChild(optContainer); secDiv.appendChild(qDiv); globalIndex++;
                 });
             });
             document.getElementById('totalDisplay').innerText = flatQuestionsData.length;
         }
 
-        // ដំណើរការពេល Login
+        // មុខងារ Login ទាក់ទងទៅ Google Script
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            currentStudent.id = document.getElementById('studentId').value.trim();
-            currentStudent.name = document.getElementById('studentName').value.trim();
+            const loginInput = document.getElementById('loginInput').value.trim();
+            const d = document.getElementById('dobDay').value;
+            const m = document.getElementById('dobMonth').value;
+            const y = document.getElementById('dobYear').value;
+            const errorDiv = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
 
-            if (currentStudent.id && currentStudent.name) {
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('quizSection').classList.remove('hidden');
-                document.getElementById('displayStudentName').innerText = `${currentStudent.name} (${currentStudent.id})`;
+            btn.innerHTML = "កំពុងផ្ទៀងផ្ទាត់... ⏳";
+            btn.disabled = true;
+            errorDiv.classList.add('hidden');
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // ការពារបញ្ហា CORS ជាមួយ Google Script
+                body: JSON.stringify({
+                    action: "login",
+                    id: loginInput,
+                    dobParts: { d: d, m: m, y: y }
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.innerHTML = "ចូលប្រឡង ⏱️";
+                btn.disabled = false;
                 
-                // បង្កើតសំណួរ
-                initQuiz();
-                
-                // ចាប់ផ្ដើមម៉ោង
-                startTimer();
-                window.scrollTo(0, 0);
-            }
+                if(data.success) {
+                    currentStudent.id = data.id || loginInput;
+                    currentStudent.name = data.name;
+                    
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('quizSection').classList.remove('hidden');
+                    
+                    let timeMins = data.timeLimit || 60; // បើក្នុង sheet គ្មាន ដាក់៦០នាទី
+                    document.getElementById('displayStudentName').innerText = `${currentStudent.name} (${timeMins} នាទី)`;
+                    
+                    timeRemaining = timeMins * 60;
+                    initQuiz();
+                    startTimer();
+                    window.scrollTo(0, 0);
+                } else {
+                    errorDiv.innerText = data.message;
+                    errorDiv.classList.remove('hidden');
+                }
+            })
+            .catch(err => {
+                btn.innerHTML = "ចូលប្រឡង ⏱️";
+                btn.disabled = false;
+                errorDiv.innerText = "មានបញ្ហាបណ្តាញអ៊ីនធឺណិត ឬ URL Google Script ខុស!";
+                errorDiv.classList.remove('hidden');
+            });
         });
 
-        // មុខងារម៉ោង (Timer)
         function startTimer() {
             updateTimerUI();
             timerInterval = setInterval(() => {
                 timeRemaining--;
                 updateTimerUI();
-                
                 if (timeRemaining <= 0) {
                     clearInterval(timerInterval);
-                    alert("អស់ម៉ោង! ប្រព័ន្ធនឹងធ្វើការបញ្ជូនចម្លើយរបស់អ្នកដោយស្វ័យប្រវត្តិ។");
+                    alert("អស់ម៉ោង! ប្រព័ន្ធបញ្ជូនចម្លើយដោយស្វ័យប្រវត្តិ។");
                     closeConfirmModal();
-                    processSubmission(); // អស់ម៉ោង Auto Submit តែម្តង
+                    processSubmission();
                 }
             }, 1000);
         }
@@ -291,86 +307,46 @@
             let display = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
             const timerEl = document.getElementById('timerDisplay');
             timerEl.innerText = `⏱️ ${display}`;
-            
-            // បើនៅសល់ក្រោម ៥ នាទី លោតព្រិចៗ
-            if(timeRemaining < 300) {
-                timerEl.classList.add('animate-pulse');
-            }
+            if(timeRemaining < 300) timerEl.classList.add('animate-pulse');
         }
 
-        // ចុចប៊ូតុង បញ្ចប់ការប្រឡង 
         function confirmSubmit() {
             if(isSubmitted) return;
-            
             let unanswered = 0;
             for (let i = 0; i < flatQuestionsData.length; i++) {
-                const checked = document.querySelector(`input[name="question_${i}"]:checked`);
-                if (!checked) unanswered++;
+                if (!document.querySelector(`input[name="question_${i}"]:checked`)) unanswered++;
             }
-
-            const warningEl = document.getElementById('unansweredWarning');
-            if (unanswered > 0) {
-                warningEl.innerHTML = `អ្នកនៅសល់ <span class="text-red-600 font-bold text-lg">${unanswered}</span> សំណួរទៀតមិនទាន់បានឆ្លើយ។<br>តើពិតជាចង់បញ្ជូនមែនទេ? (មិនឆ្លើយមិនបានពិន្ទុ)`;
-            } else {
-                warningEl.innerHTML = "<span class="text-green-600">អ្នកបានឆ្លើយគ្រប់សំណួរទាំងអស់។ តើពិតជាចង់បញ្ជូនមែនទេ?</span>";
-            }
+            const warnEl = document.getElementById('unansweredWarning');
+            if (unanswered > 0) warnEl.innerHTML = `អ្នកនៅសល់ <span class="text-red-600 font-bold text-lg">${unanswered}</span> សំណួរទៀត។ តើពិតជាចង់បញ្ជូនមែនទេ?`;
+            else warnEl.innerHTML = "<span class="text-green-600">អ្នកបានឆ្លើយគ្រប់សំណួរទាំងអស់។</span>";
+            
             document.getElementById('confirmModal').classList.remove('hidden');
         }
 
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').classList.add('hidden');
-        }
+        function closeConfirmModal() { document.getElementById('confirmModal').classList.add('hidden'); }
 
-        // ការគណនា និង បញ្ជូនទៅកាន់ Google Sheet
         function processSubmission() {
             if(isSubmitted) return;
             isSubmitted = true;
-            
             closeConfirmModal();
-            clearInterval(timerInterval); // បញ្ឈប់ម៉ោង
+            clearInterval(timerInterval); 
 
-            let correctCount = 0;
-            let wrongCount = 0;
-            let skippedCount = 0;
-            const totalQuestions = flatQuestionsData.length;
+            let correctCount = 0, wrongCount = 0, skippedCount = 0;
+            const total = flatQuestionsData.length;
             
-            // គណនាពិន្ទុដោយប្រៀបធៀបជាមួយ flatQuestionsData
-            for (let i = 0; i < totalQuestions; i++) {
-                const selectedRadio = document.querySelector(`input[name="question_${i}"]:checked`);
-                const correctText = flatQuestionsData[i].correctAnswer;
+            for (let i = 0; i < total; i++) {
+                const selected = document.querySelector(`input[name="question_${i}"]:checked`);
+                if (!selected) skippedCount++;
+                else if (selected.value === flatQuestionsData[i].correctAnswer) correctCount++;
+                else wrongCount++;
 
-                if (!selectedRadio) {
-                    skippedCount++;
-                } else if (selectedRadio.value === correctText) {
-                    correctCount++;
-                } else {
-                    wrongCount++;
-                }
-
-                // Disable វិទ្យុប៊ូតុងទាំងអស់កុំឲ្យចុចបានទៀត (មិនលោតពណ៌ត្រូវខុសទេ)
-                const allRadios = document.getElementsByName(`question_${i}`);
-                allRadios.forEach(r => r.disabled = true);
+                document.getElementsByName(`question_${i}`).forEach(r => r.disabled = true);
             }
 
-            // បង្ហាញ Modal លទ្ធផល
             document.getElementById('quizSection').classList.add('opacity-50', 'pointer-events-none');
             document.getElementById('resultModal').classList.remove('hidden');
-            
             document.getElementById('scoreDisplay').innerText = correctCount;
-            
-            const gradeEl = document.getElementById('gradeMessage');
-            let percentage = (correctCount / totalQuestions) * 100;
-            if(percentage >= 90) gradeEl.innerText = "និទ្ទេស A (ល្អណាស់)";
-            else if(percentage >= 80) gradeEl.innerText = "និទ្ទេស B (ល្អ)";
-            else if(percentage >= 70) gradeEl.innerText = "និទ្ទេស C (ល្អបង្គួរ)";
-            else if(percentage >= 50) gradeEl.innerText = "និទ្ទេស D (មធ្យម)";
-            else {
-                gradeEl.className = "inline-block px-4 py-2 bg-red-100 text-red-800 rounded-lg font-bold border border-red-200";
-                gradeEl.innerText = "ធ្លាក់ (សូមខិតខំរៀនបន្ថែម)";
-            }
 
-            // បញ្ជូនទៅ Google App Script (Fetch API)
-            const statusDiv = document.getElementById('submission-status');
             const payload = {
                 action: "submit",
                 studentId: currentStudent.id,
@@ -379,31 +355,24 @@
                 correctCount: correctCount,
                 wrongCount: wrongCount,
                 skippedCount: skippedCount,
-                deviceInfo: navigator.userAgent + " | " + window.innerWidth + "x" + window.innerHeight,
-                details: `ពិន្ទុ: ${correctCount}/${totalQuestions}`
+                deviceInfo: navigator.userAgent,
+                details: `ពិន្ទុ: ${correctCount}/${total}`
             };
 
-            // បញ្ជូនទិន្នន័យ (ប្រើ POST, JSON stringify)
+            const statusDiv = document.getElementById('submission-status');
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                // បើសិនជាមានបញ្ហា CORS ជាមួយ Google Sheet, ជាទូទៅការប្រើ 'text/plain' អាចជួយបាន
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(payload)
             })
             .then(res => res.json())
             .then(data => {
-                if(data.success || data.result === "success" || data.status === 200) {
-                    statusDiv.className = "text-sm font-bold p-4 rounded-lg bg-green-50 text-green-700 border border-green-200";
-                    statusDiv.innerHTML = "✅ ទិន្នន័យត្រូវបានរក្សាទុកជោគជ័យ។ អ្នកអាចចាកចេញពីប្រព័ន្ធបាន។";
-                } else {
-                    throw new Error("Backend format missing success flag.");
-                }
+                statusDiv.className = "text-sm font-bold p-4 rounded-lg bg-green-50 text-green-700 border border-green-200";
+                statusDiv.innerHTML = "✅ ទិន្នន័យត្រូវបានបញ្ជូនទៅកាន់លោកគ្រូជោគជ័យ។ អាចចាកចេញពីប្រព័ន្ធបាន។";
             })
             .catch(err => {
-                console.error("Submission Error:", err);
-                // ករណីភាគច្រើន Google Apps Script (No-CORS) ផ្ញើចូល Sheet បាន តែមិនអាចអាន Response បាន
                 statusDiv.className = "text-sm font-bold p-4 rounded-lg bg-blue-50 text-blue-700 border border-blue-200";
-                statusDiv.innerHTML = "✅ បានផ្ញើចម្លើយទៅកាន់លោកគ្រូរួចរាល់។ អ្នកអាចបិទទំព័រនេះបាន។";
+                statusDiv.innerHTML = "✅ បានបញ្ជូនចម្លើយរួចរាល់។ អ្នកអាចបិទទំព័រនេះបាន។";
             });
         }
     </script>
