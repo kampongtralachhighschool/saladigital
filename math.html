@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ប្រព័ន្ធប្រឡងគណិតវិទ្យា</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap');
+        body { font-family: 'Battambang', cursive, sans-serif; background-color: #f3f4f6; }
+        .hidden { display: none; }
+        .math-font { font-family: 'Times New Roman', Times, serif; font-size: 1.1em; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-3xl w-full bg-white rounded-xl shadow-2xl overflow-hidden">
+        
+        <!-- Header: បង្ហាញឈ្មោះពេល Login រួច -->
+        <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">តេស្តគណិតវិទ្យា (៤៥ ពិន្ទុ)</h1>
+            <div id="user-info" class="hidden flex items-center bg-indigo-800 px-4 py-1 rounded-full border border-indigo-500">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                <span id="display-name" class="font-bold tracking-wide"></span>
+            </div>
+        </div>
+
+        <div class="p-6 md:p-8">
+            <!-- 1. Login Screen -->
+            <div id="login-screen" class="space-y-6 max-w-md mx-auto">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">ចូលប្រព័ន្ធប្រឡង</h2>
+                    <p class="text-gray-500 text-sm">សូមបញ្ចូលលេខសម្គាល់ និងថ្ងៃខែឆ្នាំកំណើត</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2">លេខសម្គាល់សិស្ស (ID)</label>
+                    <input type="text" id="login-id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="ឧទាហរណ៍: 001">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2">ថ្ងៃខែឆ្នាំកំណើត</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <select id="dob-day" class="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            <option value="">ថ្ងៃ</option>
+                            <!-- JS នឹងបង្កើត 1-31 -->
+                        </select>
+                        <select id="dob-month" class="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            <option value="">ខែ</option>
+                            <!-- JS នឹងបង្កើត 1-12 -->
+                        </select>
+                        <select id="dob-year" class="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            <option value="">ឆ្នាំ</option>
+                            <!-- JS នឹងបង្កើត 1990-2015 -->
+                        </select>
+                    </div>
+                </div>
+
+                <div id="login-error" class="hidden text-red-600 bg-red-50 p-3 rounded-lg text-sm text-center font-bold"></div>
+
+                <button id="login-btn" onclick="verifyLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+                    ផ្ទៀងផ្ទាត់ និងចាប់ផ្តើម
+                </button>
+            </div>
+
+            <!-- 2. Quiz Screen -->
+            <div id="quiz-screen" class="hidden">
+                <div class="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <span class="text-sm font-bold text-gray-600 bg-white px-3 py-1 rounded border shadow-sm" id="question-progress">សំណួរទី 1/25</span>
+                    <div class="text-right">
+                        <span class="text-xs text-gray-500 block">ពិន្ទុបច្ចុប្បន្ន</span>
+                        <span class="text-lg font-bold text-indigo-600" id="score-display">0.00</span>
+                    </div>
+                </div>
+                
+                <h2 id="question-text" class="text-xl font-bold text-gray-800 mb-6 leading-relaxed math-font"></h2>
+                
+                <div id="options-container" class="space-y-3">
+                    <!-- ជម្រើសនឹងលោតនៅទីនេះ -->
+                </div>
+
+                <div class="mt-8 text-right border-t pt-4">
+                    <button id="next-btn" onclick="nextQuestion()" disabled class="bg-gray-300 text-gray-500 font-bold py-3 px-8 rounded-lg cursor-not-allowed transition duration-200">
+                        បន្ទាប់ ➡️
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Result Screen -->
+            <div id="result-screen" class="hidden text-center space-y-6">
+                <h2 class="text-3xl font-bold text-gray-800">លទ្ធផលរបស់អ្នក</h2>
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 inline-block w-full max-w-sm">
+                    <div class="text-6xl font-bold text-indigo-600 mb-2" id="final-score">0.00</div>
+                    <p class="text-gray-500 font-bold text-lg">/ 45.00 ពិន្ទុ</p>
+                    <div class="mt-4 flex justify-center space-x-4 text-sm">
+                        <span class="text-green-600 font-bold" id="correct-count">ត្រូវ: 0</span>
+                        <span class="text-red-600 font-bold" id="wrong-count">ខុស: 0</span>
+                    </div>
+                </div>
+                
+                <div id="submission-status" class="text-sm font-bold p-4 rounded-lg mt-4 bg-yellow-50 text-yellow-700">
+                    កំពុងរក្សាទុកលទ្ធផល... ⏳ កុំទាន់បិទផ្ទាំងនេះ!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === ដាក់ URL របស់ Google Apps Script ទីនេះ (ប្តូរវាពេល Deploy កូដ Google Script រួច) ===
+        const SCRIPT_URL = 'https://script.google.com/a/macros/moeys.gov.kh/s/AKfycbxDucVaDD38PbrCh87TTbgEPjtnY1sKfNHBduC5QBNrE6Li8aKpk5P-afyWK60WFXg4Qw/exec'; 
+
+        // === ការកំណត់ពិន្ទុ ===
+        const TOTAL_QUESTIONS = 25;
+        const MAX_SCORE = 45;
+        const PTS_PER_CORRECT = MAX_SCORE / TOTAL_QUESTIONS; // 1.8 
+        const PENALTY_PCT = 0.0025; // 0.25%
+        const PTS_DEDUCT = MAX_SCORE * PENALTY_PCT; // 0.1125
+
+        // === អថេរផ្ទុកទិន្នន័យ ===
+        let currentStudent = { id: "", name: "" };
+        let currentQuestionIndex = 0;
+        let currentScore = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let hasAnswered = false;
+        let quizDetails = [];
+        let deviceInfo = "";
+
+        // === ទិន្នន័យសំណួរទាំង ២៥ ===
+        const quizData = [
+            // I. សមីការដឺក្រេទី២
+            { q: "១. ដោះស្រាយសមីការ x² - 5x + 6 = 0", options: [{t: "x = 2, x = 3", c: true}, {t: "x = -2, x = -3", c: false}, {t: "x = 1, x = 6", c: false}, {t: "x = -1, x = -6", c: false}] },
+            { q: "២. ដោះស្រាយសមីការ 2x² - 7x + 3 = 0", options: [{t: "x = 3, x = 1/2", c: true}, {t: "x = -3, x = -1/2", c: false}, {t: "x = 1, x = 3/2", c: false}, {t: "x = -1, x = -3/2", c: false}] },
+            { q: "៣. ដោះស្រាយសមីការ x² + 4x - 5 = 0", options: [{t: "x = 1, x = -5", c: true}, {t: "x = -1, x = 5", c: false}, {t: "x = 1, x = 5", c: false}, {t: "x = -1, x = -5", c: false}] },
+            { q: "៤. ដោះស្រាយសមីការ 3x² - 10x + 8 = 0", options: [{t: "x = 2, x = 4/3", c: true}, {t: "x = -2, x = -4/3", c: false}, {t: "x = 4, x = 2/3", c: false}, {t: "គ្មានឫសពិត", c: false}] },
+            { q: "៥. ដោះស្រាយសមីការ x² - 2x - 8 = 0", options: [{t: "x = 4, x = -2", c: true}, {t: "x = -4, x = 2", c: false}, {t: "x = 2, x = 4", c: false}, {t: "x = -2, x = -4", c: false}] },
+            { q: "៦. ដោះស្រាយសមីការ -x² + 6x - 8 = 0", options: [{t: "x = 2, x = 4", c: true}, {t: "x = -2, x = -4", c: false}, {t: "x = 1, x = 8", c: false}, {t: "គ្មានឫសពិត", c: false}] },
+            { q: "៧. ដោះស្រាយសមីការ x² - 4x + 4 = 0", options: [{t: "x = 2", c: true}, {t: "x = -2", c: false}, {t: "x = 4", c: false}, {t: "គ្មានឫសពិត", c: false}] },
+            { q: "៨. ដោះស្រាយសមីការ 4x² - 12x + 9 = 0", options: [{t: "x = 3/2", c: true}, {t: "x = -3/2", c: false}, {t: "x = 2/3", c: false}, {t: "x = 3, x = 2", c: false}] },
+            { q: "៩. ដោះស្រាយសមីការ 9x² + 6x + 1 = 0", options: [{t: "x = -1/3", c: true}, {t: "x = 1/3", c: false}, {t: "x = 3", c: false}, {t: "x = -3", c: false}] },
+            { q: "១០. ដោះស្រាយសមីការ x² + 10x + 25 = 0", options: [{t: "x = -5", c: true}, {t: "x = 5", c: false}, {t: "x = 10", c: false}, {t: "x = 25", c: false}] },
+            { q: "១១. ដោះស្រាយសមីការ 16x² - 8x + 1 = 0", options: [{t: "x = 1/4", c: true}, {t: "x = -1/4", c: false}, {t: "x = 4", c: false}, {t: "x = -4", c: false}] },
+            { q: "១២. ដោះស្រាយសមីការ x² + x + 1 = 0", options: [{t: "គ្មានឫសពិត", c: true}, {t: "x = 1", c: false}, {t: "x = -1", c: false}, {t: "x = 0", c: false}] },
+            { q: "១៣. ដោះស្រាយសមីការ 2x² - 3x + 4 = 0", options: [{t: "គ្មានឫសពិត", c: true}, {t: "x = 1, x = 2", c: false}, {t: "x = -1, x = -2", c: false}, {t: "x = 3/2", c: false}] },
+            { q: "១៤. ដោះស្រាយសមីការ x² + 2x + 5 = 0", options: [{t: "គ្មានឫសពិត", c: true}, {t: "x = 1, x = 5", c: false}, {t: "x = -1, x = -5", c: false}, {t: "x = 5", c: false}] },
+            { q: "១៥. ដោះស្រាយសមីការ 3x² + x + 2 = 0", options: [{t: "គ្មានឫសពិត", c: true}, {t: "x = 1, x = 2/3", c: false}, {t: "x = -1, x = -2/3", c: false}, {t: "x = 2", c: false}] },
+            
+            // II. សមីការរង្វង់
+            { q: "១៦. រកកាំ r នៃរង្វង់ x² + y² = 16", options: [{t: "r = 4", c: true}, {t: "r = 16", c: false}, {t: "r = 8", c: false}, {t: "r = 2", c: false}] },
+            { q: "១៧. សមីការរង្វង់ផ្ចិត O(0,0), កាំ r = 5 គឺ៖", options: [{t: "x² + y² = 25", c: true}, {t: "x² + y² = 5", c: false}, {t: "(x-5)² + y² = 0", c: false}, {t: "x² + y² = 10", c: false}] },
+            { q: "១៨. សមីការរង្វង់ផ្ចិត I(2,-3), កាំ r = 4 គឺ៖", options: [{t: "(x-2)² + (y+3)² = 16", c: true}, {t: "(x+2)² + (y-3)² = 16", c: false}, {t: "(x-2)² + (y+3)² = 4", c: false}, {t: "x² + y² = 16", c: false}] },
+            { q: "១៩. រកផ្ចិត I និងកាំ r នៃរង្វង់ (x+1)² + (y-4)² = 9", options: [{t: "I(-1, 4), r = 3", c: true}, {t: "I(1, -4), r = 3", c: false}, {t: "I(-1, 4), r = 9", c: false}, {t: "I(1, -4), r = 9", c: false}] },
+            { q: "២០. រកផ្ចិត I និងកាំ r នៃ x² + y² - 4x + 6y - 12 = 0", options: [{t: "I(2, -3), r = 5", c: true}, {t: "I(-2, 3), r = 5", c: false}, {t: "I(2, -3), r = 25", c: false}, {t: "I(-2, 3), r = 25", c: false}] },
+            { q: "២១. រកផ្ចិត I និងកាំ r នៃ x² + y² + 2x - 8y + 8 = 0", options: [{t: "I(-1, 4), r = 3", c: true}, {t: "I(1, -4), r = 3", c: false}, {t: "I(-1, 4), r = 9", c: false}, {t: "I(1, -4), r = 9", c: false}] },
+            { q: "២២. រកផ្ចិត I និងកាំ r នៃ 2x² + 2y² - 8x + 12y + 2 = 0", options: [{t: "I(2, -3), r = 2√3", c: true}, {t: "I(-2, 3), r = 2√3", c: false}, {t: "I(2, -3), r = 12", c: false}, {t: "I(4, -6), r = 2√3", c: false}] },
+            { q: "២៣. សមីការរង្វង់មានអង្កត់ផ្ចិត AB, A(1,2) B(5,6) គឺ៖", options: [{t: "(x-3)² + (y-4)² = 8", c: true}, {t: "(x+3)² + (y+4)² = 8", c: false}, {t: "(x-3)² + (y-4)² = 16", c: false}, {t: "(x-4)² + (y-4)² = 8", c: false}] },
+            { q: "២៤. សមីការរង្វង់ផ្ចិត I(3,2) ប៉ះអ័ក្សអាប់ស៊ីស (Ox) គឺ៖", options: [{t: "(x-3)² + (y-2)² = 4", c: true}, {t: "(x-3)² + (y-2)² = 9", c: false}, {t: "(x+3)² + (y+2)² = 4", c: false}, {t: "(x-2)² + (y-3)² = 4", c: false}] },
+            { q: "២៥. សមីការរង្វង់កាត់ 3 ចំណុច A(0,0), B(4,0), C(0,6) គឺ៖", options: [{t: "(x-2)² + (y-3)² = 13", c: true}, {t: "(x-2)² + (y-3)² = 26", c: false}, {t: "(x+2)² + (y+3)² = 13", c: false}, {t: "x² + y² = 13", c: false}] }
+        ];
+
+        // === Setup UI ពេលបើកដំបូង ===
+        window.onload = () => {
+            // បង្កើតជម្រើសថ្ងៃ
+            let dayHtml = '<option value="">ថ្ងៃ</option>';
+            for(let i=1; i<=31; i++) dayHtml += `<option value="${i}">${i}</option>`;
+            document.getElementById('dob-day').innerHTML = dayHtml;
+
+            // បង្កើតជម្រើសខែ
+            let monthHtml = '<option value="">ខែ</option>';
+            for(let i=1; i<=12; i++) monthHtml += `<option value="${i}">${i}</option>`;
+            document.getElementById('dob-month').innerHTML = monthHtml;
+
+            // បង្កើតជម្រើសឆ្នាំ (៣០ឆ្នាំចុះ)
+            let yearHtml = '<option value="">ឆ្នាំ</option>';
+            let currentYr = new Date().getFullYear();
+            for(let i=currentYr-30; i<=currentYr-5; i++) yearHtml += `<option value="${i}">${i}</option>`;
+            document.getElementById('dob-year').innerHTML = yearHtml;
+
+            // ប្រមូលព័ត៌មានឧបករណ៍ (ចាប់ Model ទូរស័ព្ទ / កុំព្យូទ័រ ដើម្បីការពារបន្លំ)
+            deviceInfo = navigator.userAgent + " | " + window.innerWidth + "x" + window.innerHeight;
+        };
+
+        // === មុខងារ Login & Verify ===
+        function verifyLogin() {
+            const id = document.getElementById('login-id').value.trim();
+            const d = document.getElementById('dob-day').value;
+            const m = document.getElementById('dob-month').value;
+            const y = document.getElementById('dob-year').value;
+            const errorDiv = document.getElementById('login-error');
+            const btn = document.getElementById('login-btn');
+
+            if(!id || !d || !m || !y) {
+                errorDiv.innerText = "សូមបំពេញព័ត៌មានឲ្យបានគ្រប់ជ្រុងជ្រោយ!";
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            // ទម្រង់ថ្ងៃខែដែលនឹងបញ្ជូនទៅ Google Script (មិនមាន 0 មុខ)
+            const dob = `${parseInt(d)}/${parseInt(m)}/${parseInt(y)}`;
+
+            btn.innerText = "កំពុងផ្ទៀងផ្ទាត់សិស្ស...";
+            btn.disabled = true;
+            errorDiv.classList.add('hidden');
+
+            // ផ្ញើទៅ Google Sheet ឲ្យឆែកមើល
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: "login", id: id, dob: dob })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    // បើត្រឹមត្រូវ អនុញ្ញាតឲ្យចូល
+                    currentStudent.id = id;
+                    currentStudent.name = data.name;
+                    document.getElementById('display-name').innerText = data.name;
+                    document.getElementById('user-info').classList.remove('hidden');
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('quiz-screen').classList.remove('hidden');
+                    loadQuestion();
+                } else {
+                    // បើខុស
+                    errorDiv.innerText = data.message;
+                    errorDiv.classList.remove('hidden');
+                    btn.innerText = "ផ្ទៀងផ្ទាត់ និងចាប់ផ្តើម";
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                errorDiv.innerText = "សូមពិនិត្យមើល URL របស់ Google Apps Script ម្តងទៀត!";
+                errorDiv.classList.remove('hidden');
+                btn.innerText = "ផ្ទៀងផ្ទាត់ និងចាប់ផ្តើម";
+                btn.disabled = false;
+            });
+        }
+
+        // === មុខងារដំណើរការតេស្ត ===
+        function loadQuestion() {
+            hasAnswered = false;
+            const btn = document.getElementById('next-btn');
+            btn.disabled = true;
+            btn.className = "bg-gray-300 text-gray-500 font-bold py-3 px-8 rounded-lg cursor-not-allowed transition duration-200";
+
+            const qInfo = quizData[currentQuestionIndex];
+            document.getElementById('question-text').innerText = qInfo.q;
+            document.getElementById('question-progress').innerText = `សំណួរទី ${currentQuestionIndex + 1} / ${TOTAL_QUESTIONS}`;
+            
+            const optionsDiv = document.getElementById('options-container');
+            optionsDiv.innerHTML = '';
+            
+            // ច្របល់ចម្លើយ
+            let shuffledOptions = [...qInfo.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach((opt) => {
+                const btnObj = document.createElement('button');
+                btnObj.innerHTML = `<span class="math-font">${opt.t}</span>`;
+                btnObj.className = 'w-full text-left p-4 border-2 border-gray-200 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 transition duration-200 font-medium text-gray-700 bg-white shadow-sm';
+                btnObj.onclick = () => selectAnswer(opt, btnObj, shuffledOptions);
+                optionsDiv.appendChild(btnObj);
+            });
+        }
+
+        function selectAnswer(selectedOpt, btnElement, allOpts) {
+            if (hasAnswered) return;
+            hasAnswered = true;
+
+            const buttons = document.getElementById('options-container').children;
+            let isCorrect = selectedOpt.c;
+
+            // ប្តូរពណ៌ពេលចុច
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('hover:border-indigo-400', 'hover:bg-indigo-50');
+                buttons[i].disabled = true;
+                if (allOpts[i].c) {
+                    buttons[i].classList.add('bg-green-100', 'border-green-500', 'text-green-800'); // បង្ហាញចម្លើយត្រូវ
+                }
+            }
+
+            if (!isCorrect) {
+                btnElement.classList.add('bg-red-100', 'border-red-500', 'text-red-800'); // បង្ហាញចម្លើយខុស
+            }
+
+            // គណនាពិន្ទុ (ត្រូវបូក ខុសដក)
+            if (isCorrect) {
+                currentScore += PTS_PER_CORRECT;
+                correctAnswers++;
+            } else {
+                currentScore -= PTS_DEDUCT;
+                wrongAnswers++;
+            }
+
+            document.getElementById('score-display').innerText = currentScore.toFixed(2);
+            quizDetails.push(`Q${currentQuestionIndex+1}: ${isCorrect ? 'ត្រូវ' : 'ខុស'}`);
+
+            // បើកប៊ូតុងទៅមុខ
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = false;
+            nextBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-200";
+            if (currentQuestionIndex === TOTAL_QUESTIONS - 1) {
+                nextBtn.innerText = "បញ្ចប់ការប្រឡង 🏁";
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < TOTAL_QUESTIONS) {
+                loadQuestion();
+            } else {
+                showResultsAndSubmit();
+            }
+        }
+
+        function showResultsAndSubmit() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            document.getElementById('final-score').innerText = currentScore.toFixed(2);
+            document.getElementById('correct-count').innerText = `ត្រូវ: ${correctAnswers}`;
+            document.getElementById('wrong-count').innerText = `ខុស: ${wrongAnswers}`;
+
+            // ត្រៀមទិន្នន័យបញ្ជូនទៅ Google Sheets
+            const payload = {
+                action: "submit",
+                studentId: currentStudent.id,
+                studentName: currentStudent.name,
+                finalScore: currentScore.toFixed(2),
+                correctCount: correctAnswers,
+                wrongCount: wrongAnswers,
+                deviceInfo: deviceInfo, // ផ្ទុកព័ត៌មានទូរស័ព្ទ/កុំព្យូទ័រការពារបន្លំ
+                details: quizDetails.join(', ')
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                const statusDiv = document.getElementById('submission-status');
+                if(data.success) {
+                    statusDiv.className = "text-sm font-bold p-4 rounded-lg mt-4 bg-green-100 text-green-800";
+                    statusDiv.innerHTML = "✅ លទ្ធផលរបស់អ្នកត្រូវបានរក្សាទុកដោយជោគជ័យទៅក្នុងប្រព័ន្ធ!";
+                } else {
+                    throw new Error("Backend error");
+                }
+            })
+            .catch(err => {
+                const statusDiv = document.getElementById('submission-status');
+                statusDiv.className = "text-sm font-bold p-4 rounded-lg mt-4 bg-red-100 text-red-800";
+                statusDiv.innerHTML = "❌ មានបញ្ហាក្នុងការរក្សាទុក។ សូមប្រាប់លោកគ្រូ ឬអ្នកគ្រប់គ្រង។";
+            });
+        }
+    </script>
+</body>
+</html>
+```
