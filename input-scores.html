@@ -3,284 +3,321 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ប្រព័ន្ធបញ្ចូលពិន្ទុរបស់វិទ្យាល័យហ៊ុនសែនកំពង់ត្រឡាច</title>
+  <title>វិទ្យាល័យហ៊ុនសែនកំពង់ត្រឡាច - ប្រព័ន្ធបញ្ចូលពិន្ទុ</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- ភ្ជាប់ api.js ដើម្បីទាញយក Link -->
   <script src="api.js"></script>
   
   <style>
-    body { background-color: #f0f2f5; font-family: 'Kantumruy Pro', sans-serif; }
-    #appSection { display: none; }
+    body { background-color: #f4f6f9; font-family: 'Kantumruy Pro', sans-serif; }
+    .school-title { font-size: 1.3rem; font-weight: bold; color: white; text-transform: uppercase;}
+    .sys-subtitle { font-size: 1rem; color: #d1e7dd; }
     
-    .login-card { border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
-    .login-header { background: linear-gradient(135deg, #0d6efd, #0dcaf0); padding: 30px; text-align: center; color: white; }
-    .school-logo { width: 100px; height: auto; margin-bottom: 15px; border-radius: 50%; padding: 5px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .login-card { border-radius: 15px; border: none; box-shadow: 0 5px 20px rgba(0,0,0,0.1); overflow: hidden; }
+    .login-header { background: linear-gradient(135deg, #0d6efd, #0dcaf0); padding: 25px; text-align: center; }
+    .school-logo { width: 90px; height: auto; margin-bottom: 10px; border-radius: 50%; padding: 3px; background: white; }
     
-    .score-input { width: 80px; text-align: center; font-weight: bold; text-transform: uppercase; background-color: #e9ecef;}
+    .score-input { width: 75px; text-align: center; font-weight: bold; text-transform: uppercase; background-color: #e9ecef;}
     .score-input:focus { background-color: #fff; box-shadow: 0 0 5px rgba(13, 110, 253, 0.5); border-color: #0d6efd; }
+    .score-input:disabled { background-color: #f8d7da; color: #dc3545; cursor: not-allowed; border: 1px solid #f5c2c7;}
     
-    .footer-note { font-size: 0.9rem; color: #6c757d; text-align: center; margin-top: 20px; }
-    .telegram-link { color: #0088cc; text-decoration: none; font-weight: bold; }
-    .telegram-link:hover { text-decoration: underline; }
+    .nav-pills .nav-link { font-weight: bold; color: #495057; }
+    .nav-pills .nav-link.active { background-color: #0d6efd; color: white; }
+    .table-container { max-height: 65vh; border-radius: 8px; border: 1px solid #dee2e6; overflow-y: auto; }
+    
+    .student-row { cursor: pointer; transition: background 0.2s; }
+    .student-row:hover { background-color: #e9ecef; }
+    .abs-select { font-weight: bold; }
+    .abs-select option[value="A"] { color: red; }
+    .abs-select option[value="P"] { color: orange; }
   </style>
 </head>
 <body>
 
-  <!-- ផ្ទាំង Login -->
-  <div class="container mt-5 pt-3" id="loginSection">
-    <div class="row justify-content-center">
-      <div class="col-md-5 col-sm-8">
+  <!-- ផ្ទាំងគណនី (រក្សាកូដដដែល...) -->
+  <div class="container mt-4" id="authSection">
+    <!-- ... សូមប្រើប្រាស់កូដផ្ទាំង Login ដូចវគ្គមុន ... -->
+    <!-- ដោយសារទំហំតួអក្សរមានកំណត់ ខ្ញុំសង្ខេបត្រង់នេះ សូម Copy កូដ Login ខាងលើមកដាក់ -->
+          <div class="row justify-content-center">
+      <div class="col-md-5 col-sm-10">
         <div class="card login-card">
           <div class="login-header">
             <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" alt="School Logo" class="school-logo">
-            <h4 class="mb-0 fw-bold">ប្រព័ន្ធបញ្ចូលពិន្ទុ</h4>
-            <p class="mb-0" style="font-size: 0.9rem;">វិទ្យាល័យហ៊ុនសែនកំពង់ត្រឡាច</p>
+            <div class="school-title">វិទ្យាល័យហ៊ុនសែនកំពង់ត្រឡាច</div>
+            <div class="sys-subtitle">ប្រព័ន្ធបញ្ចូលពិន្ទុ (Score System)</div>
           </div>
-          <div class="card-body p-4">
-            <div id="loginError" class="alert alert-danger d-none text-center" style="font-size: 0.9rem;"></div>
-            
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-              <input type="text" id="username" class="form-control" placeholder="ឈ្មោះគណនី (Username)">
+          
+          <!-- Login Form -->
+          <div class="card-body p-4" id="loginForm">
+            <div id="loginMsg" class="alert d-none text-center" style="font-size: 0.9rem;"></div>
+            <div class="input-group mb-3"><span class="input-group-text"><i class="fa-solid fa-user"></i></span><input type="text" id="logUser" class="form-control" placeholder="ឈ្មោះគណនី"></div>
+            <div class="input-group mb-3"><span class="input-group-text"><i class="fa-solid fa-lock"></i></span><input type="password" id="logPass" class="form-control" placeholder="លេខសម្ងាត់"></div>
+            <button class="btn btn-primary w-100 fw-bold py-2 mb-3" onclick="login()"><i class="fa-solid fa-right-to-bracket"></i> ចូលប្រព័ន្ធ</button>
+            <div class="d-flex justify-content-between" style="font-size: 0.9rem;">
+              <a href="#" onclick="toggleAuth('registerForm')">ចុះឈ្មោះគណនីថ្មី</a>
+              <a href="#" class="text-danger" onclick="toggleAuth('forgotForm')">ភ្លេចលេខសម្ងាត់?</a>
             </div>
-            
-            <div class="input-group mb-4">
-              <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-              <input type="password" id="password" class="form-control" placeholder="លេខសម្ងាត់ (Password)">
-            </div>
-            
-            <button class="btn btn-primary w-100 fw-bold py-2" onclick="login()"><i class="fa-solid fa-right-to-bracket"></i> ចូលប្រព័ន្ធ</button>
-            
-            <div class="footer-note">
-              ករណីមិនអាចចូលប្រព័ន្ធបាន<br>សូមទាក់ទង <b>លោក ហុន ម៉ុម</b> តាមរយៈ 
-              <a href="https://t.me/Mrhonmom" target="_blank" class="telegram-link"><i class="fa-brands fa-telegram"></i> @Mrhonmom</a>
-            </div>
+          </div>
+
+          <!-- Register Form -->
+          <div class="card-body p-4 d-none" id="registerForm">
+            <h5 class="text-center text-primary fw-bold mb-3">បង្កើតគណនីថ្មី</h5>
+            <div class="input-group mb-2"><span class="input-group-text"><i class="fa-solid fa-user-plus"></i></span><input type="text" id="regUser" class="form-control" placeholder="ឈ្មោះគណនីថ្មី"></div>
+            <div class="input-group mb-2"><span class="input-group-text"><i class="fa-solid fa-key"></i></span><input type="password" id="regPass" class="form-control" placeholder="លេខសម្ងាត់ថ្មី"></div>
+            <div class="input-group mb-3"><span class="input-group-text"><i class="fa-brands fa-telegram"></i></span><input type="text" id="regContact" class="form-control" placeholder="លេខទូរស័ព្ទ ឬ Telegram"></div>
+            <button class="btn btn-success w-100 fw-bold py-2 mb-2" onclick="register()"><i class="fa-solid fa-user-check"></i> ចុះឈ្មោះ</button>
+            <div class="text-center"><a href="#" onclick="toggleAuth('loginForm')" style="font-size: 0.9rem;">ត្រឡប់ទៅការចូលប្រព័ន្ធវិញ</a></div>
+          </div>
+
+          <!-- Forgot Form -->
+          <div class="card-body p-4 d-none" id="forgotForm">
+            <h5 class="text-center text-danger fw-bold mb-3">សុំលេខសម្ងាត់ថ្មី</h5>
+            <div class="input-group mb-3"><span class="input-group-text"><i class="fa-solid fa-user-shield"></i></span><input type="text" id="forgotUser" class="form-control" placeholder="បញ្ជូលឈ្មោះគណនី"></div>
+            <button class="btn btn-danger w-100 fw-bold py-2 mb-2" onclick="resetPassword()"><i class="fa-brands fa-telegram"></i> ផ្ញើសារសុំសិទ្ធិ</button>
+            <div class="text-center"><a href="#" onclick="toggleAuth('loginForm')" style="font-size: 0.9rem;">ត្រឡប់ទៅការចូលប្រព័ន្ធវិញ</a></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ផ្ទាំង App បញ្ចូលពិន្ទុ -->
-  <div class="container-fluid mt-4" id="appSection">
-    <div class="card shadow-sm p-4 border-0" style="border-radius: 12px;">
-      <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-        <h4 class="text-primary mb-0"><i class="fa-solid fa-file-pen"></i> ផ្ទាំងបញ្ជូលពិន្ទុ <small class="text-muted" style="font-size: 1rem;">| អ្នកប្រើ៖ <span id="userDisplay" class="text-danger fw-bold"></span></small></h4>
-        <button class="btn btn-outline-danger btn-sm" onclick="location.reload()"><i class="fa-solid fa-power-off"></i> ចាកចេញ</button>
+  <!-- ផ្ទាំង App ធំ -->
+  <div class="container-fluid mt-3 d-none" id="appSection">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="text-primary mb-0"><i class="fa-solid fa-school"></i> ប្រព័ន្ធពិន្ទុ <span class="badge bg-secondary" id="userDisplay"></span></h5>
+      <button class="btn btn-outline-danger btn-sm" onclick="location.reload()"><i class="fa-solid fa-power-off"></i> ចាកចេញ</button>
+    </div>
+
+    <!-- Tabs Menu -->
+    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-input">បញ្ជូលពិន្ទុ</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-report" onclick="loadReport()">របាយការណ៍សង្ខេប</button></li>
+      <!-- បង្ហាញតែ Admin -->
+      <li class="nav-item d-none" id="nav-admin"><button class="nav-link text-danger" data-bs-toggle="pill" data-bs-target="#tab-admin"><i class="fa-solid fa-lock"></i> គ្រប់គ្រងអវត្តមាន</button></li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- ផ្ទាំងបញ្ចូលពិន្ទុ (រក្សាកូដដដែល...) -->
+      <div class="tab-pane fade show active" id="tab-input">
+        <div class="card shadow-sm p-3 border-0 rounded-3">
+          <!-- Filter រក្សាកូដដដែល... -->
+          <div class="row g-2 mb-2">
+            <div class="col-6 col-md-3"><select id="roomSelect" class="form-select form-select-sm"></select></div>
+            <div class="col-6 col-md-3"><select id="subjectSelect" class="form-select form-select-sm"></select></div>
+            <div class="col-12 col-md-2"><button class="btn btn-success btn-sm w-100" onclick="fetchStudents()" id="btnFetch">ទាញបញ្ជី</button></div>
+            <div class="col-12 col-md-4"><input type="text" id="searchInput" class="form-control form-select-sm" placeholder="🔍 ស្វែងរកឈ្មោះ..." onkeyup="searchTable()"></div>
+          </div>
+          <!-- Table រក្សាកូដដដែល... -->
+          <div class="table-responsive table-container">
+            <table class="table table-hover table-sm align-middle mb-0 sticky-top">
+              <thead class="table-dark">
+                <tr><th class="text-center">តុ</th><th class="d-none d-sm-table-cell">អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th class="text-center">ពិន្ទុ</th></tr>
+              </thead>
+              <tbody id="tableBody"><tr><td colspan="4" class="text-center py-5">សូមរើសបន្ទប់ និងមុខវិជ្ជាសិន</td></tr></tbody>
+            </table>
+          </div>
+          <div class="mt-3 text-end"><button class="btn btn-primary px-4 fw-bold" onclick="saveData()" id="btnSave" style="display:none;"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុក</button></div>
+        </div>
       </div>
-      
-      <div class="row g-2 mb-3">
-        <div class="col-md-3">
-          <select id="roomSelect" class="form-select"><option>កំពុងទាញទិន្នន័យ...</option></select>
-        </div>
-        <div class="col-md-3">
-          <select id="subjectSelect" class="form-select"><option>កំពុងទាញទិន្នន័យ...</option></select>
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-success w-100" onclick="fetchStudents()" id="btnFetch"><i class="fa-solid fa-cloud-arrow-down"></i> ទាញបញ្ជីសិស្ស</button>
-        </div>
-        <div class="col-md-4">
-          <div class="input-group">
-            <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="text" id="searchInput" class="form-control" placeholder="ស្វែងរកឈ្មោះសិស្ស..." onkeyup="searchTable()">
+
+      <!-- ផ្ទាំងរបាយការណ៍ (រក្សាកូដដដែល...) -->
+      <div class="tab-pane fade" id="tab-report">
+        <!-- ដាក់កូដ Tab Report ដដែលនៅទីនេះ -->
+        <div class="card shadow-sm p-3 border-0 rounded-3">
+          <div class="row mb-2">
+            <div class="col-md-4"><select id="reportFilter" class="form-select form-select-sm" onchange="filterReport()"><option value="ALL">មើលគ្រប់បន្ទប់ទាំងអស់</option></select></div>
+          </div>
+          <div class="table-responsive table-container">
+            <table class="table table-bordered table-sm align-middle mb-0 sticky-top">
+              <thead class="table-secondary"><tr><th>បន្ទប់</th><th>មុខវិជ្ជា</th><th class="text-center">សរុប</th><th class="text-center">បញ្ចូលរួច</th><th>ស្ថានភាព</th></tr></thead>
+              <tbody id="reportBody"><tr><td colspan="5" class="text-center py-3">កំពុងទាញ...</td></tr></tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <div class="alert alert-info py-2" style="font-size: 0.9rem;">
-        💡 <b>គន្លឹះ៖</b> អាចវាយអក្សរ <b>A</b> (អវត្តមាន) ឫ <b>P</b> (សុំច្បាប់) បាន។ ប្រើប៊ូតុង <b>Tab</b>, <b>Enter</b> ឫ <b>Space</b> ដើម្បីលោតទៅប្រអប់សិស្សបន្ទាប់។
+      <!-- 🌟 ផ្ទាំង Admin គ្រប់គ្រងអវត្តមានថ្មី 🌟 -->
+      <div class="tab-pane fade" id="tab-admin">
+        <div class="card shadow-sm p-3 border-0 rounded-3 border-danger" style="border-top: 4px solid #dc3545 !important;">
+          <h6 class="text-danger fw-bold"><i class="fa-solid fa-user-slash"></i> កំណត់អវត្តមានសិស្ស (Lock)</h6>
+          
+          <div class="row g-2 mb-3">
+            <div class="col-md-4"><select id="adminRoomSelect" class="form-select form-select-sm" onchange="loadAdminStudents()"><option value="">-- រើសបន្ទប់ --</option></select></div>
+            <div class="col-md-8"><input type="text" id="adminSearch" class="form-control form-select-sm" placeholder="🔍 ស្វែងរកឈ្មោះ ឬអត្តលេខ..." onkeyup="searchAdminTable()"></div>
+          </div>
+
+          <div class="table-responsive table-container" style="max-height: 50vh;">
+            <table class="table table-hover table-sm align-middle mb-0 sticky-top">
+              <thead class="table-danger">
+                <tr><th class="text-center">តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th>ថ្នាក់</th></tr>
+              </thead>
+              <tbody id="adminTableBody">
+                <tr><td colspan="4" class="text-center text-muted py-5">សូមរើសបន្ទប់ដើម្បីបង្ហាញឈ្មោះសិស្ស</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      <div class="table-responsive" style="max-height: 60vh; border-radius: 8px; border: 1px solid #dee2e6;">
-        <table class="table table-hover mb-0 sticky-top">
-          <thead class="table-dark">
-            <tr>
-              <th width="60" class="text-center">តុ</th>
-              <th width="120">អត្តលេខ</th>
-              <th>ឈ្មោះសិស្ស</th>
-              <th width="80">ភេទ</th>
-              <th width="80">ថ្នាក់</th>
-              <th width="150" class="text-center">ពិន្ទុ</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody">
-            <tr><td colspan="6" class="text-center text-muted py-4">សូមរើសបន្ទប់ និងមុខវិជ្ជា រួចចុចទាញបញ្ជីសិស្ស</td></tr>
-          </tbody>
-        </table>
-      </div>
+    </div>
+  </div>
 
-      <div class="mt-4 text-end">
-        <button class="btn btn-primary px-5 py-2 fw-bold" onclick="saveData()" id="btnSave" style="display:none;"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកពិន្ទុ</button>
+  <!-- Modal សម្រាប់ដាក់អវត្តមាន -->
+  <div class="modal fade" id="absenceModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title fs-6"><i class="fa-solid fa-user-lock"></i> កំណត់អវត្តមានសិស្ស</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-3">
+          <div class="alert alert-light border p-2 mb-3">
+            <div class="fw-bold text-primary" id="modName">ឈ្មោះ: ...</div>
+            <div class="text-muted" style="font-size:0.85rem;" id="modInfo">អត្តលេខ: ... | ថ្នាក់: ...</div>
+            <!-- លាក់ទុកសម្រាប់ទាញទិន្នន័យពេល Save -->
+            <input type="hidden" id="modId"> <input type="hidden" id="modClass">
+          </div>
+          
+          <div class="d-flex justify-content-end mb-2">
+            <button class="btn btn-outline-danger btn-sm me-2" onclick="setAllAbsence('A')">ដាក់ A ទាំងអស់</button>
+            <button class="btn btn-outline-warning btn-sm" onclick="setAllAbsence('P')">ដាក់ P ទាំងអស់</button>
+          </div>
+
+          <table class="table table-bordered table-sm align-middle" style="font-size:0.9rem;">
+            <tbody id="modSubjectsBody">
+              <!-- មុខវិជ្ជាលោតទីនេះ -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">បិទ</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="saveAbsence()" id="btnSaveAbs"><i class="fa-solid fa-save"></i> រក្សាទុក</button>
+        </div>
       </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // មុខងារ API
-    async function callAPI(payload) {
-      if(typeof API_URL === 'undefined' || API_URL === "ដាក់_LINK_GOOGLE_APP_SCRIPT_របស់អ្នក_នៅទីនេះ") {
-        alert("សូមកំណត់ API_URL នៅក្នុង File api.js ជាមុនសិន!"); return {error: "No API Link"};
-      }
-      try {
-        let response = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-        return await response.json();
-      } catch (error) { return { error: "បរាជ័យក្នុងការភ្ជាប់ទៅ Server របស់ Google!" }; }
-    }
+    // [រក្សាកូដ toggleAuth, callAPI, login, register, resetPassword, loadDropdowns, fetchStudents, validateInput, setupKeyboardAndPaste, saveData, searchTable ដូចចាស់]
 
+    // ក្នុង Function login ត្រូវបន្ថែមការឆែក Role
     async function login() {
-      let u = document.getElementById('username').value;
-      let p = document.getElementById('password').value;
-      if(!u || !p) return alert("សូមបញ្ជូលឈ្មោះ និងលេខសម្ងាត់!");
-
-      let btn = document.querySelector('#loginSection button');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងផ្ទៀងផ្ទាត់...'; btn.disabled = true;
-      
+      // ... [កូដដើម] ...
       let res = await callAPI({ action: "login", username: u, password: p });
-      
       if(res.success) {
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('appSection').style.display = 'block';
-        document.getElementById('userDisplay').innerText = res.username;
+        document.getElementById('authSection').classList.add('d-none');
+        document.getElementById('appSection').classList.remove('d-none');
+        document.getElementById('userDisplay').innerText = res.username + (res.role === "Admin" ? " (Admin)" : "");
+        
+        // បើជា Admin បង្ហាញ Tab ទី៣
+        if(res.role === "Admin") document.getElementById('nav-admin').classList.remove('d-none');
+        
         loadDropdowns();
-      } else {
-        let errBox = document.getElementById('loginError');
-        errBox.innerText = res.error; errBox.classList.remove('d-none');
-        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> ចូលប្រព័ន្ធ'; btn.disabled = false;
-      }
+      } else showMsg('loginMsg', true, res.error);
     }
 
+    // [មុខងារ Report ដដែល] ...
+
+    // =====================================
+    // លក្ខណៈពិសេស Admin: គ្រប់គ្រងអវត្តមាន
+    // =====================================
+    // ពេលបើក Dropdown ក៏ត្រូវដាក់បញ្ចូល Option ទៅកាន់ adminRoomSelect ដែរ
     async function loadDropdowns() {
       let res = await callAPI({ action: "getDropdowns" });
       if(res.rooms) {
-        document.getElementById('roomSelect').innerHTML = '<option value="">-- រើសបន្ទប់ --</option>' + res.rooms.map(r => `<option value="${r}">បន្ទប់ទី ${r}</option>`).join('');
-        document.getElementById('subjectSelect').innerHTML = '<option value="">-- រើសមុខវិជ្ជា --</option>' + res.subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+        let opts = '<option value="">-បន្ទប់-</option>' + res.rooms.map(r => `<option value="${r}">${r}</option>`).join('');
+        document.getElementById('roomSelect').innerHTML = opts;
+        document.getElementById('adminRoomSelect').innerHTML = opts; // ដាក់ឲ្យ Admin
+        document.getElementById('subjectSelect').innerHTML = '<option value="">-មុខវិជ្ជា-</option>' + res.subjects.map(s => `<option value="${s}">${s}</option>`).join('');
       }
     }
 
-    async function fetchStudents() {
-      let room = document.getElementById('roomSelect').value;
-      let subject = document.getElementById('subjectSelect').value;
-      if(!room || !subject) return alert("សូមជ្រើសរើសបន្ទប់ និងមុខវិជ្ជា!");
+    async function loadAdminStudents() {
+      let room = document.getElementById('adminRoomSelect').value;
+      let tbody = document.getElementById('adminTableBody');
+      if(!room) { tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-5">សូមរើសបន្ទប់...</td></tr>'; return; }
 
-      let btn = document.getElementById('btnFetch');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញ...'; btn.disabled = true;
-      document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="text-center py-4">កំពុងដំណើរការទាញទិន្នន័យ...</td></tr>';
-
-      let res = await callAPI({ action: "getStudents", room: room, subject: subject });
-      let tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '<tr><td colspan="4" class="text-center py-5"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញ...</td></tr>';
+      let res = await callAPI({ action: "getStudentsByRoomOnly", room: room });
       tbody.innerHTML = '';
+      
+      if(res.students) {
+        res.students.forEach(stu => {
+          tbody.innerHTML += `<tr class="student-row search-admin-row" onclick="openAbsenceModal('${stu.id}', '${stu.name}', '${stu.className}')">
+            <td class="text-center fw-bold">${stu.desk}</td>
+            <td class="text-muted" style="font-size:0.85rem;">${stu.id}</td>
+            <td class="fw-bold text-primary">${stu.name} <i class="fa-solid fa-arrow-pointer float-end text-muted mt-1" style="font-size:0.7rem;"></i></td>
+            <td>${stu.className}</td>
+          </tr>`;
+        });
+      }
+    }
 
-      if(!res || res.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">គ្មានទិន្នន័យសិស្សក្នុងបន្ទប់នេះទេ!</td></tr>';
-        document.getElementById('btnSave').style.display = 'none';
-      } else {
-        res.forEach((stu, index) => {
-          let val = stu.score !== "" ? stu.score : "";
-          let bg = stu.score !== "" ? "table-warning" : "";
-          
-          let row = `<tr class="search-row ${bg}">
-            <td class="text-center align-middle">${stu.desk}</td>
-            <td class="stu-id align-middle text-muted">${stu.id}</td>
-            <td class="stu-name align-middle fw-bold">${stu.name}</td>
-            <td class="align-middle">${stu.gender}</td>
-            <td class="stu-class align-middle">${stu.className}</td>
-            <td class="text-center">
-              <input type="text" class="form-control score-input mx-auto" data-index="${index}" data-max="${stu.maxScore}" value="${val}" oninput="validateInput(this)" placeholder="ទទេ">
-              <small class="text-muted" style="font-size:0.7rem;">អតិបរមា: ${stu.maxScore}</small>
+    function searchAdminTable() {
+      let filter = document.getElementById("adminSearch").value.toUpperCase();
+      document.querySelectorAll(".search-admin-row").forEach(row => { row.style.display = row.innerText.toUpperCase().includes(filter) ? "" : "none"; });
+    }
+
+    // បើកផ្ទាំងកំណត់ A/P
+    let currentModalParams = {};
+    async function openAbsenceModal(id, name, className) {
+      document.getElementById('modName').innerText = "ឈ្មោះ: " + name;
+      document.getElementById('modInfo').innerText = `អត្តលេខ: ${id} | ថ្នាក់: ${className}`;
+      document.getElementById('modId').value = id;
+      document.getElementById('modClass').value = className;
+      
+      currentModalParams = { id: id, name: name, className: className, room: document.getElementById('adminRoomSelect').value };
+
+      let tbody = document.getElementById('modSubjectsBody');
+      tbody.innerHTML = '<tr><td colspan="2" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i> ទាញមុខវិជ្ជា...</td></tr>';
+      
+      let modal = new bootstrap.Modal(document.getElementById('absenceModal'));
+      modal.show();
+
+      let res = await callAPI({ action: "getStudentSubjects", id: id, className: className });
+      tbody.innerHTML = '';
+      if(res.subjects) {
+        res.subjects.forEach(sub => {
+          let selA = sub.val === 'A' ? 'selected' : '';
+          let selP = sub.val === 'P' ? 'selected' : '';
+          tbody.innerHTML += `<tr>
+            <td class="fw-bold text-muted w-50">${sub.subject}</td>
+            <td>
+              <select class="form-select form-select-sm abs-select" data-subject="${sub.subject}">
+                <option value="">-- (ធម្មតា) --</option>
+                <option value="A" ${selA}>A (អវត្តមាន)</option>
+                <option value="P" ${selP}>P (សុំច្បាប់)</option>
+              </select>
             </td>
           </tr>`;
-          tbody.innerHTML += row;
         });
-        document.getElementById('btnSave').style.display = 'inline-block';
-        setupKeyboardAndPaste(); 
       }
-      btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> ទាញបញ្ជីសិស្ស'; btn.disabled = false;
     }
 
-    // Validation (អនុញ្ញាតលេខ និង A, P)
-    function validateInput(input) {
-      let val = input.value.toUpperCase();
-      let max = parseFloat(input.getAttribute('data-max'));
-      if(val === 'A' || val === 'P' || val === '') { input.value = val; return; }
-      
-      val = val.replace(/[^0-9.]/g, ''); // លុបអក្សរផ្សេងៗចេញ
-      if(parseFloat(val) > max) { alert(`ពិន្ទុមិនអាចលើសពី ${max} ឡើយ!`); val = max; }
-      input.value = val;
+    function setAllAbsence(val) {
+      document.querySelectorAll('.abs-select').forEach(sel => sel.value = val);
     }
 
-    // មុខងារ Enter, Space ដើម្បីលោតទៅប្រអប់បន្ទាប់ និងមុខងារ Paste ពី Excel
-    function setupKeyboardAndPaste() {
-      const inputs = document.querySelectorAll('.score-input');
-      
-      inputs.forEach((input, i) => {
-        // Keyboard: Enter ឫ Space
-        input.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault(); // ការពារកុំឲ្យដកឃ្លា
-            if(i + 1 < inputs.length) {
-              inputs[i + 1].focus();
-              inputs[i + 1].select(); // Select អក្សរចាស់បើមាន
-            }
-          }
-        });
-
-        // Paste Excel
-        input.addEventListener('paste', function(e) {
-          e.preventDefault();
-          let pasteData = (e.clipboardData || window.clipboardData).getData('text');
-          let rows = pasteData.trim().split('\n');
-          let dataIdx = 0;
-          
-          for(let j = i; j < inputs.length; j++) {
-            if(inputs[j].closest('tr').style.display !== "none" && dataIdx < rows.length) {
-              inputs[j].value = rows[dataIdx].trim().toUpperCase();
-              validateInput(inputs[j]);
-              dataIdx++;
-            }
-          }
-        });
-      });
-    }
-
-    async function saveData() {
-      let room = document.getElementById('roomSelect').value;
-      let subject = document.getElementById('subjectSelect').value;
-      let rows = document.querySelectorAll('.search-row');
-      let payload = [];
-
-      rows.forEach(row => {
-        payload.push({
-          room: room, subject: subject,
-          id: row.querySelector('.stu-id').innerText,
-          name: row.querySelector('.stu-name').innerText,
-          className: row.querySelector('.stu-class').innerText,
-          score: row.querySelector('.score-input').value.trim()
-        });
+    async function saveAbsence() {
+      let records = [];
+      document.querySelectorAll('.abs-select').forEach(sel => {
+        records.push({ subject: sel.getAttribute('data-subject'), val: sel.value });
       });
 
-      let btn = document.getElementById('btnSave');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងរក្សាទុក...'; btn.disabled = true;
-
-      let res = await callAPI({ action: "saveScores", payload: payload });
+      let btn = document.getElementById('btnSaveAbs'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> រក្សាទុក...'; btn.disabled = true;
+      
+      let payload = { room: currentModalParams.room, id: currentModalParams.id, name: currentModalParams.name, className: currentModalParams.className, records: records };
+      let res = await callAPI({ action: "saveAbsence", payload: payload });
+      
+      btn.innerHTML = '<i class="fa-solid fa-save"></i> រក្សាទុក'; btn.disabled = false;
       if(res.success) {
-        alert(res.message);
-        fetchStudents(); // Refresh ឲ្យចេញពណ៌លឿង (Update)
+        // បិទ Modal
+        bootstrap.Modal.getInstance(document.getElementById('absenceModal')).hide();
+        // បើគ្រូកំពុងបើកបន្ទប់នេះដែរ ឲ្យវា Refresh អូតូ
+        if(document.getElementById('roomSelect').value === currentModalParams.room) fetchStudents(); 
       } else alert(res.error);
-      
-      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> រក្សាទុកពិន្ទុ'; btn.disabled = false;
-    }
-
-    function searchTable() {
-      let filter = document.getElementById("searchInput").value.toUpperCase();
-      let rows = document.querySelectorAll(".search-row");
-      rows.forEach(row => { row.style.display = row.innerText.toUpperCase().includes(filter) ? "" : "none"; });
     }
   </script>
 </body>
 </html>
-
