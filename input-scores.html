@@ -137,19 +137,35 @@
           </div>
         </div>
       </div>
-
-      <!-- ផ្ទាំង Admin គ្រប់គ្រងអវត្តមាន -->
+<!-- ផ្ទាំង Admin គ្រប់គ្រងអវត្តមាន -->
       <div class="tab-pane fade" id="tab-admin">
         <div class="card shadow-sm p-3 border-0 rounded-3 border-danger" style="border-top: 4px solid #dc3545 !important;">
           <h6 class="text-danger fw-bold"><i class="fa-solid fa-user-slash"></i> កំណត់អវត្តមានសិស្ស (Lock)</h6>
+          
           <div class="row g-2 mb-3">
-            <div class="col-md-4"><select id="adminRoomSelect" class="form-select form-select-sm" onchange="loadAdminStudents()"><option value="">-- រើសបន្ទប់ --</option></select></div>
-            <div class="col-md-8"><input type="text" id="adminSearch" class="form-control form-select-sm" placeholder="🔍 ស្វែងរកឈ្មោះ ឬអត្តលេខ..." onkeyup="searchAdminTable()"></div>
+            <div class="col-md-3"><select id="adminRoomSelect" class="form-select form-select-sm" onchange="loadAdminStudents()"><option value="">-- រើសបន្ទប់ --</option></select></div>
+            <div class="col-md-4"><input type="text" id="adminSearch" class="form-control form-select-sm" placeholder="🔍 ស្វែងរកឈ្មោះ ឬអត្តលេខ..." onkeyup="searchAdminTable()"></div>
+            <!-- ប៊ូតុងបញ្ជាម្ដងច្រើននាក់ -->
+            <div class="col-md-5 text-end">
+              <button class="btn btn-outline-danger btn-sm" onclick="applyBulkAbsence('A')" id="btnBulkA"><i class="fa-solid fa-a"></i> ដាក់ A អ្នកដែលបានរើស</button>
+              <button class="btn btn-outline-warning btn-sm" onclick="applyBulkAbsence('P')" id="btnBulkP"><i class="fa-solid fa-p"></i> ដាក់ P អ្នកដែលបានរើស</button>
+            </div>
           </div>
+
           <div class="table-responsive table-container" style="max-height: 50vh;">
             <table class="table table-hover table-sm align-middle mb-0 sticky-top">
-              <thead class="table-danger"><tr><th class="text-center">តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th>ថ្នាក់</th></tr></thead>
-              <tbody id="adminTableBody"><tr><td colspan="4" class="text-center text-muted py-5">សូមរើសបន្ទប់ដើម្បីបង្ហាញឈ្មោះសិស្ស</td></tr></tbody>
+              <thead class="table-danger">
+                <tr>
+                  <th class="text-center" width="40"><input type="checkbox" class="form-check-input" id="checkAllAdmin" onclick="toggleAllAdminCheckboxes()"></th>
+                  <th class="text-center">តុ</th>
+                  <th>អត្តលេខ</th>
+                  <th>ឈ្មោះសិស្ស</th>
+                  <th>ថ្នាក់</th>
+                </tr>
+              </thead>
+              <tbody id="adminTableBody">
+                <tr><td colspan="5" class="text-center text-muted py-5">សូមរើសបន្ទប់ដើម្បីបង្ហាញឈ្មោះសិស្ស</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
