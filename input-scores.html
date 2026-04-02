@@ -13,8 +13,6 @@
   <!-- SweetAlert2 សម្រាប់សារលោតស្អាតៗ -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
-  <script src="api.js"></script>
-  
   <style>
     :root {
       --primary-color: #0d6efd;
@@ -29,41 +27,38 @@
     .sys-subtitle { font-size: 1rem; color: rgba(255, 255, 255, 0.8); }
     .school-logo { width: 90px; height: 90px; object-fit: contain; border-radius: 50%; padding: 5px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     
-    /* App Elements */
-    .nav-pills .nav-link { font-weight: 600; color: #6c757d; border-radius: 8px; margin-right: 5px; transition: 0.3s; }
+    /* Tabs & Tables */
+    .nav-pills .nav-link { font-weight: 600; color: #6c757d; border-radius: 8px; margin-right: 5px; transition: 0.3s; cursor: pointer; }
     .nav-pills .nav-link.active { background-color: var(--primary-color); color: white; box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2); }
-    
-    /* Table & Inputs */
     .table-container { max-height: 65vh; border-radius: 10px; border: 1px solid #dee2e6; overflow-y: auto; background: white; }
     .table thead th { position: sticky; top: 0; z-index: 2; background-color: #212529; color: white; }
     .table-hover tbody tr:hover { background-color: #f8f9fa; }
     
+    /* Inputs */
     .score-input { width: 80px; text-align: center; font-weight: 700; font-size: 1rem; text-transform: uppercase; border: 2px solid #e9ecef; transition: 0.2s;}
     .score-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15); transform: scale(1.05); z-index: 1; }
     .score-input:disabled { background-color: #f8d7da; color: #dc3545; border-color: #f5c2c7; cursor: not-allowed; }
     
-    .abs-select { font-weight: bold; }
-    .abs-select option[value="A"] { color: red; }
-    .abs-select option[value="P"] { color: orange; }
-
     /* Sticky Save Button */
     .floating-save { position: sticky; bottom: 15px; z-index: 10; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
+    .cursor-pointer { cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <!-- Auth Section -->
+  <!-- =============================== -->
+  <!-- ផ្នែកចូលប្រព័ន្ធ (Login Section) -->
+  <!-- =============================== -->
   <div class="container mt-5" id="authSection">
     <div class="row justify-content-center">
       <div class="col-md-5 col-sm-10">
-        <div class="card login-card animate__animated animate__fadeInUp">
+        <div class="card login-card">
           <div class="login-header">
             <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" alt="School Logo" class="school-logo">
             <div class="school-title">វិទ្យាល័យហ៊ុនសែនកំពង់ត្រឡាច</div>
             <div class="sys-subtitle">ប្រព័ន្ធគ្រប់គ្រងពិន្ទុ</div>
           </div>
           
-          <!-- Login Form -->
           <div class="card-body p-4" id="loginForm">
             <div class="input-group mb-3"><span class="input-group-text bg-white"><i class="fa-solid fa-user text-primary"></i></span><input type="text" id="logUser" class="form-control" placeholder="ឈ្មោះគណនី"></div>
             <div class="input-group mb-4"><span class="input-group-text bg-white"><i class="fa-solid fa-lock text-primary"></i></span><input type="password" id="logPass" class="form-control" placeholder="លេខសម្ងាត់"></div>
@@ -74,7 +69,6 @@
             </div>
           </div>
 
-          <!-- Register Form -->
           <div class="card-body p-4 d-none" id="registerForm">
             <h5 class="text-center text-primary fw-bold mb-3">បង្កើតគណនីថ្មី</h5>
             <div class="input-group mb-2"><span class="input-group-text"><i class="fa-solid fa-user-plus"></i></span><input type="text" id="regUser" class="form-control" placeholder="ឈ្មោះគណនី"></div>
@@ -84,10 +78,8 @@
             <div class="text-center"><a href="#" class="text-decoration-none" onclick="toggleAuth('loginForm')"><i class="fa-solid fa-arrow-left"></i> ត្រឡប់ក្រោយ</a></div>
           </div>
 
-          <!-- Forgot Password -->
           <div class="card-body p-4 d-none" id="forgotForm">
             <h5 class="text-center text-danger fw-bold mb-3">សុំលេខសម្ងាត់ថ្មី</h5>
-            <p class="text-muted text-center" style="font-size:0.85rem;">ប្រព័ន្ធនឹងបង្កើតសារផ្ញើទៅ Admin តាម Telegram ដោយស្វ័យប្រវត្តិ។</p>
             <div class="input-group mb-3"><span class="input-group-text"><i class="fa-solid fa-user-shield"></i></span><input type="text" id="forgotUser" class="form-control" placeholder="បញ្ចូលឈ្មោះគណនីរបស់អ្នក"></div>
             <button class="btn btn-danger w-100 fw-bold py-2 mb-2" onclick="resetPassword()"><i class="fa-brands fa-telegram"></i> ផ្ញើសារសុំសិទ្ធិ</button>
             <div class="text-center"><a href="#" class="text-decoration-none" onclick="toggleAuth('loginForm')"><i class="fa-solid fa-arrow-left"></i> ត្រឡប់ក្រោយ</a></div>
@@ -97,22 +89,24 @@
     </div>
   </div>
 
-  <!-- App Section -->
+  <!-- =============================== -->
+  <!-- ផ្ទាំងកម្មវិធីគោល (App Section) -->
+  <!-- =============================== -->
   <div class="container-fluid mt-3 d-none" id="appSection">
     <div class="d-flex justify-content-between align-items-center mb-3 bg-white p-3 rounded-3 shadow-sm border">
       <h5 class="text-primary mb-0 fw-bold"><i class="fa-solid fa-school"></i> ប្រព័ន្ធពិន្ទុ <span class="badge bg-primary ms-2" id="userDisplay"></span></h5>
       <button class="btn btn-outline-danger btn-sm fw-bold" onclick="location.reload()"><i class="fa-solid fa-power-off"></i> ចាកចេញ</button>
     </div>
 
-    <!-- Tabs Menu -->
+    <!-- Menu Tabs -->
     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-      <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-input"><i class="fa-solid fa-pen-to-square"></i> បញ្ជូលពិន្ទុ</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-report" onclick="loadReport()"><i class="fa-solid fa-chart-pie"></i> របាយការណ៍</button></li>
-      <li class="nav-item d-none" id="nav-admin"><button class="nav-link text-danger border border-danger" data-bs-toggle="pill" data-bs-target="#tab-admin"><i class="fa-solid fa-user-lock"></i> កំណត់អវត្តមាន</button></li>
+      <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-input"><i class="fa-solid fa-pen-to-square"></i> បញ្ជូលពិន្ទុ</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-report" onclick="loadReport()"><i class="fa-solid fa-chart-pie"></i> របាយការណ៍</a></li>
+      <li class="nav-item d-none" id="nav-admin"><a class="nav-link text-danger border border-danger" data-bs-toggle="pill" data-bs-target="#tab-admin"><i class="fa-solid fa-user-lock"></i> កំណត់អវត្តមាន</a></li>
     </ul>
 
     <div class="tab-content">
-      <!-- Tab: Input Score -->
+      <!-- ផ្ទាំងបញ្ចូលពិន្ទុ -->
       <div class="tab-pane fade show active" id="tab-input">
         <div class="card shadow-sm p-3 border-0 rounded-3">
           <div class="row g-2 mb-3">
@@ -124,7 +118,7 @@
           
           <div class="alert alert-info py-2 d-flex align-items-center" style="font-size: 0.9rem;">
             <i class="fa-solid fa-lightbulb text-warning fs-4 me-2"></i> 
-            <div>អាចចុច <b>Enter</b> ឫព្រួញ <b>ចុះក្រោម(⬇) ឡើងលើ(⬆)</b> ដើម្បីលោតប្រអប់។ ប្រអប់ក្រហម <i class="fa-solid fa-lock text-danger"></i> គឺ Admin បាន Lock មិនអាចបញ្ចូលពិន្ទុបានទេ។</div>
+            <div>អាចចុច <b>Enter</b> ឫព្រួញ <b>ចុះក្រោម(⬇) ឡើងលើ(⬆)</b> ដើម្បីលោតប្រអប់។ ប្រអប់ក្រហមគឺ Admin បាន Lock។ អាច Copy ពី Excel មក Paste បាន។</div>
           </div>
 
           <div class="table-responsive table-container">
@@ -143,25 +137,24 @@
         </div>
       </div>
 
-      <!-- Tab: Report -->
+      <!-- ផ្ទាំងរបាយការណ៍ -->
       <div class="tab-pane fade" id="tab-report">
         <div class="card shadow-sm p-3 border-0 rounded-3">
           <div class="row mb-3">
             <div class="col-md-4">
-              <label class="form-label text-muted small fw-bold">តម្រងទិន្នន័យ៖</label>
               <select id="reportFilter" class="form-select fw-bold" onchange="filterReport()"><option value="ALL">ទាញយកទិន្នន័យ...</option></select>
             </div>
           </div>
           <div class="table-responsive table-container">
             <table class="table table-bordered table-hover align-middle mb-0">
               <thead class="table-light"><tr><th>បន្ទប់</th><th>មុខវិជ្ជា</th><th class="text-center">សរុប</th><th class="text-center">បញ្ចូលរួច</th><th>ស្ថានភាព</th></tr></thead>
-              <tbody id="reportBody"><tr><td colspan="5" class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-primary"></i></td></tr></tbody>
+              <tbody id="reportBody"><tr><td colspan="5" class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-primary"></i> កំពុងទាញទិន្នន័យ...</td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- Tab: Admin (Absence) -->
+      <!-- ផ្ទាំង Admin កំណត់អវត្តមាន -->
       <div class="tab-pane fade" id="tab-admin">
         <div class="card shadow-sm p-3 border-0 rounded-3 border-danger" style="border-top: 4px solid #dc3545 !important;">
           <h5 class="text-danger fw-bold mb-3"><i class="fa-solid fa-user-slash"></i> កំណត់អវត្តមានសិស្សប្រចាំថ្ងៃ</h5>
@@ -181,7 +174,7 @@
                 <tr>
                   <th class="text-center" width="50"><input type="checkbox" class="form-check-input" id="checkAllAdmin" onclick="toggleAllAdminCheckboxes()"></th>
                   <th class="text-center" width="60">តុ</th>
-                  <th width="120">អត្តលេខ</th>
+                  <th>អត្តលេខ</th>
                   <th>ឈ្មោះសិស្ស</th>
                   <th>សកម្មភាព</th>
                 </tr>
@@ -207,8 +200,7 @@
         <div class="modal-body p-3">
           <div class="alert alert-danger bg-opacity-10 border-danger p-2 mb-3">
             <div class="fw-bold text-danger fs-5" id="modName">ឈ្មោះ: ...</div>
-            <div class="text-muted" style="font-size:0.85rem;" id="modInfo">អត្តលេខ: ... | ថ្នាក់: ...</div>
-            <input type="hidden" id="modId"> <input type="hidden" id="modClass">
+            <div class="text-muted" style="font-size:0.85rem;" id="modInfo">អត្តលេខ: ...</div>
           </div>
           <div class="d-flex justify-content-end mb-2 gap-2">
             <button class="btn btn-outline-danger btn-sm fw-bold" onclick="setAllAbsence('A')">ដាក់ A ទាំងអស់</button>
@@ -228,8 +220,14 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- =============================== -->
+  <!-- ផ្នែក JAVASCRIPT LOGIC          -->
+  <!-- =============================== -->
   <script>
-    // 1. Alert Helpers (SweetAlert2)
+    // ⚠️ បញ្ចូល Web App URL របស់អ្នកនៅត្រង់នេះ
+    const API_URL = "YOUR_WEB_APP_URL_HERE"; 
+
     const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
 
     function toggleAuth(formId) {
@@ -237,26 +235,22 @@
       document.getElementById(formId).classList.remove('d-none');
     }
 
-    // 2. API Call
     async function callAPI(payload) {
-      if(typeof API_URL === 'undefined') { Swal.fire('បញ្ហា!', 'បាត់ API_URL', 'error'); return {error: "No API"}; }
+      if(API_URL === "YOUR_WEB_APP_URL_HERE") { Swal.fire('បញ្ហា', 'អ្នកមិនទាន់បានដាក់ API URL ក្នុងកូដ HTML ទេ!', 'error'); return {error: "No API"}; }
       try {
         let res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
         return await res.json();
-      } catch (e) {
-        return { error: "មិនអាចភ្ជាប់ទៅកាន់ប្រព័ន្ធបានទេ! (ពិនិត្យអុីនធឺណិត)" };
-      }
+      } catch (e) { return { error: "មិនអាចភ្ជាប់ទៅកាន់ប្រព័ន្ធបានទេ! (ពិនិត្យអុីនធឺណិត)" }; }
     }
 
-    // 3. Auth
+    // 1. Auth Logic
     async function login() {
       let u = document.getElementById('logUser').value, p = document.getElementById('logPass').value;
       if(!u || !p) return Toast.fire({icon: 'warning', title: 'សូមបញ្ជូលឈ្មោះ និងលេខសម្ងាត់!'});
       
-      let btn = document.getElementById('btnLogin');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងផ្ទៀងផ្ទាត់...'; btn.disabled = true;
-
+      let btn = document.getElementById('btnLogin'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងផ្ទៀងផ្ទាត់...'; btn.disabled = true;
       let res = await callAPI({ action: "login", username: u, password: p });
+      
       if(res.success) {
         document.getElementById('authSection').classList.add('d-none');
         document.getElementById('appSection').classList.remove('d-none');
@@ -264,23 +258,15 @@
         if(res.role === "Admin") document.getElementById('nav-admin').classList.remove('d-none');
         loadDropdowns();
         Toast.fire({icon: 'success', title: `ស្វាគមន៍ ${res.username}`});
-      } else {
-        Swal.fire({icon: 'error', title: 'បរាជ័យ', text: res.error});
-        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> ចូលប្រព័ន្ធ'; btn.disabled = false;
-      }
+      } else { Swal.fire({icon: 'error', title: 'បរាជ័យ', text: res.error}); btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> ចូលប្រព័ន្ធ'; btn.disabled = false; }
     }
 
     async function register() {
       let u = document.getElementById('regUser').value, p = document.getElementById('regPass').value, c = document.getElementById('regContact').value;
       if(!u || !p) return Toast.fire({icon: 'warning', title: 'សូមបំពេញព័ត៌មានឲ្យគ្រប់គ្រាន់!'});
-      
-      let btn = document.getElementById('btnRegister');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>...'; btn.disabled = true;
+      let btn = document.getElementById('btnRegister'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>...'; btn.disabled = true;
       let res = await callAPI({ action: "register", username: u, password: p, contact: c });
-      
-      if(res.success) { Swal.fire('ជោគជ័យ!', res.message, 'success'); toggleAuth('loginForm'); }
-      else Swal.fire('បរាជ័យ!', res.error, 'error');
-      
+      if(res.success) { Swal.fire('ជោគជ័យ!', res.message, 'success'); toggleAuth('loginForm'); } else Swal.fire('បរាជ័យ!', res.error, 'error');
       btn.innerHTML = '<i class="fa-solid fa-check"></i> ចុះឈ្មោះ'; btn.disabled = false;
     }
 
@@ -290,13 +276,12 @@
       window.open(`https://t.me/Mrhonmom?text=${encodeURIComponent(`សួស្ដី Admin! ខ្ញុំសុំ Reset Password សម្រាប់គណនីឈ្មោះ: ${user}`)}`, '_blank');
     }
 
-    // 4. Input & Fetch
+    // 2. Fetch Data & Input
     async function loadDropdowns() {
       let res = await callAPI({ action: "getDropdowns" });
       if(res.rooms) {
         let roomOpts = '<option value="">-- ជ្រើសរើសបន្ទប់ --</option>' + res.rooms.map(r => `<option value="${r}">ថ្នាក់ ${r}</option>`).join('');
-        document.getElementById('roomSelect').innerHTML = roomOpts;
-        document.getElementById('adminRoomSelect').innerHTML = roomOpts;
+        document.getElementById('roomSelect').innerHTML = roomOpts; document.getElementById('adminRoomSelect').innerHTML = roomOpts;
         document.getElementById('subjectSelect').innerHTML = '<option value="">-- ជ្រើសរើសមុខវិជ្ជា --</option>' + res.subjects.map(s => `<option value="${s}">${s}</option>`).join('');
       }
     }
@@ -305,8 +290,7 @@
       let room = document.getElementById('roomSelect').value, subject = document.getElementById('subjectSelect').value;
       if(!room || !subject) return Toast.fire({icon: 'warning', title: 'សូមជ្រើសរើសបន្ទប់ និងមុខវិជ្ជាសិន!'});
 
-      let btn = document.getElementById('btnFetch');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled = true;
+      let btn = document.getElementById('btnFetch'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled = true;
       let tbody = document.getElementById('tableBody'); tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-primary fs-3"></i></td></tr>';
 
       let res = await callAPI({ action: "getStudents", room: room, subject: subject });
@@ -326,9 +310,7 @@
             <td class="text-center align-middle fw-bold">${stu.desk}</td>
             <td class="stu-id text-muted d-none d-sm-table-cell align-middle small">${stu.id}</td>
             <td><div class="fw-bold stu-name text-primary">${stu.name}</div><div class="text-muted" style="font-size:0.75rem;">ថ្នាក់ ${stu.className} | ពិន្ទុពេញ: ${stu.maxScore}</div><span class="stu-class d-none">${stu.className}</span></td>
-            <td class="text-center align-middle position-relative">
-              ${icon} <input type="text" class="form-control score-input mx-auto" data-max="${stu.maxScore}" value="${val}" oninput="validateInput(this)" ${lockAttr}>
-            </td>
+            <td class="text-center align-middle position-relative">${icon} <input type="text" class="form-control score-input mx-auto" data-max="${stu.maxScore}" value="${val}" oninput="validateInput(this)" ${lockAttr}></td>
           </tr>`;
         });
         document.getElementById('saveContainer').classList.remove('d-none');
@@ -342,48 +324,30 @@
       document.querySelectorAll(".search-row").forEach(row => { row.style.display = row.innerText.toUpperCase().includes(filter) ? "" : "none"; });
     }
 
-    // 5. Excel-Like Navigation & Validate
     function validateInput(input) {
       if(input.disabled) return;
-      let val = input.value.toUpperCase();
-      let max = parseFloat(input.getAttribute('data-max'));
+      let val = input.value.toUpperCase(); let max = parseFloat(input.getAttribute('data-max'));
       if(val === 'A' || val === 'P' || val === '') { input.value = val; return; }
-      
       val = val.replace(/[^0-9.]/g, ''); 
-      if(parseFloat(val) > max) { 
-        Toast.fire({icon: 'error', title: `ពិន្ទុអតិបរមាគឺ ${max}`});
-        input.value = ''; return;
-      }
+      if(parseFloat(val) > max) { Toast.fire({icon: 'error', title: `ពិន្ទុអតិបរមាគឺ ${max}`}); input.value = ''; return; }
       input.value = val;
     }
 
+    // 3. Keyboard Nav & Save
     function setupKeyboardAndPaste() {
       const allInputs = Array.from(document.querySelectorAll('.score-input'));
-      
       allInputs.forEach((input, i) => {
         input.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' || e.key === 'ArrowDown') {
-            e.preventDefault();
-            let next = allInputs.slice(i + 1).find(inp => !inp.disabled && inp.closest('tr').style.display !== 'none');
-            if(next) { next.focus(); next.select(); }
-          }
-          if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            let prev = allInputs.slice(0, i).reverse().find(inp => !inp.disabled && inp.closest('tr').style.display !== 'none');
-            if(prev) { prev.focus(); prev.select(); }
-          }
+          if (e.key === 'Enter' || e.key === 'ArrowDown') { e.preventDefault(); let next = allInputs.slice(i + 1).find(inp => !inp.disabled && inp.closest('tr').style.display !== 'none'); if(next) { next.focus(); next.select(); } }
+          if (e.key === 'ArrowUp') { e.preventDefault(); let prev = allInputs.slice(0, i).reverse().find(inp => !inp.disabled && inp.closest('tr').style.display !== 'none'); if(prev) { prev.focus(); prev.select(); } }
         });
-
         input.addEventListener('paste', function(e) {
           e.preventDefault();
           let rows = (e.clipboardData || window.clipboardData).getData('text').trim().split('\n');
           let dataIdx = 0;
           for(let j = i; j < allInputs.length; j++) {
             if(allInputs[j].closest('tr').style.display !== "none" && dataIdx < rows.length) {
-              if(!allInputs[j].disabled) {
-                allInputs[j].value = rows[dataIdx].trim().toUpperCase();
-                validateInput(allInputs[j]);
-              }
+              if(!allInputs[j].disabled) { allInputs[j].value = rows[dataIdx].trim().toUpperCase(); validateInput(allInputs[j]); }
               dataIdx++;
             }
           }
@@ -396,9 +360,7 @@
       let payload = [];
       document.querySelectorAll('.search-row').forEach(row => {
         let input = row.querySelector('.score-input');
-        if(!input.disabled) {
-          payload.push({ room: room, subject: subject, id: row.querySelector('.stu-id').innerText, name: row.querySelector('.stu-name').innerText, className: row.querySelector('.stu-class').innerText, score: input.value.trim() });
-        }
+        if(!input.disabled) payload.push({ room: room, subject: subject, id: row.querySelector('.stu-id').innerText, name: row.querySelector('.stu-name').innerText, className: row.querySelector('.stu-class').innerText, score: input.value.trim() });
       });
 
       let btn = document.getElementById('btnSave'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងរក្សាទុក...'; btn.disabled = true;
@@ -407,7 +369,7 @@
       btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> រក្សាទុកពិន្ទុ'; btn.disabled = false;
     }
 
-    // 6. Reports
+    // 4. Report
     let fullReportData = [];
     async function loadReport() {
       document.getElementById('reportBody').innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fa-solid fa-spinner fa-spin fs-3 text-primary"></i></td></tr>';
@@ -427,7 +389,6 @@
     }
     
     function filterReport() { renderReport(document.getElementById('reportFilter').value); }
-
     function renderReport(filterValue) {
       let tbody = document.getElementById('reportBody'); tbody.innerHTML = '';
       let filtered = fullReportData;
@@ -440,25 +401,25 @@
       });
     }
 
-    // 7. Admin Bulk Absence
+    // 5. Admin Bulk Absence
     async function loadAdminStudents() {
       let room = document.getElementById('adminRoomSelect').value;
       let tbody = document.getElementById('adminTableBody');
       document.getElementById('checkAllAdmin').checked = false;
-      if(!room) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-5">សូមរើសបន្ទប់...</td></tr>'; return; }
+      if(!room) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-5">សូមរើសបន្ទប់ដើម្បីបង្ហាញឈ្មោះសិស្ស</td></tr>'; return; }
 
-      tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fa-solid fa-spinner fa-spin fs-3 text-danger"></i></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fa-solid fa-spinner fa-spin fs-3 text-danger"></i> កំពុងទាញទិន្នន័យ...</td></tr>';
       let res = await callAPI({ action: "getStudentsByRoomOnly", room: room });
       tbody.innerHTML = '';
       
       if(res.students) {
         res.students.forEach(stu => {
-          tbody.innerHTML += `<tr class="search-admin-row">
-            <td class="text-center"><input type="checkbox" class="form-check-input admin-stu-check" data-id="${stu.id}" data-name="${stu.name}" data-class="${stu.className}"></td>
-            <td class="text-center fw-bold">${stu.desk}</td>
-            <td class="text-muted small">${stu.id}</td>
-            <td class="fw-bold text-dark">${stu.name} <span class="badge bg-secondary ms-2">${stu.className}</span></td>
-            <td><button class="btn btn-sm btn-outline-primary fw-bold" onclick="openAbsenceModal('${stu.id}', '${stu.name}', '${stu.className}')"><i class="fa-solid fa-sliders"></i> លម្អិត</button></td>
+          tbody.innerHTML += `<tr class="search-admin-row table-hover cursor-pointer">
+            <td class="text-center" onclick="event.stopPropagation();"><input type="checkbox" class="form-check-input admin-stu-check" data-id="${stu.id}" data-name="${stu.name}" data-class="${stu.className}"></td>
+            <td class="text-center fw-bold" onclick="openAbsenceModal('${stu.id}', '${stu.name}', '${stu.className}')">${stu.desk}</td>
+            <td class="text-muted small" onclick="openAbsenceModal('${stu.id}', '${stu.name}', '${stu.className}')">${stu.id}</td>
+            <td class="fw-bold text-dark" onclick="openAbsenceModal('${stu.id}', '${stu.name}', '${stu.className}')">${stu.name} <span class="badge bg-secondary ms-2">${stu.className}</span></td>
+            <td onclick="openAbsenceModal('${stu.id}', '${stu.name}', '${stu.className}')"><button class="btn btn-sm btn-outline-primary fw-bold"><i class="fa-solid fa-sliders"></i> លម្អិត</button></td>
           </tr>`;
         });
       }
@@ -469,90 +430,62 @@
       document.querySelectorAll(".search-admin-row").forEach(row => { row.style.display = row.innerText.toUpperCase().includes(filter) ? "" : "none"; });
     }
 
-    // New: Checkbox Logic
     function toggleAllAdminCheckboxes() {
       let isChecked = document.getElementById('checkAllAdmin').checked;
-      document.querySelectorAll('.admin-stu-check').forEach(chk => {
-        if(chk.closest('tr').style.display !== 'none') chk.checked = isChecked;
-      });
+      document.querySelectorAll('.admin-stu-check').forEach(chk => { if(chk.closest('tr').style.display !== 'none') chk.checked = isChecked; });
     }
 
-    // New: Bulk Apply API logic
-    async function applyBulkAbsence(status) {
+    async function applyBulkAbsence(val) {
       let room = document.getElementById('adminRoomSelect').value;
-      let checkedBoxes = Array.from(document.querySelectorAll('.admin-stu-check:checked'));
-      if(checkedBoxes.length === 0) return Toast.fire({icon: 'warning', title: 'សូម Tick លើឈ្មោះសិស្សជាមុនសិន!'});
+      if(!room) return Toast.fire({icon: 'warning', title: 'សូមរើសបន្ទប់សិន!'});
+
+      let checkboxes = document.querySelectorAll('.admin-stu-check:checked');
+      if(checkboxes.length === 0) return Toast.fire({icon: 'warning', title: 'សូម Tick ជ្រើសរើសឈ្មោះសិស្ស!'});
       
-      let confirmTxt = status === 'A' ? 'អវត្តមាន (A)' : 'សុំច្បាប់ (P)';
-      let result = await Swal.fire({ title: `បញ្ជាក់ការកំណត់ ${confirmTxt}?`, text: `អ្នកកំពុងកំណត់សិស្ស ${checkedBoxes.length} នាក់។ តើអ្នកចង់បន្តទេ?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់' });
+      let confirmTxt = val === 'A' ? 'អវត្តមាន (A)' : 'សុំច្បាប់ (P)';
+      let result = await Swal.fire({ title: `បញ្ជាក់ការកំណត់ ${confirmTxt}?`, text: `កំណត់សិស្សចំនួន ${checkboxes.length} នាក់ គ្រប់មុខវិជ្ជាមែនទេ?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់' });
       
       if(result.isConfirmed) {
-        Swal.fire({title: 'កំពុងដំណើរការ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
-        // We will loop and build payload, assuming your API allows it or we call one by one. 
-        // *If API doesn't support bulk array yet, we call saveAbsence multiple times via Promise.all
-        let promises = checkedBoxes.map(chk => {
-           let id = chk.getAttribute('data-id'), name = chk.getAttribute('data-name'), className = chk.getAttribute('data-class');
-           // Get subjects silently to save all as 'A' or 'P'
-           return callAPI({ action: "getStudentSubjects", id: id, className: className }).then(res => {
-              if(res.subjects) {
-                 let records = res.subjects.map(s => ({subject: s.subject, val: status}));
-                 return callAPI({ action: "saveAbsence", payload: { room: room, id: id, name: name, className: className, records: records } });
-              }
-           });
-        });
-        await Promise.all(promises);
-        Swal.fire('ជោគជ័យ', 'បានកត់ត្រារួចរាល់!', 'success');
-        document.getElementById('checkAllAdmin').checked = false;
-        document.querySelectorAll('.admin-stu-check').forEach(c => c.checked = false);
+        let students = Array.from(checkboxes).map(cb => ({ id: cb.getAttribute('data-id'), name: cb.getAttribute('data-name'), className: cb.getAttribute('data-class') }));
+        let btn = document.getElementById(val === 'A' ? 'btnBulkA' : 'btnBulkP'); let origText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងរក្សាទុក...'; btn.disabled = true;
+
+        let res = await callAPI({ action: "saveBulkAbsence", payload: { room: room, val: val, students: students } });
+        
+        btn.innerHTML = origText; btn.disabled = false;
+        if(res.success) { Swal.fire('ជោគជ័យ!', res.message, 'success'); document.getElementById('checkAllAdmin').checked = false; checkboxes.forEach(cb => cb.checked = false); } 
+        else { Swal.fire('បរាជ័យ!', res.error, 'error'); }
       }
     }
 
-    let currentModalParams = {};
+    // Modal Details
+    let curModParams = {};
     async function openAbsenceModal(id, name, className) {
-      document.getElementById('modName').innerText = name;
-      document.getElementById('modInfo').innerText = `អត្តលេខ: ${id} | ថ្នាក់: ${className}`;
-      currentModalParams = { id: id, name: name, className: className, room: document.getElementById('adminRoomSelect').value };
-
-      let tbody = document.getElementById('modSubjectsBody');
-      tbody.innerHTML = '<tr><td colspan="2" class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-danger"></i> ទាញទិន្នន័យ...</td></tr>';
+      document.getElementById('modName').innerText = name; document.getElementById('modInfo').innerText = `អត្តលេខ: ${id} | ថ្នាក់: ${className}`;
+      curModParams = { id: id, name: name, className: className, room: document.getElementById('adminRoomSelect').value };
+      
+      let tbody = document.getElementById('modSubjectsBody'); tbody.innerHTML = '<tr><td colspan="2" class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-danger"></i> ទាញទិន្នន័យ...</td></tr>';
       new bootstrap.Modal(document.getElementById('absenceModal')).show();
-
+      
       let res = await callAPI({ action: "getStudentSubjects", id: id, className: className });
       tbody.innerHTML = '';
       if(res.subjects) {
         res.subjects.forEach(sub => {
           let selA = sub.val === 'A' ? 'selected' : '', selP = sub.val === 'P' ? 'selected' : '';
-          tbody.innerHTML += `<tr>
-            <td class="fw-bold text-dark w-50 ps-3">${sub.subject}</td>
-            <td>
-              <select class="form-select abs-select border-danger" data-subject="${sub.subject}">
-                <option value="">-- (ធម្មតា) --</option>
-                <option value="A" ${selA}>A (អវត្តមាន)</option>
-                <option value="P" ${selP}>P (សុំច្បាប់)</option>
-              </select>
-            </td>
-          </tr>`;
+          tbody.innerHTML += `<tr><td class="fw-bold text-dark w-50 ps-3">${sub.subject}</td><td><select class="form-select abs-select border-danger" data-subject="${sub.subject}"><option value="">-- (ធម្មតា) --</option><option value="A" ${selA}>A (អវត្តមាន)</option><option value="P" ${selP}>P (សុំច្បាប់)</option></select></td></tr>`;
         });
       }
     }
 
     function setAllAbsence(val) { document.querySelectorAll('.abs-select').forEach(sel => sel.value = val); }
-
     async function saveAbsence() {
-      let records = [];
-      document.querySelectorAll('.abs-select').forEach(sel => records.push({ subject: sel.getAttribute('data-subject'), val: sel.value }));
-
+      let records = []; document.querySelectorAll('.abs-select').forEach(sel => records.push({ subject: sel.getAttribute('data-subject'), val: sel.value }));
       let btn = document.getElementById('btnSaveAbs'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> រក្សាទុក...'; btn.disabled = true;
-      let payload = { room: currentModalParams.room, id: currentModalParams.id, name: currentModalParams.name, className: currentModalParams.className, records: records };
       
-      let res = await callAPI({ action: "saveAbsence", payload: payload });
+      let res = await callAPI({ action: "saveAbsence", payload: { room: curModParams.room, id: curModParams.id, name: curModParams.name, className: curModParams.className, records: records } });
       btn.innerHTML = '<i class="fa-solid fa-save"></i> រក្សាទុក'; btn.disabled = false;
       
-      if(res.success) {
-        bootstrap.Modal.getInstance(document.getElementById('absenceModal')).hide();
-        Toast.fire({icon: 'success', title: 'បានរក្សាទុកអវត្តមាន'});
-        if(document.getElementById('roomSelect').value === currentModalParams.room) fetchStudents(); 
-      } else Swal.fire('បរាជ័យ', res.error, 'error');
+      if(res.success) { bootstrap.Modal.getInstance(document.getElementById('absenceModal')).hide(); Toast.fire({icon: 'success', title: 'បានរក្សាទុកអវត្តមាន'}); }
     }
   </script>
 </body>
