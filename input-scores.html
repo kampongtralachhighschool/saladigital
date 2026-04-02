@@ -328,14 +328,22 @@
       document.querySelectorAll(".search-row").forEach(row => { row.style.display = row.innerText.toUpperCase().includes(filter) ? "" : "none"; });
     }
 
-    // ៧. Validate និង Keyboard/Paste Logic
+// ៧. Validate និង Keyboard/Paste Logic
     function validateInput(input) {
       if(input.disabled) return;
       let val = input.value.toUpperCase();
       let max = parseFloat(input.getAttribute('data-max'));
       if(val === 'A' || val === 'P' || val === '') { input.value = val; return; }
+      
       val = val.replace(/[^0-9.]/g, ''); 
-      if(parseFloat(val) > max) val = max;
+      
+      // លក្ខខណ្ឌថ្មី៖ លោតសារព្រមាន និងលុបលេខខុសនោះចោល
+      if(parseFloat(val) > max) { 
+        alert(`អ្នកបានបញ្ចូលពិន្ទុមិនត្រឹមត្រូវ សូមពិនិត្យម្ដងទៀត ពិន្ទុអាចបញ្ចូលចាប់ពី ០ ដល់ ${max} ប៉ុណ្ណោះ។`);
+        input.value = ''; // លុបពិន្ទុខុសចេញ ដើម្បីឲ្យវាយថ្មី
+        return;
+      }
+      
       input.value = val;
     }
 
@@ -388,30 +396,62 @@
       btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> រក្សាទុក'; btn.disabled = false;
     }
 
-    // ៩. Tab របាយការណ៍
+// ៩. Tab របាយការណ៍
     let fullReportData = [];
     async function loadReport() {
-      let tbody = document.getElementById('reportBody'); tbody.innerHTML = '<tr><td colspan="5" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញ...</td></tr>';
+      let tbody = document.getElementById('reportBody'); 
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញ...</td></tr>';
+      
       let res = await callAPI({ action: "getReport" });
       if(res.data) {
         fullReportData = res.data;
-        let rooms = [...new Set(res.data.map(r => r[0]))];
-        document.getElementById('reportFilter').innerHTML = '<option value="ALL">មើលគ្រប់បន្ទប់ទាំងអស់</option>' + rooms.map(r => `<option value="${r}">បន្ទប់ ${r}</option>`).join('');
+        
+        // ទាញយកបន្ទប់ និង កម្រិតថ្នាក់ ដោយមិនឲ្យជាន់គ្នា
+        let rooms = [...new Set(res.data.map(r => r[0]))].sort((a,b)=>a-b);
+        // ទាញយកកម្រិតថ្នាក់ (ឧ. យកតែលេខ 7 ពី 7A, 7B)
+        let grades = [...new Set(res.data.map(r => r[1].toString().match(/\d+/)[0]))].sort((a,b)=>a-b);
+
+        // រៀបចំជម្រើស Dropdown
+        let opts = `<option value="ALL">-- មើលគ្រប់កម្រិតទាំងអស់ --</option>`;
+        
+        opts += `<optgroup label="តាមកម្រិតថ្នាក់">`;
+        grades.forEach(g => { opts += `<option value="GRADE_${g}">ថ្នាក់ទី ${g}</option>`; });
+        opts += `</optgroup>`;
+        
+        opts += `<optgroup label="តាមបន្ទប់">`;
+        rooms.forEach(r => { opts += `<option value="ROOM_${r}">បន្ទប់ទី ${r}</option>`; });
+        opts += `</optgroup>`;
+
+        document.getElementById('reportFilter').innerHTML = opts;
         renderReport("ALL");
       }
     }
     
-    function filterReport() { renderReport(document.getElementById('reportFilter').value); }
+    function filterReport() { 
+      renderReport(document.getElementById('reportFilter').value); 
+    }
 
-    function renderReport(roomFilter) {
-      let tbody = document.getElementById('reportBody'); tbody.innerHTML = '';
-      let filtered = roomFilter === "ALL" ? fullReportData : fullReportData.filter(r => r[0].toString() === roomFilter.toString());
+    function renderReport(filterValue) {
+      let tbody = document.getElementById('reportBody'); 
+      tbody.innerHTML = '';
+      
+      let filtered = fullReportData;
+
+      // លក្ខខណ្ឌចម្រាញ់ទិន្នន័យ
+      if (filterValue.startsWith("ROOM_")) {
+        let room = filterValue.split("_")[1];
+        filtered = fullReportData.filter(r => r[0].toString() === room);
+      } else if (filterValue.startsWith("GRADE_")) {
+        let grade = filterValue.split("_")[1];
+        filtered = fullReportData.filter(r => r[1].toString().startsWith(grade));
+      }
+
+      // បង្ហាញក្នុងតារាង
       filtered.forEach(r => {
         let color = r[5].includes('✅') ? 'text-success' : (r[5].includes('❌') ? 'text-danger' : 'text-warning');
         tbody.innerHTML += `<tr><td>${r[0]}</td><td>${r[2]}</td><td class="text-center">${r[3]}</td><td class="text-center fw-bold">${r[4]}</td><td class="${color} fw-bold" style="font-size:0.8rem;">${r[5]}</td></tr>`;
       });
     }
-
     // ១០. Tab Admin គ្រប់គ្រងអវត្តមាន
     async function loadAdminStudents() {
       let room = document.getElementById('adminRoomSelect').value;
