@@ -113,16 +113,23 @@
         <div id="view-admin" class="tab-content bg-gray-50 p-6 md:p-8 border-t border-gray-200">
             <h2 class="text-2xl font-bold mb-6 text-gray-800">ប្រព័ន្ធគ្រប់គ្រង និងបង្កើតវិញ្ញាសាដោយ AI (Auto-Generate)</h2>
             
-            <!-- Step 1: API Key -->
+            <!-- Step 1: API Key & Model -->
             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
-                <h3 class="font-bold text-lg mb-2">ជំហានទី១៖ ការកំណត់ API Key</h3>
-                <p class="text-sm text-gray-600 mb-4">ដោយសារប្រព័ន្ធនេះដំណើរការនៅលើ Github Pages ដោយឥតគិតថ្លៃ លោកអ្នកត្រូវមាន Google Gemini API Key ដើម្បីប្រើមុខងារ AI បាន។ <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-600 hover:underline">បង្កើត API Key ទីនេះ</a>។</p>
+                <h3 class="font-bold text-lg mb-2">ជំហានទី១៖ ការកំណត់ API Key និងម៉ូដែល</h3>
+                <p class="text-sm text-gray-600 mb-4">លោកអ្នកត្រូវមាន Google Gemini API Key ដើម្បីប្រើមុខងារ AI បាន។ <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-600 hover:underline">បង្កើត API Key ទីនេះ</a>។ បន្ទាប់មក សូមជ្រើសរើសម៉ូដែល AI ដែលអ្នកចង់ប្រើ។</p>
                 
-                <div class="flex gap-2">
-                    <input type="password" id="api-key-input" placeholder="បំពេញ Gemini API Key របស់អ្នកនៅទីនេះ..." class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <button onclick="saveApiKey()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition">រក្សាទុក</button>
+                <div class="flex gap-2 flex-wrap">
+                    <input type="password" id="api-key-input" placeholder="បំពេញ Gemini API Key របស់អ្នកនៅទីនេះ..." class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[250px]">
+                    
+                    <select id="api-model-input" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-semibold text-gray-700 cursor-pointer">
+                        <option value="gemini-1.5-pro">Gemini 1.5 Pro (ឆ្លាតវៃបំផុត)</option>
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (លឿន)</option>
+                        <option value="gemini-2.5-flash">Gemini 2.5 Flash (ថ្មី)</option>
+                    </select>
+
+                    <button onclick="saveApiKey()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition min-w-[120px]">រក្សាទុក</button>
                 </div>
-                <p id="api-key-status" class="text-sm mt-2 font-medium"></p>
+                <p id="api-key-status" class="text-sm mt-3 font-medium"></p>
             </div>
 
             <!-- Step 2: Upload Image -->
@@ -141,7 +148,7 @@
             <!-- Loading & Error -->
             <div id="admin-loading" class="hidden flex flex-col items-center py-8">
                 <div class="loader mb-4"></div>
-                <p class="text-blue-600 font-bold">AI កំពុងអានរូបភាព និងដោះស្រាយលំហាត់... (សូមរង់ចាំប្រហែល 10-20 វិនាទី)</p>
+                <p class="text-blue-600 font-bold">AI កំពុងអានរូបភាព និងដោះស្រាយលំហាត់... (សូមរង់ចាំប្រហែល 10-30 វិនាទី)</p>
             </div>
             <div id="admin-error" class="hidden mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded"></div>
 
@@ -184,17 +191,19 @@
 
         // ================= INITIALIZATION =================
         window.onload = function() {
-            // Load API Key
+            // Load Settings
             const savedKey = localStorage.getItem('gemini_api_key');
+            const savedModel = localStorage.getItem('gemini_api_model');
+            
+            if (savedModel) {
+                document.getElementById('api-model-input').value = savedModel;
+            }
+
             if (savedKey) {
                 document.getElementById('api-key-input').value = savedKey;
-                document.getElementById('api-key-status').innerText = '✅ បានរក្សាទុក API Key';
+                document.getElementById('api-key-status').innerText = `✅ បានរក្សាទុក Key! (កំពុងប្រើម៉ូដែល: ${savedModel || 'gemini-1.5-pro'})`;
                 document.getElementById('api-key-status').classList.add('text-green-600');
-            } else {
-                const isCanvas = window.location.hostname.includes('usercontent.goog');
-                if (!isCanvas) {
-                    document.getElementById('no-api-warning').classList.remove('hidden');
-                }
+                document.getElementById('no-api-warning').classList.add('hidden');
             }
 
             // Load Custom Quiz if exists, else load default
@@ -317,33 +326,39 @@
         // ================= ADMIN LOGIC (GENERATOR) =================
         function saveApiKey() {
             const key = document.getElementById('api-key-input').value.trim();
+            const model = document.getElementById('api-model-input').value;
+            
             if (key) {
                 localStorage.setItem('gemini_api_key', key);
+                localStorage.setItem('gemini_api_model', model);
                 const status = document.getElementById('api-key-status');
-                status.innerText = '✅ បានរក្សាទុកជោគជ័យ!';
+                status.innerText = `✅ បានរក្សាទុកជោគជ័យ! (ប្រើម៉ូដែល: ${model})`;
                 status.classList.remove('text-red-600');
                 status.classList.add('text-green-600');
                 document.getElementById('no-api-warning').classList.add('hidden');
+            } else {
+                alert("សូមបញ្ចូល API Key ជាមុនសិន");
             }
         }
 
-        // មុខងារនេះជួយឲ្យកម្មវិធីចេះសម្គាល់បរិស្ថានស្វ័យប្រវត្តិ (Canvas vs GitHub Pages)
+        // មុខងារវៃឆ្លាត ដើម្បីផ្តល់អាទិភាពដល់ Key ផ្ទាល់ខ្លួនរបស់លោកអ្នក
         function getApiConfig() {
-            const isCanvas = window.location.hostname.includes('usercontent.goog');
+            const customKey = localStorage.getItem('gemini_api_key');
+            const customModel = localStorage.getItem('gemini_api_model') || "gemini-1.5-pro";
             
-            if (isCanvas) {
-                // ប្រសិនបើតេស្តនៅក្នុង Canvas (ទីនេះ), ប្រព័ន្ធនឹងប្រើ Key និង Model របស់ Canvas
+            // ប្រសិនបើមាន Key ផ្ទាល់ខ្លួន វានឹងប្រើ Key និងម៉ូដែលនោះជានិច្ច មិនថានៅក្នុង Canvas ឬ GitHub ទេ
+            if (customKey && customKey.trim() !== "") {
                 return {
-                    key: "",
-                    model: "gemini-2.5-flash-preview-09-2025"
-                };
-            } else {
-                // ប្រសិនបើអ្នកយកកូដទៅបង្ហោះលើ GitHub Pages, ប្រព័ន្ធនឹងប្រើ Key របស់អ្នក
-                return {
-                    key: localStorage.getItem('gemini_api_key') || "",
-                    model: "gemini-1.5-flash"
+                    key: customKey,
+                    model: customModel
                 };
             }
+
+            // ប្រសិនបើមិនទាន់បានបញ្ចូល Key ទេ វាប្រើប្រាស់ប្រព័ន្ធ Preview របស់ Canvas បណ្ដោះអាសន្ន
+            return {
+                key: "",
+                model: "gemini-2.5-flash-preview-09-2025"
+            };
         }
 
         function fileToBase64(file) {
@@ -366,9 +381,7 @@
             errorDiv.classList.add('hidden');
             resultDiv.classList.add('hidden');
 
-            const isCanvas = window.location.hostname.includes('usercontent.goog');
-            
-            if (!isCanvas && !apiConfig.key) {
+            if (!apiConfig.key && !window.location.hostname.includes('usercontent.goog')) {
                 errorDiv.innerText = "សូមបញ្ចូល Gemini API Key ជាមុនសិន។";
                 errorDiv.classList.remove('hidden');
                 return;
@@ -409,7 +422,7 @@
                         ]
                     }],
                     generationConfig: {
-                        temperature: 0.1
+                        temperature: 0.1 // សីតុណ្ហភាពទាបដើម្បីឲ្យទិន្នន័យចេញមកត្រឹមត្រូវល្អ
                     }
                 };
 
@@ -509,9 +522,8 @@
             const apiConfig = getApiConfig();
             const loadingDiv = document.getElementById('ai-loading');
             const feedbackDiv = document.getElementById('ai-feedback');
-            const isCanvas = window.location.hostname.includes('usercontent.goog');
             
-            if (!isCanvas && !apiConfig.key) {
+            if (!apiConfig.key && !window.location.hostname.includes('usercontent.goog')) {
                 loadingDiv.classList.add('hidden');
                 feedbackDiv.innerHTML = `<p class="text-red-500 font-bold">លោកអ្នកមិនទាន់បានបញ្ចូល API Key ទេ ទើបមិនអាចវិភាគបាន។</p>`;
                 feedbackDiv.classList.remove('hidden');
