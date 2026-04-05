@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>កម្មវិធីប្រឡងគណិតវិទ្យាឆ្លាតវៃ - ជំនួយដោយ AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600&family=Suwannaphum:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- MathJax for rendering Math formulas -->
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['\\(', '\\)']]
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: 'Kantumruy Pro', 'Suwannaphum', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Hide sections based on active tab */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        
+        <!-- Header & Navigation -->
+        <div class="bg-blue-800 text-white">
+            <div class="p-6 md:p-8 text-center border-b border-blue-700">
+                <h1 class="text-2xl md:text-4xl font-bold mb-3 tracking-wide" id="app-title">លំហាត់ត្រៀមប្រឡងសញ្ញាបត្រមធ្យមសិក្សាបឋមភូមិ</h1>
+                <p class="text-sm md:text-lg opacity-90 text-blue-100">ប្រព័ន្ធតេស្ត និងវិភាគសមត្ថភាពដោយស្វ័យប្រវត្តិជាមួយ AI</p>
+            </div>
+            <div class="flex justify-center bg-blue-900">
+                <button onclick="switchTab('quiz')" id="tab-quiz" class="flex-1 py-4 text-center font-bold text-lg hover:bg-blue-700 transition duration-200 border-b-4 border-white text-white">
+                    📝 សម្រាប់សិស្ស (ធ្វើតេស្ត)
+                </button>
+                <button onclick="switchTab('admin')" id="tab-admin" class="flex-1 py-4 text-center font-bold text-lg hover:bg-blue-700 transition duration-200 border-b-4 border-transparent text-gray-300">
+                    ⚙️ សម្រាប់គ្រូ (បង្កើតតេស្តដោយ AI)
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= STUDENT VIEW (QUIZ) ================= -->
+        <div id="view-quiz" class="tab-content active p-6 md:p-8">
+            <div id="no-api-warning" class="hidden mb-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded">
+                <strong>ចំណាំ៖</strong> លោកអ្នកមិនទាន់បានបញ្ចូល Gemini API Key ទេ មុខងារវិភាគលទ្ធផល AI អាចនឹងមិនដំណើរការ។ (សូមបញ្ចូលនៅផ្នែក "សម្រាប់គ្រូ")
+            </div>
+
+            <form id="quiz-form">
+                <div id="questions-list"></div>
+                
+                <div class="mt-10 flex justify-center sticky bottom-6 z-10" id="submit-btn-container">
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-10 rounded-full shadow-2xl transition duration-300 transform hover:scale-105 border-4 border-white">
+                        បញ្ជូនចម្លើយទាំងអស់
+                    </button>
+                </div>
+            </form>
+
+            <!-- Result Section -->
+            <div id="result-container" class="hidden mt-10 p-6 md:p-8 border-t border-gray-200 bg-gray-50 rounded-xl shadow-inner">
+                <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">លទ្ធផលរបស់អ្នក</h2>
+                
+                <div class="flex justify-center mb-8">
+                    <div class="text-center p-6 bg-white rounded-full shadow border-4 border-blue-500 w-40 h-40 flex flex-col justify-center items-center">
+                        <span class="text-4xl font-bold text-blue-600" id="score-display">0/0</span>
+                        <span class="text-md text-gray-500 mt-1">ពិន្ទុ</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm mb-6 border-l-4 border-yellow-400">
+                    <h3 class="text-xl font-bold mb-4 flex items-center text-gray-800">
+                        <svg class="w-8 h-8 mr-3 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        ការវិភាគ និងយោបល់ពីលោកគ្រូ AI
+                    </h3>
+                    <div id="ai-loading" class="flex flex-col items-center justify-center py-6 text-gray-500">
+                        <div class="loader mb-4"></div>
+                        <p class="text-lg">កំពុងពិនិត្យ និងវិភាគលទ្ធផល...</p>
+                    </div>
+                    <div id="ai-feedback" class="text-gray-700 text-lg leading-relaxed hidden bg-yellow-50 p-6 rounded-lg border border-yellow-100">
+                        <!-- AI response will go here -->
+                    </div>
+                </div>
+
+                <div class="text-center mt-8 flex flex-wrap justify-center gap-4">
+                    <button onclick="location.reload()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-8 rounded-full transition duration-300">
+                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        ធ្វើតេស្តម្ដងទៀត
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ADMIN VIEW (GENERATOR) ================= -->
+        <div id="view-admin" class="tab-content bg-gray-50 p-6 md:p-8 border-t border-gray-200">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">ប្រព័ន្ធគ្រប់គ្រង និងបង្កើតវិញ្ញាសាដោយ AI (Auto-Generate)</h2>
+            
+            <!-- Step 1: API Key -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+                <h3 class="font-bold text-lg mb-2">ជំហានទី១៖ ការកំណត់ API Key</h3>
+                <p class="text-sm text-gray-600 mb-4">ដោយសារប្រព័ន្ធនេះដំណើរការនៅលើ Github Pages ដោយឥតគិតថ្លៃ លោកអ្នកត្រូវមាន Google Gemini API Key ដើម្បីប្រើមុខងារ AI បាន។ <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-600 hover:underline">បង្កើត API Key ទីនេះ</a>។</p>
+                
+                <div class="flex gap-2">
+                    <input type="password" id="api-key-input" placeholder="បំពេញ Gemini API Key របស់អ្នកនៅទីនេះ..." class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button onclick="saveApiKey()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition">រក្សាទុក</button>
+                </div>
+                <p id="api-key-status" class="text-sm mt-2 font-medium"></p>
+            </div>
+
+            <!-- Step 2: Upload Image -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+                <h3 class="font-bold text-lg mb-2">ជំហានទី២៖ អាប់ឡូតរូបភាពវិញ្ញាសា</h3>
+                <p class="text-sm text-gray-600 mb-4">ជ្រើសរើសរូបភាពដែលមានផ្ទុកលំហាត់គណិតវិទ្យា (ឧទាហរណ៍៖ លំហាត់ពហុជ្រើសរើស ឬលំហាត់សរសេរ) រួចឲ្យ AI ធ្វើការបំប្លែង។</p>
+                
+                <input type="file" id="exam-image" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border p-2 rounded-lg mb-4">
+                
+                <button onclick="generateQuizFromImage()" id="btn-generate" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition flex justify-center items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    <span>វិភាគ និងបង្កើតសំណួរឥឡូវនេះ</span>
+                </button>
+            </div>
+
+            <!-- Loading & Error -->
+            <div id="admin-loading" class="hidden flex flex-col items-center py-8">
+                <div class="loader mb-4"></div>
+                <p class="text-blue-600 font-bold">AI កំពុងអានរូបភាព និងដោះស្រាយលំហាត់... (សូមរង់ចាំប្រហែល 10-20 វិនាទី)</p>
+            </div>
+            <div id="admin-error" class="hidden mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded"></div>
+
+            <!-- Step 3: Result & Preview -->
+            <div id="admin-result" class="hidden bg-white p-6 rounded-lg shadow-sm border border-green-200">
+                <h3 class="font-bold text-lg mb-2 text-green-700">✅ ការបង្កើតវិញ្ញាសាទទួលបានជោគជ័យ!</h3>
+                <p class="text-sm text-gray-600 mb-4">លោកអ្នកអាចចុចសាកល្បងលំហាត់នេះដោយផ្ទាល់ ឬចម្លងកូដនេះទៅជំនួសក្នុងឯកសារ HTML ដើម ដើម្បីរក្សាទុកជារៀងរហូត។</p>
+                
+                <div class="flex gap-4 mb-4 flex-wrap">
+                    <button onclick="previewNewQuiz()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition text-center min-w-[200px]">
+                        ▶️ សាកល្បងធ្វើតេស្ត
+                    </button>
+                    <button onclick="downloadGeneratedHTML()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition text-center min-w-[200px]">
+                        💾 ទាញយកជា File HTML ថ្មី
+                    </button>
+                    <button onclick="copyGeneratedCode()" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded transition text-center min-w-[200px]">
+                        📋 ចម្លងកូដ JSON
+                    </button>
+                </div>
+
+                <textarea id="json-output" rows="10" class="w-full p-3 font-mono text-sm border rounded bg-gray-50 focus:outline-none" readonly></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================= STATE & DATA =================
+        // Default 5 Questions fallback just in case
+        // --- QUIZ DATA START ---
+        const defaultQuizData = [
+            { id: 1, q: "គណនាកន្សោមរ៉ាឌីកាល់៖ \\( \\sqrt{9 - 6\\sqrt{2}} \\)", options: ["\\( \\sqrt{6} - \\sqrt{3} \\)", "\\( \\sqrt{3} - \\sqrt{6} \\)", "\\( 3 - \\sqrt{2} \\)", "\\( 3\\sqrt{2} \\)"], correct: 0, topic: "រ៉ាឌីកាល់" },
+            { id: 2, q: "ដាក់ជាផលគុណកត្តា៖ \\( A = 2b^2 - 2b \\)", options: ["\\( 2b(b + 1) \\)", "\\( 2b(b - 1) \\)", "\\( b(2b - 1) \\)", "\\( 2(b^2 + b) \\)"], correct: 1, topic: "កន្សោមពីជគណិត" },
+            { id: 3, q: "ដោះស្រាយសមីការ៖ \\( x(7 + 2x) = 2x(x + 4) - 5 \\)", options: ["\\( x = -5 \\)", "\\( x = 2 \\)", "\\( x = 5 \\)", "\\( x = 1 \\)"], correct: 2, topic: "សមីការដឺក្រេទី១" },
+            { id: 4, q: "បើ \\( 2x + 3y = 12 \\) និង \\( y = 2 \\) តើ \\( x \\) ស្មើប៉ុន្មាន?", options: ["\\( 2 \\)", "\\( 3 \\)", "\\( 4 \\)", "\\( 6 \\)"], correct: 1, topic: "ប្រព័ន្ធសមីការ" },
+            { id: 5, q: "សរសេរសមីការបន្ទាត់ \\( (d_1) \\) ដែលមានមេគុណប្រាប់ទិស \\( m = -\\frac{1}{2} \\) និងកាត់តាមចំណុច \\( A(0,3) \\) ។", options: ["\\( y = \\frac{1}{2}x + 3 \\)", "\\( y = -\\frac{1}{2}x - 3 \\)", "\\( y = -2x + 3 \\)", "\\( y = -\\frac{1}{2}x + 3 \\)"], correct: 3, topic: "សមីការបន្ទាត់" }
+        ];
+        // --- QUIZ DATA END ---
+
+        let activeQuizData = [];
+
+        // ================= INITIALIZATION =================
+        window.onload = function() {
+            // Load API Key
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if (savedKey) {
+                document.getElementById('api-key-input').value = savedKey;
+                document.getElementById('api-key-status').innerText = '✅ បានរក្សាទុក API Key';
+                document.getElementById('api-key-status').classList.add('text-green-600');
+            } else {
+                document.getElementById('no-api-warning').classList.remove('hidden');
+            }
+
+            // Load Custom Quiz if exists, else load default
+            const savedQuiz = localStorage.getItem('custom_quiz_data');
+            if (savedQuiz) {
+                try {
+                    activeQuizData = JSON.parse(savedQuiz);
+                    document.getElementById('app-title').innerText = "វិញ្ញាសាថ្មី (បង្កើតដោយ AI)";
+                } catch (e) {
+                    activeQuizData = defaultQuizData;
+                }
+            } else {
+                activeQuizData = defaultQuizData;
+            }
+
+            renderQuiz();
+        };
+
+        // ================= UI NAVIGATION =================
+        function switchTab(tabId) {
+            document.getElementById('view-quiz').classList.remove('active');
+            document.getElementById('view-admin').classList.remove('active');
+            
+            document.getElementById('tab-quiz').classList.remove('border-white', 'text-white');
+            document.getElementById('tab-quiz').classList.add('border-transparent', 'text-gray-300');
+            
+            document.getElementById('tab-admin').classList.remove('border-white', 'text-white');
+            document.getElementById('tab-admin').classList.add('border-transparent', 'text-gray-300');
+
+            document.getElementById(`view-${tabId}`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.remove('border-transparent', 'text-gray-300');
+            document.getElementById(`tab-${tabId}`).classList.add('border-white', 'text-white');
+        }
+
+        // ================= QUIZ LOGIC (STUDENT) =================
+        function renderQuiz() {
+            const questionsList = document.getElementById('questions-list');
+            questionsList.innerHTML = '';
+            
+            activeQuizData.forEach((item, index) => {
+                let optionsHtml = '';
+                item.options.forEach((opt, optIndex) => {
+                    optionsHtml += `
+                        <label class="flex items-center p-4 border-2 border-gray-100 rounded-xl cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition duration-200 group">
+                            <input type="radio" name="q${index}" value="${optIndex}" class="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500">
+                            <span class="ml-3 text-gray-700 group-hover:text-blue-800 text-base md:text-lg">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                const qHtml = `
+                    <div class="mb-8 p-6 md:p-8 bg-white rounded-2xl border border-gray-200 shadow-sm question-block transition-all" id="qb-${index}">
+                        <div class="flex items-start mb-6">
+                            <div class="flex-shrink-0 bg-blue-100 text-blue-700 font-bold rounded-full w-10 h-10 flex items-center justify-center mr-4 mt-1">
+                                ${index + 1}
+                            </div>
+                            <h3 class="text-lg md:text-xl font-semibold text-gray-800 leading-relaxed">${item.q}</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 ml-0 md:ml-14">
+                            ${optionsHtml}
+                        </div>
+                        <div id="feedback-${index}" class="mt-5 ml-0 md:ml-14 hidden text-md font-medium p-3 rounded-lg"></div>
+                    </div>
+                `;
+                questionsList.insertAdjacentHTML('beforeend', qHtml);
+            });
+
+            if(typeof MathJax !== 'undefined' && typeof MathJax.typesetPromise === 'function') {
+                MathJax.typesetPromise().catch((err) => console.log('MathJax err', err));
+            }
+        }
+
+        document.getElementById('quiz-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let score = 0;
+            let wrongTopics = [];
+
+            activeQuizData.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const qBlock = document.getElementById(`qb-${index}`);
+                const feedbackDiv = document.getElementById(`feedback-${index}`);
+                feedbackDiv.classList.remove('hidden');
+
+                if (selected && parseInt(selected.value) === item.correct) {
+                    score++;
+                    qBlock.classList.add('border-green-400', 'bg-green-50');
+                    qBlock.classList.remove('border-gray-200', 'bg-white');
+                    feedbackDiv.innerHTML = '✅ ចម្លើយត្រឹមត្រូវ';
+                    feedbackDiv.classList.add('text-green-700', 'bg-green-100');
+                } else {
+                    if (item.topic) wrongTopics.push(item.topic);
+                    qBlock.classList.add('border-red-400', 'bg-red-50');
+                    qBlock.classList.remove('border-gray-200', 'bg-white');
+                    
+                    let statusText = selected ? 'ចម្លើយខុស' : 'មិនបានឆ្លើយ';
+                    feedbackDiv.innerHTML = `❌ ${statusText}។ ចម្លើយដែលត្រឹមត្រូវគឺ: <span class="font-bold">${item.options[item.correct]}</span>`;
+                    feedbackDiv.classList.add('text-red-700', 'bg-red-100');
+                }
+
+                const inputs = document.querySelectorAll(`input[name="q${index}"]`);
+                inputs.forEach(input => input.disabled = true);
+            });
+
+            if(typeof MathJax !== 'undefined' && typeof MathJax.typesetPromise === 'function') {
+                MathJax.typesetPromise();
+            }
+
+            wrongTopics = [...new Set(wrongTopics)];
+
+            document.getElementById('score-display').innerText = `${score}/${activeQuizData.length}`;
+            document.getElementById('submit-btn-container').style.display = 'none';
+            
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.classList.remove('hidden');
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+
+            fetchAIFeedback(score, activeQuizData.length, wrongTopics);
+        });
+
+        // ================= ADMIN LOGIC (GENERATOR) =================
+        function saveApiKey() {
+            const key = document.getElementById('api-key-input').value.trim();
+            if (key) {
+                localStorage.setItem('gemini_api_key', key);
+                const status = document.getElementById('api-key-status');
+                status.innerText = '✅ បានរក្សាទុកជោគជ័យ!';
+                status.classList.remove('text-red-600');
+                status.classList.add('text-green-600');
+                document.getElementById('no-api-warning').classList.add('hidden');
+            }
+        }
+
+        function getApiKey() {
+            // Check injected environment key first (for Canvas testing), then fallback to user's local storage
+            const envKey = typeof __apiKey !== 'undefined' && __apiKey ? __apiKey : ""; 
+            const localKey = localStorage.getItem('gemini_api_key') || "";
+            return envKey || localKey;
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function generateQuizFromImage() {
+            const apiKey = getApiKey();
+            const fileInput = document.getElementById('exam-image');
+            const errorDiv = document.getElementById('admin-error');
+            const loadingDiv = document.getElementById('admin-loading');
+            const resultDiv = document.getElementById('admin-result');
+            const btn = document.getElementById('btn-generate');
+
+            errorDiv.classList.add('hidden');
+            resultDiv.classList.add('hidden');
+
+            if (!apiKey) {
+                errorDiv.innerText = "សូមបញ្ចូល Gemini API Key ជាមុនសិន។";
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            if (fileInput.files.length === 0) {
+                errorDiv.innerText = "សូមជ្រើសរើសរូបភាពវិញ្ញាសាមួយសិន។";
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            btn.disabled = true;
+            loadingDiv.classList.remove('hidden');
+
+            try {
+                const base64Data = await fileToBase64(file);
+                
+                const promptText = `អ្នកគឺជាអ្នកជំនាញគណិតវិទ្យា។ សូមអានរូបភាពវិញ្ញាសាគណិតវិទ្យានេះ រួចទាញយកសំណួរទាំងអស់ ដោះស្រាយរកចម្លើយត្រឹមត្រូវ និងកំណត់ឈ្មោះមេរៀន។ 
+បញ្ជាក់៖ បើចម្លើយជារូបមន្ត ឬប្រភាគ សូមប្រើប្រាស់ LaTeX (ឧទាហរណ៍ \\\\( \\\\frac{1}{2} \\\\)) ។
+បន្ទាប់មកចងក្រងជាទិន្នន័យ JSON Array សុទ្ធសាធ ដូចទម្រង់នេះ៖
+[
+  {
+    "id": 1,
+    "q": "សំណួរ (ប្រើ LaTeX បើមានរូបមន្ត)",
+    "options": ["ចម្លើយ A", "ចម្លើយ B", "ចម្លើយ C", "ចម្លើយ D"],
+    "correct": 0,
+    "topic": "ឈ្មោះមេរៀន"
+  }
+]
+ចាំបាច់បំផុត៖ ផ្ដល់មកវិញតែ JSON មួយមុខគត់។ ហាមពន្យល់ ហាមសរសេរពាក្យផ្សេង និងហាមប្រើសញ្ញា \`\`\`json ពីមុខឬពីក្រោយ។`;
+
+                const payload = {
+                    contents: [{
+                        role: "user",
+                        parts: [
+                            { text: promptText },
+                            { inlineData: { mimeType: file.type, data: base64Data } }
+                        ]
+                    }],
+                    generationConfig: {
+                        temperature: 0.1 // Low temp for structured data consistency
+                    }
+                };
+
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errObj = await response.json().catch(()=>({}));
+                    throw new Error(errObj.error?.message || "បរាជ័យក្នុងការតភ្ជាប់ទៅ API។");
+                }
+
+                const data = await response.json();
+                let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (!rawText) throw new Error("AI មិនបានបញ្ជូនទិន្នន័យមកវិញទេ។");
+
+                // Clean up markdown markers if AI accidentally adds them
+                rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+                
+                // Parse to check valid JSON
+                const parsedJSON = JSON.parse(rawText);
+                
+                if (!Array.isArray(parsedJSON) || parsedJSON.length === 0) {
+                    throw new Error("ទម្រង់ JSON ដែល AI បង្កើតមកមិនត្រឹមត្រូវ។");
+                }
+
+                // Show Success
+                document.getElementById('json-output').value = JSON.stringify(parsedJSON, null, 4);
+                localStorage.setItem('custom_quiz_data', JSON.stringify(parsedJSON)); // Save for testing
+                
+                loadingDiv.classList.add('hidden');
+                resultDiv.classList.remove('hidden');
+
+            } catch (error) {
+                loadingDiv.classList.add('hidden');
+                errorDiv.innerText = `មានបញ្ហា៖ ${error.message}`;
+                errorDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function previewNewQuiz() {
+            location.reload(); // Reloads page, which will pull 'custom_quiz_data' from localStorage
+        }
+
+        function copyGeneratedCode() {
+            const text = document.getElementById('json-output').value;
+            navigator.clipboard.writeText(`const quizData = ${text};`).then(() => {
+                alert("បានចម្លងកូដដោយជោគជ័យ! លោកអ្នកអាចយកវាទៅ Paste ជំនួសក្នុងឯកសារ HTML ដើម។");
+            }).catch(() => {
+                alert("មិនអាចចម្លងបានទេ សូម Copy ដោយខ្លួនឯង។");
+            });
+        }
+
+        async function downloadGeneratedHTML() {
+            try {
+                const newJson = document.getElementById('json-output').value;
+                if (!newJson) {
+                    alert("មិនមានទិន្នន័យដើម្បីទាញយកទេ!");
+                    return;
+                }
+
+                // 1. Fetch the original source code of this exact page
+                const response = await fetch(window.location.href);
+                let htmlContent = await response.text();
+
+                // 2. Replace the old Quiz Data with the new generated JSON using Regex and the markers we set
+                const regex = /(\/\/ --- QUIZ DATA START ---\s*const defaultQuizData = )[\s\S]*?(;\s*\/\/ --- QUIZ DATA END ---)/;
+                const updatedHtml = htmlContent.replace(regex, `$1${newJson}$2`);
+
+                // 3. Create a Blob (File equivalent in memory)
+                const blob = new Blob([updatedHtml], { type: 'text/html' });
+                
+                // 4. Create an invisible download link and click it programmatically
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                // Create a unique filename using current date/time
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
+                a.download = `math_quiz_${timestamp}.html`; 
+                
+                document.body.appendChild(a);
+                a.click(); // Trigger auto-download
+                document.body.removeChild(a);
+                
+                // Clean up memory
+                URL.revokeObjectURL(a.href);
+
+            } catch (error) {
+                console.error(error);
+                alert("មានបញ្ហាក្នុងការទាញយក! មុខងារនេះដំណើរការបានល្អបំផុតនៅពេលប្រើលើ GitHub Pages (មិនមែនបើកផ្ទាល់ពីកុំព្យូទ័រ file:// ទេ)។");
+            }
+        }
+
+        // ================= AI FEEDBACK LOGIC =================
+        async function fetchAIFeedback(score, total, wrongTopics) {
+            const apiKey = getApiKey();
+            const loadingDiv = document.getElementById('ai-loading');
+            const feedbackDiv = document.getElementById('ai-feedback');
+            
+            if (!apiKey) {
+                loadingDiv.classList.add('hidden');
+                feedbackDiv.innerHTML = `<p class="text-red-500 font-bold">លោកអ្នកមិនទាន់បានបញ្ចូល API Key ទេ ទើបមិនអាចវិភាគបាន។</p>`;
+                feedbackDiv.classList.remove('hidden');
+                return;
+            }
+
+            let promptText = `(System Instruction: អ្នកគឺជាគ្រូបង្រៀនគណិតវិទ្យាថ្នាក់ទី៩ដ៏ពូកែនិងចេះលើកទឹកចិត្តម្នាក់។)\n\n`;
+            promptText += `សិស្សរបស់អ្នកទើបតែប្រឡងតេស្តទទួលបានពិន្ទុ ${score} លើ ${total}។\n`;
+            
+            if (score === total) {
+                promptText += `គាត់ធ្វើត្រូវទាំងអស់។ សូមសរសេរពាក្យសរសើរយ៉ាងជ្រាលជ្រៅ និងលើកទឹកចិត្តឲ្យគាត់បន្តការព្យាយាម។`;
+            } else {
+                promptText += `គាត់បានធ្វើខុសលើមេរៀន៖ ${wrongTopics.length > 0 ? wrongTopics.join(', ') : 'ផ្សេងៗ'}។ សូមសរសេរយោបល់លើកទឹកចិត្ត និងណែនាំពីរបៀបរំលឹកមេរៀនទាំងនេះ។`;
+            }
+            
+            promptText += `\n\nសូមសរសេរជាភាសាខ្មែរឲ្យបានពីរោះ ត្រឹមត្រូវ ខ្លីល្មម ប្រើពាក្យសំដីដូចគ្រូនិយាយទៅកាន់សិស្ស។`;
+
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: promptText }] }]
+            };
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("API Error");
+
+                const data = await response.json();
+                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (aiText) {
+                    loadingDiv.classList.add('hidden');
+                    feedbackDiv.innerHTML = `<p>${aiText.replace(/\n/g, '<br>')}</p>`;
+                    feedbackDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                loadingDiv.classList.add('hidden');
+                feedbackDiv.innerHTML = `<p class="text-red-500 font-bold mb-2">មានបញ្ហាក្នុងការតភ្ជាប់ទៅកាន់ AI។ សូមពិនិត្យ API Key និងអ៉ីនធឺណិតរបស់អ្នកម្ដងទៀត។</p>`;
+                feedbackDiv.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
