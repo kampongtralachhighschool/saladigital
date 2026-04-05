@@ -324,11 +324,26 @@
             }
         }
 
+        // មុខងារនេះជួយឲ្យកម្មវិធីចេះបែងចែកការប្រើប្រាស់ Key
         function getApiKey() {
-            // Check injected environment key first (for Canvas testing), then fallback to user's local storage
+            // ប្រើប្រាស់ Key ដែលលោកអ្នកបញ្ចូលមុនគេ (ល្អសម្រាប់ការបង្ហោះលើកុំព្យូទ័រ/ទូរស័ព្ទលោកអ្នក)
+            const localKey = localStorage.getItem('gemini_api_key');
+            if (localKey) return localKey;
+            
+            // ប្រសិនបើគ្មានទេ ប្រើ Key របស់ប្រព័ន្ធនេះបណ្ដោះអាសន្ន
             const envKey = typeof __apiKey !== 'undefined' && __apiKey ? __apiKey : ""; 
-            const localKey = localStorage.getItem('gemini_api_key') || "";
-            return envKey || localKey;
+            return envKey;
+        }
+
+        // មុខងារនេះជួយប្ដូរម៉ូដែល AI អូតូ អាស្រ័យលើ Key ដែលយើងប្រើប្រាស់
+        function getApiUrl(apiKey) {
+            const envKey = typeof __apiKey !== 'undefined' ? __apiKey : "";
+            
+            // ប្រសិនបើជា Key ផ្ទាល់ខ្លួនរបស់លោកអ្នក យើងនឹងប្រើម៉ូដែលផ្លូវការ (gemini-1.5-flash) ដែលមានស្ថិរភាព
+            // ប្រសិនបើប្រើក្នុង Canvas នេះដោយមិនដាក់ Key វានឹងប្រើម៉ូដែលសាកល្បង
+            const modelName = (apiKey === envKey && envKey !== "") ? "gemini-2.5-flash-preview-09-2025" : "gemini-1.5-flash";
+            
+            return `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
         }
 
         function fileToBase64(file) {
@@ -396,7 +411,8 @@
                     }
                 };
 
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                // ប្រើ URL ដែលបានកែសម្រួលដើម្បីប្ដូរម៉ូដែលអូតូ
+                const url = getApiUrl(apiKey);
                 
                 const response = await fetch(url, {
                     method: 'POST',
@@ -520,7 +536,8 @@
                 contents: [{ role: "user", parts: [{ text: promptText }] }]
             };
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            // ប្រើ URL ដែលបានកែសម្រួលដើម្បីប្ដូរម៉ូដែលអូតូ
+            const url = getApiUrl(apiKey);
 
             try {
                 const response = await fetch(url, {
