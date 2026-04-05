@@ -201,8 +201,15 @@
 
             if (savedKey) {
                 document.getElementById('api-key-input').value = savedKey;
-                document.getElementById('api-key-status').innerText = `✅ បានរក្សាទុក Key! (កំពុងប្រើម៉ូដែល: ${savedModel || 'gemini-1.5-pro'})`;
-                document.getElementById('api-key-status').classList.add('text-green-600');
+                
+                // បង្ហាញសញ្ញាប្រាប់ពេលកំពុងតេស្តក្នុង Canvas
+                if (window.location.hostname.includes('usercontent.goog')) {
+                    document.getElementById('api-key-status').innerText = `✅ បានរក្សាទុក Key! (ចំណាំ៖ ក្នុងផ្ទាំង Canvas នេះ ប្រព័ន្ធនឹងបង្ខំប្រើម៉ូដែល Canvas អូតូ។ ពេលលោកអ្នកយកកូដនេះទៅដាក់លើ GitHub វានឹងដំណើរការម៉ូដែល ${savedModel || 'gemini-1.5-pro'} របស់លោកអ្នកវិញធម្មតា)`;
+                    document.getElementById('api-key-status').className = 'text-sm mt-3 font-medium text-orange-600';
+                } else {
+                    document.getElementById('api-key-status').innerText = `✅ បានរក្សាទុក Key! (កំពុងប្រើម៉ូដែល: ${savedModel || 'gemini-1.5-pro'})`;
+                    document.getElementById('api-key-status').className = 'text-sm mt-3 font-medium text-green-600';
+                }
                 document.getElementById('no-api-warning').classList.add('hidden');
             }
 
@@ -332,32 +339,41 @@
                 localStorage.setItem('gemini_api_key', key);
                 localStorage.setItem('gemini_api_model', model);
                 const status = document.getElementById('api-key-status');
-                status.innerText = `✅ បានរក្សាទុកជោគជ័យ! (ប្រើម៉ូដែល: ${model})`;
-                status.classList.remove('text-red-600');
-                status.classList.add('text-green-600');
+                
+                if (window.location.hostname.includes('usercontent.goog')) {
+                    status.innerText = `✅ បានរក្សាទុក Key! (ចំណាំ៖ ក្នុងផ្ទាំង Canvas នេះ ប្រព័ន្ធនឹងបង្ខំប្រើម៉ូដែល Canvas អូតូ។ ពេលលោកអ្នកយកកូដនេះទៅដាក់លើ GitHub វានឹងដំណើរការម៉ូដែល ${model} របស់លោកអ្នកវិញធម្មតា)`;
+                    status.className = 'text-sm mt-3 font-medium text-orange-600';
+                } else {
+                    status.innerText = `✅ បានរក្សាទុកជោគជ័យ! (ប្រើម៉ូដែល: ${model})`;
+                    status.className = 'text-sm mt-3 font-medium text-green-600';
+                }
+                
                 document.getElementById('no-api-warning').classList.add('hidden');
             } else {
                 alert("សូមបញ្ចូល API Key ជាមុនសិន");
             }
         }
 
-        // មុខងារវៃឆ្លាត ដើម្បីផ្តល់អាទិភាពដល់ Key ផ្ទាល់ខ្លួនរបស់លោកអ្នក
+        // មុខងារវៃឆ្លាត ដើម្បីផ្តល់អាទិភាពដល់ Key ផ្ទាល់ខ្លួនរបស់លោកអ្នក និងការពារ Error ក្នុង Canvas
         function getApiConfig() {
-            const customKey = localStorage.getItem('gemini_api_key');
-            const customModel = localStorage.getItem('gemini_api_model') || "gemini-1.5-pro";
+            const isCanvas = window.location.hostname.includes('usercontent.goog');
             
-            // ប្រសិនបើមាន Key ផ្ទាល់ខ្លួន វានឹងប្រើ Key និងម៉ូដែលនោះជានិច្ច មិនថានៅក្នុង Canvas ឬ GitHub ទេ
-            if (customKey && customKey.trim() !== "") {
+            // ប្រសិនបើតេស្តនៅក្នុង Canvas (ទីនេះ) ប្រព័ន្ធនឹងបង្ខំប្រើ Key និង Model របស់ Canvas
+            // ព្រោះបើយើងហៅម៉ូដែលផ្សេង វានឹងលោត Error "Model not found" ភ្លាមៗ
+            if (isCanvas) {
                 return {
-                    key: customKey,
-                    model: customModel
+                    key: typeof __apiKey !== 'undefined' ? __apiKey : "",
+                    model: "gemini-2.5-flash-preview-09-2025"
                 };
             }
 
-            // ប្រសិនបើមិនទាន់បានបញ្ចូល Key ទេ វាប្រើប្រាស់ប្រព័ន្ធ Preview របស់ Canvas បណ្ដោះអាសន្ន
+            // ប្រសិនបើអ្នកយកកូដទៅបង្ហោះលើ GitHub Pages, ប្រព័ន្ធនឹងប្រើ Key និងម៉ូដែលរបស់អ្នក
+            const customKey = localStorage.getItem('gemini_api_key');
+            const customModel = localStorage.getItem('gemini_api_model') || "gemini-1.5-pro";
+            
             return {
-                key: "",
-                model: "gemini-2.5-flash-preview-09-2025"
+                key: customKey || "",
+                model: customModel
             };
         }
 
@@ -381,7 +397,9 @@
             errorDiv.classList.add('hidden');
             resultDiv.classList.add('hidden');
 
-            if (!apiConfig.key && !window.location.hostname.includes('usercontent.goog')) {
+            const isCanvas = window.location.hostname.includes('usercontent.goog');
+            
+            if (!isCanvas && !apiConfig.key) {
                 errorDiv.innerText = "សូមបញ្ចូល Gemini API Key ជាមុនសិន។";
                 errorDiv.classList.remove('hidden');
                 return;
@@ -522,8 +540,9 @@
             const apiConfig = getApiConfig();
             const loadingDiv = document.getElementById('ai-loading');
             const feedbackDiv = document.getElementById('ai-feedback');
+            const isCanvas = window.location.hostname.includes('usercontent.goog');
             
-            if (!apiConfig.key && !window.location.hostname.includes('usercontent.goog')) {
+            if (!apiConfig.key && !isCanvas) {
                 loadingDiv.classList.add('hidden');
                 feedbackDiv.innerHTML = `<p class="text-red-500 font-bold">លោកអ្នកមិនទាន់បានបញ្ចូល API Key ទេ ទើបមិនអាចវិភាគបាន។</p>`;
                 feedbackDiv.classList.remove('hidden');
