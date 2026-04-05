@@ -191,7 +191,10 @@
                 document.getElementById('api-key-status').innerText = '✅ បានរក្សាទុក API Key';
                 document.getElementById('api-key-status').classList.add('text-green-600');
             } else {
-                document.getElementById('no-api-warning').classList.remove('hidden');
+                const isCanvas = window.location.hostname.includes('usercontent.goog');
+                if (!isCanvas) {
+                    document.getElementById('no-api-warning').classList.remove('hidden');
+                }
             }
 
             // Load Custom Quiz if exists, else load default
@@ -324,26 +327,23 @@
             }
         }
 
-        // មុខងារនេះជួយឲ្យកម្មវិធីចេះបែងចែកការប្រើប្រាស់ Key
-        function getApiKey() {
-            // ប្រើប្រាស់ Key ដែលលោកអ្នកបញ្ចូលមុនគេ (ល្អសម្រាប់ការបង្ហោះលើកុំព្យូទ័រ/ទូរស័ព្ទលោកអ្នក)
-            const localKey = localStorage.getItem('gemini_api_key');
-            if (localKey) return localKey;
+        // មុខងារនេះជួយឲ្យកម្មវិធីចេះសម្គាល់បរិស្ថានស្វ័យប្រវត្តិ (Canvas vs GitHub Pages)
+        function getApiConfig() {
+            const isCanvas = window.location.hostname.includes('usercontent.goog');
             
-            // ប្រសិនបើគ្មានទេ ប្រើ Key របស់ប្រព័ន្ធនេះបណ្ដោះអាសន្ន
-            const envKey = typeof __apiKey !== 'undefined' && __apiKey ? __apiKey : ""; 
-            return envKey;
-        }
-
-        // មុខងារនេះជួយប្ដូរម៉ូដែល AI អូតូ អាស្រ័យលើ Key ដែលយើងប្រើប្រាស់
-        function getApiUrl(apiKey) {
-            const envKey = typeof __apiKey !== 'undefined' ? __apiKey : "";
-            
-            // ប្រសិនបើជា Key ផ្ទាល់ខ្លួនរបស់លោកអ្នក យើងនឹងប្រើម៉ូដែលផ្លូវការ (gemini-1.5-flash) ដែលមានស្ថិរភាព
-            // ប្រសិនបើប្រើក្នុង Canvas នេះដោយមិនដាក់ Key វានឹងប្រើម៉ូដែលសាកល្បង
-            const modelName = (apiKey === envKey && envKey !== "") ? "gemini-2.5-flash-preview-09-2025" : "gemini-1.5-flash";
-            
-            return `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+            if (isCanvas) {
+                // ប្រសិនបើតេស្តនៅក្នុង Canvas (ទីនេះ), ប្រព័ន្ធនឹងប្រើ Key និង Model របស់ Canvas
+                return {
+                    key: "",
+                    model: "gemini-2.5-flash-preview-09-2025"
+                };
+            } else {
+                // ប្រសិនបើអ្នកយកកូដទៅបង្ហោះលើ GitHub Pages, ប្រព័ន្ធនឹងប្រើ Key របស់អ្នក
+                return {
+                    key: localStorage.getItem('gemini_api_key') || "",
+                    model: "gemini-1.5-flash"
+                };
+            }
         }
 
         function fileToBase64(file) {
@@ -356,7 +356,7 @@
         }
 
         async function generateQuizFromImage() {
-            const apiKey = getApiKey();
+            const apiConfig = getApiConfig();
             const fileInput = document.getElementById('exam-image');
             const errorDiv = document.getElementById('admin-error');
             const loadingDiv = document.getElementById('admin-loading');
@@ -366,7 +366,9 @@
             errorDiv.classList.add('hidden');
             resultDiv.classList.add('hidden');
 
-            if (!apiKey) {
+            const isCanvas = window.location.hostname.includes('usercontent.goog');
+            
+            if (!isCanvas && !apiConfig.key) {
                 errorDiv.innerText = "សូមបញ្ចូល Gemini API Key ជាមុនសិន។";
                 errorDiv.classList.remove('hidden');
                 return;
@@ -407,12 +409,11 @@
                         ]
                     }],
                     generationConfig: {
-                        temperature: 0.1 // Low temp for structured data consistency
+                        temperature: 0.1
                     }
                 };
 
-                // ប្រើ URL ដែលបានកែសម្រួលដើម្បីប្ដូរម៉ូដែលអូតូ
-                const url = getApiUrl(apiKey);
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${apiConfig.model}:generateContent?key=${apiConfig.key}`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
@@ -430,26 +431,27 @@
                 
                 if (!rawText) throw new Error("AI មិនបានបញ្ជូនទិន្នន័យមកវិញទេ។");
 
-                // Clean up markdown markers if AI accidentally adds them
                 rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
                 
-                // Parse to check valid JSON
                 const parsedJSON = JSON.parse(rawText);
                 
                 if (!Array.isArray(parsedJSON) || parsedJSON.length === 0) {
                     throw new Error("ទម្រង់ JSON ដែល AI បង្កើតមកមិនត្រឹមត្រូវ។");
                 }
 
-                // Show Success
                 document.getElementById('json-output').value = JSON.stringify(parsedJSON, null, 4);
-                localStorage.setItem('custom_quiz_data', JSON.stringify(parsedJSON)); // Save for testing
+                localStorage.setItem('custom_quiz_data', JSON.stringify(parsedJSON));
                 
                 loadingDiv.classList.add('hidden');
                 resultDiv.classList.remove('hidden');
 
             } catch (error) {
                 loadingDiv.classList.add('hidden');
-                errorDiv.innerText = `មានបញ្ហា៖ ${error.message}`;
+                if (error.message.includes('Failed to fetch')) {
+                    errorDiv.innerText = `មានបញ្ហា៖ Failed to fetch (សូមពិនិត្យមើលអ៉ីនធឺណិត ឬ API Key របស់អ្នក)`;
+                } else {
+                    errorDiv.innerText = `មានបញ្ហា៖ ${error.message}`;
+                }
                 errorDiv.classList.remove('hidden');
             } finally {
                 btn.disabled = false;
@@ -457,7 +459,7 @@
         }
 
         function previewNewQuiz() {
-            location.reload(); // Reloads page, which will pull 'custom_quiz_data' from localStorage
+            location.reload(); 
         }
 
         function copyGeneratedCode() {
@@ -477,29 +479,23 @@
                     return;
                 }
 
-                // 1. Fetch the original source code of this exact page
                 const response = await fetch(window.location.href);
                 let htmlContent = await response.text();
 
-                // 2. Replace the old Quiz Data with the new generated JSON using Regex and the markers we set
                 const regex = /(\/\/ --- QUIZ DATA START ---\s*const defaultQuizData = )[\s\S]*?(;\s*\/\/ --- QUIZ DATA END ---)/;
                 const updatedHtml = htmlContent.replace(regex, `$1${newJson}$2`);
 
-                // 3. Create a Blob (File equivalent in memory)
                 const blob = new Blob([updatedHtml], { type: 'text/html' });
                 
-                // 4. Create an invisible download link and click it programmatically
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                // Create a unique filename using current date/time
                 const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
                 a.download = `math_quiz_${timestamp}.html`; 
                 
                 document.body.appendChild(a);
-                a.click(); // Trigger auto-download
+                a.click(); 
                 document.body.removeChild(a);
                 
-                // Clean up memory
                 URL.revokeObjectURL(a.href);
 
             } catch (error) {
@@ -510,11 +506,12 @@
 
         // ================= AI FEEDBACK LOGIC =================
         async function fetchAIFeedback(score, total, wrongTopics) {
-            const apiKey = getApiKey();
+            const apiConfig = getApiConfig();
             const loadingDiv = document.getElementById('ai-loading');
             const feedbackDiv = document.getElementById('ai-feedback');
+            const isCanvas = window.location.hostname.includes('usercontent.goog');
             
-            if (!apiKey) {
+            if (!isCanvas && !apiConfig.key) {
                 loadingDiv.classList.add('hidden');
                 feedbackDiv.innerHTML = `<p class="text-red-500 font-bold">លោកអ្នកមិនទាន់បានបញ្ចូល API Key ទេ ទើបមិនអាចវិភាគបាន។</p>`;
                 feedbackDiv.classList.remove('hidden');
@@ -536,8 +533,7 @@
                 contents: [{ role: "user", parts: [{ text: promptText }] }]
             };
 
-            // ប្រើ URL ដែលបានកែសម្រួលដើម្បីប្ដូរម៉ូដែលអូតូ
-            const url = getApiUrl(apiKey);
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${apiConfig.model}:generateContent?key=${apiConfig.key}`;
 
             try {
                 const response = await fetch(url, {
