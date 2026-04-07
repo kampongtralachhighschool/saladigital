@@ -221,13 +221,13 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   
+  <!-- ភ្ជាប់ឯកសារ API របស់អ្នកនៅទីនេះ -->
+  <script src="api.js"></script>
+  
   <!-- =============================== -->
   <!-- ផ្នែក JAVASCRIPT LOGIC          -->
   <!-- =============================== -->
   <script>
-    // ⚠️ បញ្ចូល Web App URL របស់អ្នកនៅត្រង់នេះ
-    const API_URL = "YOUR_WEB_APP_URL_HERE"; 
-
     const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
 
     function toggleAuth(formId) {
@@ -236,7 +236,11 @@
     }
 
     async function callAPI(payload) {
-      if(API_URL === "YOUR_WEB_APP_URL_HERE") { Swal.fire('បញ្ហា', 'អ្នកមិនទាន់បានដាក់ API URL ក្នុងកូដ HTML ទេ!', 'error'); return {error: "No API"}; }
+      // ឆែកមើលថាតើ API_URL ត្រូវបានទាញមកពី api.js ជោគជ័យឬអត់
+      if (typeof API_URL === 'undefined' || API_URL === "YOUR_WEB_APP_URL_HERE" || API_URL === "") {
+        Swal.fire('បញ្ហា', 'រកមិនឃើញ API URL ទេ! សូមពិនិត្យមើលឯកសារ api.js របស់អ្នក។', 'error');
+        return {error: "No API"};
+      }
       try {
         let res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
         return await res.json();
