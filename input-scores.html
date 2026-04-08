@@ -11,52 +11,56 @@
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
   
   <style>
-    :root { --primary: #0d6efd; --bg: #f0f2f5; }
+    :root { --primary: #0d6efd; --bg: #f4f7f6; }
     body { background-color: var(--bg); font-family: 'Kantumruy Pro', sans-serif; font-size: 13px; }
-    .card { border-radius: 12px; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    .card { border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 15px; }
     .hidden { display: none !important; }
-    
-    .table-container { max-height: 65vh; overflow-y: auto; background: white; border: 1px solid #dee2e6; border-radius: 10px; }
-    .table thead th { position: sticky; top: 0; background: #212529; color: white; z-index: 10; padding: 10px; text-align: center; white-space: nowrap; }
-    
-    .score-input { width: 65px; text-align: center; font-weight: bold; border: 2px solid #eee; border-radius: 6px; padding: 4px; }
-    .score-input:focus { border-color: var(--primary); outline: none; background: #eef6ff; }
+    .table-container { max-height: 60vh; overflow-y: auto; background: white; border: 1px solid #dee2e6; border-radius: 10px; }
+    .table thead th { position: sticky; top: 0; background: #212529; color: white; z-index: 10; padding: 10px; text-align: center; }
+    .score-input { width: 70px; text-align: center; font-weight: bold; border: 2px solid #eee; border-radius: 6px; padding: 4px; }
+    .score-input:focus { border-color: var(--primary); outline: none; background: #eef6ff; transform: scale(1.05); }
     .score-input:disabled { background-color: #ffdce0; color: #d32f2f; border-color: #ffc1c8; cursor: not-allowed; }
-    
     .app-header { background: linear-gradient(135deg, #0d6efd, #0099ff); color: white; padding: 15px; border-radius: 0 0 20px 20px; }
-    .filter-card { margin-top: -20px; padding: 15px; background: white; border-radius: 12px; border-bottom: 4px solid var(--primary); }
-    
-    .excel-mode th, .excel-mode td { border: 1px solid #ccc !important; text-align: center; padding: 6px !important; white-space: nowrap; }
-    .missing { background-color: #fff3cd; }
-    
+    .filter-card { margin-top: -25px; padding: 15px; background: white; border-radius: 12px; border-bottom: 4px solid var(--primary); }
+    .excel-mode th, .excel-mode td { border: 1px solid #ccc !important; text-align: center; padding: 4px !important; white-space: nowrap; }
     .nav-pills .nav-link { font-weight: 600; color: #555; padding: 8px 18px; cursor: pointer; border-radius: 8px; }
     .nav-pills .nav-link.active { background-color: var(--primary); color: white !important; }
-    
-    @media (max-width: 768px) {
-        .score-input { width: 55px; }
-        .filter-card { margin-top: 0; border-radius: 0; }
-        .app-header { border-radius: 0; }
-        body { font-size: 12px; }
-    }
+    .auth-card { max-width: 400px; margin: 60px auto; }
+    .nav-link-auth { cursor: pointer; color: var(--primary); font-weight: bold; text-decoration: none; }
+    @media (max-width: 768px) { .filter-card { margin-top: 0; } .app-header { border-radius: 0; } }
   </style>
 </head>
 <body>
 
   <!-- AUTH SECTION -->
-  <div id="authSection" class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-4 text-center">
-        <div class="card p-4 shadow-lg">
-          <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" width="70" class="mx-auto mb-3">
-          <h5 class="fw-bold text-primary mb-4">ចូលប្រើប្រាស់ប្រព័ន្ធ</h5>
-          <input type="email" id="loginEmail" class="form-control mb-2" placeholder="អ៊ីមែល">
-          <input type="password" id="loginPass" class="form-control mb-4" placeholder="លេខសម្ងាត់">
-          <button class="btn btn-primary w-100 fw-bold py-2 shadow" onclick="handleLogin()">ចូលប្រព័ន្ធ</button>
-        </div>
+  <div id="authSection" class="container">
+    <div id="loginForm" class="card auth-card p-4 shadow-lg text-center border-0">
+      <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" width="80" class="mx-auto mb-3">
+      <h5 class="fw-bold text-primary mb-4">ចូលប្រើប្រាស់ប្រព័ន្ធ</h5>
+      <div class="text-start">
+        <label class="small fw-bold">អ៊ីមែល</label>
+        <input type="email" id="loginEmail" class="form-control mb-2" placeholder="example@gmail.com">
+        <label class="small fw-bold">លេខសម្ងាត់</label>
+        <input type="password" id="loginPass" class="form-control mb-4" placeholder="******">
       </div>
+      <button class="btn btn-primary w-100 fw-bold py-2 shadow mb-3" onclick="handleLogin()">ចូលប្រព័ន្ធ</button>
+      <div class="small"><span class="nav-link-auth" onclick="toggleAuthView('forgot')">ភ្លេចលេខសម្ងាត់?</span></div>
+    </div>
+
+    <div id="forgotForm" class="card auth-card p-4 shadow-lg text-center hidden border-0">
+      <h5 class="fw-bold text-danger mb-3">ភ្លេចលេខសម្ងាត់</h5>
+      <p class="small text-muted mb-4">បញ្ចូលអ៊ីមែលដើម្បីទទួលបានតំណភ្ជាប់ប្តូរលេខសម្ងាត់</p>
+      <input type="email" id="forgotEmail" class="form-control mb-4" placeholder="Email របស់អ្នក...">
+      <button class="btn btn-danger w-100 fw-bold py-2 mb-3" onclick="handleForgot()">ផ្ញើតំណភ្ជាប់</button>
+      <div class="small"><span class="nav-link-auth" onclick="toggleAuthView('login')">ត្រឡប់ទៅ Login</span></div>
+    </div>
+
+    <div id="resetForm" class="card auth-card p-4 shadow-lg text-center hidden border-0">
+      <h5 class="fw-bold text-success mb-3">កំណត់លេខសម្ងាត់ថ្មី</h5>
+      <input type="password" id="newPass" class="form-control mb-4" placeholder="លេខសម្ងាត់ថ្មី">
+      <button class="btn btn-success w-100 fw-bold py-2" onclick="handleUpdatePassword()">ប្តូរលេខសម្ងាត់</button>
     </div>
   </div>
 
@@ -64,12 +68,11 @@
   <div id="appSection" class="container-fluid hidden p-0">
     <div class="app-header text-center shadow">
         <h6 class="fw-bold mb-0"><i class="fa-solid fa-graduation-cap me-2"></i>ប្រព័ន្ធគ្រប់គ្រងពិន្ទុ</h6>
-        <p class="small mb-0" id="userDisplay"></p>
+        <p class="small mb-0 mt-1" id="userDisplay"></p>
     </div>
 
-    <div class="container-fluid px-2 mt-4">
-        <!-- GLOBAL FILTERS -->
-        <div class="card filter-card shadow-sm mb-3">
+    <div class="container-fluid px-3 mt-4">
+        <div class="card filter-card shadow-sm mb-4 border-0">
             <div class="row g-2 align-items-end">
                 <div class="col-6 col-md-2"><label class="small fw-bold">ឆ្នាំសិក្សា</label><select id="gYear" class="form-select border-primary" onchange="refreshData()"></select></div>
                 <div class="col-6 col-md-2"><label class="small fw-bold">ឆមាស</label><select id="gSemester" class="form-select border-primary" onchange="refreshData()"><option value="ឆមាសទី១">ឆមាសទី១</option><option value="ឆមាសទី២">ឆមាសទី២</option></select></div>
@@ -77,61 +80,50 @@
                 <div class="col-6 col-md-3">
                     <div class="form-check form-switch bg-light p-2 rounded border border-primary text-center">
                         <input class="form-check-input ms-0" type="checkbox" id="mode70" checked onchange="updateMaxLabel()">
-                        <label class="form-check-label fw-bold text-primary ms-2" for="mode70">យក ៧០%</label>
+                        <label class="form-check-label fw-bold text-primary ms-2" for="mode70">យក ៧០% (បង្គត់ឡើង)</label>
                     </div>
                 </div>
-                <div class="col-12 col-md-3 text-end"><button class="btn btn-danger btn-sm rounded-pill px-4 fw-bold" onclick="location.reload()">ចាកចេញ</button></div>
+                <div class="col-12 col-md-3 text-end"><button class="btn btn-danger btn-sm rounded-pill px-4 fw-bold shadow-sm" onclick="handleLogout()">ចាកចេញ</button></div>
             </div>
         </div>
 
-        <!-- TAB MENU -->
-        <ul class="nav nav-pills mb-3 px-1" id="pills-tab">
+        <ul class="nav nav-pills mb-3 px-1">
           <li class="nav-item"><a class="nav-link active" onclick="switchTab('input')">បញ្ចូលពិន្ទុ</a></li>
           <li class="nav-item"><a class="nav-link" onclick="switchTab('report')">របាយការណ៍រួម</a></li>
           <li id="adminOnly" class="nav-item d-none"><a class="nav-link text-danger border border-danger ms-2" onclick="switchTab('absence')">ដាក់អវត្តមាន</a></li>
         </ul>
 
         <div class="tab-content">
-          <!-- TAB 1: INPUT SCORE -->
           <div id="tab-input" class="tab-pane-custom">
-            <div class="card p-2 shadow-sm">
+            <div class="card p-2 shadow-sm border-0">
               <div class="row g-2 mb-3 align-items-end border-bottom pb-2">
-                <div class="col-6 col-md-2"><label class="small fw-bold">បន្ទប់</label><select id="roomSelect" class="form-select fw-bold border-primary"></select></div>
-                <div class="col-6 col-md-3"><label class="small fw-bold text-primary">មុខវិជ្ជា</label><select id="subjectSelect" class="form-select fw-bold border-primary"></select></div>
-                <div class="col-6 col-md-3"><button class="btn btn-primary w-100 fw-bold" onclick="loadInputList()">ទាញឈ្មោះ</button></div>
-                <div class="col-6 col-md-3"><button class="btn btn-success w-100 fw-bold shadow" onclick="saveScores()"><i class="fa-solid fa-save me-1"></i>រក្សាទុក</button></div>
+                <div class="col-md-3"><label class="small fw-bold text-muted">បន្ទប់</label><select id="roomSelect" class="form-select fw-bold border-primary"></select></div>
+                <div class="col-md-4"><label class="small fw-bold text-primary">មុខវិជ្ជា</label><select id="subjectSelect" class="form-select fw-bold border-primary"></select></div>
+                <div class="col-md-2"><button class="btn btn-primary w-100 fw-bold shadow" onclick="loadInputList()">ទាញឈ្មោះ</button></div>
+                <div class="col-md-3"><button class="btn btn-success w-100 fw-bold shadow" onclick="saveScores()"><i class="fa-solid fa-save me-1"></i>រក្សាទុកពិន្ទុ</button></div>
               </div>
-              <div class="table-responsive table-container border shadow-sm">
-                <table class="table table-hover align-middle mb-0">
-                  <thead><tr><th>ល.រ</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th class="text-center">ពិន្ទុ</th></tr></thead>
-                  <tbody id="inputListBody"></tbody>
-                </table>
-              </div>
+              <div class="table-responsive table-container border shadow-sm"><table class="table table-hover align-middle mb-0"><thead><tr><th>ល.រ</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th class="text-center">ពិន្ទុ</th></tr></thead><tbody id="inputListBody"></tbody></table></div>
             </div>
           </div>
 
-          <!-- TAB 2: GLOBAL REPORT -->
           <div id="tab-report" class="tab-pane-custom hidden">
             <div class="card p-2 shadow-sm border-0">
               <div class="d-flex justify-content-between mb-2 align-items-center">
                 <h6 class="fw-bold mb-0 text-success small">របាយការណ៍រួម (គ្រប់បន្ទប់)</h6>
-                <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel()"><i class="fa-solid fa-file-excel me-1"></i>Excel</button>
+                <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel()">Excel</button>
               </div>
-              <div class="table-responsive table-container border">
-                <table class="table excel-mode mb-0" id="reportTable"><thead id="reportHead"></thead><tbody id="reportTableBody"></tbody></table>
-              </div>
+              <div class="table-responsive table-container border shadow-sm"><table class="table excel-mode mb-0" id="reportTable"><thead id="reportHead"></thead><tbody id="reportTableBody"></tbody></table></div>
             </div>
           </div>
 
-          <!-- TAB 3: ABSENCE -->
           <div id="tab-absence" class="tab-pane-custom hidden">
-            <div class="card p-2 border-danger shadow-sm">
+            <div class="card p-2 border-danger shadow-sm border-0">
                 <div class="row g-2 mb-2 align-items-end">
-                    <div class="col-8 col-md-3"><label class="small fw-bold">បន្ទប់</label><select id="absRoomSelect" class="form-select fw-bold border-danger"></select></div>
-                    <div class="col-4 col-md-2"><button class="btn btn-danger w-100 fw-bold btn-sm" onclick="loadAbsenceList()">ទាញ</button></div>
-                    <div class="col-12 col-md-7 text-end"><button class="btn btn-danger btn-sm fw-bold" onclick="saveAbsence()">រក្សាទុកវត្តមាន (A/P)</button></div>
+                    <div class="col-8 col-md-3"><label class="small fw-bold text-danger">បន្ទប់</label><select id="absRoomSelect" class="form-select fw-bold border-danger"></select></div>
+                    <div class="col-4 col-md-2"><button class="btn btn-danger w-100 fw-bold btn-sm shadow" onclick="loadAbsenceList()">ទាញ</button></div>
+                    <div class="col-12 col-md-7 text-end"><button class="btn btn-danger btn-sm fw-bold shadow" onclick="saveAbsence()">រក្សាទុកវត្តមាន (A/P)</button></div>
                 </div>
-                <div class="table-responsive table-container border"><table class="table table-hover align-middle mb-0"><thead class="table-danger"><tr><th>ល.រ</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th class="text-center">A / P</th></tr></thead><tbody id="absListBody"></tbody></table></div>
+                <div class="table-responsive table-container border shadow-sm"><table class="table table-hover align-middle mb-0"><thead class="table-danger"><tr><th>ល.រ</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th class="text-center">A / P</th></tr></thead><tbody id="absListBody"></tbody></table></div>
             </div>
           </div>
         </div>
@@ -144,48 +136,59 @@
     const _sb = supabase.createClient(SB_URL, SB_KEY);
     let currentUser = null;
 
-    (function initUI() {
+    (function init() {
         const yearSel = document.getElementById('gYear'), monthSel = document.getElementById('gMonth');
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ", "ប្រឡងឆមាសលើកទី១", "ប្រឡងឆមាសលើកទី២"];
         for(let i=0; i<11; i++) { let y = `${2024+i}-${2025+i}`; yearSel.innerHTML += `<option value="${y}">${y}</option>`; }
         months.forEach(m => monthSel.innerHTML += `<option value="${m}">${m}</option>`);
     })();
 
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-pane-custom').forEach(p => p.classList.add('hidden'));
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById('tab-' + tabId).classList.remove('hidden');
-        event.currentTarget.classList.add('active');
-        if(tabId === 'report') loadGlobalReport();
-    }
+    function toggleAuthView(v) { ['login','forgot','reset'].forEach(i => document.getElementById(i+'Form').classList.add('hidden')); document.getElementById(v+'Form').classList.remove('hidden'); }
+    function switchTab(t) { document.querySelectorAll('.tab-pane-custom').forEach(p => p.classList.add('hidden')); document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); document.getElementById('tab-'+t).classList.remove('hidden'); event.currentTarget.classList.add('active'); if(t==='report') loadGlobalReport(); }
 
     async function handleLogin() {
         const email = document.getElementById('loginEmail').value, password = document.getElementById('loginPass').value;
         const { data, error } = await _sb.auth.signInWithPassword({ email, password });
-        if(error) return Swal.fire('Error', 'Login Failed', 'error');
-        const { data: prof } = await _sb.from('profiles').select('*').eq('id', data.user.id).single();
-        currentUser = prof;
-        document.getElementById('authSection').classList.add('hidden');
-        document.getElementById('appSection').classList.remove('hidden');
-        document.getElementById('userDisplay').innerText = "អ្នកប្រើ៖ " + prof.full_name;
-        if(prof.role === 'Admin') document.getElementById('adminOnly').classList.remove('d-none');
-        
-        const { data: lastSt } = await _sb.from('students').select('academic_year, semester, month_name').order('created_at', {ascending: false}).limit(1).maybeSingle();
-        if(lastSt) { document.getElementById('gYear').value = lastSt.academic_year; document.getElementById('gSemester').value = lastSt.semester; document.getElementById('gMonth').value = lastSt.month_name; }
-        await refreshData();
+        if(error) return Swal.fire('Error', 'អុីមែល ឬលេខសម្ងាត់មិនត្រឹមត្រូវ', 'error');
+        checkProfile(data.user.id);
     }
+
+    async function handleForgot() {
+        const { error } = await _sb.auth.resetPasswordForEmail(document.getElementById('forgotEmail').value, { redirectTo: window.location.href });
+        if(error) return Swal.fire('Error', error.message, 'error');
+        Swal.fire('ជោគជ័យ', 'Link ត្រូវបានផ្ញើទៅ Email', 'success'); toggleAuthView('login');
+    }
+
+    async function handleUpdatePassword() {
+        const { error } = await _sb.auth.updateUser({ password: document.getElementById('newPass').value });
+        if(error) return Swal.fire('Error', error.message, 'error');
+        Swal.fire('ជោគជ័យ', 'លេខសម្ងាត់ត្រូវបានប្តូរ', 'success'); toggleAuthView('login');
+    }
+
+    _sb.auth.onAuthStateChange((ev) => { if(ev==="PASSWORD_RECOVERY") toggleAuthView('reset'); });
+
+    async function checkProfile(id) {
+        const { data: prof } = await _sb.from('profiles').select('*').eq('id', id).single();
+        if(prof) {
+            currentUser = prof; document.getElementById('authSection').classList.add('hidden'); document.getElementById('appSection').classList.remove('hidden');
+            document.getElementById('userDisplay').innerText = "អ្នកប្រើ៖ " + prof.full_name;
+            if(prof.role === 'Admin') document.getElementById('adminOnly').classList.remove('d-none');
+            const { data: last } = await _sb.from('students').select('academic_year,semester,month_name').order('created_at',{ascending:false}).limit(1).maybeSingle();
+            if(last) { document.getElementById('gYear').value=last.academic_year; document.getElementById('gSemester').value=last.semester; document.getElementById('gMonth').value=last.month_name; }
+            refreshData();
+        }
+    }
+
+    async function handleLogout() { await _sb.auth.signOut(); location.reload(); }
 
     async function refreshData() {
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value;
-        let allRooms = [], from = 0;
+        let all = [], from = 0;
         while(true) {
-            const { data } = await _sb.from('students').select('room_number').eq('academic_year', y).eq('month_name', m).range(from, from + 999);
-            if(!data || !data.length) break;
-            allRooms = [...allRooms, ...data.map(r => r.room_number)];
-            if(data.length < 1000) break;
-            from += 1000;
+            const { data } = await _sb.from('students').select('room_number').eq('academic_year',y).eq('month_name',m).range(from, from+999);
+            if(!data || !data.length) break; all = [...all, ...data.map(r => r.room_number)]; if(data.length<1000) break; from+=1000;
         }
-        const rooms = [...new Set(allRooms)].sort((a,b)=>a-b);
+        const rooms = [...new Set(all)].sort((a,b)=>a-b);
         const opts = rooms.map(r => `<option value="${r}">${r}</option>`).join('');
         document.getElementById('roomSelect').innerHTML = opts; document.getElementById('absRoomSelect').innerHTML = opts;
         const { data: subs } = await _sb.from('subject_configs').select('subject_name');
@@ -193,20 +196,18 @@
     }
 
     async function loadInputList() {
-        const room = document.getElementById('roomSelect').value, sub = document.getElementById('subjectSelect').value;
-        const year = document.getElementById('gYear').value, month = document.getElementById('gMonth').value;
-        const tbody = document.getElementById('inputListBody');
-        if(!room) return;
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin fs-4"></i></td></tr>';
-        const { data: stds } = await _sb.from('students').select('*').eq('room_number', room).eq('academic_year', year).eq('month_name', month).order('desk_number', {ascending: true});
-        const { data: scores } = await _sb.from('scores').select('*').eq('academic_year', year).eq('month_name', month);
-        const { data: configs } = await _sb.from('subject_configs').select('*').eq('subject_name', sub);
+        const r = document.getElementById('roomSelect').value, sub = document.getElementById('subjectSelect').value, y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value;
+        const tbody = document.getElementById('inputListBody'); if(!r) return;
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i></td></tr>';
+        const { data: stds } = await _sb.from('students').select('*').eq('room_number', r).eq('academic_year', y).eq('month_name', m).order('desk_number', {ascending: true});
+        const { data: scores } = await _sb.from('scores').select('*').eq('academic_year', y).eq('month_name', m);
+        const { data: cfgs } = await _sb.from('subject_configs').select('*').eq('subject_name', sub);
         tbody.innerHTML = stds.map((s, i) => {
-            const max = configs.find(c => c.class_name === s.class_name)?.max_score || 100;
+            const max = cfgs.find(c => c.class_name === s.class_name)?.max_score || 100;
             const mySc = scores.find(sc => sc.student_id === s.student_id && sc.subject_name === sub)?.score_value || '';
             const isAbs = scores.some(sc => sc.student_id === s.student_id && (sc.score_value === 'A' || sc.score_value === 'P'));
             return `<tr class="stu-row" data-id="${s.student_id}" data-room="${s.room_number}" data-name="${s.full_name}" data-class="${s.class_name}">
-                <td class="text-center">${i+1}</td><td class="text-center fw-bold">${s.desk_number}</td><td class="text-center small text-muted">${s.student_id}</td>
+                <td class="text-center">${i+1}</td><td class="text-center fw-bold">${s.desk_number}</td><td class="text-center small">${s.student_id}</td>
                 <td><div class="fw-bold text-primary">${s.full_name}</div><div class="small">Max: <span class="max-label">${max}</span></div></td>
                 <td><input type="text" class="form-control score-input mx-auto shadow-sm" value="${mySc}" data-max="${max}" oninput="validateInput(this)" ${isAbs?'disabled':''}></td></tr>`;
         }).join('');
@@ -214,107 +215,93 @@
     }
 
     function updateMaxLabel() {
-        const p = document.getElementById('mode70').checked ? 70 : 100;
+        const is70 = document.getElementById('mode70').checked;
         document.querySelectorAll('.stu-row').forEach(r => {
             const inp = r.querySelector('.score-input');
-            if(inp) r.querySelector('.max-label').innerText = (parseFloat(inp.dataset.max) * p / 100).toFixed(1).replace('.0','');
+            if(inp) {
+                let m = parseFloat(inp.dataset.max);
+                // បើ ៧០% គឺយកពិន្ទុពេញ គុណ ០.៧ រួចបង្គត់ឡើង
+                let displayM = is70 ? Math.ceil(m * 0.7) : m;
+                r.querySelector('.max-label').innerText = displayM;
+            }
         });
     }
 
     function validateInput(inp) {
-        let v = inp.value.toUpperCase(); const p = document.getElementById('mode70').checked ? 70 : 100;
-        const m = parseFloat(inp.dataset.max) * p / 100;
+        let v = inp.value.toUpperCase(); const is70 = document.getElementById('mode70').checked;
+        let m = parseFloat(inp.dataset.max);
+        let limit = is70 ? Math.ceil(m * 0.7) : m;
         if(v==='A'||v==='P'||v==='') return;
-        if(parseFloat(v.replace(/[^0-9.]/g,'')) > m) { inp.value = ''; Toast.fire({icon:'error', title:'លើសពិន្ទុ!'}); }
+        if(parseFloat(v.replace(/[^0-9.]/g,'')) > limit) { inp.value = ''; Toast.fire({icon:'error', title:'លើសពិន្ទុ!'}); }
     }
 
     async function saveScores() {
-        const payload = [];
-        const sub = document.getElementById('subjectSelect').value, year = document.getElementById('gYear').value;
-        const sem = document.getElementById('gSemester').value, month = document.getElementById('gMonth').value;
-        const p = document.getElementById('mode70').checked ? 70 : 100;
+        const p = []; const sub = document.getElementById('subjectSelect').value, y = document.getElementById('gYear').value, sem = document.getElementById('gSemester').value, m = document.getElementById('gMonth').value, mode = document.getElementById('mode70').checked?70:100;
         document.querySelectorAll('.stu-row').forEach(row => {
             const val = row.querySelector('.score-input').value;
-            if(val !== "" && !row.querySelector('.score-input').disabled) {
-                payload.push({ student_id: row.dataset.id, subject_name: sub, score_value: val, academic_year: year, semester: sem, month_name: month, room_number: row.dataset.room, full_name: row.dataset.name, class_name: row.dataset.class, score_percentage: p, input_by: currentUser.username });
-            }
+            if(val !== "" && !row.querySelector('.score-input').disabled) p.push({ student_id: row.dataset.id, subject_name: sub, score_value: val, academic_year: y, semester: sem, month_name: m, room_number: row.dataset.room, full_name: row.dataset.name, class_name: row.dataset.class, score_percentage: mode, input_by: currentUser.username });
         });
-        if(payload.length) await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
-        Swal.fire('ជោគជ័យ', 'រក្សាទុកបាន ' + payload.length + ' នាក់', 'success');
+        if(p.length) await _sb.from('scores').upsert(p, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
+        Swal.fire('ជោគជ័យ');
     }
 
     async function loadGlobalReport() {
-        const year = document.getElementById('gYear').value, month = document.getElementById('gMonth').value;
-        const tbody = document.getElementById('reportTableBody');
-        tbody.innerHTML = '<tr><td colspan="25" class="text-center py-5">កំពុងរៀបចំរបាយការណ៍រួម...</td></tr>';
-        
+        const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value;
+        const tbody = document.getElementById('reportTableBody'); tbody.innerHTML = '<tr><td colspan="20" class="text-center py-5">Loading...</td></tr>';
         let stds = [], from = 0;
         while(true) {
-            const { data } = await _sb.from('students').select('*').eq('academic_year', year).eq('month_name', month).order('room_number').order('desk_number').range(from, from + 999);
-            if(!data || !data.length) break;
-            stds = [...stds, ...data];
-            if(data.length < 1000) break;
-            from += 1000;
+            const { data } = await _sb.from('students').select('*').eq('academic_year',y).eq('month_name',m).order('room_number').order('desk_number').range(from, from+999);
+            if(!data || !data.length) break; stds = [...stds, ...data]; if(data.length<1000) break; from+=1000;
         }
-
-        const { data: scores } = await _sb.from('scores').select('*').eq('academic_year', year).eq('month_name', month);
-        const { data: configList } = await _sb.from('subject_configs').select('subject_name').order('id', {ascending: true});
-        const subjects = [...new Set(configList.map(c => c.subject_name))];
-
-        document.getElementById('reportHead').innerHTML = `<tr><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th>${subjects.map(s => `<th>${s}</th>`).join('')}</tr>`;
+        const { data: sc } = await _sb.from('scores').select('*').eq('academic_year',y).eq('month_name',m);
+        const { data: cf } = await _sb.from('subject_configs').select('subject_name').order('id',{ascending:true});
+        const subs = [...new Set(cf.map(c=>c.subject_name))];
+        document.getElementById('reportHead').innerHTML = `<tr><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th>${subs.map(s => `<th>${s}</th>`).join('')}</tr>`;
         tbody.innerHTML = stds.map(s => {
-            let html = `<tr><td>${s.room_number}</td><td>${s.desk_number}</td><td class="small">${s.student_id}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td>${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td>${s.class_name}</td>`;
-            subjects.forEach(sub => {
-                const val = scores.find(sc => sc.student_id === s.student_id && sc.subject_name === sub)?.score_value;
-                html += `<td class="${!val?'':'fw-bold'}">${val || ''}</td>`;
-            });
-            return html + '</tr>';
+            let h = `<tr><td>${s.room_number}</td><td>${s.desk_number}</td><td class="small">${s.student_id}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td>${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td>${s.class_name}</td>`;
+            subs.forEach(sub => { const v = sc.find(x => x.student_id===s.student_id && x.subject_name===sub)?.score_value; h += `<td>${v||''}</td>`; });
+            return h + '</tr>';
         }).join('');
     }
 
     async function loadAbsenceList() {
-        const room = document.getElementById('absRoomSelect').value, year = document.getElementById('gYear').value, month = document.getElementById('gMonth').value;
-        const tbody = document.getElementById('absListBody');
-        if(!room) return;
+        const r = document.getElementById('absRoomSelect').value, y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value;
+        const tbody = document.getElementById('absListBody'); if(!r) return;
         tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5">Loading...</td></tr>';
-        const { data: stds } = await _sb.from('students').select('*').eq('room_number', room).eq('academic_year', year).eq('month_name', month).order('desk_number', {ascending: true});
-        const { data: scores } = await _sb.from('scores').select('*').eq('academic_year', year).eq('month_name', month);
-        tbody.innerHTML = stds.map((s, i) => {
-            const currentAbs = scores.find(sc => sc.student_id === s.student_id && (sc.score_value === 'A' || sc.score_value === 'P'))?.score_value || '';
+        const { data: stds } = await _sb.from('students').select('*').eq('room_number',r).eq('academic_year',y).eq('month_name',m).order('desk_number',{ascending:true});
+        const { data: sc } = await _sb.from('scores').select('*').eq('academic_year',y).eq('month_name',m);
+        tbody.innerHTML = stds.map((s,i) => {
+            const v = sc.find(x => x.student_id===s.student_id && (x.score_value==='A'||x.score_value==='P'))?.score_value || '';
             return `<tr class="abs-row" data-id="${s.student_id}" data-name="${s.full_name}" data-class="${s.class_name}" data-room="${s.room_number}">
-                <td class="text-center">${i+1}</td><td class="text-center">${s.desk_number}</td><td class="text-center small">${s.student_id}</td>
-                <td class="fw-bold">${s.full_name}</td>
-                <td><input type="text" class="form-control abs-input mx-auto text-center fw-bold text-danger" value="${currentAbs}" maxlength="1" oninput="this.value=this.value.toUpperCase().replace(/[^AP]/g,'')"></td></tr>`;
+                <td class="text-center">${i+1}</td><td class="text-center">${s.desk_number}</td><td class="text-center small">${s.student_id}</td><td class="fw-bold">${s.full_name}</td>
+                <td><input type="text" class="form-control abs-input mx-auto text-center fw-bold text-danger shadow-sm" value="${v}" maxlength="1" oninput="this.value=this.value.toUpperCase().replace(/[^AP]/g,'')"></td></tr>`;
         }).join('');
         setupSmartPaste('.abs-input');
     }
 
     async function saveAbsence() {
-        const year = document.getElementById('gYear').value, sem = document.getElementById('gSemester').value, month = document.getElementById('gMonth').value;
-        const { data: configs } = await _sb.from('subject_configs').select('subject_name');
-        const subjects = [...new Set(configs.map(s => s.subject_name))];
+        const y = document.getElementById('gYear').value, sem = document.getElementById('gSemester').value, m = document.getElementById('gMonth').value;
+        const { data: cf } = await _sb.from('subject_configs').select('subject_name');
+        const subs = [...new Set(cf.map(s => s.subject_name))];
         const payload = [];
         document.querySelectorAll('.abs-row').forEach(row => {
             const val = row.querySelector('.abs-input').value.trim();
-            if(val) subjects.forEach(sub => payload.push({ student_id: row.dataset.id, subject_name: sub, score_value: val, academic_year: year, semester: sem, month_name: month, room_number: row.dataset.room, full_name: row.dataset.name, class_name: row.dataset.class, input_by: currentUser.username }));
+            if(val) subs.forEach(sub => payload.push({ student_id: row.dataset.id, subject_name: sub, score_value: val, academic_year: y, semester: sem, month_name: m, room_number: row.dataset.room, full_name: row.dataset.name, class_name: row.dataset.class, input_by: currentUser.username }));
         });
         if(payload.length) await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
         Swal.fire('ជោគជ័យ');
     }
 
-    function setupSmartPaste(selector) {
-        const inputs = Array.from(document.querySelectorAll(selector));
-        inputs.forEach((inp, i) => {
-            inp.onkeydown = (e) => { if(e.key==='Enter'||e.key==='ArrowDown') focusNext(inputs, i, 1); if(e.key==='ArrowUp') focusNext(inputs, i, -1); };
-            inp.onpaste = (e) => { e.preventDefault(); const data = (e.clipboardData || window.clipboardData).getData('text').trim().split(/\s+/); let idx = 0; for(let j=i; j<inputs.length && idx < data.length; j++) { if(!inputs[j].disabled) { inputs[j].value = data[idx].toUpperCase(); idx++; } } };
+    function setupSmartPaste(sel) {
+        const ins = Array.from(document.querySelectorAll(sel));
+        ins.forEach((inp, i) => {
+            inp.onkeydown = (e) => { if(e.key==='Enter'||e.key==='ArrowDown') focusNext(ins, i, 1); if(e.key==='ArrowUp') focusNext(ins, i, -1); };
+            inp.onpaste = (e) => { e.preventDefault(); const d = (e.clipboardData || window.clipboardData).getData('text').trim().split(/\s+/); let idx = 0; for(let j=i; j<ins.length && idx < d.length; j++) { if(!ins[j].disabled) { ins[j].value = d[idx].toUpperCase(); validateInput(ins[j]); idx++; } } };
         });
     }
 
-    function focusNext(inputs, curr, dir) { let next = curr + dir; while(inputs[next] && inputs[next].disabled) next += dir; if(inputs[next]) { inputs[next].focus(); inputs[next].select(); } }
+    function focusNext(ins, curr, dir) { let next = curr + dir; while(ins[next] && ins[next].disabled) next += dir; if(ins[next]) { ins[next].focus(); ins[next].select(); } }
     function exportExcel() { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(['\ufeff', document.getElementById("reportTable").outerHTML], { type: 'application/vnd.ms-excel' })); a.download = `Global_Report.xls`; a.click(); }
   </script>
 </body>
 </html>
-
-
-
