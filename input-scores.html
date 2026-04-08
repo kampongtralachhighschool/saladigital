@@ -31,6 +31,11 @@
     #authSection { display: flex; align-items: center; justify-content: center; min-height: 90vh; }
     .auth-card { width: 100%; max-width: 400px; border: none; }
     .cursor-pointer { cursor: pointer; }
+    /* Class Background Colors */
+    .bg-class-0 { background-color: #ffffff !important; }
+    .bg-class-1 { background-color: #f0f7ff !important; }
+    .bg-class-2 { background-color: #fffaf0 !important; }
+    .stu-row:hover { filter: brightness(0.97); transition: 0.2s; }
   </style>
 </head>
 <body>
@@ -113,7 +118,7 @@
                 <div class="col-6 col-md-3"><button class="btn btn-success w-100 fw-bold shadow" onclick="saveScores()"><i class="fa-solid fa-save"></i> រក្សាទុកពិន្ទុ</button></div>
               </div>
               <div class="table-responsive table-container border shadow-sm">
-                  <table class="table table-hover align-middle mb-0 text-center">
+                  <table class="table align-middle mb-0 text-center">
                       <thead><tr><th>ល.រ</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th width="100">ពិន្ទុ</th></tr></thead>
                       <tbody id="inputListBody"></tbody>
                   </table>
@@ -248,7 +253,7 @@
         }
     }
 
-    // 4. LOAD INPUT LIST
+    // 4. LOAD INPUT LIST (Added Class Name & Row Color)
     async function loadInputList() {
         const r = document.getElementById('roomSelect').value, sub = document.getElementById('subjectSelect').value;
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value;
@@ -261,14 +266,27 @@
         const scores = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
         const cfgs = await fetchAllData('subject_configs', { subject_name: sub });
         
+        // កំណត់ពណ៌ខុសគ្នាសម្រាប់ថ្នាក់នីមួយៗ
+        const uniqueClasses = [...new Set(stds.map(s => s.class_name ? String(s.class_name).trim() : ''))];
+        
         tbody.innerHTML = stds.map((s, i) => {
-            const max = cfgs.find(c => String(c.class_name).trim() === String(s.class_name).trim())?.max_score || 100;
+            const classStr = s.class_name ? String(s.class_name).trim() : '';
+            const classIdx = uniqueClasses.indexOf(classStr);
+            // ប្រើប្រាស់ Class CSS ដើម្បីដាក់ពណ៌
+            const rowBgClass = classIdx === 0 ? 'bg-class-0' : (classIdx === 1 ? 'bg-class-1' : 'bg-class-2');
+
+            const max = cfgs.find(c => String(c.class_name).trim() === classStr)?.max_score || 100;
             const mySc = scores.find(x => String(x.student_id).trim() === String(s.student_id).trim() && String(x.subject_name).trim() === String(sub).trim())?.score_value || '';
             const isAbs = scores.some(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value === 'A' || x.score_value === 'P'));
             
-            return `<tr class="stu-row" data-id="${s.student_id}" data-room="${s.room_number}" data-name="${s.full_name}" data-class="${s.class_name}">
-                <td class="text-center">${i+1}</td><td class="fw-bold">${s.desk_number}</td><td class="small">${s.student_id}</td>
-                <td class="text-start fw-bold text-primary">${s.full_name} <div class="small text-muted fw-normal">Max: <span class="max-label">${max}</span></div></td>
+            return `<tr class="stu-row ${rowBgClass}" data-id="${s.student_id}" data-room="${s.room_number}" data-name="${s.full_name}" data-class="${s.class_name}">
+                <td class="text-center">${i+1}</td>
+                <td class="fw-bold">${s.desk_number}</td>
+                <td class="small">${s.student_id}</td>
+                <td class="text-start fw-bold text-primary">
+                    ${s.full_name} <span class="badge bg-secondary ms-1" style="font-size: 10px;">${classStr}</span>
+                    <div class="small text-muted fw-normal mt-1">Max: <span class="max-label">${max}</span></div>
+                </td>
                 <td><input type="text" class="form-control score-input mx-auto shadow-sm" value="${mySc}" data-max="${max}" oninput="validateInput(this)" ondblclick="adminUnlock('${s.student_id}', '${sub}', this.value)" ${isAbs?'disabled':''}></td>
             </tr>`;
         }).join('');
@@ -445,13 +463,43 @@
     }
 
     function updateMaxLabel() { const is70 = document.getElementById('mode70').checked; document.querySelectorAll('.stu-row').forEach(r => { const inp = r.querySelector('.score-input'); if(inp) { let m = parseFloat(inp.dataset.max); r.querySelector('.max-label').innerText = is70 ? Math.ceil(m * 0.7) : m; } }); }
-    function setupSmartPaste(sel) { const ins = Array.from(document.querySelectorAll(sel)); ins.forEach((inp, i) => { inp.onkeydown = (e) => { if(e.key==='Enter'||e.key==='ArrowDown') focusNext(ins, i, 1); if(e.key==='ArrowUp') focusNext(ins, i, -1); }; inp.onpaste = (e) => { e.preventDefault(); const d = (e.clipboardData || window.clipboardData).getData('text').trim().split(/\s+/); let idx = 0; for(let j=i; j<ins.length && idx < d.length; j++) { if(!ins[j].disabled) { let orig = ins[j].value; ins[j].value = d[idx].toUpperCase(); if(!validateInput(ins[j], true)) { ins[j].value = orig; } else { idx++; } } } }; }); }
+    
+    // SMART PASTE REWRITTEN: គិតជួរ១ទល់១ ជាមួយ Excel, រំលង Absent ដោយមិនរុញខុសជួរ និងមិនបញ្វូលពិន្ទុខុស
+    function setupSmartPaste(sel) { 
+        const ins = Array.from(document.querySelectorAll(sel)); 
+        ins.forEach((inp, i) => { 
+            inp.onkeydown = (e) => { 
+                if(e.key==='Enter'||e.key==='ArrowDown') focusNext(ins, i, 1); 
+                if(e.key==='ArrowUp') focusNext(ins, i, -1); 
+            }; 
+            inp.onpaste = (e) => { 
+                e.preventDefault(); 
+                // បំបែកទិន្នន័យដោយចុះបន្ទាត់ (Newline) ដែលត្រូវនឹង Copy ចេញពីជួរ Excel
+                const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/\r/g, '').split('\n'); 
+                
+                let pasteIdx = 0; 
+                for(let j=i; j<ins.length && pasteIdx < pasteData.length; j++) { 
+                    let valToPaste = pasteData[pasteIdx].trim().toUpperCase();
+                    pasteIdx++; // ដំឡើង Index ជានិច្ចដើម្បីរក្សាជួរ១ទល់១ (1-to-1 Mapping)
+
+                    // បញ្ចូលតែប្រអប់ណាដែលបើក (សិស្សមិនអវត្តមាន) និងមានទិន្នន័យ
+                    if(!ins[j].disabled && valToPaste !== "") { 
+                        let orig = ins[j].value; 
+                        ins[j].value = valToPaste; 
+                        // validateInput និងត្រឡប់ false បើពិន្ទុខុស/លើស
+                        if(!validateInput(ins[j], true)) { 
+                            ins[j].value = orig; // ទាញទិន្នន័យដើមមកវិញបើពិន្ទុដែល paste បញ្ចូលនោះខុស
+                        } 
+                    } 
+                } 
+            }; 
+        }); 
+    }
+
     function focusNext(ins, curr, dir) { let next = curr + dir; while(ins[next] && ins[next].disabled) next += dir; if(ins[next]) { ins[next].focus(); ins[next].select(); } }
     
-    // បង្កើនប្រសិទ្ធភាពមុខងារទាញ Excel ដោយមិនឲ្យជាប់ប៊ូតុង
     function exportExcel(id) { 
         let tableClone = document.getElementById(id).cloneNode(true);
-        // លុប Column ចុងក្រោយ (សកម្មភាព/ប៊ូតុងលុប) ចេញមុននឹង Export ប្រសិនបើវាជាតារាងអវត្តមាន
         if(id === 'absHistoryTable') {
             const rows = tableClone.querySelectorAll('tr');
             rows.forEach(row => { if(row.children.length > 0) row.removeChild(row.lastElementChild); });
