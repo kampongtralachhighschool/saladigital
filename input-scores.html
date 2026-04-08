@@ -124,9 +124,9 @@
           <!-- TAB: REPORT -->
           <div id="tab-report" class="tab-pane-custom hidden">
               <div class="card p-2 shadow-sm border-0">
-                  <div class="d-flex justify-content-between mb-2">
-                      <h6 class="fw-bold text-success small">របាយការណ៍រួម</h6>
-                      <button class="btn btn-outline-success btn-sm fw-bold" onclick="exportExcel('reportTable')">Excel</button>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                      <h6 class="fw-bold text-success small mb-0">របាយការណ៍រួម</h6>
+                      <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('reportTable')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
                   </div>
                   <div class="table-responsive table-container border shadow-sm">
                       <table class="table excel-mode mb-0" id="reportTable"><thead id="reportHead"></thead><tbody id="reportTableBody"></tbody></table>
@@ -137,6 +137,10 @@
           <!-- TAB: ABSENCE HISTORY -->
           <div id="tab-abs-report" class="tab-pane-custom hidden">
               <div class="card p-2 shadow-sm border-0">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                      <h6 class="fw-bold text-danger small mb-0"><i class="fa-solid fa-user-xmark me-1"></i> របាយការណ៍តាមដានអវត្តមាន</h6>
+                      <button class="btn btn-outline-danger btn-sm fw-bold shadow-sm" onclick="exportExcel('absHistoryTable')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+                  </div>
                   <div class="table-responsive table-container border shadow-sm">
                       <table class="table excel-mode mb-0" id="absHistoryTable">
                           <thead><tr class="table-dark"><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th><th class="bg-danger">ខែនេះ</th><th class="bg-warning text-dark">ប្រវត្តិឆ្នាំនេះ</th><th>សកម្មភាព</th></tr></thead>
@@ -179,7 +183,7 @@
     </div>
   </div>
 
-<script>
+  <script>
     const SB_URL = "https://jmyfcgtvwlbtzfxgmyai.supabase.co";
     const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpteWZjZ3R2d2xidHpmeGdteWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NzEzODcsImV4cCI6MjA5MTE0NzM4N30.9CD_yAFGBTylqPjivqSHoyTYvL_b1PP27WUi2yL9CbQ";
     const _sb = supabase.createClient(SB_URL, SB_KEY);
@@ -238,7 +242,6 @@
         document.getElementById('roomSelect').innerHTML = roomOpts;
         document.getElementById('absRoomSelect').innerHTML = roomOpts;
         
-        // កែសម្រួលត្រង់នេះ៖ ទាញមុខវិជ្ជាពី subject_configs ធានាថាលឿន និងចេញ១០០%
         const { data: subs } = await _sb.from('subject_configs').select('subject_name');
         if(subs) {
             document.getElementById('subjectSelect').innerHTML = [...new Set(subs.map(s => s.subject_name))].map(s => `<option value="${s}">${s}</option>`).join('');
@@ -413,6 +416,24 @@
     }
     
     async function revertAbs(sid) { 
+        if (currentUser.role !== 'Admin') {
+            Swal.fire({
+                title: 'គ្មានសិទ្ធិអនុញ្ញាត',
+                text: 'អ្នកមិនមានសិទ្ធិលុបអវត្តមានសិស្សទេ។ សូមទាក់ទង Admin ដើម្បីដោះស្រាយ!',
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#0088cc',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '<i class="fa-brands fa-telegram me-1"></i> រាយការណ៍ទៅ Admin',
+                cancelButtonText: 'បិទ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.open('https://t.me/Mrmomhon', '_blank');
+                }
+            });
+            return;
+        }
+
         const { isConfirmed } = await Swal.fire({ title: 'លុបវត្តមាន?', text: "សិស្សនេះនឹងអាចបញ្ចូលពិន្ទុបានវិញ!", icon: 'warning', showCancelButton: true }); 
         if(isConfirmed) { 
             Swal.fire({ title: 'កំពុងលុប...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
@@ -426,7 +447,21 @@
     function updateMaxLabel() { const is70 = document.getElementById('mode70').checked; document.querySelectorAll('.stu-row').forEach(r => { const inp = r.querySelector('.score-input'); if(inp) { let m = parseFloat(inp.dataset.max); r.querySelector('.max-label').innerText = is70 ? Math.ceil(m * 0.7) : m; } }); }
     function setupSmartPaste(sel) { const ins = Array.from(document.querySelectorAll(sel)); ins.forEach((inp, i) => { inp.onkeydown = (e) => { if(e.key==='Enter'||e.key==='ArrowDown') focusNext(ins, i, 1); if(e.key==='ArrowUp') focusNext(ins, i, -1); }; inp.onpaste = (e) => { e.preventDefault(); const d = (e.clipboardData || window.clipboardData).getData('text').trim().split(/\s+/); let idx = 0; for(let j=i; j<ins.length && idx < d.length; j++) { if(!ins[j].disabled) { let orig = ins[j].value; ins[j].value = d[idx].toUpperCase(); if(!validateInput(ins[j], true)) { ins[j].value = orig; } else { idx++; } } } }; }); }
     function focusNext(ins, curr, dir) { let next = curr + dir; while(ins[next] && ins[next].disabled) next += dir; if(ins[next]) { ins[next].focus(); ins[next].select(); } }
-    function exportExcel(id) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(['\ufeff', document.getElementById(id).outerHTML], { type: 'application/vnd.ms-excel' })); a.download = `Report.xls`; a.click(); }
+    
+    // បង្កើនប្រសិទ្ធភាពមុខងារទាញ Excel ដោយមិនឲ្យជាប់ប៊ូតុង
+    function exportExcel(id) { 
+        let tableClone = document.getElementById(id).cloneNode(true);
+        // លុប Column ចុងក្រោយ (សកម្មភាព/ប៊ូតុងលុប) ចេញមុននឹង Export ប្រសិនបើវាជាតារាងអវត្តមាន
+        if(id === 'absHistoryTable') {
+            const rows = tableClone.querySelectorAll('tr');
+            rows.forEach(row => { if(row.children.length > 0) row.removeChild(row.lastElementChild); });
+        }
+        const a = document.createElement("a"); 
+        a.href = URL.createObjectURL(new Blob(['\ufeff', tableClone.outerHTML], { type: 'application/vnd.ms-excel' })); 
+        a.download = `Report_${id}.xls`; 
+        a.click(); 
+    }
+
     function toggleAuthView(v) { ['login','forgot','reset'].forEach(i => document.getElementById(i+'Form').classList.add('hidden')); document.getElementById(v+'Form').classList.remove('hidden'); }
     async function handleLogout() { await _sb.auth.signOut(); location.reload(); }
     _sb.auth.onAuthStateChange((ev) => { if(ev==="PASSWORD_RECOVERY") toggleAuthView('reset'); });
