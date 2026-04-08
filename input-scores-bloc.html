@@ -3,495 +3,314 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>វិទ្យាល័យហ៊ុនសែនកំពង់ត្រឡាច - ប្រព័ន្ធបញ្ចូលពិន្ទុ</title>
+  <title>ប្រព័ន្ធគ្រប់គ្រងពិន្ទុ - វិទ្យាល័យហ៊ុនសែនកំពង់ត្រឡាច</title>
   
-  <!-- CSS & Fonts -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- SweetAlert2 សម្រាប់សារលោតស្អាតៗ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
-    :root {
-      --primary-color: #0d6efd;
-      --bg-color: #f4f6f9;
-      
+    :root { --primary: #0d6efd; --bg: #f0f2f5; }
+    body { background-color: var(--bg); font-family: 'Kantumruy Pro', sans-serif; font-size: 13px; }
+    .card { border-radius: 12px; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    .hidden { display: none !important; }
+    
+    .table-container { max-height: 65vh; overflow-y: auto; background: white; border: 1px solid #dee2e6; border-radius: 10px; }
+    .table thead th { position: sticky; top: 0; background: #212529; color: white; z-index: 10; padding: 10px; text-align: center; white-space: nowrap; }
+    
+    .score-input { width: 65px; text-align: center; font-weight: bold; border: 2px solid #eee; border-radius: 6px; padding: 4px; }
+    .score-input:focus { border-color: var(--primary); outline: none; background: #eef6ff; }
+    .score-input:disabled { background-color: #ffdce0; color: #d32f2f; border-color: #ffc1c8; cursor: not-allowed; }
+    
+    .app-header { background: linear-gradient(135deg, #0d6efd, #0099ff); color: white; padding: 15px; border-radius: 0 0 20px 20px; }
+    .filter-card { margin-top: -20px; padding: 15px; background: white; border-radius: 12px; border-bottom: 4px solid var(--primary); }
+    
+    .excel-mode th, .excel-mode td { border: 1px solid #ccc !important; text-align: center; padding: 6px !important; white-space: nowrap; }
+    .missing { background-color: #fff3cd; }
+    
+    .nav-pills .nav-link { font-weight: 600; color: #555; padding: 8px 18px; cursor: pointer; border-radius: 8px; }
+    .nav-pills .nav-link.active { background-color: var(--primary); color: white !important; }
+    
+    @media (max-width: 768px) {
+        .score-input { width: 55px; }
+        .filter-card { margin-top: 0; border-radius: 0; }
+        .app-header { border-radius: 0; }
+        body { font-size: 12px; }
     }
-    body { background-color: var(--bg-color); font-family: 'Kantumruy Pro', sans-serif; }
-    
-    /* Login Screen */
-    .login-card { border-radius: 16px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; }
-    .login-header { background: linear-gradient(135deg, #0d6efd, #0dcaf0); padding: 30px 20px; text-align: center; }
-    .school-title { font-size: 1.4rem; font-weight: 700; color: white; margin-top: 10px; }
-    .sys-subtitle { font-size: 1rem; color: rgba(255, 255, 255, 0.8); }
-    .school-logo { width: 90px; height: 90px; object-fit: contain; border-radius: 50%; padding: 5px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    
-    /* Tabs & Tables */
-    .nav-pills .nav-link { font-weight: 600; color: #6c757d; border-radius: 8px; margin-right: 5px; transition: 0.3s; cursor: pointer; }
-    .nav-pills .nav-link.active { background-color: var(--primary-color); color: white; box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2); }
-    .table-container { max-height: 65vh; border-radius: 10px; border: 1px solid #dee2e6; overflow-y: auto; background: white; }
-    .table thead th { position: sticky; top: 0; z-index: 2; background-color: #212529; color: white; }
-    .table-hover tbody tr:hover { background-color: #f8f9fa; }
-    
-    /* Inputs */
-    .score-input { width: 80px; text-align: center; font-weight: 700; font-size: 1rem; text-transform: uppercase; border: 2px solid #e9ecef; transition: 0.2s;}
-    .score-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15); transform: scale(1.05); z-index: 1; }
-    .score-input:disabled { background-color: #f8d7da; color: #dc3545; border-color: #f5c2c7; cursor: not-allowed; }
-    
-    /* Sticky Save Button */
-    .floating-save { position: sticky; bottom: 15px; z-index: 10; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
-    .cursor-pointer { cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <!-- =============================== -->
-  <!-- ផ្នែកចូលប្រព័ន្ធ (Login Section) -->
-  <!-- =============================== -->
-  <div class="container mt-5" id="authSection">
+  <!-- AUTH SECTION -->
+  <div id="authSection" class="container mt-5">
     <div class="row justify-content-center">
-      <div class="col-md-5 col-sm-10">
-        <div class="card login-card">
-          <div class="login-header">
-            <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" alt="School Logo" class="school-logo">
-            <div class="school-title">វិទ្យាល័យហ៊ុនសែនកំពង់ត្រឡាច</div>
-            <div class="sys-subtitle">ប្រព័ន្ធគ្រប់គ្រងពិន្ទុ</div>
-          </div>
-          
-          <div class="card-body p-4" id="loginForm">
-            <div class="input-group mb-3"><span class="input-group-text bg-white"><i class="fa-solid fa-user text-primary"></i></span><input type="text" id="logUser" class="form-control" placeholder="ឈ្មោះគណនី"></div>
-            <div class="input-group mb-4"><span class="input-group-text bg-white"><i class="fa-solid fa-lock text-primary"></i></span><input type="password" id="logPass" class="form-control" placeholder="លេខសម្ងាត់"></div>
-            <button class="btn btn-primary w-100 fw-bold py-2 mb-3 shadow-sm" id="btnLogin" onclick="login()"><i class="fa-solid fa-right-to-bracket"></i> ចូលប្រព័ន្ធ</button>
-            <div class="d-flex justify-content-between" style="font-size: 0.9rem;">
-              <a href="#" class="text-decoration-none" onclick="toggleAuth('registerForm')">បង្កើតគណនីថ្មី</a>
-              <a href="#" class="text-danger text-decoration-none" onclick="toggleAuth('forgotForm')">ភ្លេចលេខសម្ងាត់?</a>
-            </div>
-          </div>
-
-          <div class="card-body p-4 d-none" id="registerForm">
-            <h5 class="text-center text-primary fw-bold mb-3">បង្កើតគណនីថ្មី</h5>
-            <div class="input-group mb-2"><span class="input-group-text"><i class="fa-solid fa-user-plus"></i></span><input type="text" id="regUser" class="form-control" placeholder="ឈ្មោះគណនី"></div>
-            <div class="input-group mb-2"><span class="input-group-text"><i class="fa-solid fa-key"></i></span><input type="password" id="regPass" class="form-control" placeholder="លេខសម្ងាត់"></div>
-            <div class="input-group mb-3"><span class="input-group-text"><i class="fa-brands fa-telegram"></i></span><input type="text" id="regContact" class="form-control" placeholder="លេខទូរស័ព្ទ / Telegram"></div>
-            <button class="btn btn-success w-100 fw-bold py-2 mb-2" id="btnRegister" onclick="register()"><i class="fa-solid fa-check"></i> ចុះឈ្មោះ</button>
-            <div class="text-center"><a href="#" class="text-decoration-none" onclick="toggleAuth('loginForm')"><i class="fa-solid fa-arrow-left"></i> ត្រឡប់ក្រោយ</a></div>
-          </div>
-
-          <div class="card-body p-4 d-none" id="forgotForm">
-            <h5 class="text-center text-danger fw-bold mb-3">សុំលេខសម្ងាត់ថ្មី</h5>
-            <div class="input-group mb-3"><span class="input-group-text"><i class="fa-solid fa-user-shield"></i></span><input type="text" id="forgotUser" class="form-control" placeholder="បញ្ចូលឈ្មោះគណនីរបស់អ្នក"></div>
-            <button class="btn btn-danger w-100 fw-bold py-2 mb-2" onclick="resetPassword()"><i class="fa-brands fa-telegram"></i> ផ្ញើសារសុំសិទ្ធិ</button>
-            <div class="text-center"><a href="#" class="text-decoration-none" onclick="toggleAuth('loginForm')"><i class="fa-solid fa-arrow-left"></i> ត្រឡប់ក្រោយ</a></div>
-          </div>
+      <div class="col-md-4 text-center">
+        <div class="card p-4 shadow-lg">
+          <img src="https://i.ibb.co/XZ1mpn5R/Logo-04.png" width="70" class="mx-auto mb-3">
+          <h5 class="fw-bold text-primary mb-4">ចូលប្រើប្រាស់ប្រព័ន្ធ</h5>
+          <input type="email" id="loginEmail" class="form-control mb-2" placeholder="អ៊ីមែល">
+          <input type="password" id="loginPass" class="form-control mb-4" placeholder="លេខសម្ងាត់">
+          <button class="btn btn-primary w-100 fw-bold py-2 shadow" onclick="handleLogin()">ចូលប្រព័ន្ធ</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- =============================== -->
-  <!-- ផ្ទាំងកម្មវិធីគោល (App Section) -->
-  <!-- =============================== -->
-  <div class="container-fluid mt-3 d-none" id="appSection">
-    <div class="d-flex justify-content-between align-items-center mb-3 bg-white p-3 rounded-3 shadow-sm border">
-      <h5 class="text-primary mb-0 fw-bold"><i class="fa-solid fa-school"></i> ប្រព័ន្ធពិន្ទុ <span class="badge bg-primary ms-2" id="userDisplay"></span></h5>
-      <button class="btn btn-outline-danger btn-sm fw-bold" onclick="location.reload()"><i class="fa-solid fa-power-off"></i> ចាកចេញ</button>
+  <!-- MAIN APP SECTION -->
+  <div id="appSection" class="container-fluid hidden p-0">
+    <div class="app-header text-center shadow">
+        <h6 class="fw-bold mb-0"><i class="fa-solid fa-graduation-cap me-2"></i>ប្រព័ន្ធគ្រប់គ្រងពិន្ទុ</h6>
+        <p class="small mb-0" id="userDisplay"></p>
     </div>
 
-    <!-- Menu Tabs -->
-    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-      <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-input"><i class="fa-solid fa-pen-to-square"></i> បញ្ជូលពិន្ទុ</a></li>
-      <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-report" onclick="loadReport()"><i class="fa-solid fa-chart-pie"></i> របាយការណ៍</a></li>
-      <li class="nav-item d-none" id="nav-admin"><a class="nav-link text-danger border border-danger" data-bs-toggle="pill" data-bs-target="#tab-admin"><i class="fa-solid fa-user-lock"></i> កំណត់អវត្តមាន</a></li>
-    </ul>
-
-    <div class="tab-content">
-      <!-- ផ្ទាំងបញ្ចូលពិន្ទុ -->
-      <div class="tab-pane fade show active" id="tab-input">
-        <div class="card shadow-sm p-3 border-0 rounded-3">
-          <div class="row g-2 mb-3">
-            <div class="col-6 col-md-2"><select id="roomSelect" class="form-select fw-bold text-primary"></select></div>
-            <div class="col-6 col-md-3"><select id="subjectSelect" class="form-select fw-bold text-success"></select></div>
-            <div class="col-12 col-md-2"><button class="btn btn-success w-100 fw-bold" onclick="fetchStudents()" id="btnFetch"><i class="fa-solid fa-download"></i> ទាញទិន្នន័យ</button></div>
-            <div class="col-12 col-md-5"><div class="input-group"><span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass"></i></span><input type="text" id="searchInput" class="form-control" placeholder="ស្វែងរកឈ្មោះសិស្ស..." onkeyup="searchTable()"></div></div>
-          </div>
-          
-          <div class="alert alert-info py-2 d-flex align-items-center" style="font-size: 0.9rem;">
-            <i class="fa-solid fa-lightbulb text-warning fs-4 me-2"></i> 
-            <div>អាចចុច <b>Enter</b> ឫព្រួញ <b>ចុះក្រោម(⬇) ឡើងលើ(⬆)</b> ដើម្បីលោតប្រអប់។ ប្រអប់ក្រហមគឺ Admin បាន Lock។ អាច Copy ពី Excel មក Paste បាន។</div>
-          </div>
-
-          <div class="table-responsive table-container">
-            <table class="table table-hover align-middle mb-0">
-              <thead>
-                <tr><th class="text-center" width="60">តុ</th><th class="d-none d-sm-table-cell" width="120">អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th class="text-center" width="150">ពិន្ទុ</th></tr>
-              </thead>
-              <tbody id="tableBody">
-                <tr><td colspan="4" class="text-center text-muted py-5"><i class="fa-solid fa-clipboard-list fs-2 mb-2 text-light"></i><br>សូមរើសបន្ទប់ និងមុខវិជ្ជា រួចចុចទាញទិន្នន័យ</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="text-end floating-save d-none" id="saveContainer">
-            <button class="btn btn-primary px-5 fw-bold shadow" onclick="saveData()" id="btnSave"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកពិន្ទុ</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ផ្ទាំងរបាយការណ៍ -->
-      <div class="tab-pane fade" id="tab-report">
-        <div class="card shadow-sm p-3 border-0 rounded-3">
-          <div class="row mb-3">
-            <div class="col-md-4">
-              <select id="reportFilter" class="form-select fw-bold" onchange="filterReport()"><option value="ALL">ទាញយកទិន្នន័យ...</option></select>
+    <div class="container-fluid px-2 mt-4">
+        <!-- GLOBAL FILTERS -->
+        <div class="card filter-card shadow-sm mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-6 col-md-2"><label class="small fw-bold">ឆ្នាំសិក្សា</label><select id="gYear" class="form-select border-primary" onchange="refreshData()"></select></div>
+                <div class="col-6 col-md-2"><label class="small fw-bold">ឆមាស</label><select id="gSemester" class="form-select border-primary" onchange="refreshData()"><option value="ឆមាសទី១">ឆមាសទី១</option><option value="ឆមាសទី២">ឆមាសទី២</option></select></div>
+                <div class="col-6 col-md-2"><label class="small fw-bold">ខែប្រឡង</label><select id="gMonth" class="form-select border-primary" onchange="refreshData()"></select></div>
+                <div class="col-6 col-md-3">
+                    <div class="form-check form-switch bg-light p-2 rounded border border-primary text-center">
+                        <input class="form-check-input ms-0" type="checkbox" id="mode70" checked onchange="updateMaxLabel()">
+                        <label class="form-check-label fw-bold text-primary ms-2" for="mode70">យក ៧០%</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 text-end"><button class="btn btn-danger btn-sm rounded-pill px-4 fw-bold" onclick="location.reload()">ចាកចេញ</button></div>
             </div>
-          </div>
-          <div class="table-responsive table-container">
-            <table class="table table-bordered table-hover align-middle mb-0">
-              <thead class="table-light"><tr><th>បន្ទប់</th><th>មុខវិជ្ជា</th><th class="text-center">សរុប</th><th class="text-center">បញ្ចូលរួច</th><th>ស្ថានភាព</th></tr></thead>
-              <tbody id="reportBody"><tr><td colspan="5" class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-primary"></i> កំពុងទាញទិន្នន័យ...</td></tr></tbody>
-            </table>
-          </div>
         </div>
-      </div>
 
-      <!-- ផ្ទាំង Admin កំណត់អវត្តមាន -->
-      <div class="tab-pane fade" id="tab-admin">
-        <div class="card shadow-sm p-3 border-0 rounded-3 border-danger" style="border-top: 4px solid #dc3545 !important;">
-          <h5 class="text-danger fw-bold mb-3"><i class="fa-solid fa-user-slash"></i> កំណត់អវត្តមានសិស្សប្រចាំថ្ងៃ</h5>
-          
-          <div class="row g-2 mb-3 bg-light p-2 rounded border">
-            <div class="col-md-3"><select id="adminRoomSelect" class="form-select fw-bold" onchange="loadAdminStudents()"><option value="">-- រើសបន្ទប់ --</option></select></div>
-            <div class="col-md-4"><input type="text" id="adminSearch" class="form-control" placeholder="ស្វែងរកឈ្មោះ..." onkeyup="searchAdminTable()"></div>
-            <div class="col-md-5 text-end">
-              <button class="btn btn-danger fw-bold" onclick="applyBulkAbsence('A')" id="btnBulkA"><i class="fa-solid fa-a"></i> ដាក់ A អ្នករើស</button>
-              <button class="btn btn-warning fw-bold text-dark" onclick="applyBulkAbsence('P')" id="btnBulkP"><i class="fa-solid fa-p"></i> ដាក់ P អ្នករើស</button>
+        <!-- TAB MENU -->
+        <ul class="nav nav-pills mb-3 px-1" id="pills-tab">
+          <li class="nav-item"><a class="nav-link active" onclick="switchTab('input')">បញ្ចូលពិន្ទុ</a></li>
+          <li class="nav-item"><a class="nav-link" onclick="switchTab('report')">របាយការណ៍រួម</a></li>
+          <li id="adminOnly" class="nav-item d-none"><a class="nav-link text-danger border border-danger ms-2" onclick="switchTab('absence')">ដាក់អវត្តមាន</a></li>
+        </ul>
+
+        <div class="tab-content">
+          <!-- TAB 1: INPUT SCORE -->
+          <div id="tab-input" class="tab-pane-custom">
+            <div class="card p-2 shadow-sm">
+              <div class="row g-2 mb-3 align-items-end border-bottom pb-2">
+                <div class="col-6 col-md-2"><label class="small fw-bold">បន្ទប់</label><select id="roomSelect" class="form-select fw-bold border-primary"></select></div>
+                <div class="col-6 col-md-3"><label class="small fw-bold text-primary">មុខវិជ្ជា</label><select id="subjectSelect" class="form-select fw-bold border-primary"></select></div>
+                <div class="col-6 col-md-3"><button class="btn btn-primary w-100 fw-bold" onclick="loadInputList()">ទាញឈ្មោះ</button></div>
+                <div class="col-6 col-md-3"><button class="btn btn-success w-100 fw-bold shadow" onclick="saveScores()"><i class="fa-solid fa-save me-1"></i>រក្សាទុក</button></div>
+              </div>
+              <div class="table-responsive table-container border shadow-sm">
+                <table class="table table-hover align-middle mb-0">
+                  <thead><tr><th>ល.រ</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th class="text-center">ពិន្ទុ</th></tr></thead>
+                  <tbody id="inputListBody"></tbody>
+                </table>
+              </div>
             </div>
           </div>
 
-          <div class="table-responsive table-container" style="max-height: 55vh;">
-            <table class="table table-hover align-middle mb-0">
-              <thead class="table-danger">
-                <tr>
-                  <th class="text-center" width="50"><input type="checkbox" class="form-check-input" id="checkAllAdmin" onclick="toggleAllAdminCheckboxes()"></th>
-                  <th class="text-center" width="60">តុ</th>
-                  <th>អត្តលេខ</th>
-                  <th>ឈ្មោះសិស្ស</th>
-                  <th>សកម្មភាព</th>
-                </tr>
-              </thead>
-              <tbody id="adminTableBody">
-                <tr><td colspan="5" class="text-center text-muted py-5">សូមរើសបន្ទប់ដើម្បីបង្ហាញឈ្មោះសិស្ស</td></tr>
-              </tbody>
-            </table>
+          <!-- TAB 2: GLOBAL REPORT -->
+          <div id="tab-report" class="tab-pane-custom hidden">
+            <div class="card p-2 shadow-sm border-0">
+              <div class="d-flex justify-content-between mb-2 align-items-center">
+                <h6 class="fw-bold mb-0 text-success small">របាយការណ៍រួម (គ្រប់បន្ទប់)</h6>
+                <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel()"><i class="fa-solid fa-file-excel me-1"></i>Excel</button>
+              </div>
+              <div class="table-responsive table-container border">
+                <table class="table excel-mode mb-0" id="reportTable"><thead id="reportHead"></thead><tbody id="reportTableBody"></tbody></table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: ABSENCE -->
+          <div id="tab-absence" class="tab-pane-custom hidden">
+            <div class="card p-2 border-danger shadow-sm">
+                <div class="row g-2 mb-2 align-items-end">
+                    <div class="col-8 col-md-3"><label class="small fw-bold">បន្ទប់</label><select id="absRoomSelect" class="form-select fw-bold border-danger"></select></div>
+                    <div class="col-4 col-md-2"><button class="btn btn-danger w-100 fw-bold btn-sm" onclick="loadAbsenceList()">ទាញ</button></div>
+                    <div class="col-12 col-md-7 text-end"><button class="btn btn-danger btn-sm fw-bold" onclick="saveAbsence()">រក្សាទុកវត្តមាន (A/P)</button></div>
+                </div>
+                <div class="table-responsive table-container border"><table class="table table-hover align-middle mb-0"><thead class="table-danger"><tr><th>ល.រ</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th class="text-center">A / P</th></tr></thead><tbody id="absListBody"></tbody></table></div>
+            </div>
           </div>
         </div>
-      </div>
     </div>
   </div>
 
-  <!-- Modal Admin Absence Detail -->
-  <div class="modal fade" id="absenceModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-danger text-white">
-          <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-sliders"></i> កំណត់អវត្តមានលម្អិត</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body p-3">
-          <div class="alert alert-danger bg-opacity-10 border-danger p-2 mb-3">
-            <div class="fw-bold text-danger fs-5" id="modName">ឈ្មោះ: ...</div>
-            <div class="text-muted" style="font-size:0.85rem;" id="modInfo">អត្តលេខ: ...</div>
-          </div>
-          <div class="d-flex justify-content-end mb-2 gap-2">
-            <button class="btn btn-outline-danger btn-sm fw-bold" onclick="setAllAbsence('A')">ដាក់ A ទាំងអស់</button>
-            <button class="btn btn-outline-warning btn-sm fw-bold text-dark" onclick="setAllAbsence('P')">ដាក់ P ទាំងអស់</button>
-            <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="setAllAbsence('')">លុបវិញ</button>
-          </div>
-          <table class="table table-bordered align-middle mb-0" style="font-size:0.9rem;">
-            <tbody id="modSubjectsBody"></tbody>
-          </table>
-        </div>
-        <div class="modal-footer bg-light">
-          <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">បិទ</button>
-          <button type="button" class="btn btn-danger fw-bold px-4" onclick="saveAbsence()" id="btnSaveAbs"><i class="fa-solid fa-save"></i> រក្សាទុក</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  
-  <!-- ភ្ជាប់ឯកសារ API របស់អ្នកនៅទីនេះ -->
-  <script src="api.js"></script>
-  
-  <!-- =============================== -->
-  <!-- ផ្នែក JAVASCRIPT LOGIC          -->
-  <!-- =============================== -->
   <script>
-    const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
+    const SB_URL = "https://jmyfcgtvwlbtzfxgmyai.supabase.co";
+    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpteWZjZ3R2d2xidHpmeGdteWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NzEzODcsImV4cCI6MjA5MTE0NzM4N30.9CD_yAFGBTylqPjivqSHoyTYvL_b1PP27WUi2yL9CbQ";
+    const _sb = supabase.createClient(SB_URL, SB_KEY);
+    let currentUser = null;
 
-    function toggleAuth(formId) {
-      ['loginForm', 'registerForm', 'forgotForm'].forEach(id => document.getElementById(id).classList.add('d-none'));
-      document.getElementById(formId).classList.remove('d-none');
+    (function initUI() {
+        const yearSel = document.getElementById('gYear'), monthSel = document.getElementById('gMonth');
+        const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ", "ប្រឡងឆមាសលើកទី១", "ប្រឡងឆមាសលើកទី២"];
+        for(let i=0; i<11; i++) { let y = `${2024+i}-${2025+i}`; yearSel.innerHTML += `<option value="${y}">${y}</option>`; }
+        months.forEach(m => monthSel.innerHTML += `<option value="${m}">${m}</option>`);
+    })();
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-pane-custom').forEach(p => p.classList.add('hidden'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.remove('hidden');
+        event.currentTarget.classList.add('active');
+        if(tabId === 'report') loadGlobalReport();
     }
 
-    async function callAPI(payload) {
-      // ឆែកមើលថាតើ API_URL ត្រូវបានទាញមកពី api.js ជោគជ័យឬអត់
-      if (typeof API_URL === 'undefined' || API_URL === "YOUR_WEB_APP_URL_HERE" || API_URL === "") {
-        Swal.fire('បញ្ហា', 'រកមិនឃើញ API URL ទេ! សូមពិនិត្យមើលឯកសារ api.js របស់អ្នក។', 'error');
-        return {error: "No API"};
-      }
-      try {
-        let res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
-        return await res.json();
-      } catch (e) { return { error: "មិនអាចភ្ជាប់ទៅកាន់ប្រព័ន្ធបានទេ! (ពិនិត្យអុីនធឺណិត)" }; }
-    }
-
-    // 1. Auth Logic
-    async function login() {
-      let u = document.getElementById('logUser').value, p = document.getElementById('logPass').value;
-      if(!u || !p) return Toast.fire({icon: 'warning', title: 'សូមបញ្ជូលឈ្មោះ និងលេខសម្ងាត់!'});
-      
-      let btn = document.getElementById('btnLogin'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងផ្ទៀងផ្ទាត់...'; btn.disabled = true;
-      let res = await callAPI({ action: "login", username: u, password: p });
-      
-      if(res.success) {
-        document.getElementById('authSection').classList.add('d-none');
-        document.getElementById('appSection').classList.remove('d-none');
-        document.getElementById('userDisplay').innerText = res.username + (res.role === "Admin" ? " (Admin)" : "");
-        if(res.role === "Admin") document.getElementById('nav-admin').classList.remove('d-none');
-        loadDropdowns();
-        Toast.fire({icon: 'success', title: `ស្វាគមន៍ ${res.username}`});
-      } else { Swal.fire({icon: 'error', title: 'បរាជ័យ', text: res.error}); btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> ចូលប្រព័ន្ធ'; btn.disabled = false; }
-    }
-
-    async function register() {
-      let u = document.getElementById('regUser').value, p = document.getElementById('regPass').value, c = document.getElementById('regContact').value;
-      if(!u || !p) return Toast.fire({icon: 'warning', title: 'សូមបំពេញព័ត៌មានឲ្យគ្រប់គ្រាន់!'});
-      let btn = document.getElementById('btnRegister'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>...'; btn.disabled = true;
-      let res = await callAPI({ action: "register", username: u, password: p, contact: c });
-      if(res.success) { Swal.fire('ជោគជ័យ!', res.message, 'success'); toggleAuth('loginForm'); } else Swal.fire('បរាជ័យ!', res.error, 'error');
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> ចុះឈ្មោះ'; btn.disabled = false;
-    }
-
-    function resetPassword() {
-      let user = document.getElementById('forgotUser').value;
-      if(!user) return Toast.fire({icon: 'warning', title: 'បញ្ចូលឈ្មោះគណនីរបស់អ្នកសិន!'});
-      window.open(`https://t.me/Mrhonmom?text=${encodeURIComponent(`សួស្ដី Admin! ខ្ញុំសុំ Reset Password សម្រាប់គណនីឈ្មោះ: ${user}`)}`, '_blank');
-    }
-
-    // 2. Fetch Data & Input
-    async function loadDropdowns() {
-      let res = await callAPI({ action: "getDropdowns" });
-      if(res.rooms) {
-        let roomOpts = '<option value="">-- ជ្រើសរើសបន្ទប់ --</option>' + res.rooms.map(r => `<option value="${r}">ថ្នាក់ ${r}</option>`).join('');
-        document.getElementById('roomSelect').innerHTML = roomOpts; document.getElementById('adminRoomSelect').innerHTML = roomOpts;
-        document.getElementById('subjectSelect').innerHTML = '<option value="">-- ជ្រើសរើសមុខវិជ្ជា --</option>' + res.subjects.map(s => `<option value="${s}">${s}</option>`).join('');
-      }
-    }
-
-    async function fetchStudents() {
-      let room = document.getElementById('roomSelect').value, subject = document.getElementById('subjectSelect').value;
-      if(!room || !subject) return Toast.fire({icon: 'warning', title: 'សូមជ្រើសរើសបន្ទប់ និងមុខវិជ្ជាសិន!'});
-
-      let btn = document.getElementById('btnFetch'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled = true;
-      let tbody = document.getElementById('tableBody'); tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-primary fs-3"></i></td></tr>';
-
-      let res = await callAPI({ action: "getStudents", room: room, subject: subject });
-      tbody.innerHTML = '';
-
-      if(!res || res.length === 0) { 
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">គ្មានទិន្នន័យសិស្សទេ!</td></tr>'; 
-        document.getElementById('saveContainer').classList.add('d-none');
-      } else {
-        res.forEach((stu) => {
-          let val = stu.score !== "" ? stu.score : "";
-          let bg = stu.score !== "" ? "table-success bg-opacity-10" : "";
-          let lockAttr = stu.isLocked ? 'disabled title="ជាប់ Lock ដោយ Admin"' : '';
-          let icon = stu.isLocked ? '<i class="fa-solid fa-lock text-danger position-absolute mt-2 ms-2"></i>' : '';
-          
-          tbody.innerHTML += `<tr class="search-row ${bg}">
-            <td class="text-center align-middle fw-bold">${stu.desk}</td>
-            <td class="stu-id text-muted d-none d-sm-table-cell align-middle small">${stu.id}</td>
-            <td><div class="fw-bold stu-name text-primary">${stu.name}</div><div class="text-muted" style="font-size:0.75rem;">ថ្នាក់ ${stu.className} | ពិន្ទុពេញ: ${stu.maxScore}</div><span class="stu-class d-none">${stu.className}</span></td>
-            <td class="text-center align-middle position-relative">${icon} <input type="text" class="form-control score-input mx-auto" data-max="${stu.maxScore}" value="${val}" oninput="validateInput(this)" ${lockAttr}></td>
-          </tr>`;
-        });
-        document.getElementById('saveContainer').classList.remove('d-none');
-        setupKeyboardAndPaste(); 
-      }
-      btn.innerHTML = '<i class="fa-solid fa-download"></i> ទាញទិន្នន័យ'; btn.disabled = false;
-    }
-
-    function searchTable() {
-      let filter = document.getElementById("searchInput").value.toUpperCase().trim();
-      document.querySelectorAll(".search-row").forEach(row => { row.style.display = row.innerText.toUpperCase().includes(filter) ? "" : "none"; });
-    }
-
-    function validateInput(input) {
-      if(input.disabled) return;
-      let val = input.value.toUpperCase(); let max = parseFloat(input.getAttribute('data-max'));
-      if(val === 'A' || val === 'P' || val === '') { input.value = val; return; }
-      val = val.replace(/[^0-9.]/g, ''); 
-      if(parseFloat(val) > max) { Toast.fire({icon: 'error', title: `ពិន្ទុអតិបរមាគឺ ${max}`}); input.value = ''; return; }
-      input.value = val;
-    }
-
-    // 3. Keyboard Nav & Save
-    function setupKeyboardAndPaste() {
-      const allInputs = Array.from(document.querySelectorAll('.score-input'));
-      allInputs.forEach((input, i) => {
-        input.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' || e.key === 'ArrowDown') { e.preventDefault(); let next = allInputs.slice(i + 1).find(inp => !inp.disabled && inp.closest('tr').style.display !== 'none'); if(next) { next.focus(); next.select(); } }
-          if (e.key === 'ArrowUp') { e.preventDefault(); let prev = allInputs.slice(0, i).reverse().find(inp => !inp.disabled && inp.closest('tr').style.display !== 'none'); if(prev) { prev.focus(); prev.select(); } }
-        });
-        input.addEventListener('paste', function(e) {
-          e.preventDefault();
-          let rows = (e.clipboardData || window.clipboardData).getData('text').trim().split('\n');
-          let dataIdx = 0;
-          for(let j = i; j < allInputs.length; j++) {
-            if(allInputs[j].closest('tr').style.display !== "none" && dataIdx < rows.length) {
-              if(!allInputs[j].disabled) { allInputs[j].value = rows[dataIdx].trim().toUpperCase(); validateInput(allInputs[j]); }
-              dataIdx++;
-            }
-          }
-        });
-      });
-    }
-
-    async function saveData() {
-      let room = document.getElementById('roomSelect').value, subject = document.getElementById('subjectSelect').value;
-      let payload = [];
-      document.querySelectorAll('.search-row').forEach(row => {
-        let input = row.querySelector('.score-input');
-        if(!input.disabled) payload.push({ room: room, subject: subject, id: row.querySelector('.stu-id').innerText, name: row.querySelector('.stu-name').innerText, className: row.querySelector('.stu-class').innerText, score: input.value.trim() });
-      });
-
-      let btn = document.getElementById('btnSave'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងរក្សាទុក...'; btn.disabled = true;
-      let res = await callAPI({ action: "saveScores", payload: payload });
-      if(res.success) { Swal.fire('ជោគជ័យ!', res.message, 'success'); fetchStudents(); } else Swal.fire('បរាជ័យ!', res.error, 'error');
-      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> រក្សាទុកពិន្ទុ'; btn.disabled = false;
-    }
-
-    // 4. Report
-    let fullReportData = [];
-    async function loadReport() {
-      document.getElementById('reportBody').innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fa-solid fa-spinner fa-spin fs-3 text-primary"></i></td></tr>';
-      let res = await callAPI({ action: "getReport" });
-      if(res.data) {
-        fullReportData = res.data;
-        let rooms = [...new Set(res.data.map(r => r[0]))].sort((a,b)=>a-b);
-        let grades = [...new Set(res.data.map(r => r[1].toString().match(/\d+/)[0]))].sort((a,b)=>a-b);
-
-        let opts = `<option value="ALL">-- មើលគ្រប់កម្រិតទាំងអស់ --</option><optgroup label="តាមកម្រិតថ្នាក់">`;
-        grades.forEach(g => { opts += `<option value="GRADE_${g}">ថ្នាក់ទី ${g}</option>`; });
-        opts += `</optgroup><optgroup label="តាមបន្ទប់">`;
-        rooms.forEach(r => { opts += `<option value="ROOM_${r}">បន្ទប់ទី ${r}</option>`; });
-        document.getElementById('reportFilter').innerHTML = opts + `</optgroup>`;
-        renderReport("ALL");
-      }
-    }
-    
-    function filterReport() { renderReport(document.getElementById('reportFilter').value); }
-    function renderReport(filterValue) {
-      let tbody = document.getElementById('reportBody'); tbody.innerHTML = '';
-      let filtered = fullReportData;
-      if (filterValue.startsWith("ROOM_")) filtered = fullReportData.filter(r => r[0].toString() === filterValue.split("_")[1]);
-      else if (filterValue.startsWith("GRADE_")) filtered = fullReportData.filter(r => r[1].toString().startsWith(filterValue.split("_")[1]));
-
-      filtered.forEach(r => {
-        let color = r[5].includes('✅') ? 'text-success' : (r[5].includes('❌') ? 'text-danger' : 'text-warning');
-        tbody.innerHTML += `<tr><td class="fw-bold">${r[0]}</td><td class="text-primary fw-bold">${r[2]}</td><td class="text-center">${r[3]}</td><td class="text-center fw-bold">${r[4]}</td><td class="${color} fw-bold" style="font-size:0.85rem;">${r[5]}</td></tr>`;
-      });
-    }
-
-    // 5. Admin Bulk Absence
-    async function loadAdminStudents() {
-      let room = document.getElementById('adminRoomSelect').value;
-      let tbody = document.getElementById('adminTableBody');
-      document.getElementById('checkAllAdmin').checked = false;
-      if(!room) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-5">សូមរើសបន្ទប់ដើម្បីបង្ហាញឈ្មោះសិស្ស</td></tr>'; return; }
-
-      tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fa-solid fa-spinner fa-spin fs-3 text-danger"></i> កំពុងទាញទិន្នន័យ...</td></tr>';
-      let res = await callAPI({ action: "getStudentsByRoomOnly", room: room });
-      tbody.innerHTML = '';
-      
-      if(res.students) {
-        res.students.forEach(stu => {
-          tbody.innerHTML += `<tr class="search-admin-row table-hover cursor-pointer">
-            <td class="text-center" onclick="event.stopPropagation();"><input type="checkbox" class="form-check-input admin-stu-check" data-id="${stu.id}" data-name="${stu.name}" data-class="${stu.className}"></td>
-            <td class="text-center fw-bold" onclick="openAbsenceModal('${stu.id}', '${stu.name}', '${stu.className}')">${stu.desk}</td>
-            <td class="text-muted small" onclick="openAbsenceModal('${stu.id}', '${stu.name}', '${stu.className}')">${stu.id}</td>
-            <td class="fw-bold text-dark" onclick="openAbsenceModal('${stu.id}', '${stu.name}', '${stu.className}')">${stu.name} <span class="badge bg-secondary ms-2">${stu.className}</span></td>
-            <td onclick="openAbsenceModal('${stu.id}', '${stu.name}', '${stu.className}')"><button class="btn btn-sm btn-outline-primary fw-bold"><i class="fa-solid fa-sliders"></i> លម្អិត</button></td>
-          </tr>`;
-        });
-      }
-    }
-
-    function searchAdminTable() {
-      let filter = document.getElementById("adminSearch").value.toUpperCase().trim();
-      document.querySelectorAll(".search-admin-row").forEach(row => { row.style.display = row.innerText.toUpperCase().includes(filter) ? "" : "none"; });
-    }
-
-    function toggleAllAdminCheckboxes() {
-      let isChecked = document.getElementById('checkAllAdmin').checked;
-      document.querySelectorAll('.admin-stu-check').forEach(chk => { if(chk.closest('tr').style.display !== 'none') chk.checked = isChecked; });
-    }
-
-    async function applyBulkAbsence(val) {
-      let room = document.getElementById('adminRoomSelect').value;
-      if(!room) return Toast.fire({icon: 'warning', title: 'សូមរើសបន្ទប់សិន!'});
-
-      let checkboxes = document.querySelectorAll('.admin-stu-check:checked');
-      if(checkboxes.length === 0) return Toast.fire({icon: 'warning', title: 'សូម Tick ជ្រើសរើសឈ្មោះសិស្ស!'});
-      
-      let confirmTxt = val === 'A' ? 'អវត្តមាន (A)' : 'សុំច្បាប់ (P)';
-      let result = await Swal.fire({ title: `បញ្ជាក់ការកំណត់ ${confirmTxt}?`, text: `កំណត់សិស្សចំនួន ${checkboxes.length} នាក់ គ្រប់មុខវិជ្ជាមែនទេ?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់' });
-      
-      if(result.isConfirmed) {
-        let students = Array.from(checkboxes).map(cb => ({ id: cb.getAttribute('data-id'), name: cb.getAttribute('data-name'), className: cb.getAttribute('data-class') }));
-        let btn = document.getElementById(val === 'A' ? 'btnBulkA' : 'btnBulkP'); let origText = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងរក្សាទុក...'; btn.disabled = true;
-
-        let res = await callAPI({ action: "saveBulkAbsence", payload: { room: room, val: val, students: students } });
+    async function handleLogin() {
+        const email = document.getElementById('loginEmail').value, password = document.getElementById('loginPass').value;
+        const { data, error } = await _sb.auth.signInWithPassword({ email, password });
+        if(error) return Swal.fire('Error', 'Login Failed', 'error');
+        const { data: prof } = await _sb.from('profiles').select('*').eq('id', data.user.id).single();
+        currentUser = prof;
+        document.getElementById('authSection').classList.add('hidden');
+        document.getElementById('appSection').classList.remove('hidden');
+        document.getElementById('userDisplay').innerText = "អ្នកប្រើ៖ " + prof.full_name;
+        if(prof.role === 'Admin') document.getElementById('adminOnly').classList.remove('d-none');
         
-        btn.innerHTML = origText; btn.disabled = false;
-        if(res.success) { Swal.fire('ជោគជ័យ!', res.message, 'success'); document.getElementById('checkAllAdmin').checked = false; checkboxes.forEach(cb => cb.checked = false); } 
-        else { Swal.fire('បរាជ័យ!', res.error, 'error'); }
-      }
+        const { data: lastSt } = await _sb.from('students').select('academic_year, semester, month_name').order('created_at', {ascending: false}).limit(1).maybeSingle();
+        if(lastSt) { document.getElementById('gYear').value = lastSt.academic_year; document.getElementById('gSemester').value = lastSt.semester; document.getElementById('gMonth').value = lastSt.month_name; }
+        await refreshData();
     }
 
-    // Modal Details
-    let curModParams = {};
-    async function openAbsenceModal(id, name, className) {
-      document.getElementById('modName').innerText = name; document.getElementById('modInfo').innerText = `អត្តលេខ: ${id} | ថ្នាក់: ${className}`;
-      curModParams = { id: id, name: name, className: className, room: document.getElementById('adminRoomSelect').value };
-      
-      let tbody = document.getElementById('modSubjectsBody'); tbody.innerHTML = '<tr><td colspan="2" class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-danger"></i> ទាញទិន្នន័យ...</td></tr>';
-      new bootstrap.Modal(document.getElementById('absenceModal')).show();
-      
-      let res = await callAPI({ action: "getStudentSubjects", id: id, className: className });
-      tbody.innerHTML = '';
-      if(res.subjects) {
-        res.subjects.forEach(sub => {
-          let selA = sub.val === 'A' ? 'selected' : '', selP = sub.val === 'P' ? 'selected' : '';
-          tbody.innerHTML += `<tr><td class="fw-bold text-dark w-50 ps-3">${sub.subject}</td><td><select class="form-select abs-select border-danger" data-subject="${sub.subject}"><option value="">-- (ធម្មតា) --</option><option value="A" ${selA}>A (អវត្តមាន)</option><option value="P" ${selP}>P (សុំច្បាប់)</option></select></td></tr>`;
+    async function refreshData() {
+        const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value;
+        let allRooms = [], from = 0;
+        while(true) {
+            const { data } = await _sb.from('students').select('room_number').eq('academic_year', y).eq('month_name', m).range(from, from + 999);
+            if(!data || !data.length) break;
+            allRooms = [...allRooms, ...data.map(r => r.room_number)];
+            if(data.length < 1000) break;
+            from += 1000;
+        }
+        const rooms = [...new Set(allRooms)].sort((a,b)=>a-b);
+        const opts = rooms.map(r => `<option value="${r}">${r}</option>`).join('');
+        document.getElementById('roomSelect').innerHTML = opts; document.getElementById('absRoomSelect').innerHTML = opts;
+        const { data: subs } = await _sb.from('subject_configs').select('subject_name');
+        document.getElementById('subjectSelect').innerHTML = [...new Set(subs.map(s => s.subject_name))].map(s => `<option value="${s}">${s}</option>`).join('');
+    }
+
+    async function loadInputList() {
+        const room = document.getElementById('roomSelect').value, sub = document.getElementById('subjectSelect').value;
+        const year = document.getElementById('gYear').value, month = document.getElementById('gMonth').value;
+        const tbody = document.getElementById('inputListBody');
+        if(!room) return;
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin fs-4"></i></td></tr>';
+        const { data: stds } = await _sb.from('students').select('*').eq('room_number', room).eq('academic_year', year).eq('month_name', month).order('desk_number', {ascending: true});
+        const { data: scores } = await _sb.from('scores').select('*').eq('academic_year', year).eq('month_name', month);
+        const { data: configs } = await _sb.from('subject_configs').select('*').eq('subject_name', sub);
+        tbody.innerHTML = stds.map((s, i) => {
+            const max = configs.find(c => c.class_name === s.class_name)?.max_score || 100;
+            const mySc = scores.find(sc => sc.student_id === s.student_id && sc.subject_name === sub)?.score_value || '';
+            const isAbs = scores.some(sc => sc.student_id === s.student_id && (sc.score_value === 'A' || sc.score_value === 'P'));
+            return `<tr class="stu-row" data-id="${s.student_id}" data-room="${s.room_number}" data-name="${s.full_name}" data-class="${s.class_name}">
+                <td class="text-center">${i+1}</td><td class="text-center fw-bold">${s.desk_number}</td><td class="text-center small text-muted">${s.student_id}</td>
+                <td><div class="fw-bold text-primary">${s.full_name}</div><div class="small">Max: <span class="max-label">${max}</span></div></td>
+                <td><input type="text" class="form-control score-input mx-auto shadow-sm" value="${mySc}" data-max="${max}" oninput="validateInput(this)" ${isAbs?'disabled':''}></td></tr>`;
+        }).join('');
+        setupSmartPaste('.score-input'); updateMaxLabel();
+    }
+
+    function updateMaxLabel() {
+        const p = document.getElementById('mode70').checked ? 70 : 100;
+        document.querySelectorAll('.stu-row').forEach(r => {
+            const inp = r.querySelector('.score-input');
+            if(inp) r.querySelector('.max-label').innerText = (parseFloat(inp.dataset.max) * p / 100).toFixed(1).replace('.0','');
         });
-      }
     }
 
-    function setAllAbsence(val) { document.querySelectorAll('.abs-select').forEach(sel => sel.value = val); }
-    async function saveAbsence() {
-      let records = []; document.querySelectorAll('.abs-select').forEach(sel => records.push({ subject: sel.getAttribute('data-subject'), val: sel.value }));
-      let btn = document.getElementById('btnSaveAbs'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> រក្សាទុក...'; btn.disabled = true;
-      
-      let res = await callAPI({ action: "saveAbsence", payload: { room: curModParams.room, id: curModParams.id, name: curModParams.name, className: curModParams.className, records: records } });
-      btn.innerHTML = '<i class="fa-solid fa-save"></i> រក្សាទុក'; btn.disabled = false;
-      
-      if(res.success) { bootstrap.Modal.getInstance(document.getElementById('absenceModal')).hide(); Toast.fire({icon: 'success', title: 'បានរក្សាទុកអវត្តមាន'}); }
+    function validateInput(inp) {
+        let v = inp.value.toUpperCase(); const p = document.getElementById('mode70').checked ? 70 : 100;
+        const m = parseFloat(inp.dataset.max) * p / 100;
+        if(v==='A'||v==='P'||v==='') return;
+        if(parseFloat(v.replace(/[^0-9.]/g,'')) > m) { inp.value = ''; Toast.fire({icon:'error', title:'លើសពិន្ទុ!'}); }
     }
+
+    async function saveScores() {
+        const payload = [];
+        const sub = document.getElementById('subjectSelect').value, year = document.getElementById('gYear').value;
+        const sem = document.getElementById('gSemester').value, month = document.getElementById('gMonth').value;
+        const p = document.getElementById('mode70').checked ? 70 : 100;
+        document.querySelectorAll('.stu-row').forEach(row => {
+            const val = row.querySelector('.score-input').value;
+            if(val !== "" && !row.querySelector('.score-input').disabled) {
+                payload.push({ student_id: row.dataset.id, subject_name: sub, score_value: val, academic_year: year, semester: sem, month_name: month, room_number: row.dataset.room, full_name: row.dataset.name, class_name: row.dataset.class, score_percentage: p, input_by: currentUser.username });
+            }
+        });
+        if(payload.length) await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
+        Swal.fire('ជោគជ័យ', 'រក្សាទុកបាន ' + payload.length + ' នាក់', 'success');
+    }
+
+    async function loadGlobalReport() {
+        const year = document.getElementById('gYear').value, month = document.getElementById('gMonth').value;
+        const tbody = document.getElementById('reportTableBody');
+        tbody.innerHTML = '<tr><td colspan="25" class="text-center py-5">កំពុងរៀបចំរបាយការណ៍រួម...</td></tr>';
+        
+        let stds = [], from = 0;
+        while(true) {
+            const { data } = await _sb.from('students').select('*').eq('academic_year', year).eq('month_name', month).order('room_number').order('desk_number').range(from, from + 999);
+            if(!data || !data.length) break;
+            stds = [...stds, ...data];
+            if(data.length < 1000) break;
+            from += 1000;
+        }
+
+        const { data: scores } = await _sb.from('scores').select('*').eq('academic_year', year).eq('month_name', month);
+        const { data: configList } = await _sb.from('subject_configs').select('subject_name').order('id', {ascending: true});
+        const subjects = [...new Set(configList.map(c => c.subject_name))];
+
+        document.getElementById('reportHead').innerHTML = `<tr><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th>${subjects.map(s => `<th>${s}</th>`).join('')}</tr>`;
+        tbody.innerHTML = stds.map(s => {
+            let html = `<tr><td>${s.room_number}</td><td>${s.desk_number}</td><td class="small">${s.student_id}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td>${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td>${s.class_name}</td>`;
+            subjects.forEach(sub => {
+                const val = scores.find(sc => sc.student_id === s.student_id && sc.subject_name === sub)?.score_value;
+                html += `<td class="${!val?'':'fw-bold'}">${val || ''}</td>`;
+            });
+            return html + '</tr>';
+        }).join('');
+    }
+
+    async function loadAbsenceList() {
+        const room = document.getElementById('absRoomSelect').value, year = document.getElementById('gYear').value, month = document.getElementById('gMonth').value;
+        const tbody = document.getElementById('absListBody');
+        if(!room) return;
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5">Loading...</td></tr>';
+        const { data: stds } = await _sb.from('students').select('*').eq('room_number', room).eq('academic_year', year).eq('month_name', month).order('desk_number', {ascending: true});
+        const { data: scores } = await _sb.from('scores').select('*').eq('academic_year', year).eq('month_name', month);
+        tbody.innerHTML = stds.map((s, i) => {
+            const currentAbs = scores.find(sc => sc.student_id === s.student_id && (sc.score_value === 'A' || sc.score_value === 'P'))?.score_value || '';
+            return `<tr class="abs-row" data-id="${s.student_id}" data-name="${s.full_name}" data-class="${s.class_name}" data-room="${s.room_number}">
+                <td class="text-center">${i+1}</td><td class="text-center">${s.desk_number}</td><td class="text-center small">${s.student_id}</td>
+                <td class="fw-bold">${s.full_name}</td>
+                <td><input type="text" class="form-control abs-input mx-auto text-center fw-bold text-danger" value="${currentAbs}" maxlength="1" oninput="this.value=this.value.toUpperCase().replace(/[^AP]/g,'')"></td></tr>`;
+        }).join('');
+        setupSmartPaste('.abs-input');
+    }
+
+    async function saveAbsence() {
+        const year = document.getElementById('gYear').value, sem = document.getElementById('gSemester').value, month = document.getElementById('gMonth').value;
+        const { data: configs } = await _sb.from('subject_configs').select('subject_name');
+        const subjects = [...new Set(configs.map(s => s.subject_name))];
+        const payload = [];
+        document.querySelectorAll('.abs-row').forEach(row => {
+            const val = row.querySelector('.abs-input').value.trim();
+            if(val) subjects.forEach(sub => payload.push({ student_id: row.dataset.id, subject_name: sub, score_value: val, academic_year: year, semester: sem, month_name: month, room_number: row.dataset.room, full_name: row.dataset.name, class_name: row.dataset.class, input_by: currentUser.username }));
+        });
+        if(payload.length) await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
+        Swal.fire('ជោគជ័យ');
+    }
+
+    function setupSmartPaste(selector) {
+        const inputs = Array.from(document.querySelectorAll(selector));
+        inputs.forEach((inp, i) => {
+            inp.onkeydown = (e) => { if(e.key==='Enter'||e.key==='ArrowDown') focusNext(inputs, i, 1); if(e.key==='ArrowUp') focusNext(inputs, i, -1); };
+            inp.onpaste = (e) => { e.preventDefault(); const data = (e.clipboardData || window.clipboardData).getData('text').trim().split(/\s+/); let idx = 0; for(let j=i; j<inputs.length && idx < data.length; j++) { if(!inputs[j].disabled) { inputs[j].value = data[idx].toUpperCase(); idx++; } } };
+        });
+    }
+
+    function focusNext(inputs, curr, dir) { let next = curr + dir; while(inputs[next] && inputs[next].disabled) next += dir; if(inputs[next]) { inputs[next].focus(); inputs[next].select(); } }
+    function exportExcel() { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(['\ufeff', document.getElementById("reportTable").outerHTML], { type: 'application/vnd.ms-excel' })); a.download = `Global_Report.xls`; a.click(); }
   </script>
 </body>
 </html>
