@@ -36,18 +36,29 @@
     .auth-card { width: 100%; max-width: 400px; border: none; }
     .cursor-pointer { cursor: pointer; }
     
+    /* Grade Background Colors */
     tr.bg-grade-7 td { background-color: #f4f6f8 !important; } 
     tr.bg-grade-8 td { background-color: #e6f0fa !important; } 
     tr.bg-grade-9 td { background-color: #e8f5e9 !important; } 
     tr.bg-grade-10 td { background-color: #fce4ec !important; } 
     tr.bg-grade-11 td { background-color: #fff8e1 !important; } 
     tr.bg-grade-12 td { background-color: #e0f7fa !important; } 
-    .stu-row:hover td { filter: brightness(0.95); transition: 0.2s; }
+    .stu-row:hover td, .abs-row:hover td { filter: brightness(0.95); transition: 0.2s; }
 
     #saveStatus { font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 15px; margin-left: 10px; opacity: 0; transition: opacity 0.3s ease; }
     .status-saving { background-color: #fff3cd; color: #856404; opacity: 1 !important; }
     .status-saved { background-color: #d4edda; color: #155724; opacity: 1 !important; }
     .status-error { background-color: #f8d7da; color: #721c24; opacity: 1 !important; }
+
+    .stat-card { border-left: 4px solid var(--primary); background: #f8f9fa; }
+    .progress { height: 8px; border-radius: 4px; }
+    .inputter-badge { font-size: 10px; background: #e9ecef; color: #495057; padding: 2px 6px; border-radius: 10px; margin-right: 4px; margin-bottom: 4px; display: inline-block; border: 1px solid #ced4da; }
+    
+    /* Style for Absence Toggle Buttons */
+    .btn-group-abs .btn { padding: 4px 12px; font-size: 12px; font-weight: bold; border-color: #ccc; }
+    .btn-check:checked + .btn-outline-secondary { background-color: #6c757d; color: white; }
+    .btn-check:checked + .btn-outline-danger { background-color: #dc3545; color: white; }
+    .btn-check:checked + .btn-outline-warning { background-color: #ffc107; color: #000; }
   </style>
 </head>
 <body>
@@ -125,13 +136,11 @@
           <div id="tab-input" class="tab-pane-custom">
             <div class="card p-2 shadow-sm border-0">
               <div class="row g-2 mb-3 align-items-end border-bottom pb-3">
-                <!-- រៀបចំ Layout ថ្មីបន្ទាប់ពីលុបប៊ូតុងចេញ -->
                 <div class="col-6 col-md-4"><label class="small fw-bold">បន្ទប់</label><select id="roomSelect" class="form-select fw-bold border-primary" onchange="onFilterChange()"></select></div>
                 <div class="col-6 col-md-5"><label class="small fw-bold text-primary">មុខវិជ្ជា</label><select id="subjectSelect" class="form-select fw-bold border-primary" onchange="onFilterChange()"></select></div>
                 <div class="col-12 col-md-3"><button class="btn btn-success w-100 fw-bold shadow mt-2 mt-md-0" onclick="manualSaveScores()"><i class="fa-solid fa-save"></i> រក្សាទុកពិន្ទុ</button></div>
               </div>
 
-              <!-- ចំណងជើងបង្ហាញបន្ទប់ និងមុខវិជ្ជា (Dynamic Title) -->
               <div id="currentInputTitle" class="alert alert-primary py-2 mb-3 text-center fw-bold hidden shadow-sm" style="border-left: 5px solid #0d6efd; background-color: #eef6ff;"></div>
 
               <div class="table-responsive table-container border shadow-sm">
@@ -146,10 +155,16 @@
           <!-- TAB: REPORT -->
           <div id="tab-report" class="tab-pane-custom hidden">
               <div class="card p-2 shadow-sm border-0">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                      <h6 class="fw-bold text-success small mb-0">របាយការណ៍រួម</h6>
-                      <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('reportTable')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                      <h6 class="fw-bold text-success small mb-0"><i class="fa-solid fa-chart-pie me-1"></i> វឌ្ឍនភាព និងរបាយការណ៍រួម</h6>
+                      <div>
+                          <button class="btn btn-outline-secondary btn-sm fw-bold shadow-sm me-1" onclick="openSubjectOrderModal()" title="កំណត់លំដាប់មុខវិជ្ជា"><i class="fa-solid fa-gear"></i></button>
+                          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('reportTable')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+                      </div>
                   </div>
+                  
+                  <div id="progressStatsArea" class="row g-2 mb-3"></div>
+
                   <div class="table-responsive table-container border shadow-sm">
                       <table class="table excel-mode mb-0" id="reportTable"><thead id="reportHead"></thead><tbody id="reportTableBody"></tbody></table>
                   </div>
@@ -185,17 +200,21 @@
               </div>
           </div>
 
-          <!-- TAB: ABSENCE INPUT (ADMIN ONLY) -->
+          <!-- TAB: ABSENCE INPUT -->
           <div id="tab-absence" class="tab-pane-custom hidden">
               <div class="card p-2 border-danger shadow-sm border-0">
-                  <div class="row g-2 mb-2 align-items-end">
-                      <div class="col-8 col-md-3"><select id="absRoomSelect" class="form-select fw-bold border-danger"></select></div>
-                      <div class="col-4 col-md-2"><button class="btn btn-danger w-100 btn-sm shadow" onclick="loadAbsenceList()">ទាញ</button></div>
-                      <div class="col-12 col-md-7 text-end"><button class="btn btn-danger btn-sm fw-bold shadow" onclick="saveAbsence()">រក្សាទុកវត្តមាន</button></div>
+                  <div class="row g-2 mb-2 align-items-center border-bottom pb-2">
+                      <div class="col-12 col-md-5">
+                          <label class="small fw-bold text-danger mb-1">ជ្រើសរើសបន្ទប់</label>
+                          <select id="absRoomSelect" class="form-select fw-bold border-danger" onchange="loadAbsenceList()"></select>
+                      </div>
+                      <div class="col-12 col-md-7 text-start text-md-end mt-2 mt-md-0">
+                          <span class="small text-muted"><i class="fa-solid fa-circle-info text-primary"></i> ជ្រើសរើស A ឬ P វានឹងរក្សាទុកដោយស្វ័យប្រវត្តិ។</span>
+                      </div>
                   </div>
-                  <div class="table-responsive table-container border shadow-sm">
-                      <table class="table table-hover align-middle mb-0 text-center">
-                          <thead class="table-danger text-white"><tr><th>ល.រ</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th>ស្ថានភាព (A/P)</th></tr></thead>
+                  <div class="table-responsive table-container border shadow-sm mt-2">
+                      <table class="table align-middle mb-0 text-center border-0">
+                          <thead class="table-danger text-white"><tr><th>ល.រ</th><th>បន្ទប់/តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th>សកម្មភាព (អវត្តមាន)</th></tr></thead>
                           <tbody id="absListBody"></tbody>
                       </table>
                   </div>
@@ -212,6 +231,13 @@
     let currentUser = null, allStudentsCache = [];
     let saveTimeout = null; 
     let hasUnsavedChanges = false; 
+
+    const defaultSubjectOrder = [
+        "ភាសាខ្មែរ", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", 
+        "ផែនដី និងបរិស្ថាន", "ផែនដីវិទ្យា", "ប្រវត្តិវិទ្យា", "ភូមិវិទ្យា", "សីលធម៌ ពលរដ្ឋ", "សីលធម៌-ពលរដ្ឋ",
+        "ភាសាអង់គ្លេស", "ភាសាបារាំង", "សរសេរតាមអាន", "តែងសេចក្ដី", 
+        "កីឡា", "ពលកម្ម", "កសិកម្ម", "គេហវិទ្យា", "ព័ត៌មានវិទ្យា"
+    ];
 
     window.addEventListener('beforeunload', function (e) {
         if (hasUnsavedChanges) { e.preventDefault(); e.returnValue = ''; }
@@ -263,18 +289,15 @@
         const rooms = [...new Set(allStudentsCache.map(r => r.room_number))].sort((a,b)=>a-b);
         const roomOpts = rooms.length ? rooms.map(r => `<option value="${r}">${r}</option>`).join('') : '<option value="">--គ្មានបន្ទប់--</option>';
         document.getElementById('roomSelect').innerHTML = roomOpts;
-        document.getElementById('absRoomSelect').innerHTML = roomOpts;
+        document.getElementById('absRoomSelect').innerHTML = `<option value="ALL">-- បង្ហាញទាំងអស់ --</option>` + roomOpts;
         
         const { data: subs } = await _sb.from('subject_configs').select('subject_name');
         if(subs) { document.getElementById('subjectSelect').innerHTML = [...new Set(subs.map(s => s.subject_name))].map(s => `<option value="${s}">${s}</option>`).join(''); }
         
-        // Auto load លើកដំបូង
         loadInputList();
     }
 
-    // មុខងារនេះដើរពេល User ចុចប្តូរបន្ទប់ ឬ មុខវិជ្ជា
     async function onFilterChange() {
-        // បើមានទិន្នន័យមិនទាន់ Save ត្រូវ Auto Save វាឱ្យហើយសិន មុននឹងទាញថ្មី
         if(hasUnsavedChanges && document.querySelectorAll('.stu-row').length > 0) {
             await saveScoresCore(true); 
         }
@@ -289,12 +312,8 @@
         const tbody = document.getElementById('inputListBody'); 
         const titleDiv = document.getElementById('currentInputTitle');
 
-        if(!r || !sub) {
-            titleDiv.classList.add('hidden');
-            return;
-        }
+        if(!r || !sub) { titleDiv.classList.add('hidden'); return; }
         
-        // បង្ហាញចំណងជើងរស់រវើក
         titleDiv.innerHTML = `កំពុងបញ្ចូលពិន្ទុ៖ បន្ទប់ <span class="text-danger mx-1">${r}</span> | មុខវិជ្ជា <span class="text-primary mx-1">${sub}</span>`;
         titleDiv.classList.remove('hidden');
 
@@ -306,11 +325,8 @@
         
         tbody.innerHTML = stds.map((s, i) => {
             const classStr = s.class_name ? String(s.class_name).trim() : '';
-            const gradeMatch = classStr.match(/\d+/);
-            const gradeNum = gradeMatch ? parseInt(gradeMatch[0]) : 0;
-            
-            let rowBgClass = '';
-            if(gradeNum >= 7 && gradeNum <= 12) { rowBgClass = `bg-grade-${gradeNum}`; }
+            const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
+            let rowBgClass = (gradeNum >= 7 && gradeNum <= 12) ? `bg-grade-${gradeNum}` : '';
 
             const max = cfgs.find(c => String(c.class_name).trim() === classStr)?.max_score || 100;
             const mySc = scores.find(x => String(x.student_id).trim() === String(s.student_id).trim() && String(x.subject_name).trim() === String(sub).trim())?.score_value || '';
@@ -331,120 +347,179 @@
     }
 
     function validateInput(inp, isPasteMode = false) { 
-        hasUnsavedChanges = true; 
-        inp.classList.remove('input-error'); 
-
+        hasUnsavedChanges = true; inp.classList.remove('input-error'); 
         const originalValue = inp.value;
         inp.value = inp.value.toUpperCase().replace(/[^0-9.AP]/g, ''); 
-        
-        if ((inp.value.match(/\./g) || []).length > 1) {
-            inp.value = inp.value.substring(0, inp.value.lastIndexOf('.')); 
-        }
+        if ((inp.value.match(/\./g) || []).length > 1) { inp.value = inp.value.substring(0, inp.value.lastIndexOf('.')); }
 
         if(inp.value === '') return true; 
-        
-        if (originalValue !== inp.value && originalValue.length > 0) {
-             inp.classList.add('input-error');
-             return false;
-        }
-
+        if (originalValue !== inp.value && originalValue.length > 0) { inp.classList.add('input-error'); return false; }
         if(inp.value === 'A' || inp.value === 'P') return true; 
 
         const is70 = document.getElementById('mode70').checked; 
         let limit = is70 ? Math.ceil(parseFloat(inp.dataset.max)*0.7) : parseFloat(inp.dataset.max); 
-        
-        if(parseFloat(inp.value) > limit) { 
-            inp.classList.add('input-error'); 
-            return false; 
-        } 
+        if(parseFloat(inp.value) > limit) { inp.classList.add('input-error'); return false; } 
         return true; 
     }
 
     function updateSaveStatus(state) {
-        const st = document.getElementById('saveStatus');
-        st.className = '';
+        const st = document.getElementById('saveStatus'); st.className = '';
         if(state === 'saving') { st.innerHTML = '<i class="fas fa-spinner fa-spin"></i> កំពុងរក្សាទុក...'; st.classList.add('status-saving'); }
         else if(state === 'saved') { st.innerHTML = '<i class="fas fa-check-circle"></i> រក្សាទុកក្នុង Cloud'; st.classList.add('status-saved'); setTimeout(()=> st.classList.remove('status-saved'), 3000); }
         else if(state === 'error') { st.innerHTML = '<i class="fas fa-exclamation-triangle"></i> មានកំហុស សូមពិនិត្យ'; st.classList.add('status-error'); }
     }
 
-    function triggerAutoSave() {
-        clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(() => { saveScoresCore(true); }, 800);
-    }
-
-    function manualSaveScores() {
-        saveScoresCore(false);
-    }
+    function triggerAutoSave() { clearTimeout(saveTimeout); saveTimeout = setTimeout(() => { saveScoresCore(true); }, 800); }
+    function manualSaveScores() { saveScoresCore(false); }
 
     async function saveScoresCore(isAutoSave = false) { 
-        const pUpsert = []; 
-        const pDelete = []; 
-        let hasError = false;
-        
+        const pUpsert = []; const pDelete = []; let hasError = false;
         const sub = document.getElementById('subjectSelect').value, y = document.getElementById('gYear').value, sem = document.getElementById('gSemester').value, m = document.getElementById('gMonth').value; 
         const mode = document.getElementById('mode70').checked ? 70 : 100;
         
         document.querySelectorAll('.stu-row').forEach(row => { 
-            const inp = row.querySelector('.score-input');
-            const stuId = row.dataset.id;
-            
-            if(inp.classList.contains('input-error')) {
-                hasError = true; 
-            } else if(!inp.disabled) {
+            const inp = row.querySelector('.score-input'); const stuId = row.dataset.id;
+            if(inp.classList.contains('input-error')) { hasError = true; } 
+            else if(!inp.disabled) {
                 if(inp.value !== "") {
-                    pUpsert.push({ student_id: stuId, subject_name: sub, score_value: inp.value, academic_year: y, semester: sem, month_name: m, room_number: row.dataset.room, full_name: row.dataset.name, class_name: row.dataset.class, score_percentage: mode, input_by: currentUser.username }); 
-                } else {
-                    pDelete.push(stuId);
-                }
+                    pUpsert.push({ student_id: stuId, subject_name: sub, score_value: inp.value, academic_year: y, semester: sem, month_name: m, room_number: row.dataset.room, full_name: row.dataset.name, class_name: row.dataset.class, score_percentage: mode, input_by: currentUser.full_name }); 
+                } else { pDelete.push(stuId); }
             }
         }); 
 
-        if(hasError) {
-            updateSaveStatus('error');
-            if(!isAutoSave) Swal.fire('មិនអាចរក្សាទុកបានទេ!', 'សូមកែសម្រួលប្រអប់ពណ៌ក្រហមសិន។', 'warning');
-            return;
-        }
+        if(hasError) { updateSaveStatus('error'); if(!isAutoSave) Swal.fire('មិនអាចរក្សាទុកបានទេ!', 'សូមកែសម្រួលប្រអប់ពណ៌ក្រហមសិន។', 'warning'); return; }
         
         if(pUpsert.length > 0 || pDelete.length > 0) { 
             updateSaveStatus('saving');
             try {
-                if(pDelete.length > 0) {
-                     await _sb.from('scores').delete().in('student_id', pDelete).eq('subject_name', sub).eq('academic_year', y).eq('month_name', m).eq('semester', sem);
-                }
-                if(pUpsert.length > 0) {
-                     await _sb.from('scores').upsert(pUpsert, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'}); 
-                }
-                updateSaveStatus('saved');
-                hasUnsavedChanges = false;
+                if(pDelete.length > 0) { await _sb.from('scores').delete().in('student_id', pDelete).eq('subject_name', sub).eq('academic_year', y).eq('month_name', m).eq('semester', sem); }
+                if(pUpsert.length > 0) { await _sb.from('scores').upsert(pUpsert, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'}); }
+                updateSaveStatus('saved'); hasUnsavedChanges = false;
                 if(!isAutoSave) Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'រក្សាទុករួចរាល់!', showConfirmButton: false, timer: 2000 });
-            } catch (err) {
-                updateSaveStatus('error');
-            }
+            } catch (err) { updateSaveStatus('error'); }
         } 
+    }
+
+    async function openSubjectOrderModal() {
+        const cf = await fetchAllData('subject_configs');
+        let allSubs = [...new Set(cf.map(c=>c.subject_name))];
+        let currentOrder = JSON.parse(localStorage.getItem('customSubjectOrder')) || defaultSubjectOrder;
+
+        allSubs.sort((a, b) => {
+            let idxA = currentOrder.indexOf(a); let idxB = currentOrder.indexOf(b);
+            if(idxA===-1) idxA=999; if(idxB===-1) idxB=999;
+            return idxA - idxB;
+        });
+
+        let html = '<div class="text-start px-2" style="max-height: 400px; overflow-y: auto;">';
+        html += '<p class="small text-muted mb-3">សូមវាយបញ្ចូលលេខរៀង ដើម្បីតម្រៀបមុខវិជ្ជា (លេខតូចនៅមុខ)</p>';
+        allSubs.forEach((sub, index) => {
+            html += `<div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1"><span class="fw-bold text-primary" style="font-size:13px;">${sub}</span><input type="number" class="form-control text-center sub-order-input p-1" data-sub="${sub}" value="${index + 1}" style="width: 60px; font-weight:bold; border-color:#ccc;"></div>`;
+        });
+        html += '</div>';
+
+        Swal.fire({
+            title: 'រៀបចំលំដាប់មុខវិជ្ជា', html: html, showCancelButton: true, confirmButtonColor: '#0d6efd', confirmButtonText: '<i class="fa-solid fa-save"></i> រក្សាទុក', cancelButtonText: 'បិទ',
+            preConfirm: () => {
+                let newOrderArr = [];
+                document.querySelectorAll('.sub-order-input').forEach(inp => { newOrderArr.push({ name: inp.getAttribute('data-sub'), order: parseInt(inp.value) || 999 }); });
+                newOrderArr.sort((a,b) => a.order - b.order); return newOrderArr.map(item => item.name);
+            }
+        }).then((result) => {
+            if (result.isConfirmed) { localStorage.setItem('customSubjectOrder', JSON.stringify(result.value)); loadGlobalReport(); Swal.fire({toast: true, position: 'top-end', icon: 'success', title: 'បានរក្សាទុករួចរាល់', showConfirmButton: false, timer: 2000}); }
+        });
     }
 
     async function loadGlobalReport() { 
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value; 
         const tbody = document.getElementById('reportTableBody'); 
-        tbody.innerHTML = '<tr><td colspan="20" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> កំពុងទាញរបាយការណ៍រួម...</td></tr>'; 
+        const statsArea = document.getElementById('progressStatsArea');
         
+        tbody.innerHTML = '<tr><td colspan="20" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> កំពុងទាញរបាយការណ៍ និងគណនាភាគរយ...</td></tr>'; 
+        statsArea.innerHTML = '';
+
         const sc = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem }); 
         const cf = await fetchAllData('subject_configs');
-        const subs = [...new Set(cf.map(c=>c.subject_name))]; 
         
-        document.getElementById('reportHead').innerHTML = `<tr><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th>${subs.map(s => `<th>${s}</th>`).join('')}</tr>`; 
-        
-        const sortedStds = [...allStudentsCache].sort((a,b) => a.room_number - b.room_number || a.desk_number - b.desk_number);
+        // AUTO MAP: ទាញយក Profiles ដើម្បីបំប្លែង username ទៅជា full_name សម្រាប់ទិន្នន័យចាស់ៗ
+        const { data: profs } = await _sb.from('profiles').select('email, username, full_name');
+        let profMap = {};
+        if(profs) {
+            profs.forEach(p => {
+                if(p.full_name) profMap[p.full_name] = p.full_name;
+                if(p.email) profMap[p.email.split('@')[0]] = p.full_name;
+                if(p.username) profMap[p.username] = p.full_name;
+            });
+        }
 
-        tbody.innerHTML = sortedStds.map(s => { 
+        let activeOrder = JSON.parse(localStorage.getItem('customSubjectOrder')) || defaultSubjectOrder;
+        let uniqueSubs = [...new Set(cf.map(c=>c.subject_name))]; 
+        uniqueSubs.sort((a, b) => { let idxA = activeOrder.indexOf(a); let idxB = activeOrder.indexOf(b); if (idxA === -1) idxA = 999; if (idxB === -1) idxB = 999; return idxA - idxB; });
+        
+        document.getElementById('reportHead').innerHTML = `<tr><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th>${uniqueSubs.map(s => `<th>${s}</th>`).join('')}</tr>`; 
+        const sortedStds = [...allStudentsCache].sort((a,b) => a.room_number - b.room_number || a.desk_number - b.desk_number);
+        
+        let gradeStats = {}; [7,8,9,10,11,12].forEach(g => { gradeStats[g] = { students: 0, expected: 0, actual: 0, inputters: new Set() }; });
+
+        sortedStds.forEach(s => {
+            const classStr = String(s.class_name).trim(); const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
+            if(gradeStats[gradeNum]) {
+                gradeStats[gradeNum].students++;
+                const numSubjects = cf.filter(c => String(c.class_name).trim() === classStr).length;
+                gradeStats[gradeNum].expected += numSubjects;
+            }
+        });
+
+        let tableRows = '';
+        sortedStds.forEach(s => { 
+            const classStr = String(s.class_name).trim(); const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
             let h = `<tr><td>${s.room_number}</td><td>${s.desk_number}</td><td>${s.student_id}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td>${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td>${s.class_name}</td>`; 
-            subs.forEach(sub => { 
-                const v = sc.find(x => String(x.student_id).trim() === String(s.student_id).trim() && String(x.subject_name).trim() === String(sub).trim())?.score_value; 
-                h += `<td>${v||''}</td>`; 
+            const myScores = sc.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
+            
+            if(gradeStats[gradeNum] && myScores.length > 0) {
+                gradeStats[gradeNum].actual += myScores.length;
+                myScores.forEach(score => { 
+                    if(score.input_by) {
+                        let dName = profMap[score.input_by] || score.input_by; // ប្រើការ Map
+                        gradeStats[gradeNum].inputters.add(dName); 
+                    }
+                });
+            }
+
+            uniqueSubs.forEach(sub => { 
+                let scoreObj = myScores.find(x => String(x.subject_name).trim() === String(sub).trim());
+                let v = scoreObj ? scoreObj.score_value : ''; 
+                let inputBy = scoreObj ? scoreObj.input_by : '';
+                
+                if(inputBy) inputBy = profMap[inputBy] || inputBy; // ប្រើការ Map សម្រាប់ Tooltip
+
+                if (!v && sub === 'ភាសាខ្មែរ' && gradeNum >= 7 && gradeNum <= 9) {
+                    let dictObj = myScores.find(x => String(x.subject_name).trim() === 'សរសេរតាមអាន'); let essayObj = myScores.find(x => String(x.subject_name).trim() === 'តែងសេចក្ដី');
+                    if (dictObj || essayObj) {
+                        let dVal = parseFloat(dictObj?.score_value) || 0; let eVal = parseFloat(essayObj?.score_value) || 0;
+                        if (!isNaN(dVal) && !isNaN(eVal) && dictObj?.score_value !== 'A' && essayObj?.score_value !== 'A') {
+                            v = `<span class="text-primary fw-bold" title="គណនាអូតូ: អាន(${dVal}) + តែង(${eVal})">${dVal + eVal}*</span>`; inputBy = "ប្រព័ន្ធអូតូ";
+                        }
+                    }
+                }
+                h += `<td ${inputBy ? `title="បញ្ចូលដោយ៖ ${inputBy}" style="cursor:help;"` : ''}>${v}</td>`; 
             }); 
-            return h + '</tr>'; 
-        }).join(''); 
+            tableRows += h + '</tr>'; 
+        }); 
+        
+        tbody.innerHTML = tableRows;
+
+        let statsHTML = '';
+        [7,8,9,10,11,12].forEach(g => {
+            let st = gradeStats[g];
+            if(st.expected > 0) {
+                let pct = Math.min(100, Math.round((st.actual / st.expected) * 100));
+                let colorClass = pct < 50 ? 'bg-danger' : (pct < 100 ? 'bg-warning' : 'bg-success');
+                let inputtersHTML = Array.from(st.inputters).map(name => `<span class="inputter-badge">${name}</span>`).join('');
+                statsHTML += `<div class="col-6 col-md-4 col-lg-2"><div class="card p-2 stat-card h-100 shadow-sm border-0"><div class="d-flex justify-content-between align-items-center mb-1"><span class="fw-bold small">ថ្នាក់ទី ${g}</span><span class="badge ${colorClass}">${pct}%</span></div><div class="progress mb-2"><div class="progress-bar ${colorClass}" style="width: ${pct}%"></div></div><div class="small text-muted mb-1" style="font-size:10px;">បញ្ចូលបាន: ${st.actual}/${st.expected}</div><div>${inputtersHTML || '<span class="small text-muted" style="font-size:10px;">- មិនទាន់មាន -</span>'}</div></div></div>`;
+            }
+        });
+        statsArea.innerHTML = statsHTML;
     }
 
     async function loadAbsenceList() { 
@@ -453,40 +528,62 @@
         const tbody = document.getElementById('absListBody'); 
         if(!r) return; 
         
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i></td></tr>'; 
-        const stds = allStudentsCache.filter(s => String(s.room_number) === String(r)).sort((a,b) => a.desk_number - b.desk_number); 
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> ទាញទិន្នន័យ...</td></tr>'; 
+        
+        let stds = allStudentsCache;
+        if(r !== "ALL") { stds = stds.filter(s => String(s.room_number) === String(r)); }
+        stds.sort((a,b) => a.room_number - b.room_number || a.desk_number - b.desk_number);
+
         const sc = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
         
         tbody.innerHTML = stds.map((s,i) => { 
+            const classStr = s.class_name ? String(s.class_name).trim() : '';
+            const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
+            let rowBgClass = (gradeNum >= 7 && gradeNum <= 12) ? `bg-grade-${gradeNum}` : '';
+
             const v = sc.find(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value==='A'||x.score_value==='P'))?.score_value || ''; 
-            return `<tr class="abs-row" data-id="${s.student_id}" data-name="${s.full_name}" data-class="${s.class_name}" data-room="${s.room_number}">
-                <td>${i+1}</td><td>${s.desk_number}</td><td>${s.student_id}</td><td class="text-start ps-4 fw-bold">${s.full_name}</td>
-                <td><input type="text" class="form-control abs-input mx-auto text-center fw-bold text-danger shadow-sm" value="${v}" maxlength="1" placeholder="A/P" oninput="this.value=this.value.toUpperCase().replace(/[^AP]/g,'')"></td>
+            
+            return `<tr class="abs-row border-bottom ${rowBgClass}" data-id="${s.student_id}" data-name="${s.full_name}" data-class="${classStr}" data-room="${s.room_number}">
+                <td class="border-end-0">${i+1}</td>
+                <td class="fw-bold border-end-0">${s.room_number} / ${s.desk_number}</td>
+                <td class="small border-end-0">${s.student_id}</td>
+                <td class="text-start ps-4 fw-bold border-end-0 text-primary">${s.full_name} <span class="badge bg-secondary ms-1" style="font-size:10px;">${classStr}</span></td>
+                <td class="border-end-0">
+                    <div class="btn-group btn-group-abs shadow-sm" role="group">
+                        <input type="radio" class="btn-check" name="abs_${s.student_id}" id="none_${s.student_id}" value="" autocomplete="off" ${v===''?'checked':''} onchange="saveSingleAbsence('${s.student_id}', '${s.full_name}', '${classStr}', '${s.room_number}', '')">
+                        <label class="btn btn-outline-secondary" for="none_${s.student_id}"><i class="fa-solid fa-ban"></i> គ្មាន</label>
+
+                        <input type="radio" class="btn-check" name="abs_${s.student_id}" id="a_${s.student_id}" value="A" autocomplete="off" ${v==='A'?'checked':''} onchange="saveSingleAbsence('${s.student_id}', '${s.full_name}', '${classStr}', '${s.room_number}', 'A')">
+                        <label class="btn btn-outline-danger" for="a_${s.student_id}">A</label>
+
+                        <input type="radio" class="btn-check" name="abs_${s.student_id}" id="p_${s.student_id}" value="P" autocomplete="off" ${v==='P'?'checked':''} onchange="saveSingleAbsence('${s.student_id}', '${s.full_name}', '${classStr}', '${s.room_number}', 'P')">
+                        <label class="btn btn-outline-warning" for="p_${s.student_id}">P</label>
+                    </div>
+                </td>
             </tr>`; 
         }).join(''); 
-        const ins = Array.from(document.querySelectorAll('.abs-input'));
-        ins.forEach((inp, i) => { 
-            inp.onkeydown = (e) => { if(e.key==='Enter'||e.key==='ArrowDown') focusNext(ins, i, 1); if(e.key==='ArrowUp') focusNext(ins, i, -1); }; 
-        });
     }
 
-    async function saveAbsence() { 
+    async function saveSingleAbsence(stuId, stuName, stuClass, stuRoom, val) {
+        updateSaveStatus('saving');
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value; 
         const cf = await fetchAllData('subject_configs'); 
         const subs = [...new Set(cf.map(s => s.subject_name))]; 
-        const payload = []; 
-        
-        document.querySelectorAll('.abs-row').forEach(row => { 
-            const val = row.querySelector('.abs-input').value.trim(); 
-            if(val) {
-                subs.forEach(sub => payload.push({ student_id: row.dataset.id, subject_name: sub, score_value: val, academic_year: y, semester: sem, month_name: m, room_number: row.dataset.room, full_name: row.dataset.name, class_name: row.dataset.class, input_by: currentUser.username }));
+
+        try {
+            if (val === "") {
+                await _sb.from('scores').delete().eq('student_id', stuId).eq('academic_year', y).eq('month_name', m).eq('semester', sem).in('score_value', ['A', 'P']);
+            } else {
+                const payload = subs.map(sub => ({
+                    student_id: stuId, subject_name: sub, score_value: val, 
+                    academic_year: y, semester: sem, month_name: m, 
+                    room_number: stuRoom, full_name: stuName, class_name: stuClass, 
+                    input_by: currentUser.full_name
+                }));
+                await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
             }
-        }); 
-        if(payload.length) {
-            Swal.fire({ title: 'កំពុងរក្សាទុក...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-            await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'}); 
-            Swal.fire('ជោគជ័យ'); 
-        }
+            updateSaveStatus('saved');
+        } catch (error) { updateSaveStatus('error'); }
     }
 
     async function loadAbsenceHistoryReport() { 
@@ -498,10 +595,7 @@
         const curAbsIds = [...new Set(absData.filter(x => x.month_name === m && x.semester === sem).map(x => String(x.student_id).trim()))]; 
         const filteredStds = allStudentsCache.filter(s => curAbsIds.includes(String(s.student_id).trim()));
 
-        if(filteredStds.length === 0) {
-             tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-muted">គ្មានទិន្នន័យអវត្តមានក្នុងខែនេះទេ</td></tr>';
-             return;
-        }
+        if(filteredStds.length === 0) { tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-muted">គ្មានទិន្នន័យអវត្តមានក្នុងខែនេះទេ</td></tr>'; return; }
 
         tbody.innerHTML = filteredStds.map(s => { 
             const myAbs = absData.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
@@ -528,18 +622,12 @@
     function jumpToInput(r) { document.getElementById('roomSelect').value = r; switchTab('input'); loadInputList(); }
 
     async function switchTab(t) { 
-        // បើមានទិន្នន័យមិនទាន់ Save បញ្ជាឱ្យ Save មុនពេលប្តូរ Tab 
-        if (t !== 'input' && document.querySelectorAll('.stu-row').length > 0) {
-            triggerAutoSave();
-        }
-
+        if (t !== 'input' && document.querySelectorAll('.stu-row').length > 0) { triggerAutoSave(); }
         document.querySelectorAll('.tab-pane-custom').forEach(p => p.classList.add('hidden')); 
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
         document.getElementById('tab-'+t).classList.remove('hidden'); 
-        
         const activeLink = Array.from(document.querySelectorAll('.nav-link')).find(el => el.getAttribute('onclick') === `switchTab('${t}')`);
         if(activeLink) activeLink.classList.add('active');
-
         if(t==='report') loadGlobalReport(); 
         if(t==='abs-report') loadAbsenceHistoryReport(); 
     }
@@ -552,25 +640,16 @@
     
     async function revertAbs(sid) { 
         if (currentUser.role !== 'Admin') {
-            Swal.fire({
-                title: 'គ្មានសិទ្ធិអនុញ្ញាត',
-                text: 'អ្នកមិនមានសិទ្ធិលុបអវត្តមានសិស្សទេ។ សូមទាក់ទង Admin ដើម្បីដោះស្រាយ!',
-                icon: 'error',
-                showCancelButton: true,
-                confirmButtonColor: '#0088cc',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '<i class="fa-brands fa-telegram me-1"></i> រាយការណ៍ទៅ Admin',
-                cancelButtonText: 'បិទ'
-            }).then((result) => { if (result.isConfirmed) { window.open('https://t.me/Mrmomhon', '_blank'); } });
+            Swal.fire({ title: 'គ្មានសិទ្ធិអនុញ្ញាត', text: 'អ្នកមិនមានសិទ្ធិលុបអវត្តមានសិស្សទេ។ សូមទាក់ទង Admin ដើម្បីដោះស្រាយ!', icon: 'error', showCancelButton: true, confirmButtonColor: '#0088cc', cancelButtonColor: '#d33', confirmButtonText: '<i class="fa-brands fa-telegram me-1"></i> រាយការណ៍ទៅ Admin', cancelButtonText: 'បិទ' }).then((result) => { if (result.isConfirmed) { window.open('https://t.me/Mrmomhon', '_blank'); } });
             return;
         }
-
         const { isConfirmed } = await Swal.fire({ title: 'លុបវត្តមាន?', text: "សិស្សនេះនឹងអាចបញ្ចូលពិន្ទុបានវិញ!", icon: 'warning', showCancelButton: true }); 
         if(isConfirmed) { 
             Swal.fire({ title: 'កំពុងលុប...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
             await _sb.from('scores').delete().eq('student_id', sid).eq('academic_year', document.getElementById('gYear').value).eq('month_name', document.getElementById('gMonth').value).eq('semester', document.getElementById('gSemester').value).in('score_value', ['A','P']); 
             Swal.close();
             if(document.getElementById('tab-abs-report').classList.contains('hidden') === false) loadAbsenceHistoryReport(); 
+            if(document.getElementById('tab-absence').classList.contains('hidden') === false) loadAbsenceList(); 
             if(document.getElementById('globalSearchInput').value !== '') handleGlobalSearch();
         } 
     }
@@ -580,43 +659,24 @@
     function setupSmartPaste(sel) { 
         const ins = Array.from(document.querySelectorAll(sel)); 
         ins.forEach((inp, i) => { 
-            inp.onkeydown = (e) => { 
-                if(e.key==='Enter'||e.key==='ArrowDown') focusNext(ins, i, 1); 
-                if(e.key==='ArrowUp') focusNext(ins, i, -1); 
-            }; 
+            inp.onkeydown = (e) => { if(e.key==='Enter'||e.key==='ArrowDown') focusNext(ins, i, 1); if(e.key==='ArrowUp') focusNext(ins, i, -1); }; 
             inp.onpaste = (e) => { 
-                e.preventDefault(); 
-                hasUnsavedChanges = true; 
+                e.preventDefault(); hasUnsavedChanges = true; 
                 const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/\r/g, '').split('\n'); 
-                
-                let pasteIdx = 0; 
-                let hasPasteError = false;
+                let pasteIdx = 0; let hasPasteError = false;
 
                 for(let j=i; j<ins.length && pasteIdx < pasteData.length; j++) { 
                     let valToPaste = pasteData[pasteIdx].trim().toUpperCase();
                     pasteIdx++; 
-
                     if(!ins[j].disabled && valToPaste !== "") { 
                         ins[j].value = valToPaste; 
-                        
-                        if(!validateInput(ins[j], true)) { 
-                            hasPasteError = true;
-                        } 
+                        if(!validateInput(ins[j], true)) { hasPasteError = true; } 
                     } 
                 } 
 
                 setTimeout(() => {
-                    if(hasPasteError) {
-                        Swal.fire({
-                            title: 'យកចិត្តទុកដាក់!',
-                            text: 'មានទិន្នន័យមិនត្រឹមត្រូវខ្លះ (ពណ៌ក្រហម)! សូមកែប្រែឱ្យបានត្រឹមត្រូវសិន។',
-                            icon: 'error',
-                            confirmButtonColor: '#d33'
-                        });
-                        updateSaveStatus('error');
-                    } else {
-                        triggerAutoSave();
-                    }
+                    if(hasPasteError) { Swal.fire({ title: 'យកចិត្តទុកដាក់!', text: 'មានទិន្នន័យមិនត្រឹមត្រូវខ្លះ (ពណ៌ក្រហម)! សូមកែប្រែឱ្យបានត្រឹមត្រូវសិន។', icon: 'error', confirmButtonColor: '#d33' }); updateSaveStatus('error'); } 
+                    else { triggerAutoSave(); }
                 }, 100);
             }; 
         }); 
