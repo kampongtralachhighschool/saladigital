@@ -22,6 +22,10 @@
     .score-input { width: 75px; text-align: center; font-weight: bold; border: 2px solid #ccc; border-radius: 6px; padding: 5px; font-size: 15px; }
     .score-input:focus { border-color: var(--primary); outline: none; background: #eef6ff; transform: scale(1.05); }
     .score-input:disabled { background-color: #ffdce0; color: #d32f2f; border-color: #ffc1c8; cursor: pointer; }
+    
+    .input-error { background-color: #ffe5e5 !important; border-color: #dc3545 !important; color: #dc3545 !important; animation: shake 0.4s; }
+    @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-4px); } 100% { transform: translateX(0); } }
+    
     .app-header { background: linear-gradient(135deg, #0d6efd, #0099ff); color: white; padding: 15px; border-radius: 0 0 20px 20px; }
     .filter-card { margin-top: -25px; padding: 15px; background: white; border-radius: 12px; border-bottom: 4px solid var(--primary); }
     .motivation-box { background: #e7f1ff; border-left: 5px solid #0d6efd; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-weight: 600; color: #084298; }
@@ -31,11 +35,19 @@
     #authSection { display: flex; align-items: center; justify-content: center; min-height: 90vh; }
     .auth-card { width: 100%; max-width: 400px; border: none; }
     .cursor-pointer { cursor: pointer; }
-    /* Class Background Colors */
-    .bg-class-0 { background-color: #ffffff !important; }
-    .bg-class-1 { background-color: #f0f7ff !important; }
-    .bg-class-2 { background-color: #fffaf0 !important; }
-    .stu-row:hover { filter: brightness(0.97); transition: 0.2s; }
+    
+    tr.bg-grade-7 td { background-color: #f4f6f8 !important; } 
+    tr.bg-grade-8 td { background-color: #e6f0fa !important; } 
+    tr.bg-grade-9 td { background-color: #e8f5e9 !important; } 
+    tr.bg-grade-10 td { background-color: #fce4ec !important; } 
+    tr.bg-grade-11 td { background-color: #fff8e1 !important; } 
+    tr.bg-grade-12 td { background-color: #e0f7fa !important; } 
+    .stu-row:hover td { filter: brightness(0.95); transition: 0.2s; }
+
+    #saveStatus { font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 15px; margin-left: 10px; opacity: 0; transition: opacity 0.3s ease; }
+    .status-saving { background-color: #fff3cd; color: #856404; opacity: 1 !important; }
+    .status-saved { background-color: #d4edda; color: #155724; opacity: 1 !important; }
+    .status-error { background-color: #f8d7da; color: #721c24; opacity: 1 !important; }
   </style>
 </head>
 <body>
@@ -95,8 +107,9 @@
             </div>
         </div>
 
-        <div id="motivationArea" class="motivation-box shadow-sm">
-            <i class="fa-solid fa-face-smile me-2"></i><span id="motivationMsg">ស្វាគមន៍លោកគ្រូអ្នកគ្រូ! HS-KPT ស៊ូស៊ូ!</span>
+        <div id="motivationArea" class="motivation-box shadow-sm d-flex justify-content-between align-items-center">
+            <div><i class="fa-solid fa-face-smile me-2"></i><span id="motivationMsg">ស្វាគមន៍លោកគ្រូអ្នកគ្រូ! HS-KPT ស៊ូស៊ូ!</span></div>
+            <div id="saveStatus"><i class="fa-solid fa-cloud-arrow-up"></i> រក្សាទុក...</div>
         </div>
 
         <ul class="nav nav-pills mb-3 px-1 overflow-auto flex-nowrap" id="pills-tab">
@@ -112,13 +125,17 @@
           <div id="tab-input" class="tab-pane-custom">
             <div class="card p-2 shadow-sm border-0">
               <div class="row g-2 mb-3 align-items-end border-bottom pb-3">
-                <div class="col-5 col-md-3"><label class="small fw-bold">បន្ទប់</label><select id="roomSelect" class="form-select fw-bold border-primary"></select></div>
-                <div class="col-7 col-md-4"><label class="small fw-bold text-primary">មុខវិជ្ជា</label><select id="subjectSelect" class="form-select fw-bold border-primary"></select></div>
-                <div class="col-6 col-md-2"><button class="btn btn-primary w-100 fw-bold shadow" onclick="loadInputList()">ទាញឈ្មោះ</button></div>
-                <div class="col-6 col-md-3"><button class="btn btn-success w-100 fw-bold shadow" onclick="saveScores()"><i class="fa-solid fa-save"></i> រក្សាទុកពិន្ទុ</button></div>
+                <!-- រៀបចំ Layout ថ្មីបន្ទាប់ពីលុបប៊ូតុងចេញ -->
+                <div class="col-6 col-md-4"><label class="small fw-bold">បន្ទប់</label><select id="roomSelect" class="form-select fw-bold border-primary" onchange="onFilterChange()"></select></div>
+                <div class="col-6 col-md-5"><label class="small fw-bold text-primary">មុខវិជ្ជា</label><select id="subjectSelect" class="form-select fw-bold border-primary" onchange="onFilterChange()"></select></div>
+                <div class="col-12 col-md-3"><button class="btn btn-success w-100 fw-bold shadow mt-2 mt-md-0" onclick="manualSaveScores()"><i class="fa-solid fa-save"></i> រក្សាទុកពិន្ទុ</button></div>
               </div>
+
+              <!-- ចំណងជើងបង្ហាញបន្ទប់ និងមុខវិជ្ជា (Dynamic Title) -->
+              <div id="currentInputTitle" class="alert alert-primary py-2 mb-3 text-center fw-bold hidden shadow-sm" style="border-left: 5px solid #0d6efd; background-color: #eef6ff;"></div>
+
               <div class="table-responsive table-container border shadow-sm">
-                  <table class="table align-middle mb-0 text-center">
+                  <table class="table align-middle mb-0 text-center border-0">
                       <thead><tr><th>ល.រ</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th width="100">ពិន្ទុ</th></tr></thead>
                       <tbody id="inputListBody"></tbody>
                   </table>
@@ -193,8 +210,13 @@
     const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpteWZjZ3R2d2xidHpmeGdteWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NzEzODcsImV4cCI6MjA5MTE0NzM4N30.9CD_yAFGBTylqPjivqSHoyTYvL_b1PP27WUi2yL9CbQ";
     const _sb = supabase.createClient(SB_URL, SB_KEY);
     let currentUser = null, allStudentsCache = [];
+    let saveTimeout = null; 
+    let hasUnsavedChanges = false; 
 
-    // 1. POPULATE DROPDOWNS
+    window.addEventListener('beforeunload', function (e) {
+        if (hasUnsavedChanges) { e.preventDefault(); e.returnValue = ''; }
+    });
+
     (function initUI() {
         const yearSel = document.getElementById('gYear'), monthSel = document.getElementById('gMonth');
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ", "ប្រឡងឆមាសលើកទី១", "ប្រឡងឆមាសលើកទី២"];
@@ -203,17 +225,14 @@
         months.forEach(m => monthSel.innerHTML += `<option value="${m}">${m}</option>`);
     })();
 
-    // 2. POWERFUL FETCH ALL (BYPASS 1000 LIMIT)
     async function fetchAllData(table, eqFilters = {}, inFilter = null) {
         let results = [], from = 0, step = 1000;
         while (true) {
             let query = _sb.from(table).select('*').range(from, from + step - 1);
             for (const k in eqFilters) query = query.eq(k, eqFilters[k]);
             if (inFilter) query = query.in(inFilter.col, inFilter.vals);
-            
             const { data, error } = await query;
             if (error || !data || data.length === 0) break;
-            
             results = results.concat(data);
             if (data.length < step) break;
             from += step;
@@ -221,7 +240,6 @@
         return results;
     }
 
-    // 3. AUTH & INIT
     async function handleLogin() {
         const { data, error } = await _sb.auth.signInWithPassword({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPass').value });
         if(error) return Swal.fire('បរាជ័យ', 'អ៊ីមែល ឬលេខសម្ងាត់មិនត្រឹមត្រូវ', 'error');
@@ -248,80 +266,164 @@
         document.getElementById('absRoomSelect').innerHTML = roomOpts;
         
         const { data: subs } = await _sb.from('subject_configs').select('subject_name');
-        if(subs) {
-            document.getElementById('subjectSelect').innerHTML = [...new Set(subs.map(s => s.subject_name))].map(s => `<option value="${s}">${s}</option>`).join('');
-        }
+        if(subs) { document.getElementById('subjectSelect').innerHTML = [...new Set(subs.map(s => s.subject_name))].map(s => `<option value="${s}">${s}</option>`).join(''); }
+        
+        // Auto load លើកដំបូង
+        loadInputList();
     }
 
-    // 4. LOAD INPUT LIST (Added Class Name & Row Color)
+    // មុខងារនេះដើរពេល User ចុចប្តូរបន្ទប់ ឬ មុខវិជ្ជា
+    async function onFilterChange() {
+        // បើមានទិន្នន័យមិនទាន់ Save ត្រូវ Auto Save វាឱ្យហើយសិន មុននឹងទាញថ្មី
+        if(hasUnsavedChanges && document.querySelectorAll('.stu-row').length > 0) {
+            await saveScoresCore(true); 
+        }
+        loadInputList();
+    }
+
     async function loadInputList() {
+        hasUnsavedChanges = false;
         const r = document.getElementById('roomSelect').value, sub = document.getElementById('subjectSelect').value;
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value;
-        const tbody = document.getElementById('inputListBody'); 
-        if(!r || !sub) return;
         
+        const tbody = document.getElementById('inputListBody'); 
+        const titleDiv = document.getElementById('currentInputTitle');
+
+        if(!r || !sub) {
+            titleDiv.classList.add('hidden');
+            return;
+        }
+        
+        // បង្ហាញចំណងជើងរស់រវើក
+        titleDiv.innerHTML = `កំពុងបញ្ចូលពិន្ទុ៖ បន្ទប់ <span class="text-danger mx-1">${r}</span> | មុខវិជ្ជា <span class="text-primary mx-1">${sub}</span>`;
+        titleDiv.classList.remove('hidden');
+
         tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> ទាញទិន្នន័យ...</td></tr>';
         
         const stds = allStudentsCache.filter(s => String(s.room_number) === String(r)).sort((a,b) => a.desk_number - b.desk_number);
         const scores = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
         const cfgs = await fetchAllData('subject_configs', { subject_name: sub });
         
-        // កំណត់ពណ៌ខុសគ្នាសម្រាប់ថ្នាក់នីមួយៗ
-        const uniqueClasses = [...new Set(stds.map(s => s.class_name ? String(s.class_name).trim() : ''))];
-        
         tbody.innerHTML = stds.map((s, i) => {
             const classStr = s.class_name ? String(s.class_name).trim() : '';
-            const classIdx = uniqueClasses.indexOf(classStr);
-            // ប្រើប្រាស់ Class CSS ដើម្បីដាក់ពណ៌
-            const rowBgClass = classIdx === 0 ? 'bg-class-0' : (classIdx === 1 ? 'bg-class-1' : 'bg-class-2');
+            const gradeMatch = classStr.match(/\d+/);
+            const gradeNum = gradeMatch ? parseInt(gradeMatch[0]) : 0;
+            
+            let rowBgClass = '';
+            if(gradeNum >= 7 && gradeNum <= 12) { rowBgClass = `bg-grade-${gradeNum}`; }
 
             const max = cfgs.find(c => String(c.class_name).trim() === classStr)?.max_score || 100;
             const mySc = scores.find(x => String(x.student_id).trim() === String(s.student_id).trim() && String(x.subject_name).trim() === String(sub).trim())?.score_value || '';
             const isAbs = scores.some(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value === 'A' || x.score_value === 'P'));
             
-            return `<tr class="stu-row ${rowBgClass}" data-id="${s.student_id}" data-room="${s.room_number}" data-name="${s.full_name}" data-class="${s.class_name}">
-                <td class="text-center">${i+1}</td>
-                <td class="fw-bold">${s.desk_number}</td>
-                <td class="small">${s.student_id}</td>
-                <td class="text-start fw-bold text-primary">
+            return `<tr class="stu-row border-bottom ${rowBgClass}" data-id="${s.student_id}" data-room="${s.room_number}" data-name="${s.full_name}" data-class="${s.class_name}">
+                <td class="text-center border-end-0">${i+1}</td>
+                <td class="fw-bold border-end-0">${s.desk_number}</td>
+                <td class="small border-end-0">${s.student_id}</td>
+                <td class="text-start fw-bold text-primary border-end-0">
                     ${s.full_name} <span class="badge bg-secondary ms-1" style="font-size: 10px;">${classStr}</span>
                     <div class="small text-muted fw-normal mt-1">Max: <span class="max-label">${max}</span></div>
                 </td>
-                <td><input type="text" class="form-control score-input mx-auto shadow-sm" value="${mySc}" data-max="${max}" oninput="validateInput(this)" ondblclick="adminUnlock('${s.student_id}', '${sub}', this.value)" ${isAbs?'disabled':''}></td>
+                <td class="border-end-0"><input type="text" class="form-control score-input mx-auto shadow-sm" value="${mySc}" data-max="${max}" onblur="triggerAutoSave()" oninput="validateInput(this)" ondblclick="adminUnlock('${s.student_id}', '${sub}', this.value)" ${isAbs?'disabled':''}></td>
             </tr>`;
         }).join('');
         setupSmartPaste('.score-input'); updateMaxLabel();
     }
 
-    function validateInput(inp, silent = false) { 
+    function validateInput(inp, isPasteMode = false) { 
+        hasUnsavedChanges = true; 
+        inp.classList.remove('input-error'); 
+
+        const originalValue = inp.value;
         inp.value = inp.value.toUpperCase().replace(/[^0-9.AP]/g, ''); 
-        if ((inp.value.match(/\./g) || []).length > 1) inp.value = inp.value.substring(0, inp.value.lastIndexOf('.')); 
+        
+        if ((inp.value.match(/\./g) || []).length > 1) {
+            inp.value = inp.value.substring(0, inp.value.lastIndexOf('.')); 
+        }
+
+        if(inp.value === '') return true; 
+        
+        if (originalValue !== inp.value && originalValue.length > 0) {
+             inp.classList.add('input-error');
+             return false;
+        }
+
+        if(inp.value === 'A' || inp.value === 'P') return true; 
+
         const is70 = document.getElementById('mode70').checked; 
         let limit = is70 ? Math.ceil(parseFloat(inp.dataset.max)*0.7) : parseFloat(inp.dataset.max); 
-        if(inp.value==='A'||inp.value==='P'||inp.value==='') return true; 
-        if(parseFloat(inp.value) > limit) { if(!silent) Swal.fire('Error', `លើសពិន្ទុ (${limit})`, 'error'); inp.value = ''; return false; } 
+        
+        if(parseFloat(inp.value) > limit) { 
+            inp.classList.add('input-error'); 
+            return false; 
+        } 
         return true; 
     }
 
-    async function saveScores() { 
-        const p = []; 
+    function updateSaveStatus(state) {
+        const st = document.getElementById('saveStatus');
+        st.className = '';
+        if(state === 'saving') { st.innerHTML = '<i class="fas fa-spinner fa-spin"></i> កំពុងរក្សាទុក...'; st.classList.add('status-saving'); }
+        else if(state === 'saved') { st.innerHTML = '<i class="fas fa-check-circle"></i> រក្សាទុកក្នុង Cloud'; st.classList.add('status-saved'); setTimeout(()=> st.classList.remove('status-saved'), 3000); }
+        else if(state === 'error') { st.innerHTML = '<i class="fas fa-exclamation-triangle"></i> មានកំហុស សូមពិនិត្យ'; st.classList.add('status-error'); }
+    }
+
+    function triggerAutoSave() {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => { saveScoresCore(true); }, 800);
+    }
+
+    function manualSaveScores() {
+        saveScoresCore(false);
+    }
+
+    async function saveScoresCore(isAutoSave = false) { 
+        const pUpsert = []; 
+        const pDelete = []; 
+        let hasError = false;
+        
         const sub = document.getElementById('subjectSelect').value, y = document.getElementById('gYear').value, sem = document.getElementById('gSemester').value, m = document.getElementById('gMonth').value; 
         const mode = document.getElementById('mode70').checked ? 70 : 100;
         
         document.querySelectorAll('.stu-row').forEach(row => { 
-            const val = row.querySelector('.score-input').value; 
-            if(val !== "" && !row.querySelector('.score-input').disabled) {
-                p.push({ student_id: row.dataset.id, subject_name: sub, score_value: val, academic_year: y, semester: sem, month_name: m, room_number: row.dataset.room, full_name: row.dataset.name, class_name: row.dataset.class, score_percentage: mode, input_by: currentUser.username }); 
+            const inp = row.querySelector('.score-input');
+            const stuId = row.dataset.id;
+            
+            if(inp.classList.contains('input-error')) {
+                hasError = true; 
+            } else if(!inp.disabled) {
+                if(inp.value !== "") {
+                    pUpsert.push({ student_id: stuId, subject_name: sub, score_value: inp.value, academic_year: y, semester: sem, month_name: m, room_number: row.dataset.room, full_name: row.dataset.name, class_name: row.dataset.class, score_percentage: mode, input_by: currentUser.username }); 
+                } else {
+                    pDelete.push(stuId);
+                }
             }
         }); 
-        if(p.length) { 
-            Swal.fire({ title: 'កំពុងរក្សាទុក...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-            await _sb.from('scores').upsert(p, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'}); 
-            Swal.fire('ជោគជ័យ', 'រក្សាទុកបាន ' + p.length + ' នាក់', 'success'); 
+
+        if(hasError) {
+            updateSaveStatus('error');
+            if(!isAutoSave) Swal.fire('មិនអាចរក្សាទុកបានទេ!', 'សូមកែសម្រួលប្រអប់ពណ៌ក្រហមសិន។', 'warning');
+            return;
+        }
+        
+        if(pUpsert.length > 0 || pDelete.length > 0) { 
+            updateSaveStatus('saving');
+            try {
+                if(pDelete.length > 0) {
+                     await _sb.from('scores').delete().in('student_id', pDelete).eq('subject_name', sub).eq('academic_year', y).eq('month_name', m).eq('semester', sem);
+                }
+                if(pUpsert.length > 0) {
+                     await _sb.from('scores').upsert(pUpsert, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'}); 
+                }
+                updateSaveStatus('saved');
+                hasUnsavedChanges = false;
+                if(!isAutoSave) Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'រក្សាទុករួចរាល់!', showConfirmButton: false, timer: 2000 });
+            } catch (err) {
+                updateSaveStatus('error');
+            }
         } 
     }
 
-    // 5. GLOBAL REPORT
     async function loadGlobalReport() { 
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value; 
         const tbody = document.getElementById('reportTableBody'); 
@@ -345,7 +447,6 @@
         }).join(''); 
     }
 
-    // 6. ABSENCE TABS
     async function loadAbsenceList() { 
         const r = document.getElementById('absRoomSelect').value; 
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value;
@@ -363,7 +464,10 @@
                 <td><input type="text" class="form-control abs-input mx-auto text-center fw-bold text-danger shadow-sm" value="${v}" maxlength="1" placeholder="A/P" oninput="this.value=this.value.toUpperCase().replace(/[^AP]/g,'')"></td>
             </tr>`; 
         }).join(''); 
-        setupSmartPaste('.abs-input'); 
+        const ins = Array.from(document.querySelectorAll('.abs-input'));
+        ins.forEach((inp, i) => { 
+            inp.onkeydown = (e) => { if(e.key==='Enter'||e.key==='ArrowDown') focusNext(ins, i, 1); if(e.key==='ArrowUp') focusNext(ins, i, -1); }; 
+        });
     }
 
     async function saveAbsence() { 
@@ -407,7 +511,6 @@
         }).join(''); 
     }
 
-    // 7. SEARCH TAB
     async function handleGlobalSearch() { 
         const q = document.getElementById('globalSearchInput').value.toLowerCase(); 
         const tbody = document.getElementById('searchResultBody'); 
@@ -424,8 +527,22 @@
 
     function jumpToInput(r) { document.getElementById('roomSelect').value = r; switchTab('input'); loadInputList(); }
 
-    // 8. ADMIN & UTILS
-    function switchTab(t) { document.querySelectorAll('.tab-pane-custom').forEach(p => p.classList.add('hidden')); document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); document.getElementById('tab-'+t).classList.remove('hidden'); event.currentTarget.classList.add('active'); if(t==='report') loadGlobalReport(); if(t==='abs-report') loadAbsenceHistoryReport(); }
+    async function switchTab(t) { 
+        // បើមានទិន្នន័យមិនទាន់ Save បញ្ជាឱ្យ Save មុនពេលប្តូរ Tab 
+        if (t !== 'input' && document.querySelectorAll('.stu-row').length > 0) {
+            triggerAutoSave();
+        }
+
+        document.querySelectorAll('.tab-pane-custom').forEach(p => p.classList.add('hidden')); 
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
+        document.getElementById('tab-'+t).classList.remove('hidden'); 
+        
+        const activeLink = Array.from(document.querySelectorAll('.nav-link')).find(el => el.getAttribute('onclick') === `switchTab('${t}')`);
+        if(activeLink) activeLink.classList.add('active');
+
+        if(t==='report') loadGlobalReport(); 
+        if(t==='abs-report') loadAbsenceHistoryReport(); 
+    }
     
     async function adminUnlock(sid, sub, val) { 
         if(currentUser.role !== 'Admin' || (val !== 'A' && val !== 'P')) return; 
@@ -444,11 +561,7 @@
                 cancelButtonColor: '#d33',
                 confirmButtonText: '<i class="fa-brands fa-telegram me-1"></i> រាយការណ៍ទៅ Admin',
                 cancelButtonText: 'បិទ'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.open('https://t.me/Mrmomhon', '_blank');
-                }
-            });
+            }).then((result) => { if (result.isConfirmed) { window.open('https://t.me/Mrmomhon', '_blank'); } });
             return;
         }
 
@@ -464,7 +577,6 @@
 
     function updateMaxLabel() { const is70 = document.getElementById('mode70').checked; document.querySelectorAll('.stu-row').forEach(r => { const inp = r.querySelector('.score-input'); if(inp) { let m = parseFloat(inp.dataset.max); r.querySelector('.max-label').innerText = is70 ? Math.ceil(m * 0.7) : m; } }); }
     
-    // SMART PASTE REWRITTEN: គិតជួរ១ទល់១ ជាមួយ Excel, រំលង Absent ដោយមិនរុញខុសជួរ និងមិនបញ្វូលពិន្ទុខុស
     function setupSmartPaste(sel) { 
         const ins = Array.from(document.querySelectorAll(sel)); 
         ins.forEach((inp, i) => { 
@@ -474,24 +586,38 @@
             }; 
             inp.onpaste = (e) => { 
                 e.preventDefault(); 
-                // បំបែកទិន្នន័យដោយចុះបន្ទាត់ (Newline) ដែលត្រូវនឹង Copy ចេញពីជួរ Excel
+                hasUnsavedChanges = true; 
                 const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/\r/g, '').split('\n'); 
                 
                 let pasteIdx = 0; 
+                let hasPasteError = false;
+
                 for(let j=i; j<ins.length && pasteIdx < pasteData.length; j++) { 
                     let valToPaste = pasteData[pasteIdx].trim().toUpperCase();
-                    pasteIdx++; // ដំឡើង Index ជានិច្ចដើម្បីរក្សាជួរ១ទល់១ (1-to-1 Mapping)
+                    pasteIdx++; 
 
-                    // បញ្ចូលតែប្រអប់ណាដែលបើក (សិស្សមិនអវត្តមាន) និងមានទិន្នន័យ
                     if(!ins[j].disabled && valToPaste !== "") { 
-                        let orig = ins[j].value; 
                         ins[j].value = valToPaste; 
-                        // validateInput និងត្រឡប់ false បើពិន្ទុខុស/លើស
+                        
                         if(!validateInput(ins[j], true)) { 
-                            ins[j].value = orig; // ទាញទិន្នន័យដើមមកវិញបើពិន្ទុដែល paste បញ្ចូលនោះខុស
+                            hasPasteError = true;
                         } 
                     } 
                 } 
+
+                setTimeout(() => {
+                    if(hasPasteError) {
+                        Swal.fire({
+                            title: 'យកចិត្តទុកដាក់!',
+                            text: 'មានទិន្នន័យមិនត្រឹមត្រូវខ្លះ (ពណ៌ក្រហម)! សូមកែប្រែឱ្យបានត្រឹមត្រូវសិន។',
+                            icon: 'error',
+                            confirmButtonColor: '#d33'
+                        });
+                        updateSaveStatus('error');
+                    } else {
+                        triggerAutoSave();
+                    }
+                }, 100);
             }; 
         }); 
     }
