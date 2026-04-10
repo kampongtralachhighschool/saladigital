@@ -155,11 +155,22 @@
           <!-- TAB: REPORT -->
           <div id="tab-report" class="tab-pane-custom hidden">
               <div class="card p-2 shadow-sm border-0">
-                  <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                       <h6 class="fw-bold text-success small mb-0"><i class="fa-solid fa-chart-pie me-1"></i> វឌ្ឍនភាព និងរបាយការណ៍រួម</h6>
-                      <div>
+                      <div class="d-flex align-items-center">
+                          <!-- Dropdown សម្រាប់ច្រោះថ្នាក់ -->
+                          <select id="reportGradeFilter" class="form-select form-select-sm border-primary fw-bold me-2 shadow-sm" style="width: auto;" onchange="filterReportTable()">
+                              <option value="ALL">-- គ្រប់ថ្នាក់ --</option>
+                              <option value="7">ថ្នាក់ទី 7</option>
+                              <option value="8">ថ្នាក់ទី 8</option>
+                              <option value="9">ថ្នាក់ទី 9</option>
+                              <option value="10">ថ្នាក់ទី 10</option>
+                              <option value="11">ថ្នាក់ទី 11</option>
+                              <option value="12">ថ្នាក់ទី 12</option>
+                          </select>
+                          <button class="btn btn-outline-primary btn-sm fw-bold shadow-sm me-1" onclick="showDetailedProgress()" title="លម្អិតវឌ្ឍនភាពតាមមុខវិជ្ជា"><i class="fa-solid fa-list-check d-none d-md-inline me-1"></i> លម្អិត</button>
                           <button class="btn btn-outline-secondary btn-sm fw-bold shadow-sm me-1" onclick="openSubjectOrderModal()" title="កំណត់លំដាប់មុខវិជ្ជា"><i class="fa-solid fa-gear"></i></button>
-                          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('reportTable')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+                          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('reportTable')"><i class="fa-solid fa-file-excel d-none d-md-inline me-1"></i> Excel</button>
                       </div>
                   </div>
                   
@@ -441,7 +452,6 @@
         const sc = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem }); 
         const cf = await fetchAllData('subject_configs');
         
-        // AUTO MAP: ទាញយក Profiles ដើម្បីបំប្លែង username ទៅជា full_name សម្រាប់ទិន្នន័យចាស់ៗ
         const { data: profs } = await _sb.from('profiles').select('email, username, full_name');
         let profMap = {};
         if(profs) {
@@ -473,25 +483,23 @@
         let tableRows = '';
         sortedStds.forEach(s => { 
             const classStr = String(s.class_name).trim(); const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
-            let h = `<tr><td>${s.room_number}</td><td>${s.desk_number}</td><td>${s.student_id}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td>${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td>${s.class_name}</td>`; 
+            
+            // Add class report-row and data-grade for filtering
+            let h = `<tr class="report-row" data-grade="${gradeNum}"><td>${s.room_number}</td><td>${s.desk_number}</td><td>${s.student_id}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td>${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td>${s.class_name}</td>`; 
+            
             const myScores = sc.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
             
             if(gradeStats[gradeNum] && myScores.length > 0) {
                 gradeStats[gradeNum].actual += myScores.length;
                 myScores.forEach(score => { 
-                    if(score.input_by) {
-                        let dName = profMap[score.input_by] || score.input_by; // ប្រើការ Map
-                        gradeStats[gradeNum].inputters.add(dName); 
-                    }
+                    if(score.input_by) { let dName = profMap[score.input_by] || score.input_by; gradeStats[gradeNum].inputters.add(dName); }
                 });
             }
 
             uniqueSubs.forEach(sub => { 
                 let scoreObj = myScores.find(x => String(x.subject_name).trim() === String(sub).trim());
-                let v = scoreObj ? scoreObj.score_value : ''; 
-                let inputBy = scoreObj ? scoreObj.input_by : '';
-                
-                if(inputBy) inputBy = profMap[inputBy] || inputBy; // ប្រើការ Map សម្រាប់ Tooltip
+                let v = scoreObj ? scoreObj.score_value : ''; let inputBy = scoreObj ? scoreObj.input_by : '';
+                if(inputBy) inputBy = profMap[inputBy] || inputBy; 
 
                 if (!v && sub === 'ភាសាខ្មែរ' && gradeNum >= 7 && gradeNum <= 9) {
                     let dictObj = myScores.find(x => String(x.subject_name).trim() === 'សរសេរតាមអាន'); let essayObj = myScores.find(x => String(x.subject_name).trim() === 'តែងសេចក្ដី');
@@ -520,6 +528,122 @@
             }
         });
         statsArea.innerHTML = statsHTML;
+        
+        // អនុវត្តការច្រោះ (Filter) បើសិនជាមានការជ្រើសរើសរួចហើយ
+        filterReportTable();
+    }
+
+    // មុខងារច្រោះថ្នាក់នៅក្នុងរបាយការណ៍រួម
+    function filterReportTable() {
+        const selectedGrade = document.getElementById('reportGradeFilter').value;
+        document.querySelectorAll('.report-row').forEach(row => {
+            if (selectedGrade === "ALL" || row.getAttribute('data-grade') === selectedGrade) {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+    }
+
+    async function showDetailedProgress() {
+        Swal.fire({ title: 'កំពុងរៀបចំទិន្នន័យ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        const y = document.getElementById('gYear').value; const m = document.getElementById('gMonth').value; const sem = document.getElementById('gSemester').value;
+        const sc = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
+        const cf = await fetchAllData('subject_configs');
+        const { data: profs } = await _sb.from('profiles').select('email, username, full_name');
+        
+        let profMap = {};
+        if(profs) profs.forEach(p => { if(p.full_name) profMap[p.full_name] = p.full_name; if(p.email) profMap[p.email.split('@')[0]] = p.full_name; if(p.username) profMap[p.username] = p.full_name; });
+
+        let gradeDetails = {}; 
+        [7,8,9,10,11,12].forEach(g => {
+            let stdsInGrade = allStudentsCache.filter(s => parseInt(String(s.class_name).match(/\d+/)?.[0] || 0) === g);
+            if(stdsInGrade.length > 0) {
+                gradeDetails[g] = { totalStudents: stdsInGrade.length, subjects: {} };
+                let stuIds = stdsInGrade.map(s => s.student_id);
+                let gradeClasses = [...new Set(stdsInGrade.map(s => String(s.class_name).trim()))];
+                let gradeSubs = [...new Set(cf.filter(c => gradeClasses.includes(String(c.class_name).trim())).map(c => c.subject_name))];
+
+                gradeSubs.forEach(sub => { gradeDetails[g].subjects[sub] = { actual: 0, inputters: new Set() }; });
+                let gradeScores = sc.filter(x => stuIds.includes(x.student_id));
+                
+                stuIds.forEach(sid => {
+                    let stuScores = gradeScores.filter(x => x.student_id === sid);
+                    gradeSubs.forEach(sub => {
+                        let scoreObj = stuScores.find(x => x.subject_name === sub);
+                        if(scoreObj && scoreObj.score_value !== "") {
+                            gradeDetails[g].subjects[sub].actual++;
+                            if(scoreObj.input_by) gradeDetails[g].subjects[sub].inputters.add(profMap[scoreObj.input_by] || scoreObj.input_by);
+                        } else if (sub === 'ភាសាខ្មែរ' && g >= 7 && g <= 9) {
+                            let dictObj = stuScores.find(x => x.subject_name === 'សរសេរតាមអាន'); let essayObj = stuScores.find(x => x.subject_name === 'តែងសេចក្ដី');
+                            if (dictObj || essayObj) {
+                                 let dVal = parseFloat(dictObj?.score_value) || 0; let eVal = parseFloat(essayObj?.score_value) || 0;
+                                 if (!isNaN(dVal) && !isNaN(eVal) && dictObj?.score_value !== 'A' && essayObj?.score_value !== 'A') {
+                                     gradeDetails[g].subjects[sub].actual++; gradeDetails[g].subjects[sub].inputters.add("ប្រព័ន្ធអូតូ");
+                                 }
+                            }
+                        }
+                    });
+                });
+            }
+        });
+
+        window.currentGradeDetails = gradeDetails; 
+        Swal.close();
+
+        let html = `
+            <div class="mb-3 text-start bg-light p-3 rounded border">
+                <label class="fw-bold text-primary mb-2"><i class="fa-solid fa-filter me-1"></i> ជ្រើសរើសកម្រិតថ្នាក់៖</label>
+                <select id="detailGradeSelect" class="form-select fw-bold border-primary shadow-sm" onchange="renderDetailedProgressBody()">
+                    ${Object.keys(gradeDetails).map(g => `<option value="${g}">ថ្នាក់ទី ${g}</option>`).join('')}
+                </select>
+            </div>
+            <div id="detailProgressBody" class="text-start" style="max-height: 50vh; overflow-y: auto; overflow-x: hidden;"></div>
+        `;
+
+        Swal.fire({
+            title: '<h5 class="fw-bold text-primary mb-0"><i class="fa-solid fa-list-check me-2"></i> របាយការណ៍លម្អិតតាមមុខវិជ្ជា</h5>',
+            html: html, width: '600px', showCloseButton: true, showConfirmButton: false,
+            didOpen: () => {
+                if(Object.keys(gradeDetails).length > 0) { renderDetailedProgressBody(); } 
+                else { document.getElementById('detailProgressBody').innerHTML = '<div class="alert alert-warning">គ្មានទិន្នន័យសិស្សទេ!</div>'; }
+            }
+        });
+    }
+
+    window.renderDetailedProgressBody = function() {
+        const g = document.getElementById('detailGradeSelect').value;
+        const data = window.currentGradeDetails[g];
+        const container = document.getElementById('detailProgressBody');
+
+        if(!data) { container.innerHTML = ''; return; }
+
+        let html = ''; let totalStds = data.totalStudents;
+        let subs = Object.keys(data.subjects);
+        let activeOrder = JSON.parse(localStorage.getItem('customSubjectOrder')) || defaultSubjectOrder;
+        subs.sort((a, b) => { let idxA = activeOrder.indexOf(a); let idxB = activeOrder.indexOf(b); if (idxA === -1) idxA = 999; if (idxB === -1) idxB = 999; return idxA - idxB; });
+
+        subs.forEach(sub => {
+            let actual = data.subjects[sub].actual;
+            let pct = Math.min(100, Math.round((actual / totalStds) * 100));
+            let colorClass = pct < 50 ? 'bg-danger' : (pct < 100 ? 'bg-warning' : 'bg-success');
+            let inputtersHTML = Array.from(data.subjects[sub].inputters).map(name => `<span class="badge bg-light text-dark border me-1 mb-1 fw-normal shadow-sm">${name}</span>`).join('');
+
+            html += `
+            <div class="card p-3 mb-2 border shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold text-dark" style="font-size: 14px;">${sub}</span>
+                    <span class="badge ${colorClass} px-2 py-1" style="font-size: 12px;">${pct}%</span>
+                </div>
+                <div class="progress mb-3 shadow-sm" style="height: 8px;"><div class="progress-bar progress-bar-striped ${colorClass}" style="width: ${pct}%"></div></div>
+                <div class="d-flex justify-content-between align-items-start">
+                    <span class="small text-muted" style="font-size: 12px;">បញ្ចូលបាន: <b class="text-dark">${actual}/${totalStds}</b> នាក់</span>
+                    <div class="text-end" style="max-width: 65%;">${inputtersHTML || '<span class="small text-muted" style="font-size: 11px;">- មិនទាន់មានទិន្នន័យ -</span>'}</div>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
     }
 
     async function loadAbsenceList() { 
@@ -575,10 +699,8 @@
                 await _sb.from('scores').delete().eq('student_id', stuId).eq('academic_year', y).eq('month_name', m).eq('semester', sem).in('score_value', ['A', 'P']);
             } else {
                 const payload = subs.map(sub => ({
-                    student_id: stuId, subject_name: sub, score_value: val, 
-                    academic_year: y, semester: sem, month_name: m, 
-                    room_number: stuRoom, full_name: stuName, class_name: stuClass, 
-                    input_by: currentUser.full_name
+                    student_id: stuId, subject_name: sub, score_value: val, academic_year: y, semester: sem, month_name: m, 
+                    room_number: stuRoom, full_name: stuName, class_name: stuClass, input_by: currentUser.full_name
                 }));
                 await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
             }
@@ -686,10 +808,17 @@
     
     function exportExcel(id) { 
         let tableClone = document.getElementById(id).cloneNode(true);
+        
+        // ប្រសិនបើ Export តារាងរបាយការណ៍រួម ត្រូវដក Filter ថ្នាក់ចេញសិន ដើម្បី Export ទាំងអស់
+        if(id === 'reportTable') {
+            tableClone.querySelectorAll('.report-row').forEach(row => row.classList.remove('hidden'));
+        }
+
         if(id === 'absHistoryTable') {
             const rows = tableClone.querySelectorAll('tr');
             rows.forEach(row => { if(row.children.length > 0) row.removeChild(row.lastElementChild); });
         }
+        
         const a = document.createElement("a"); 
         a.href = URL.createObjectURL(new Blob(['\ufeff', tableClone.outerHTML], { type: 'application/vnd.ms-excel' })); 
         a.download = `Report_${id}.xls`; 
