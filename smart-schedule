@@ -43,21 +43,41 @@
         .tooltip-wrapper .tooltip-text::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #1e293b transparent transparent transparent; }
         .tooltip-wrapper:hover .tooltip-text { visibility: visible; opacity: 1; }
 
-        /* Print Standard A4 Landscape */
+/* Print Standard A4 Landscape Perfectly */
         @media print {
-            @page { size: A4 landscape; margin: 10mm; }
+            @page { size: A4 landscape; margin: 0; } /* បំបាត់ Margin របស់ Browser */
             body { background: white !important; margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .print-hidden { display: none !important; }
-            .page-break { page-break-after: always; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 20px; }
-            .page-break:last-child { page-break-after: auto; }
-            .print-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-            .print-title { text-align: left; margin-bottom: 10px; }
-            .print-table { width: 100%; border-collapse: collapse !important; border: 2px solid #000 !important; flex-grow: 1; margin-bottom: 20px; background: transparent; }
-            .print-table th, .print-table td { border: 1px solid #000 !important; padding: 6px !important; text-align: center !important; color: #000 !important; font-size: 12px !important; }
-            .print-table th { background-color: #f8fafc !important; font-family: var(--moul) !important; font-size: 14px !important; padding: 10px 6px !important; }
-            .print-table td { height: 50px !important; vertical-align: middle !important; }
-            .print-footer { display: flex; justify-content: space-between; padding: 0 40px; margin-top: auto; }
+            
+            /* ទម្រង់ ១ ទំព័រ A4 */
+            .print-page { 
+                width: 297mm; height: 210mm; /* ទំហំ A4 ផ្ដេក */
+                padding: 12mm 15mm; /* គម្លាតគែមក្រដាស */
+                box-sizing: border-box; 
+                page-break-after: always; 
+                page-break-inside: avoid;
+                display: flex; flex-direction: column; justify-content: space-between;
+                overflow: hidden; 
+            }
+            .print-page:last-child { page-break-after: auto; }
+            
+            .print-header { display: flex; justify-content: space-between; align-items: flex-start; flex-shrink: 0; }
+            .print-title { text-align: left; margin-bottom: 5px; flex-shrink: 0; }
+            
+            /* តារាងត្រូវបានបង្ខំឲ្យរីកពេញចន្លោះកណ្ដាលដែលសល់ */
+            .print-table-wrapper { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; margin: 10px 0; }
+            .print-table { width: 100%; height: 100%; border-collapse: collapse !important; border: 2px solid #000 !important; table-layout: fixed; }
+            .print-table th, .print-table td { border: 1px solid #000 !important; text-align: center !important; color: #000 !important; overflow: hidden; }
+            .print-table th { background-color: #f8fafc !important; font-family: var(--moul) !important; font-size: 13px !important; padding: 4px !important; }
+            .print-table td { font-size: 12px !important; vertical-align: middle !important; padding: 2px !important; }
+            
+            .print-footer { display: flex; justify-content: space-between; padding: 0 40px; flex-shrink: 0; }
             .print-footer-box { text-align: center; width: 250px; }
+            
+            /* Class សម្រាប់អក្សរក្នុងតារាង */
+            .p-subj { font-weight: bold; font-size: 14px; font-family: var(--battambang); margin-bottom: 2px; }
+            .p-subtext { font-size: 11px; color: #333; font-family: var(--battambang); }
+            .p-class { font-weight: bold; font-size: 15px; font-family: var(--battambang); }
         }
     </style>
 </head>
@@ -765,43 +785,84 @@ function renderIndividualView() { document.getElementById('print-canvas').innerH
 function printAll() { const type = document.getElementById('print-type').value; const list = type==='class' ? state.classes.map(c=>c.name) : state.teachers.map(t=>t.id); document.getElementById('print-canvas').innerHTML = list.map(v => `<div class="page-break">${generatePrintHtml(type, v)}</div>`).join(''); setTimeout(() => window.print(), 500); }
 
 function generatePrintHtml(type, val) {
-    const s = state.schoolInfo; let logoHtml = s.logo ? `<img src="${s.logo}" style="height:65px; display:block; margin: 0 auto;">` : ''; let sigHtml = s.signature ? `<img src="${s.signature}" style="height:65px; display:block; margin: 10px auto;">` : '<br><br><br>';
+    const s = state.schoolInfo; 
+    let logoHtml = s.logo ? `<img src="${s.logo}" style="height:55px; display:block; margin: 0 auto;">` : ''; 
+    let sigHtml = s.signature ? `<img src="${s.signature}" style="height:55px; display:block; margin: 5px auto;">` : '<br><br>';
+    
     let subTitle = type==='class' ? `ថ្នាក់ទី៖ <span style="color:red; font-family:Arial, sans-serif;">${val}</span>` : `គ្រូបង្រៀន៖ ${state.teachers.find(t=>t.id===val)?.name}`;
     if(type==='class') { let hrTeacher = state.teachers.find(t => t.homeroomClass === val); if(hrTeacher) subTitle += ` <span style="font-size: 13px; font-family: var(--battambang); font-weight:normal; margin-left: 15px;">(គ្រូបន្ទុកថ្នាក់៖ ${hrTeacher.name})</span>`; }
 
-    let html = `<div class="print-header font-moul text-blue-900 text-[13px]"><div class="text-center w-64 leading-relaxed">${logoHtml}${s.department}<br>${s.schoolName}</div><div class="text-center text-[15px] leading-relaxed">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Ornament_of_Cambodia.svg/512px-Ornament_of_Cambodia.svg.png" style="width:90px; margin: 3px auto;"></div><div class="w-64"></div></div><div class="print-title"><h2 class="font-moul text-[20px] mb-1">កាលវិភាគសិក្សាប្រចាំសប្ដាហ៍</h2><p class="font-bold font-moul text-[15px]">${subTitle}</p><p class="text-[13px] font-bold mt-1">ឆ្នាំសិក្សា ${s.academicYear}</p></div><table class="print-table"><thead><tr><th style="width: 10%;">ម៉ោង</th>${DAYS.map(d => `<th>${d.name}</th>`).join('')}</tr></thead><tbody>`;
-    
-    // Performance: Dictionaries
+    // Dictionaries ជំនួយល្បឿន
     const tMap = {}; state.teachers.forEach(t => tMap[t.id] = t);
     const sMap = {}; state.subjects.forEach(sbj => sMap[sbj.id] = sbj);
 
+    let html = `
+    <div class="print-page">
+        <div class="print-header font-moul text-blue-900 text-[12px]">
+            <div class="text-center w-64 leading-relaxed">${logoHtml}${s.department}<br>${s.schoolName}</div>
+            <div class="text-center text-[14px] leading-relaxed">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Ornament_of_Cambodia.svg/512px-Ornament_of_Cambodia.svg.png" style="width:70px; margin: 2px auto;"></div>
+            <div class="w-64"></div>
+        </div>
+        
+        <div class="print-title">
+            <h2 class="font-moul text-[18px] mb-1">កាលវិភាគសិក្សាប្រចាំសប្ដាហ៍</h2>
+            <p class="font-bold font-moul text-[14px]">${subTitle}</p>
+            <p class="text-[12px] font-bold mt-1">ឆ្នាំសិក្សា ${s.academicYear}</p>
+        </div>
+        
+        <div class="print-table-wrapper">
+            <table class="print-table">
+                <thead>
+                    <tr><th style="width: 10%;">ម៉ោង</th>${DAYS.map(d => `<th>${d.name}</th>`).join('')}</tr>
+                </thead>
+                <tbody>`;
+                
     state.timeSlots.forEach((time, ti) => {
-        if(ti === 5) html += `<tr><td colspan="7" class="font-moul bg-gray-50 text-[13px] py-1">ម៉ោងសម្រាកពេលរសៀល</td></tr>`;
-        html += `<tr><td class="font-moul text-[13px]">${time}</td>`;
+        if(ti === 5) html += `<tr><td colspan="7" class="font-moul bg-gray-50 text-[12px] py-1 !important">ម៉ោងសម្រាកពេលរសៀល</td></tr>`;
+        html += `<tr><td class="font-moul text-[12px]">${time}</td>`;
         DAYS.forEach(d => {
             let cell = '';
             if(type === 'class') { 
                 const aid = state.schedule[`${val}_${d.id}_${ti}`]; 
                 if(aid) { 
                     const ass = state.assignments.find(a=>a.id==aid); 
-                    cell = `<div style="font-weight:bold; font-size:14px; margin-bottom:3px; font-family:var(--battambang);">${sMap[ass?.subjId]?.name}</div><div style="font-size:11px; color:#333; font-family:var(--battambang);">${tMap[ass?.tId]?.name}</div>`; 
+                    cell = `<div class="p-subj">${sMap[ass?.subjId]?.name || ''}</div><div class="p-subtext">${tMap[ass?.tId]?.name || ''}</div>`; 
                 } else if(!isSlotAllowedForClass(val, d.id, ti)) {
-                    cell = `<div style="background:#f1f5f9; width:100%; height:100%;"></div>`;
+                    cell = `<div style="background:#f1f5f9; width:100%; height:100%; min-height: 25px;"></div>`;
                 }
             } else { 
                 state.classes.forEach(clsObj => { 
                     const cls = clsObj.name; const aid = state.schedule[`${cls}_${d.id}_${ti}`]; 
                     const ass = state.assignments.find(a=>a.id==aid); 
-                    if(ass && ass.tId === val) cell = `<div style="font-size:11px; color:#333; margin-bottom:3px; font-family:var(--battambang);">${sMap[ass.subjId]?.name}</div><div style="font-weight:bold; font-size:15px; font-family:var(--battambang);">ថ្នាក់ <span style="color:red; font-family:Arial;">${cls}</span></div>`; 
+                    if(ass && ass.tId === val) cell = `<div class="p-subtext" style="margin-bottom:2px;">${sMap[ass.subjId]?.name || ''}</div><div class="p-class">ថ្នាក់ <span style="color:red; font-family:Arial;">${cls}</span></div>`; 
                 }); 
             }
-            html += `<td style="padding:0 !important;">${cell}</td>`;
-        }); html += `</tr>`;
+            html += `<td>${cell}</td>`;
+        }); 
+        html += `</tr>`;
     });
-    html += `</tbody></table><div class="print-footer"><div class="print-footer-box"><p class="font-moul text-[13px] mb-1">បានឃើញ និងឯកភាព</p><p class="font-moul text-[13px]">នាយកសាលា</p>${sigHtml}<p class="font-moul text-[15px]">${s.principalName}</p></div><div class="print-footer-box"><p class="text-[13px] italic mb-1">ធ្វើនៅ....................., ថ្ងៃទី....... ខែ....... ឆ្នាំ២០២...</p><p class="font-moul text-[13px] mb-12">អ្នករៀបចំកាលវិភាគ</p><p class="font-bold">.........................................</p></div></div>`;
+    
+    html += `
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="print-footer">
+            <div class="print-footer-box">
+                <p class="font-moul text-[12px] mb-1">បានឃើញ និងឯកភាព</p>
+                <p class="font-moul text-[12px]">នាយកសាលា</p>
+                ${sigHtml}
+                <p class="font-moul text-[14px]">${s.principalName}</p>
+            </div>
+            <div class="print-footer-box">
+                <p class="text-[12px] italic mb-1">ធ្វើនៅ....................., ថ្ងៃទី....... ខែ....... ឆ្នាំ២០២...</p>
+                <p class="font-moul text-[12px]" style="margin-bottom: 35px;">អ្នករៀបចំកាលវិភាគ</p>
+                <p class="font-bold">.........................................</p>
+            </div>
+        </div>
+    </div>`;
     return html;
 }
-
 // ==========================================
 // 9. OWNER PANEL
 // ==========================================
