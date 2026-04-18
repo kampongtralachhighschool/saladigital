@@ -336,7 +336,7 @@ function calculateTeacherLoad(t) { let actualHours = 0; for(let key in state.sch
 function renderSettings() {
     document.getElementById('info-dept').value = state.schoolInfo.department; document.getElementById('info-school').value = state.schoolInfo.schoolName; document.getElementById('info-year').value = state.schoolInfo.academicYear; document.getElementById('info-principal').value = state.schoolInfo.principalName; 
     
-    // Render Time Slots Settings (បានកែសម្រួល UI ថ្មីទីនេះ)
+    // Render Time Slots Settings 
     document.getElementById('time-slots-container').innerHTML = state.timeSlots.map((ts, i) => {
         const isExtra = state.extraTimeSlotIndices.includes(i);
         return `
@@ -362,16 +362,37 @@ function renderSettings() {
             <label class="block text-[10px]"><input type="checkbox" onchange="toggleBlockedShift('${d.id}-PM')" ${state.blockedShifts.includes(d.id+'-PM')?'checked':''}> រសៀល</label>
         </div>`).join('');
 
+    // គ្រប់គ្រងបញ្ជីមុខវិជ្ជា
     document.getElementById('subject-manage-list').innerHTML = state.subjects.map(s => `<div class="grid grid-cols-12 gap-2 items-center bg-slate-50 p-1.5 rounded border"><div class="col-span-6"><input value="${s.name}" oninput="updateSubject('${s.id}', 'name', this.value)" class="w-full bg-white border p-1 rounded text-[11px] font-bold"></div><div class="col-span-4"><input value="${s.code}" oninput="updateSubject('${s.id}', 'code', this.value)" class="w-full bg-white border p-1 rounded text-[11px] font-bold text-center text-blue-600 uppercase"></div><div class="col-span-2 text-center"><button onclick="removeSubject('${s.id}')" class="text-red-400 hover:text-red-600 bg-white p-1 rounded border"><i data-lucide="trash" class="w-3 h-3"></i></button></div></div>`).join('');
     
-    document.getElementById('class-manage-list').innerHTML = (state.classes||[]).map(c => `
-    <div class="grid grid-cols-12 gap-2 items-center bg-slate-50 p-1.5 rounded border">
-        <div class="col-span-3"><input value="${c.name}" oninput="updateClassObj('${c.id}', 'name', this.value)" class="w-full bg-white border p-1 rounded text-[11px] font-bold text-red-600 text-center"></div>
-        <div class="col-span-3"><select onchange="updateClassObj('${c.id}', 'type', this.value)" class="w-full bg-white border p-1 rounded text-[11px] font-bold outline-none text-center"><option value="SC" ${c.type==='SC'?'selected':''}>SC</option><option value="SS" ${c.type==='SS'?'selected':''}>SS</option><option value="GEN" ${c.type==='GEN'?'selected':''}>GEN</option></select></div>
-        <div class="col-span-3"><select onchange="updateClassObj('${c.id}', 'shift', this.value)" class="w-full bg-white border p-1 rounded text-[11px] font-bold outline-none"><option value="FULL" ${c.shift==='FULL'?'selected':''}>ពេញម៉ោង</option><option value="MORNING" ${c.shift==='MORNING'?'selected':''}>វេនព្រឹក</option><option value="AFTERNOON" ${c.shift==='AFTERNOON'?'selected':''}>វេនរសៀល</option></select></div>
-        <div class="col-span-2 text-center"><input type="checkbox" onchange="updateClassObj('${c.id}', 'isExtra', this.checked)" ${c.isExtra ? 'checked' : ''}></div>
-        <div class="col-span-1 text-center"><button onclick="removeClassObj('${c.id}')" class="text-red-400 hover:text-red-600 bg-white p-1 rounded border"><i data-lucide="trash" class="w-3 h-3"></i></button></div>
-    </div>`).join('');
+    // គ្រប់គ្រងបញ្ជីថ្នាក់រៀន (បានបន្ថែមប៊ូតុង Excel និង Import នៅទីនេះ)
+    const classUI = `
+        <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <h3 class="font-bold text-blue-900">គ្រប់គ្រងថ្នាក់រៀន</h3>
+            <div class="flex gap-2">
+                <button onclick="exportClassesExcel()" class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-sm flex items-center gap-1"><i data-lucide="download" class="w-3 h-3"></i> គំរូ Excel</button>
+                <label class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-sm cursor-pointer flex items-center gap-1"><i data-lucide="upload" class="w-3 h-3"></i> Import<input type="file" class="hidden" accept=".xlsx, .xls" onchange="importClassesExcel(event)"></label>
+                <button onclick="addClassBlank()" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-sm">+ ថ្នាក់ថ្មី</button>
+            </div>
+        </div>
+        <div class="grid grid-cols-12 gap-2 text-[10px] font-bold text-slate-400 uppercase mb-2 px-2">
+            <div class="col-span-3">ឈ្មោះ</div><div class="col-span-3">ប្រភេទ</div><div class="col-span-3">វេនរៀន</div><div class="col-span-2 text-center" title="គូសធីកបើថ្នាក់នេះអនុញ្ញាតរៀនម៉ោងពិសេស">ម៉ោងពិសេស</div><div class="col-span-1 text-center">លុប</div>
+        </div>
+        <div class="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+            ${(state.classes||[]).map(c => `
+            <div class="grid grid-cols-12 gap-2 items-center bg-slate-50 p-1.5 rounded border">
+                <div class="col-span-3"><input value="${c.name}" oninput="updateClassObj('${c.id}', 'name', this.value)" class="w-full bg-white border p-1 rounded text-[11px] font-bold text-red-600 text-center"></div>
+                <div class="col-span-3"><select onchange="updateClassObj('${c.id}', 'type', this.value)" class="w-full bg-white border p-1 rounded text-[11px] font-bold outline-none text-center"><option value="SC" ${c.type==='SC'?'selected':''}>SC</option><option value="SS" ${c.type==='SS'?'selected':''}>SS</option><option value="GEN" ${c.type==='GEN'?'selected':''}>GEN</option></select></div>
+                <div class="col-span-3"><select onchange="updateClassObj('${c.id}', 'shift', this.value)" class="w-full bg-white border p-1 rounded text-[11px] font-bold outline-none"><option value="FULL" ${c.shift==='FULL'?'selected':''}>ពេញម៉ោង</option><option value="MORNING" ${c.shift==='MORNING'?'selected':''}>វេនព្រឹក</option><option value="AFTERNOON" ${c.shift==='AFTERNOON'?'selected':''}>វេនរសៀល</option></select></div>
+                <div class="col-span-2 text-center"><input type="checkbox" onchange="updateClassObj('${c.id}', 'isExtra', this.checked)" ${c.isExtra ? 'checked' : ''} class="w-4 h-4 text-blue-600 rounded cursor-pointer"></div>
+                <div class="col-span-1 text-center"><button onclick="removeClassObj('${c.id}')" class="text-red-400 hover:text-red-600 bg-white p-1 rounded border"><i data-lucide="trash" class="w-3 h-3"></i></button></div>
+            </div>`).join('')}
+        </div>
+    `;
+    
+    // Replace the HTML element with id="class-manage-list" parent
+    const classContainer = document.getElementById('class-manage-list').parentElement;
+    classContainer.innerHTML = classUI;
     
     if(state.schoolInfo.logo) { document.getElementById('preview-logo').src = state.schoolInfo.logo; document.getElementById('preview-logo').classList.remove('hidden'); }
     if(state.schoolInfo.signature) { document.getElementById('preview-signature').src = state.schoolInfo.signature; document.getElementById('preview-signature').classList.remove('hidden'); }
@@ -384,11 +405,58 @@ function toggleBlockedShift(key) { if(state.blockedShifts.includes(key)) state.b
 function uploadImage(e, type) { const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload = (ev) => { state.schoolInfo[type] = ev.target.result; saveData(); renderSettings(); }; r.readAsDataURL(f); } }
 function addClassBlank() { state.classes.push({ id:'C'+Date.now(), name:'ថ្មី', type:'GEN', shift:'FULL', isExtra:false }); saveData(); renderSettings(); } function updateClassObj(id, key, val) { let c = state.classes.find(x => x.id === id); if(c) { c[key] = val; saveData(); } } function removeClassObj(id) { const cls = state.classes.find(x => x.id === id); if(cls) { state.classes = state.classes.filter(c => c.id !== id); state.assignments = state.assignments.filter(a => a.className !== cls.name); for(let k in state.schedule) { if(k.startsWith(cls.name+'_')) delete state.schedule[k]; } saveData(); renderSettings(); } }
 function exportClassesExcel() { 
-    // Not implemented for brevity, can remain as previous version or simply disable export for classes
-    Swal.fire('Info', 'ចំណុចនេះមិនទាន់អាប់ដេត Excel Export ទេ។ សូមវាយបញ្ចូលផ្ទាល់។', 'info'); 
+    let data = state.classes.map(c => { 
+        let tName = c.type === 'SC' ? 'SC' : c.type === 'SS' ? 'SS' : 'GEN'; 
+        let shiftName = c.shift === 'MORNING' ? 'ព្រឹក' : c.shift === 'AFTERNOON' ? 'រសៀល' : 'ពេញម៉ោង';
+        return { 
+            'ឈ្មោះថ្នាក់': c.name, 
+            'ប្រភេទ (SC/SS/GEN)': tName, 
+            'វេនរៀន (ព្រឹក/រសៀល/ពេញម៉ោង)': shiftName, 
+            'ម៉ោងពិសេស (Ex: M-6)': c.extraSlots || '',
+            'អនុញ្ញាតម៉ោងពិសេស (បាទ/ទេ)': c.isExtra ? 'បាទ' : 'ទេ'
+        }; 
+    }); 
+    if(data.length === 0) data.push({'ឈ្មោះថ្នាក់':'12A', 'ប្រភេទ (SC/SS/GEN)':'SC', 'វេនរៀន (ព្រឹក/រសៀល/ពេញម៉ោង)':'ព្រឹក', 'ម៉ោងពិសេស (Ex: M-6)':'M-6', 'អនុញ្ញាតម៉ោងពិសេស (បាទ/ទេ)':'បាទ'}); 
+    
+    const ws = XLSX.utils.json_to_sheet(data); 
+    ws['!cols'] = [{wch: 15}, {wch: 20}, {wch: 30}, {wch: 20}, {wch: 30}]; 
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Classes"); XLSX.writeFile(wb, "Classes_Template.xlsx"); 
 }
+
 function importClassesExcel(e) { 
-     Swal.fire('Info', 'ចំណុចនេះមិនទាន់អាប់ដេត Excel Import ទេ។ សូមវាយបញ្ចូលផ្ទាល់។', 'info'); e.target.value = ''; 
+    const file = e.target.files[0]; if(!file) return; const r = new FileReader(); 
+    r.onload = function(evt) { 
+        try { 
+            const rows = XLSX.utils.sheet_to_json(XLSX.read(evt.target.result, {type: 'binary'}).Sheets[XLSX.read(evt.target.result, {type: 'binary'}).SheetNames[0]]); 
+            let c = 0; let errors = []; 
+            rows.forEach((r, idx) => { 
+                const name = r['ឈ្មោះថ្នាក់']?.toString().trim(); 
+                const typeRaw = r['ប្រភេទ (SC/SS/GEN)']?.toString().toUpperCase() || 'GEN'; 
+                const shiftRaw = r['វេនរៀន (ព្រឹក/រសៀល/ពេញម៉ោង)']?.toString() || ''; 
+                const extraRaw = r['ម៉ោងពិសេស (Ex: M-6)']?.toString().trim() || ''; 
+                const isExtraRaw = r['អនុញ្ញាតម៉ោងពិសេស (បាទ/ទេ)']?.toString().trim() || ''; 
+
+                if(name) { 
+                    let typeCode = 'GEN'; if(typeRaw.includes('SC')) typeCode = 'SC'; else if(typeRaw.includes('SS')) typeCode = 'SS'; 
+                    let shiftCode = 'FULL'; if(shiftRaw.includes('ព្រឹក') || shiftRaw.toUpperCase()==='MORNING') shiftCode = 'MORNING'; else if (shiftRaw.includes('រសៀល') || shiftRaw.toUpperCase()==='AFTERNOON') shiftCode = 'AFTERNOON'; 
+                    let isExtra = (isExtraRaw === 'បាទ' || isExtraRaw.toUpperCase() === 'YES');
+
+                    // Update ប្រសិនបើមានឈ្មោះថ្នាក់នោះហើយ Add ថ្មីបើអត់មាន
+                    let existing = state.classes.find(cl => cl.name === name);
+                    if(existing) {
+                        existing.type = typeCode; existing.shift = shiftCode; existing.extraSlots = extraRaw; existing.isExtra = isExtra;
+                    } else {
+                        state.classes.push({ id:'C'+Date.now()+idx, name: name, type: typeCode, shift: shiftCode, extraSlots: extraRaw, isExtra: isExtra }); 
+                    }
+                    c++; 
+                } else { 
+                    errors.push({ 'Row': idx+2, 'Error': 'ឈ្មោះថ្នាក់ទទេ', 'Description': 'សូមបំពេញឈ្មោះថ្នាក់' }); 
+                } 
+            }); 
+            if(c>0) { saveData(); renderSettings(); debouncedApplyMasterFilters(); Swal.fire('ជោគជ័យ', `បញ្ចូល និងកែប្រែបាន ${c} ថ្នាក់`, 'success'); } 
+            if(errors.length>0) downloadErrorReport(errors, "Classes_Error_Report.xlsx"); 
+        } catch(err) { Swal.fire('បរាជ័យ', 'មានបញ្ហា File', 'error'); } 
+    }; r.readAsBinaryString(file); e.target.value = ''; 
 }
 function addSubjectBlank() { state.subjects.push({ id:'S'+Date.now(), name:'ថ្មី', code:'NEW', color:`hsl(${Math.random()*360}, 70%, 45%)` }); saveData(); renderSettings(); } function updateSubject(id, key, val) { let s = state.subjects.find(x => x.id === id); if(s) { s[key] = val; saveData(); } } function removeSubject(id) { state.subjects = state.subjects.filter(s => s.id !== id); state.teachers.forEach(t => { if(t.teacherSubjectCodes) t.teacherSubjectCodes = t.teacherSubjectCodes.filter(sc => sc.split('-')[0] !== id); }); saveData(); renderSettings(); }
 
@@ -404,7 +472,45 @@ function importRulesExcel(e) { const file = e.target.files[0]; if(!file) return;
 // ==========================================
 // 5. TEACHERS TAB
 // ==========================================
-function renderTeachersTab() { const searchTerm = (document.getElementById('search-teacher')?.value || '').toLowerCase(); const filteredTeachers = state.teachers.filter(t => t.name.toLowerCase().includes(searchTerm) || (t.teacherSubjectCodes && t.teacherSubjectCodes.join(' ').toLowerCase().includes(searchTerm))); document.getElementById('teacher-manage-list').innerHTML = filteredTeachers.map(t => { const tCodesDisplay = (t.teacherSubjectCodes || []).map(tcode => { const baseCodeId = tcode.split('-')[0]; const uniqueStr = tcode.split('-')[1]; const baseSubj = state.subjects.find(s=>s.id===baseCodeId); return `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold border border-blue-200">${baseSubj?.code}${uniqueStr}</span>`; }).join(' '); const clsOptions = `<option value="">(គ្មាន)</option>` + state.classes.map(c => `<option value="${c.name}" ${t.homeroomClass===c.name?'selected':''}>${c.name}</option>`).join(''); return `<div class="bg-slate-50 p-4 rounded-2xl border space-y-3"><div class="flex justify-between items-start"><input value="${t.name}" oninput="updateTeacher('${t.id}', 'name', this.value)" class="font-bold text-sm text-blue-900 bg-transparent border-b border-slate-300 outline-none w-2/3"><button onclick="removeTeacher('${t.id}')" class="text-red-400 hover:text-red-600 bg-white p-1.5 rounded shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div><div><span class="text-[9px] font-bold text-slate-500 uppercase">កូដមុខវិជ្ជាគ្រូ:</span><div class="flex flex-wrap gap-1 mt-1">${tCodesDisplay || '<span class="text-[9px] text-slate-400">សូម Import ពី Excel</span>'}</div></div><div><span class="text-[9px] font-bold text-slate-500 uppercase">ថ្ងៃបង្រៀន:</span><div class="flex flex-wrap gap-1 mt-1">${DAYS.map(d => `<button onclick="toggleDay('${t.id}', '${d.id}')" class="px-1.5 py-1 rounded text-[9px] font-bold ${t.availableDays.includes(d.id)?'bg-blue-600 text-white':'bg-white border text-slate-400'}">${d.name}</button>`).join('')}</div></div><div class="bg-white border rounded p-2 flex justify-between items-center gap-2"><div class="flex-1"><label class="text-[10px] font-bold text-slate-500 block">បន្ទុកថ្នាក់:</label><select onchange="updateTeacher('${t.id}', 'homeroomClass', this.value)" class="w-full text-[11px] p-1 border rounded text-red-600 font-bold outline-none">${clsOptions}</select></div><div class="w-16"><label class="text-[10px] font-bold text-slate-500 block">កាតព្វកិច្ច:</label><input type="number" value="${t.dutyHours || 18}" oninput="updateTeacher('${t.id}', 'dutyHours', this.value)" class="w-full border rounded p-1 text-center text-xs font-bold text-blue-600 outline-none"></div></div></div>` }).join(''); lucide.createIcons(); }
+function renderTeachersTab() { 
+    const searchTerm = (document.getElementById('search-teacher')?.value || '').toLowerCase(); 
+    const filteredTeachers = state.teachers.filter(t => t.name.toLowerCase().includes(searchTerm) || (t.teacherSubjectCodes && t.teacherSubjectCodes.join(' ').toLowerCase().includes(searchTerm))); 
+    
+    document.getElementById('teacher-manage-list').innerHTML = filteredTeachers.map(t => { 
+        const tCodesDisplay = (t.teacherSubjectCodes || []).map(tcode => { const baseCodeId = tcode.split('-')[0]; const uniqueStr = tcode.split('-')[1]; const baseSubj = state.subjects.find(s=>s.id===baseCodeId); return `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold border border-blue-200">${baseSubj?.code}${uniqueStr}</span>`; }).join(' '); 
+        const clsOptions = `<option value="">(គ្មាន)</option>` + state.classes.map(c => `<option value="${c.name}" ${t.homeroomClass===c.name?'selected':''}>${c.name}</option>`).join(''); 
+        
+        // មុខងារចាក់សោរ (Lock Logic)
+        const isLocked = t.isLocked ? true : false;
+        const lockIcon = isLocked ? `<i data-lucide="lock" class="w-4 h-4 text-red-600"></i>` : `<i data-lucide="unlock" class="w-4 h-4 text-green-600"></i>`;
+        const lockBg = isLocked ? 'bg-red-100 border-red-300' : 'bg-green-100 border-green-300';
+        const lockText = isLocked ? 'ចាក់សោររួច' : 'បើកសេរី';
+
+        return `
+        <div class="bg-slate-50 p-4 rounded-2xl border space-y-3 relative ${isLocked ? 'ring-2 ring-red-200' : ''}">
+            <div class="flex justify-between items-start">
+                <input value="${t.name}" oninput="updateTeacher('${t.id}', 'name', this.value)" class="font-bold text-sm text-blue-900 bg-transparent border-b border-slate-300 outline-none w-1/2">
+                <div class="flex gap-1">
+                    <button onclick="toggleTeacherLock('${t.id}')" class="${lockBg} flex items-center gap-1 px-2 py-1 rounded shadow-sm border text-[9px] font-bold transition-all" title="ចាក់សោរមិនឲ្យ AI កែប្រែម៉ោងគ្រូនេះ">${lockIcon} ${lockText}</button>
+                    <button onclick="removeTeacher('${t.id}')" class="text-red-400 hover:text-red-600 bg-white p-1.5 rounded shadow-sm border"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+            <div><span class="text-[9px] font-bold text-slate-500 uppercase">កូដមុខវិជ្ជាគ្រូ:</span><div class="flex flex-wrap gap-1 mt-1">${tCodesDisplay || '<span class="text-[9px] text-slate-400">សូម Import ពី Excel</span>'}</div></div>
+            <div><span class="text-[9px] font-bold text-slate-500 uppercase">ថ្ងៃបង្រៀន:</span><div class="flex flex-wrap gap-1 mt-1">${DAYS.map(d => `<button onclick="toggleDay('${t.id}', '${d.id}')" class="px-1.5 py-1 rounded text-[9px] font-bold ${t.availableDays.includes(d.id)?'bg-blue-600 text-white':'bg-white border text-slate-400'}">${d.name}</button>`).join('')}</div></div>
+            <div class="bg-white border rounded p-2 flex justify-between items-center gap-2">
+                <div class="flex-1"><label class="text-[10px] font-bold text-slate-500 block">បន្ទុកថ្នាក់:</label><select onchange="updateTeacher('${t.id}', 'homeroomClass', this.value)" class="w-full text-[11px] p-1 border rounded text-red-600 font-bold outline-none">${clsOptions}</select></div>
+                <div class="w-16"><label class="text-[10px] font-bold text-slate-500 block">កាតព្វកិច្ច:</label><input type="number" value="${t.dutyHours || 18}" oninput="updateTeacher('${t.id}', 'dutyHours', this.value)" class="w-full border rounded p-1 text-center text-xs font-bold text-blue-600 outline-none"></div>
+            </div>
+        </div>` 
+    }).join(''); 
+    lucide.createIcons(); 
+}
+
+// បន្ថែម Function នេះពីក្រោមវា
+function toggleTeacherLock(tid) {
+    let t = state.teachers.find(x => x.id === tid);
+    if(t) { t.isLocked = !t.isLocked; saveData(); renderTeachersTab(); }
+}
 function updateTeacher(id, k, v) { let t = state.teachers.find(x=>x.id===id); t[k]=v; saveData(); } function addTeacherBlank() { state.teachers.unshift({ id:'T'+Date.now(), name:'គ្រូថ្មី', availableDays: DAYS.map(d=>d.id), teacherSubjectCodes: [], dutyHours: 18, homeroomClass: '' }); saveData(); renderTeachersTab(); } function removeTeacher(id) { state.teachers = state.teachers.filter(t=>t.id!==id); state.assignments = state.assignments.filter(a=>a.tId!==id); for(let k in state.schedule) if(!state.assignments.find(a=>a.id == state.schedule[k])) delete state.schedule[k]; saveData(); renderTeachersTab(); renderAssignments(); } function toggleDay(tid, did) { let t = state.teachers.find(x=>x.id===tid); if(t.availableDays.includes(did)) t.availableDays = t.availableDays.filter(d=>d!==did); else t.availableDays.push(did); saveData(); renderTeachersTab(); }
 function exportTeachersExcel() { const data = state.teachers.length ? state.teachers.map(t => { const friendlyCodes = (t.teacherSubjectCodes || []).map(tcode => { const baseCodeId = tcode.split('-')[0]; const uniqueStr = tcode.split('-')[1]; const baseSubj = state.subjects.find(s=>s.id===baseCodeId); return `${baseSubj?.code || ''}${uniqueStr}`; }).join(', '); return { 'ឈ្មោះគ្រូ': t.name, 'អក្សរកាត់មុខវិជ្ជា': friendlyCodes, 'ថ្ងៃបង្រៀន': t.availableDays.join(', '), 'ថ្នាក់បន្ទុក (Homeroom)': t.homeroomClass || '', 'ម៉ោងកាតព្វកិច្ច': t.dutyHours || 18 }; }) : [{ 'ឈ្មោះគ្រូ': 'ឧទាហរណ៍៖ កង ទិត្យ', 'អក្សរកាត់មុខវិជ្ជា': 'K2, H2', 'ថ្ងៃបង្រៀន': 'M, T, W, Th, F', 'ថ្នាក់បន្ទុក (Homeroom)': '10A', 'ម៉ោងកាតព្វកិច្ច': 13 }]; const ws = XLSX.utils.json_to_sheet(data); ws['!cols'] = [{wch: 25}, {wch: 25}, {wch: 20}, {wch: 20}, {wch: 15}]; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Teachers"); XLSX.writeFile(wb, "Teachers_Data.xlsx"); }
 function importTeachersExcel(e) { const file = e.target.files[0]; if(!file) return; const r = new FileReader(); r.onload = function(evt) { try { const rows = XLSX.utils.sheet_to_json(XLSX.read(evt.target.result, {type: 'binary'}).Sheets[XLSX.read(evt.target.result, {type: 'binary'}).SheetNames[0]]); let c = 0; let errors = []; rows.forEach((r, idx) => { const tName = r['ឈ្មោះគ្រូ']; if(tName && !tName.includes('ឧទាហរណ៍')) { let teacherCodes = []; if(r['អក្សរកាត់មុខវិជ្ជា']) { r['អក្សរកាត់មុខវិជ្ជា'].toString().split(',').map(s=>s.trim().toUpperCase()).forEach(sc => { const match = sc.match(/^([A-Z]+)(\d*)$/); if(match) { const baseCode = match[1]; const uniqueStr = match[2]; const foundBase = state.subjects.find(s=>s.code.toUpperCase() === baseCode); if(foundBase) teacherCodes.push(`${foundBase.id}-${uniqueStr}`); else errors.push({'Row': idx+2, 'Error': 'កូដខុស', 'Description': `កូដ '${baseCode}' អត់មានទេ`}); } else errors.push({'Row': idx+2, 'Error': 'ទម្រង់កូដខុស', 'Description': `កូដ '${sc}' មិនត្រូវទម្រង់`}); }); } let dIds = []; if(r['ថ្ងៃបង្រៀន']) { r['ថ្ងៃបង្រៀន'].toString().split(',').map(d=>d.trim()).forEach(dn => { let found = DAYS.find(d=>d.id.toUpperCase() === dn.toUpperCase()); if(!found) found = DAYS.find(d=>d.name === dn); if(found) dIds.push(found.id); }); } if(dIds.length === 0) dIds = DAYS.map(d=>d.id); let tObj = state.teachers.find(t=>t.name === tName.trim()); if(!tObj) { tObj = { id:'T'+Date.now()+idx, name: tName.trim() }; state.teachers.push(tObj); } tObj.teacherSubjectCodes = teacherCodes; tObj.availableDays = dIds; tObj.dutyHours = parseInt(r['ម៉ោងកាតព្វកិច្ច']) || 18; const hrClass = r['ថ្នាក់បន្ទុក (Homeroom)']?.toString().trim(); if(hrClass && state.classes.find(c => c.name === hrClass)) tObj.homeroomClass = hrClass; else if(hrClass) errors.push({'Row': idx+2, 'Error': 'រកថ្នាក់មិនឃើញ', 'Description': `ថ្នាក់បន្ទុក '${hrClass}' អត់មានក្នុងបញ្ជីថ្នាក់ទេ`}); c++; } }); if(c>0) { saveData(); renderTeachersTab(); renderAssignments(); Swal.fire('ជោគជ័យ', `បញ្ចូលបាន ${c} នាក់`, 'success'); } if(errors.length>0) downloadErrorReport(errors, "Teachers_Error_Report.xlsx"); } catch(err) { Swal.fire('បរាជ័យ', 'មានបញ្ហា File', 'error'); } }; r.readAsBinaryString(file); e.target.value = ''; }
@@ -645,7 +751,20 @@ function handleDrop(e, tkey) {
 }
 document.addEventListener('dragend', () => { document.querySelectorAll('.valid-drop, .drag-over, .invalid-drop').forEach(el=>el.classList.remove('valid-drop','drag-over','invalid-drop')); dragData = null; });
 
-function clearSchedule() { Swal.fire({ title:'ជម្រះតារាង?', text:'កាលវិភាគនឹងត្រូវលុបចោលទាំងអស់ ធ្លាក់ចូលប្រអប់រង់ចាំវិញ!', icon:'warning', showCancelButton:true, confirmButtonColor:'#d33' }).then(res => { if(res.isConfirmed) { state.schedule = {}; saveData(); renderMasterGrid(); } }); }
+function clearSchedule() { 
+    Swal.fire({ title:'ជម្រះតារាង?', text:'កាលវិភាគនឹងត្រូវលុបចោល (លើកលែងម៉ោងគ្រូដែលចាក់សោរ 🔒 នឹងរក្សាទុកដដែល)!', icon:'warning', showCancelButton:true, confirmButtonColor:'#d33' }).then(res => { 
+        if(res.isConfirmed) { 
+            let newSch = {};
+            // រក្សាទុកម៉ោងគ្រូដែល Lock
+            for(let k in state.schedule) {
+                const aid = state.schedule[k]; const ass = state.assignments.find(a=>a.id == aid);
+                const t = ass ? state.teachers.find(x=>x.id===ass.tId) : null;
+                if(t && t.isLocked) newSch[k] = aid; 
+            }
+            state.schedule = newSch; saveData(); renderMasterGrid(); 
+        } 
+    }); 
+}
 
 function resolveConflicts() {
     let resolved = false;
@@ -663,72 +782,78 @@ function resolveConflicts() {
 }
 
 function generateAutoSchedule() {
-    Swal.fire({ title:'រៀបអូតូ (AI Smart)', text:'កាលវិភាគចាស់នឹងត្រូវលុបចោល តើអ្នកយល់ព្រមទេ?', icon:'warning', showCancelButton:true }).then(res => {
+    Swal.fire({ title:'រៀបអូតូ (AI Smart)', text:'ម៉ោងចាស់នឹងត្រូវលុប (លើកលែងគ្រូដែលចាក់សោរ 🔒 នឹងមិនត្រូវប៉ះពាល់ទេ) តើអ្នកយល់ព្រមទេ?', icon:'warning', showCancelButton:true }).then(res => {
         if(res.isConfirmed) {
             let ns = {}; 
+            let lockedAssIds = new Set();
             
+            // ជំហានទី១៖ រក្សាទុកម៉ោងគ្រូដែលចាក់សោរ
+            for(let key in state.schedule) {
+                const aid = state.schedule[key]; const ass = state.assignments.find(a => a.id == aid);
+                if(ass) {
+                    const t = state.teachers.find(x => x.id === ass.tId);
+                    if(t && t.isLocked) {
+                        ns[key] = aid; // Save to new schedule
+                        if(!lockedAssIds.has(aid)) lockedAssIds.add(aid);
+                    }
+                }
+            }
+
             function getFlexibility(ass) {
-                const t = state.teachers.find(x => x.id === ass.tId);
-                return t ? t.availableDays.length : 6;
+                const t = state.teachers.find(x => x.id === ass.tId); return t ? t.availableDays.length : 6;
             }
 
             let blocksToPlace = [];
             state.assignments.forEach(ass => {
-                for(let i=0; i<ass.hours; i++) blocksToPlace.push(ass);
+                const t = state.teachers.find(x => x.id === ass.tId);
+                if (t && !t.isLocked) {
+                    // បើអត់ Lock គឺរៀបជាធម្មតា
+                    for(let i=0; i<ass.hours; i++) blocksToPlace.push(ass);
+                } else if (t && t.isLocked) {
+                    // បើ Lock តែម៉ោងបង្រៀនធ្លាក់ប្រអប់រង់ចាំ ត្រូវទាញរៀបម៉ោងដែលសល់បន្ត
+                    let placedCount = 0;
+                    for(let k in ns) { if(ns[k] === ass.id) placedCount++; }
+                    let remaining = ass.hours - placedCount;
+                    for(let i=0; i<remaining; i++) blocksToPlace.push(ass);
+                }
             });
 
             blocksToPlace.sort((a, b) => {
-                let flexA = getFlexibility(a);
-                let flexB = getFlexibility(b);
-                if (flexA !== flexB) return flexA - flexB;
-                return b.hours - a.hours;
+                let flexA = getFlexibility(a); let flexB = getFlexibility(b);
+                if (flexA !== flexB) return flexA - flexB; return b.hours - a.hours;
             });
 
-            let retryLimit = blocksToPlace.length * 3; 
-            let loops = 0;
+            let retryLimit = blocksToPlace.length * 3; let loops = 0;
 
             while(blocksToPlace.length > 0 && loops < retryLimit) {
-                loops++;
-                let ass = blocksToPlace.shift();
-                const t = state.teachers.find(x=>x.id===ass.tId);
-                let placed = false;
-                
-                let shuffledDays = [...t.availableDays].sort(()=>Math.random()-0.5);
+                loops++; let ass = blocksToPlace.shift(); const t = state.teachers.find(x=>x.id===ass.tId);
+                let placed = false; let shuffledDays = [...t.availableDays].sort(()=>Math.random()-0.5);
 
                 for(let day of shuffledDays) {
                     if (placed) break;
-
                     let countToday = 0;
-                    for(let i=0; i<state.timeSlots.length; i++) {
-                        if(ns[`${ass.className}_${day}_${i}`] === ass.id) countToday++;
-                    }
+                    for(let i=0; i<state.timeSlots.length; i++) { if(ns[`${ass.className}_${day}_${i}`] === ass.id) countToday++; }
                     if (countToday >= ass.maxPerDay) continue; 
 
                     for(let i=0; i<state.timeSlots.length; i++) {
                         if (!isSlotAllowedForClass(ass.className, day, i)) continue;
 
                         const key = `${ass.className}_${day}_${i}`;
-                        
                         let teacherBusy = false; 
-                        for(let k in ns) {
-                            if(k.includes(`_${day}_${i}`) && state.assignments.find(x=>x.id===ns[k])?.tId === t.id) {
-                                teacherBusy = true; break;
-                            }
-                        }
+                        for(let k in ns) { if(k.includes(`_${day}_${i}`) && state.assignments.find(x=>x.id===ns[k])?.tId === t.id) { teacherBusy = true; break; } }
                         if(teacherBusy) continue; 
 
                         if (!ns[key]) {
-                            ns[key] = ass.id;
-                            placed = true;
-                            break;
+                            ns[key] = ass.id; placed = true; break;
                         } else {
                             let occupyingAss = state.assignments.find(x => x.id === ns[key]);
                             if (occupyingAss) {
+                                const occTeacher = state.teachers.find(x => x.id === occupyingAss.tId);
+                                // ចំណុចសំខាន់៖ ហាមទាត់ម៉ោងគ្រូដែលចាក់សោរ (Locked)
+                                if (occTeacher && occTeacher.isLocked) continue; 
+
                                 if (getFlexibility(occupyingAss) > getFlexibility(ass)) {
-                                    blocksToPlace.push(occupyingAss);
-                                    ns[key] = ass.id;
-                                    placed = true;
-                                    break;
+                                    blocksToPlace.push(occupyingAss); ns[key] = ass.id; placed = true; break;
                                 }
                             }
                         }
@@ -736,19 +861,12 @@ function generateAutoSchedule() {
                 }
             } 
             
-            state.schedule = ns; 
-            saveData(); 
-            renderMasterGrid();
-            
-            if(blocksToPlace.length > 0) {
-                Swal.fire('ចំណាំ', `មាន ${blocksToPlace.length} ម៉ោងរៀបមិនចូលដោយស្វ័យប្រវត្តិ។ សូមពិនិត្យប្រអប់ "រង់ចាំ" និងអូសទម្លាក់ដោយដៃ។`, 'info');
-            } else {
-                Swal.fire('ជោគជ័យ', 'រៀបកាលវិភាគស្វ័យប្រវត្តិរួចរាល់', 'success');
-            }
+            state.schedule = ns; saveData(); renderMasterGrid();
+            if(blocksToPlace.length > 0) Swal.fire('ចំណាំ', `មាន ${blocksToPlace.length} ម៉ោងរៀបមិនចូល។ អាចមកពីជាន់ម៉ោងគ្រូដែលបាន Lock។ សូមពិនិត្យប្រអប់ "រង់ចាំ"។`, 'info');
+            else Swal.fire('ជោគជ័យ', 'រៀបកាលវិភាគស្វ័យប្រវត្តិរួចរាល់', 'success');
         }
     });
 }
-
 function exportMasterExcel() {
     let aoa = [ ['ម៉ោងសរុប', 'ល.រ', 'ថ្នាក់', 'គ្រូបន្ទុកថ្នាក់'] ]; let row2 = ['', '', '', '']; DAYS.forEach(d => { state.timeSlots.forEach((ts, i) => { if(i===0) aoa[0].push(d.name); else aoa[0].push(''); row2.push(ts); }); }); aoa.push(row2);
     state.classes.forEach((clsObj, idx) => { 
