@@ -249,7 +249,7 @@
     let currentUser = null, allStudentsCache = [];
     let saveTimeout = null; 
     let hasUnsavedChanges = false; 
-    let isSystemLocked = false; // System lock variable
+    let isSystemLocked = false; 
 
     const defaultSubjectOrder = [
         "ភាសាខ្មែរ", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", 
@@ -285,7 +285,6 @@
         return results;
     }
 
-    // --- LOCK SYSTEM FUNCTIONS ---
     async function getLockStatus() {
         const { data } = await _sb.from('subject_configs').select('*').eq('subject_name', 'SYSTEM_SETTINGS').eq('class_name', 'LOCKED').maybeSingle();
         isSystemLocked = (data && data.max_score === 1);
@@ -320,7 +319,6 @@
             btn.classList.replace('btn-danger', 'btn-outline-danger');
         }
     }
-    // -----------------------------
 
     async function handleLogin() {
         const { data, error } = await _sb.auth.signInWithPassword({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPass').value });
@@ -339,7 +337,7 @@
         const { data: lastSt } = await _sb.from('students').select('academic_year, semester, month_name').order('created_at', {ascending: false}).limit(1).maybeSingle();
         if(lastSt) { document.getElementById('gYear').value = lastSt.academic_year; document.getElementById('gSemester').value = lastSt.semester; document.getElementById('gMonth').value = lastSt.month_name; }
         
-        await getLockStatus(); // Check lock status when login
+        await getLockStatus(); 
         await refreshData(); 
         updateMotivation();
     }
@@ -392,17 +390,11 @@
             let rowBgClass = (gradeNum >= 7 && gradeNum <= 12) ? `bg-grade-${gradeNum}` : '';
 
             const max = cfgs.find(c => String(c.class_name).trim() === classStr)?.max_score || 100;
-            
-            // ស្វែងរកមុខវិជ្ជាជាក់លាក់
             let mySc = scores.find(x => String(x.student_id).trim() === String(s.student_id).trim() && String(x.subject_name).trim() === String(sub).trim())?.score_value || '';
-            
-            // ស្វែងរកមើលថាតើសិស្សនេះត្រូវបាន Owner ដាក់អវត្តមាន A/P ក្នុងខែនេះដែរឬទេ ទោះនៅមុខវិជ្ជាណាក៏ដោយ
             const absRecord = scores.find(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value === 'A' || x.score_value === 'P'));
             const isAbs = !!absRecord;
             
-            // បើអវត្តមាន បង្ខំឱ្យបង្ហាញអក្សរ A តែម្តង កុំឱ្យចេញតែក្រហម
             if (isAbs) { mySc = absRecord.score_value; }
-            
             let disabledClass = isAbs ? 'absent-disabled' : '';
             let inputDisabled = (isAbs || isSystemLocked) ? 'disabled' : '';
             
@@ -418,13 +410,13 @@
             </tr>`;
         }).join('');
         
-        document.getElementById('saveScoreBtn').disabled = isSystemLocked; // បិទប៊ូតុង Save ពេល Locked
+        document.getElementById('saveScoreBtn').disabled = isSystemLocked; 
         setupSmartPaste('.score-input'); 
         updateMaxLabel();
     }
 
     function validateInput(inp, isPasteMode = false) { 
-        if(isSystemLocked) return false; // បិទមិនឱ្យវាយចូលបើ Locked
+        if(isSystemLocked) return false; 
         hasUnsavedChanges = true; inp.classList.remove('input-error'); 
         const originalValue = inp.value;
         inp.value = inp.value.toUpperCase().replace(/[^0-9.AP]/g, ''); 
@@ -451,8 +443,7 @@
     function manualSaveScores() { saveScoresCore(false); }
 
     async function saveScoresCore(isAutoSave = false) { 
-        if(isSystemLocked) return; // មិនអនុញ្ញាតឱ្យរក្សាទុកបើ Locked
-        
+        if(isSystemLocked) return; 
         const pUpsert = []; const pDelete = []; let hasError = false;
         const sub = document.getElementById('subjectSelect').value, y = document.getElementById('gYear').value, sem = document.getElementById('gSemester').value, m = document.getElementById('gMonth').value; 
         const mode = document.getElementById('mode70').checked ? 70 : 100;
@@ -552,7 +543,8 @@
         let tableRows = '';
         sortedStds.forEach(s => { 
             const classStr = String(s.class_name).trim(); const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
-            let h = `<tr class="report-row" data-grade="${gradeNum}"><td>${s.room_number}</td><td>${s.desk_number}</td><td>${s.student_id}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td>${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td>${s.class_name}</td>`; 
+            // បន្ថែម style mso-number-format:'\@'; ការពារ Excel កុំឲ្យបម្លែងជា Date/Time
+            let h = `<tr class="report-row" data-grade="${gradeNum}"><td>${s.room_number}</td><td>${s.desk_number}</td><td style="mso-number-format:'\@';">${s.student_id}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${s.class_name}</td>`; 
             
             const myScores = sc.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
             
@@ -573,7 +565,8 @@
                     if (dictObj || essayObj) {
                         let dVal = parseFloat(dictObj?.score_value) || 0; let eVal = parseFloat(essayObj?.score_value) || 0;
                         if (!isNaN(dVal) && !isNaN(eVal) && dictObj?.score_value !== 'A' && essayObj?.score_value !== 'A') {
-                            v = `<span class="text-primary fw-bold" title="គណនាអូតូ: អាន(${dVal}) + តែង(${eVal})">${dVal + eVal}*</span>`; inputBy = "ប្រព័ន្ធអូតូ";
+                            // បានលុបសញ្ញាផ្កាយ (*) ចេញតាមការស្នើសុំ
+                            v = `<span class="text-primary fw-bold" title="គណនាអូតូ: អាន(${dVal}) + តែង(${eVal})">${dVal + eVal}</span>`; inputBy = "ប្រព័ន្ធអូតូ";
                         }
                     }
                 }
@@ -788,7 +781,8 @@
             const myAbs = absData.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
             const curSt = [...new Set(myAbs.filter(x => x.month_name === m && x.semester === sem).map(x=>x.score_value))].join('/'); 
             const hist = [...new Set(myAbs.filter(x => x.month_name !== m).map(x=>`${x.month_name}(${x.score_value})`))].join(', '); 
-            return `<tr><td>${s.room_number}</td><td>${s.desk_number}</td><td>${s.student_id}</td><td class="text-start fw-bold">${s.full_name}</td><td>${s.gender||''}</td><td>${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td>${s.class_name}</td><td class="bg-danger text-white">${curSt}</td><td>${hist||'-'}</td><td><button class="btn btn-sm btn-danger shadow-sm" onclick="revertAbs('${s.student_id}')">លុប</button></td></tr>`; 
+            // បន្ថែម style mso-number-format:'\@'; ការពារ Excel កុំឲ្យបម្លែងជា Date/Time
+            return `<tr><td>${s.room_number}</td><td>${s.desk_number}</td><td style="mso-number-format:'\@';">${s.student_id}</td><td class="text-start fw-bold">${s.full_name}</td><td>${s.gender||''}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${s.class_name}</td><td class="bg-danger text-white">${curSt}</td><td>${hist||'-'}</td><td><button class="btn btn-sm btn-danger shadow-sm" onclick="revertAbs('${s.student_id}')">លុប</button></td></tr>`; 
         }).join(''); 
     }
 
@@ -853,7 +847,7 @@
             inp.onkeydown = (e) => { if(e.key==='Enter'||e.key==='ArrowDown') focusNext(ins, i, 1); if(e.key==='ArrowUp') focusNext(ins, i, -1); }; 
             inp.onpaste = (e) => { 
                 e.preventDefault(); 
-                if(isSystemLocked) return; // មិនឱ្យ Paste ចូលទេបើ Locked
+                if(isSystemLocked) return; 
                 hasUnsavedChanges = true; 
                 const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/\r/g, '').split('\n'); 
                 let pasteIdx = 0; let hasPasteError = false;
