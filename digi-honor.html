@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>តារាងកិត្តិយស - ចម្លងចូលផ្ទាល់</title>
+    <title>តារាងកិត្តិយស - Fix ធ្លាក់បន្ទាត់ឈ្មោះសាលា</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700;900&family=Moul&display=swap" rel="stylesheet">
     
     <style>
@@ -22,21 +23,19 @@
             --c-blue: #3b82f6; --c-blue-dark: #1e3a8a;
         }
 
-        /* ម៉ូដរចនាទាំង ១០ */
-        .theme-1 { --cv-bg: #fdfdfd; --cv-pattern: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%); --school-btn-bg: linear-gradient(to right, #1e3a8a, #0f4085); --txt-school: #ffffff; --txt-title: #b91c1c; --txt-blessing: #b45309; --card-bg: #ffffff; --card-border: #cbd5e1; --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); --txt-name: #1e3a8a; --txt-score: #475569; --card-radius: 16px; --badge-bg: #fef9c3; --badge-txt: #1e3a8a; --footer-bg: linear-gradient(to right, #fefce8, #ffffff, #fefce8); --border-style: solid; }
-        .theme-2 { --cv-bg: #fdfdfd; --cv-pattern: linear-gradient(135deg, #ffffff 0%, #ffe4e6 100%); --school-btn-bg: linear-gradient(to right, #9f1239, #881337); --txt-school: #ffffff; --txt-title: #e11d48; --txt-blessing: #9f1239; --card-bg: rgba(255,255,255,0.9); --card-border: #fecdd3; --card-shadow: 0 10px 30px rgba(159, 18, 57, 0.1); --txt-name: #9f1239; --txt-score: #881337; --card-radius: 8px; --badge-bg: #ffe4e6; --badge-txt: #9f1239; --footer-bg: linear-gradient(145deg, #ffffff 0%, #fff1f2 100%); --border-style: double; }
-        .theme-3 { --cv-bg: #0f4085; --cv-pattern: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.05) 0%, transparent 50%), linear-gradient(135deg, #051d45 0%, #0f4085 50%, #051d45 100%); --school-btn-bg: linear-gradient(to right, #ffffff, #f1f5f9); --txt-school: #1e3a8a; --txt-title: #FCEABB; --txt-blessing: #FCEABB; --card-bg: rgba(255, 255, 255, 0.1); --card-border: rgba(212,175,55,0.5); --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); --txt-name: #ffffff; --txt-score: #e2e8f0; --card-radius: 20px; --badge-bg: rgba(255,255,255,0.15); --badge-txt: #FCEABB; --footer-bg: rgba(255, 255, 255, 0.1); --border-style: solid; }
-        .theme-4 { --cv-bg: #eff6ff; --cv-pattern: linear-gradient(to bottom right, #dbeafe, #eff6ff); --school-btn-bg: linear-gradient(to right, #1d4ed8, #1e40af); --txt-school: #ffffff; --txt-title: #1e3a8a; --txt-blessing: #1e3a8a; --card-bg: #ffffff; --card-border: #bfdbfe; --card-shadow: 0 10px 20px rgba(29, 78, 216, 0.1); --txt-name: #1e40af; --txt-score: #334155; --card-radius: 12px; --badge-bg: #dbeafe; --badge-txt: #1e3a8a; --footer-bg: #ffffff; --border-style: solid; }
-        .theme-5 { --cv-bg: #f1f5f9; --cv-pattern: repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 10px, #e2e8f0 10px, #e2e8f0 20px); --school-btn-bg: linear-gradient(to right, #334155, #1e293b); --txt-school: #ffffff; --txt-title: #0f172a; --txt-blessing: #1e293b; --card-bg: #ffffff; --card-border: #94a3b8; --card-shadow: 4px 4px 0px rgba(0,0,0,0.05); --txt-name: #0f172a; --txt-score: #475569; --card-radius: 8px; --badge-bg: #e2e8f0; --badge-txt: #0f172a; --footer-bg: #ffffff; --border-style: dashed; }
-        .theme-6 { --cv-bg: #334155; --cv-pattern: radial-gradient(circle at center, #475569 0%, #1e293b 100%); --school-btn-bg: linear-gradient(to right, #f8fafc, #e2e8f0); --txt-school: #0f172a; --txt-title: #ffffff; --txt-blessing: #f1f5f9; --card-bg: rgba(15, 23, 42, 0.6); --card-border: #64748b; --card-shadow: 0 15px 25px rgba(0,0,0,0.4); --txt-name: #ffffff; --txt-score: #cbd5e1; --card-radius: 16px; --badge-bg: rgba(255,255,255,0.1); --badge-txt: #ffffff; --footer-bg: rgba(15, 23, 42, 0.8); --border-style: solid; }
-        .theme-7 { --cv-bg: #7f1d1d; --cv-pattern: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%); --school-btn-bg: linear-gradient(to right, #fef08a, #facc15); --txt-school: #7f1d1d; --txt-title: #ffffff; --txt-blessing: #fef08a; --card-bg: rgba(0, 0, 0, 0.4); --card-border: #fca5a5; --card-shadow: 0 10px 30px rgba(0,0,0,0.5); --txt-name: #ffffff; --txt-score: #fecaca; --card-radius: 4px; --badge-bg: rgba(255,255,255,0.15); --badge-txt: #fef08a; --footer-bg: rgba(0, 0, 0, 0.5); --border-style: solid; }
-        .theme-8 { --cv-bg: #fff1f2; --cv-pattern: radial-gradient(circle at 50% 50%, #ffffff 0%, #ffe4e6 100%); --school-btn-bg: linear-gradient(to right, #be123c, #9f1239); --txt-school: #ffffff; --txt-title: #be123c; --txt-blessing: #9f1239; --card-bg: #ffffff; --card-border: #fda4af; --card-shadow: 0 8px 20px rgba(159, 18, 57, 0.15); --txt-name: #9f1239; --txt-score: #4c0519; --card-radius: 20px; --badge-bg: #ffe4e6; --badge-txt: #881337; --footer-bg: #ffffff; --border-style: dotted; }
-        .theme-9 { --cv-bg: #020617; --cv-pattern: radial-gradient(circle at 50% 0%, #1e293b 0%, #000000 100%); --school-btn-bg: linear-gradient(to right, #d4af37, #b45309); --txt-school: #ffffff; --txt-title: #ffffff; --txt-blessing: #d4af37; --card-bg: rgba(255, 255, 255, 0.03); --card-border: #d4af37; --card-shadow: 0 10px 40px rgba(212, 175, 55, 0.1); --txt-name: #ffffff; --txt-score: #cbd5e1; --card-radius: 0px; --badge-bg: rgba(212, 175, 55, 0.1); --badge-txt: #d4af37; --footer-bg: rgba(255, 255, 255, 0.05); --border-style: solid; }
-        .theme-10 { --cv-bg: #0f172a; --cv-pattern: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); --school-btn-bg: linear-gradient(to right, #f1f5f9, #cbd5e1); --txt-school: #0f172a; --txt-title: #f1f5f9; --txt-blessing: #cbd5e1; --card-bg: rgba(255, 255, 255, 0.05); --card-border: #94a3b8; --card-shadow: 0 5px 15px rgba(0,0,0,0.5); --txt-name: #f1f5f9; --txt-score: #94a3b8; --card-radius: 12px; --badge-bg: rgba(255,255,255,0.1); --badge-txt: #f1f5f9; --footer-bg: rgba(255, 255, 255, 0.05); --border-style: dashed; }
+        .theme-1 { --cv-bg: #fdfdfd; --cv-pattern: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%); --txt-title: #b91c1c; --txt-blessing: #b45309; --card-bg: #ffffff; --card-border: #cbd5e1; --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); --txt-name: #1e3a8a; --txt-score: #475569; --card-radius: 16px; --badge-bg: #fef9c3; --badge-txt: #1e3a8a; --footer-bg: linear-gradient(to right, #fefce8, #ffffff, #fefce8); --border-style: solid; }
+        .theme-2 { --cv-bg: #fdfdfd; --cv-pattern: linear-gradient(135deg, #ffffff 0%, #ffe4e6 100%); --txt-title: #e11d48; --txt-blessing: #9f1239; --card-bg: rgba(255,255,255,0.9); --card-border: #fecdd3; --card-shadow: 0 10px 30px rgba(159, 18, 57, 0.1); --txt-name: #9f1239; --txt-score: #881337; --card-radius: 8px; --badge-bg: #ffe4e6; --badge-txt: #9f1239; --footer-bg: linear-gradient(145deg, #ffffff 0%, #fff1f2 100%); --border-style: double; }
+        .theme-3 { --cv-bg: #0f4085; --cv-pattern: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.05) 0%, transparent 50%), linear-gradient(135deg, #051d45 0%, #0f4085 50%, #051d45 100%); --txt-title: #FCEABB; --txt-blessing: #FCEABB; --card-bg: rgba(255, 255, 255, 0.1); --card-border: rgba(212,175,55,0.5); --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); --txt-name: #ffffff; --txt-score: #e2e8f0; --card-radius: 20px; --badge-bg: rgba(255,255,255,0.15); --badge-txt: #FCEABB; --footer-bg: rgba(255, 255, 255, 0.1); --border-style: solid; }
+        .theme-4 { --cv-bg: #eff6ff; --cv-pattern: linear-gradient(to bottom right, #dbeafe, #eff6ff); --txt-title: #1e3a8a; --txt-blessing: #1e3a8a; --card-bg: #ffffff; --card-border: #bfdbfe; --card-shadow: 0 10px 20px rgba(29, 78, 216, 0.1); --txt-name: #1e40af; --txt-score: #334155; --card-radius: 12px; --badge-bg: #dbeafe; --badge-txt: #1e3a8a; --footer-bg: #ffffff; --border-style: solid; }
+        .theme-5 { --cv-bg: #f1f5f9; --cv-pattern: repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 10px, #e2e8f0 10px, #e2e8f0 20px); --txt-title: #0f172a; --txt-blessing: #1e293b; --card-bg: #ffffff; --card-border: #94a3b8; --card-shadow: 4px 4px 0px rgba(0,0,0,0.05); --txt-name: #0f172a; --txt-score: #475569; --card-radius: 8px; --badge-bg: #e2e8f0; --badge-txt: #0f172a; --footer-bg: #ffffff; --border-style: dashed; }
+        .theme-6 { --cv-bg: #334155; --cv-pattern: radial-gradient(circle at center, #475569 0%, #1e293b 100%); --txt-title: #ffffff; --txt-blessing: #f1f5f9; --card-bg: rgba(15, 23, 42, 0.6); --card-border: #64748b; --card-shadow: 0 15px 25px rgba(0,0,0,0.4); --txt-name: #ffffff; --txt-score: #cbd5e1; --card-radius: 16px; --badge-bg: rgba(255,255,255,0.1); --badge-txt: #ffffff; --footer-bg: rgba(15, 23, 42, 0.8); --border-style: solid; }
+        .theme-7 { --cv-bg: #7f1d1d; --cv-pattern: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%); --txt-title: #ffffff; --txt-blessing: #fef08a; --card-bg: rgba(0, 0, 0, 0.4); --card-border: #fca5a5; --card-shadow: 0 10px 30px rgba(0,0,0,0.5); --txt-name: #ffffff; --txt-score: #fecaca; --card-radius: 4px; --badge-bg: rgba(255,255,255,0.15); --badge-txt: #fef08a; --footer-bg: rgba(0, 0, 0, 0.5); --border-style: solid; }
+        .theme-8 { --cv-bg: #fff1f2; --cv-pattern: radial-gradient(circle at 50% 50%, #ffffff 0%, #ffe4e6 100%); --txt-title: #be123c; --txt-blessing: #9f1239; --card-bg: #ffffff; --card-border: #fda4af; --card-shadow: 0 8px 20px rgba(159, 18, 57, 0.15); --txt-name: #9f1239; --txt-score: #4c0519; --card-radius: 20px; --badge-bg: #ffe4e6; --badge-txt: #881337; --footer-bg: #ffffff; --border-style: dotted; }
+        .theme-9 { --cv-bg: #020617; --cv-pattern: radial-gradient(circle at 50% 0%, #1e293b 0%, #000000 100%); --txt-title: #ffffff; --txt-blessing: #d4af37; --card-bg: rgba(255, 255, 255, 0.03); --card-border: #d4af37; --card-shadow: 0 10px 40px rgba(212, 175, 55, 0.1); --txt-name: #ffffff; --txt-score: #cbd5e1; --card-radius: 0px; --badge-bg: rgba(212, 175, 55, 0.1); --badge-txt: #d4af37; --footer-bg: rgba(255, 255, 255, 0.05); --border-style: solid; }
+        .theme-10 { --cv-bg: #0f172a; --cv-pattern: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); --txt-title: #f1f5f9; --txt-blessing: #cbd5e1; --card-bg: rgba(255, 255, 255, 0.05); --card-border: #94a3b8; --card-shadow: 0 5px 15px rgba(0,0,0,0.5); --txt-name: #f1f5f9; --txt-score: #94a3b8; --card-radius: 12px; --badge-bg: rgba(255,255,255,0.1); --badge-txt: #f1f5f9; --footer-bg: rgba(255, 255, 255, 0.05); --border-style: dashed; }
 
-        /* រចនាសម្ព័ន្ធទូទៅ */
         body { font-family: 'Battambang', sans-serif; background-color: #e2e8f0; margin: 0; padding: 0; }
-        .font-moul { font-family: 'Moul', cursive; line-height: 1.7 !important; padding-top: 5px; padding-bottom: 5px; }
+        .font-moul { font-family: 'Moul', cursive; }
 
         .control-panel { background: white; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; border-bottom: 2px solid #cbd5e1; }
         #render-container { display: flex; flex-direction: column; align-items: center; gap: 40px; padding: 40px 20px; }
@@ -46,13 +45,12 @@
         .btn-download-img { position: absolute; top: -65px; right: 0; background: #16a34a; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; z-index: 200; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.3s; border: none; }
         .btn-download-img:hover { background: #15803d; transform: translateY(-2px); }
 
-        /* Canvas */
         .fb-post-canvas {
             width: 1080px; height: 1350px;
-            background-color: var(--cv-bg); background-image: var(--cv-pattern);
+            background-color: var(--cv-bg);
+            background-image: var(--cv-pattern);
             position: relative; box-sizing: border-box; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
             display: flex; flex-direction: column; padding: 40px; overflow: hidden;
-            transition: all 0.5s ease;
         }
 
         .canvas-border-outer { position: absolute; top: 15px; bottom: 15px; left: 15px; right: 15px; border: 2.5px var(--border-style) var(--gold-main); pointer-events: none; z-index: 1; }
@@ -63,41 +61,132 @@
         .c-bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
         .c-br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
 
-        .school-btn-bg { background: var(--school-btn-bg); color: var(--txt-school); }
-        .title-main { color: var(--txt-title); font-size: 48px; text-shadow: 2px 2px 0px rgba(255,255,255,0.2), 0 4px 8px rgba(0,0,0,0.15); }
+        .school-header-wrapper {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* ផ្តល់កន្លែងធំទូលាយ */
+        }
+        .school-stars {
+            color: var(--gold-main);
+            font-size: 18px;
+            letter-spacing: 5px;
+            margin-bottom: 5px;
+        }
+        .school-title-new {
+            font-family: 'Battambang', sans-serif;
+            font-weight: 900;
+            font-size: 26px;
+            color: var(--txt-name);
+            line-height: 2;
+            letter-spacing: 1px;
+            margin: 0;
+            padding: 0;
+            white-space: nowrap; /* 🔥 ចាក់សោរមិនឱ្យធ្លាក់បន្ទាត់ដាច់ខាត 🔥 */
+            max-width: none; /* បំបាត់រនាំងរារាំងទំហំអក្សរ */
+        }
+        .school-divider {
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--gold-main), transparent);
+            margin-top: -5px;
+        }
 
-        /* កាតសិស្ស និង មេដាយ */
-        .student-card { background: var(--card-bg); border-radius: var(--card-radius); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: var(--card-shadow); position: relative; border: 1px var(--border-style) var(--card-border); }
-        .card-top-line { position: absolute; top: 0; left: 0; right: 0; height: 6px; border-top-left-radius: var(--card-radius); border-top-right-radius: var(--card-radius); }
+        .title-main { 
+            color: var(--txt-title); 
+            font-size: 40px; 
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.2), 0 4px 8px rgba(0,0,0,0.15); 
+            padding: 5px 0 10px 0; 
+            line-height: 1.8; 
+            margin: 0;
+            display: block;
+        }
+
+        .info-badge { 
+            background: var(--badge-bg); 
+            border: 1px var(--border-style) rgba(212, 175, 55, 0.4); 
+            color: var(--badge-txt); 
+            border-radius: 999px; 
+            font-weight: bold; 
+            font-size: 16px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: inline-block;
+            padding: 0 30px;
+            white-space: nowrap; 
+            min-width: max-content;
+        }
+        .info-badge span { 
+            display: block;
+            margin: 0; 
+            padding: 12px 0 16px 0; 
+            line-height: normal; 
+        }
+
+        .medal-container { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 10;}
+        
+        .medal { 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            font-family: 'Moul', cursive; color: white;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2), inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.5); z-index: 10;
+        }
+        
+        .medal span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
+            padding-top: 12px;
+        }
+
+        .student-card { 
+            background: var(--card-bg); border-radius: var(--card-radius); 
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start; 
+            box-shadow: var(--card-shadow); position: relative; border: 1px var(--border-style) var(--card-border); 
+        }
+
+        .blessing-box { 
+            background: var(--footer-bg); border: 1px var(--border-style) rgba(212, 175, 55, 0.4); 
+            border-radius: var(--card-radius); text-align: center; width: 100%; 
+            padding: 25px 20px !important; 
+        }
+        .blessing-text { color: var(--txt-blessing); line-height: 1.8; margin: 0; }
+        
+        .card-top-line { position: absolute; top: 0; left: 0; right: 0; height: 6px; border-top-left-radius: var(--card-radius); border-top-right-radius: var(--card-radius); z-index: 1; }
         .rank-1 .card-top-line { background: var(--c-gold); } .rank-2 .card-top-line { background: var(--c-silver); } .rank-3 .card-top-line { background: var(--c-bronze); } .rank-other .card-top-line { background: var(--c-blue); }
-
-        .medal-container { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
-        .medal { border-radius: 50%; display: flex; justify-content: center; align-items: center; font-family: 'Moul', cursive; color: white; box-shadow: 0 8px 15px rgba(0,0,0,0.2), inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.5); z-index: 10; }
         .medal.gold { background: radial-gradient(circle, #fde047 0%, #d97706 100%); border: 2px solid #fef08a;} .medal.silver { background: radial-gradient(circle, #f1f5f9 0%, #94a3b8 100%); border: 2px solid #ffffff;} .medal.bronze { background: radial-gradient(circle, #fcd34d 0%, #b45309 100%); border: 2px solid #fde047;} .medal.standard { background: radial-gradient(circle, #60a5fa 0%, #2563eb 100%); border: 2px solid #bfdbfe;}
-
-        .ribbon { z-index: 5; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 70%, 0 100%); }
-        .rank-1 .ribbon { background: var(--c-gold-dark); } .rank-2 .ribbon { background: var(--c-silver-dark); } .rank-3 .ribbon { background: var(--c-bronze-dark); } .rank-other .ribbon { background: var(--c-blue-dark); }
-
-        hr.divider { border-color: var(--card-border); margin: 10px 0; width: 100%; border-style: dashed; }
+        
+        .ribbon { 
+            width: 0; 
+            height: 0; 
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid; 
+            margin-top: -5px; 
+            z-index: 5;
+        }
+        .rank-1 .ribbon { border-top-color: var(--c-gold-dark); }
+        .rank-2 .ribbon { border-top-color: var(--c-silver-dark); }
+        .rank-3 .ribbon { border-top-color: var(--c-bronze-dark); }
+        .rank-other .ribbon { border-top-color: var(--c-blue-dark); }
+        
+        hr.divider { border-color: var(--card-border); margin: 0; width: 90%; border-style: dashed; }
         .grade-badge { background: #fef08a; border: 1px solid #fde047; color: #b45309; border-radius: 6px; font-weight: 900; }
-        .info-badge { background: var(--badge-bg); border: 1px var(--border-style) rgba(212, 175, 55, 0.4); color: var(--badge-txt); padding: 6px 20px; border-radius: 999px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .blessing-box { background: var(--footer-bg); border: 1px var(--border-style) rgba(212, 175, 55, 0.4); border-radius: var(--card-radius); padding: 15px; text-align: center; width: 100%; }
-        .blessing-text { color: var(--txt-blessing); }
-        .stu-name { color: var(--txt-name); }
-        .stu-score { color: var(--txt-score); }
     </style>
 </head>
 <body>
 
     <!-- CONTROL PANEL -->
-    <div class="control-panel w-full flex flex-col gap-4">
+    <div class="control-panel no-print w-full flex flex-col gap-4">
         
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 border-b pb-4">
             <div class="flex items-center gap-3">
                 <span class="text-3xl">🏆</span>
                 <div>
-                    <h1 class="font-bold text-xl text-blue-900 font-moul">តារាងកិត្តិយស (Copy-Paste)</h1>
-                    <p class="text-xs text-gray-500 font-bold">ទំហំ 1080x1350 px (ច្បាប់ ៣ ជួរ)</p>
+                    <h1 class="font-bold text-xl text-blue-900 font-moul" style="padding-top: 8px;">តារាងកិត្តិយស (Copy-Paste)</h1>
+                    <p class="text-xs text-gray-500 font-bold">ទំហំ 1080x1350 px (Fixed One Line Text)</p>
                 </div>
             </div>
 
@@ -117,7 +206,7 @@
                     <option value="theme-10">🤍 ម៉ូដទី១0: ខ្មៅ ប្រាក់</option>
                 </select>
 
-                <select id="yearSelect" class="px-4 py-2.5 rounded-xl border border-gray-300 font-bold text-sm">
+                <select id="yearSelect" class="px-4 py-2.5 rounded-xl border border-gray-300 font-bold text-sm bg-gray-50">
                     <option value="២០២៣-២០២៤">២០២៣-២០២៤</option>
                     <option value="២០២៤-២០២៥">២០២៤-២០២៥</option>
                     <option value="២០២៥-២០២៦" selected>២០២៥-២០២៦</option>
@@ -128,28 +217,32 @@
                 <button onclick="generateFromText()" id="btnGenerate" class="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl shadow hover:bg-blue-700 transition">
                     បង្កើតកាត
                 </button>
+
+                <button onclick="downloadPDF()" id="btnPdf" class="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow hover:bg-red-700 transition hidden">
+                    📄 ទាញយកជា PDF
+                </button>
             </div>
         </div>
 
         <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-gray-700">📋 Copy ទិន្នន័យពី Excel រួច Paste បញ្ចូលទីនេះ៖ <span class="text-red-500 font-normal">(ទម្រង់៖ ថ្នាក់ | លេខ | ឈ្មោះ | ពិន្ទុ | និទ្ទេស)</span></label>
-            <textarea id="dataInput" rows="5" class="w-full p-3 border-2 border-dashed border-gray-400 rounded-xl font-mono text-sm outline-none focus:border-blue-500" placeholder="ឧទាហរណ៍៖
-១២ក	១	សុខ សាន្ត	៩៩.៥	A
-១២ក	២	ចាន់ សុខា	៩៥.០	B
-១១ខ	១	មាស វិសាល	៩០.៥	B"></textarea>
+            <textarea id="dataInput" rows="6" class="w-full p-3 border-2 border-dashed border-gray-400 rounded-xl font-mono text-sm outline-none focus:border-blue-500" placeholder="ឧទាហរណ៍៖">១០ក	១	ឌី បញ្ញា	១០០.០	A
+១០ក	២	សន ស្រីពៅ	៩៦.៥	A
+១០ក	៣	ហេង វិរៈ	៩២.០	B
+១០ក	៤	នួន សីហា	៨៨.៥	B
+១០ក	៥	ពេជ្រ សុវណ្ណារី	៨៤.០	C</textarea>
         </div>
 
     </div>
 
-    <!-- RENDER CONTAINER -->
+    <!-- 🌟 RENDER CONTAINER -->
     <div id="render-container">
-        <div class="text-center text-gray-400 font-bold mt-20" id="placeholder-msg">
+        <div class="text-center text-gray-400 font-bold mt-20 no-print" id="placeholder-msg">
             សូមបញ្ចូលទិន្នន័យពី Excel ទៅក្នុងប្រអប់ខាងលើ រួចចុច "បង្កើតកាត"
         </div>
     </div>
 
     <script>
-        // ប្តូរម៉ូដពណ៌
         function changeTheme() {
             const selectedTheme = document.getElementById('themeSelect').value;
             const canvases = document.querySelectorAll('.fb-post-canvas');
@@ -173,254 +266,233 @@
             return isNaN(num) ? 9999 : num;
         }
 
-        // =========================================================
-        // 🚀 MAIN LOGIC - PARSE TEXT & GENERATE
-        // =========================================================
         function generateFromText() {
             let rawText = document.getElementById('dataInput').value.trim();
             let year = document.getElementById('yearSelect').value;
             let periodLabel = document.getElementById('periodInput').value.trim();
-            let schoolName = document.getElementById('schoolName').value.trim();
-
-            if (!rawText) {
-                Swal.fire('បញ្ហា', 'សូម Paste ទិន្នន័យចូលប្រអប់សិន!', 'error');
-                return;
-            }
+            
+            if (!rawText) { Swal.fire('បញ្ហា', 'សូម Paste ទិន្នន័យចូលប្រអប់សិន!', 'error'); return; }
 
             let lines = rawText.split('\n');
             let honorStudents = [];
 
-            // អានជួរនីមួយៗ
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].trim();
                 if (!line) continue;
                 
-                // Excel Copy តែងតែខណ្ឌដោយ Tab (\t)
                 let cols = line.split('\t'); 
-                
-                if (cols.length < 5) {
-                    // ប្រសិនបើអ្នកប្រើប្រាស់ Space ជំនួស Tab
-                    cols = line.split(/\s{2,}|\t/);
-                }
+                if (cols.length < 5) cols = line.split(/\s{2,}|\t/);
 
                 if (cols.length >= 5) {
-                    let className = cols[0].trim();
-                    let rankNum = parseRank(cols[1]);
-                    let name = cols[2].trim();
-                    let score = cols[3].trim();
-                    let grade = cols[4].trim();
+                    let className = cols[0].trim(); let rankNum = parseRank(cols[1]); let name = cols[2].trim(); let score = cols[3].trim(); let gradeLetter = cols[4].trim();
 
                     if (rankNum > 0 && rankNum <= 5) {
-                        honorStudents.push({
-                            grade_class: className,
-                            class_rank: rankNum,
-                            student_name: name,
-                            score: score,
-                            grade_letter: grade
-                        });
+                        honorStudents.push({ grade: className, class_rank: rankNum, student_name: name, average: score, final_result: gradeLetter });
                     }
                 }
             }
 
-            if (honorStudents.length === 0) {
-                Swal.fire('ទទេ!', 'រកមិនឃើញទិន្នន័យសិស្សជាប់លេខ១-៥ ទេ ឬទម្រង់ទិន្នន័យខុស!', 'warning');
-                return;
-            }
+            if (honorStudents.length === 0) { Swal.fire('ទទេ!', 'រកមិនឃើញទិន្នន័យសិស្សជាប់លេខ១-៥ ទេ!', 'warning'); return; }
 
-            // Group តាមថ្នាក់
             let classesMap = {};
             honorStudents.forEach(s => {
-                let cName = s.grade_class.toUpperCase();
-                if(!classesMap[cName]) classesMap[cName] = [];
+                let cName = String(s.grade).trim().toUpperCase();
+                if(!classesMap[cName]) classesMap[cName] =[];
                 classesMap[cName].push(s);
             });
 
-            let container = document.getElementById('render-container');
-            container.innerHTML = ""; 
-
+            let container = document.getElementById('render-container'); container.innerHTML = ""; 
             let sortedClasses = Object.keys(classesMap).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
             let currentTheme = document.getElementById('themeSelect').value;
+            let schoolName = document.getElementById('schoolName').value.trim() || 'វិទ្យាល័យ ហ៊ុន សែន កំពង់ត្រឡាច';
 
-            // បង្កើតកាត
             sortedClasses.forEach((className, idx) => {
-                let students = classesMap[className];
-                students.sort((a,b) => a.class_rank - b.class_rank);
-                
+                let students = classesMap[className]; students.sort((a,b) => parseRank(a.class_rank) - parseRank(b.class_rank));
                 let pageHtml = generateCanvasHTML(className, students, periodLabel, year, schoolName, idx, currentTheme);
                 container.innerHTML += pageHtml;
             });
 
+            document.getElementById('btnPdf').classList.remove('hidden');
             Swal.fire('ជោគជ័យ', `បង្កើតបាន ${sortedClasses.length} ថ្នាក់!`, 'success');
         }
 
-        // =========================================================
-        // 🎨 UI GENERATOR FUNCTIONS
-        // =========================================================
-        
         function getMedalConfig(rankNum) {
-            if(rankNum === 1) return { color: 'gold', cls: 'rank-1' };
-            if(rankNum === 2) return { color: 'silver', cls: 'rank-2' };
-            if(rankNum === 3) return { color: 'bronze', cls: 'rank-3' };
-            return { color: 'standard', cls: 'rank-other' };
+            if(rankNum === 1) return { color: 'gold', cls: 'rank-1' }; if(rankNum === 2) return { color: 'silver', cls: 'rank-2' }; if(rankNum === 3) return { color: 'bronze', cls: 'rank-3' }; return { color: 'standard', cls: 'rank-other' };
         }
 
         function getCardStyle(count, isTop1) {
-            let width = '320px'; let padding = '2.2rem 1rem 1rem 1rem';
-            let nameSize = '18px'; let scoreSize = '14px';
-            let medalSize = '75px'; let medalFont = '2.2rem';
-            let ribbonW = '25px'; let ribbonH = '25px'; let ribbonM = '-12px';
-
-            if (isTop1 && count === 1) {
-                width = '500px'; padding = '3rem 1.5rem 1.5rem 1.5rem'; nameSize = '28px'; scoreSize = '20px'; medalSize = '100px'; medalFont = '3rem'; ribbonW = '35px'; ribbonH = '25px'; ribbonM = '-12px';
-            } else if (count === 1) {
-                width = '450px'; padding = '2.5rem 1.5rem 1.2rem 1.5rem'; nameSize = '24px'; scoreSize = '18px'; medalSize = '85px'; medalFont = '2.5rem'; ribbonW = '30px'; ribbonH = '25px'; ribbonM = '-12px';
-            } else if (count === 2) {
-                width = '420px'; padding = '2.5rem 1.5rem 1.2rem 1.5rem'; nameSize = '22px'; scoreSize = '16px'; medalSize = '80px'; medalFont = '2.3rem'; ribbonW = '28px'; ribbonH = '25px'; ribbonM = '-12px';
-            } else if (count === 3) {
-                width = '315px'; padding = '2rem 0.5rem 0.8rem 0.5rem'; nameSize = '18px'; scoreSize = '14px'; medalSize = '70px'; medalFont = '2rem'; ribbonW = '22px'; ribbonH = '22px'; ribbonM = '-10px';
-            } else if (count === 4) {
-                width = '234px'; padding = '1.8rem 0.5rem 0.8rem 0.5rem'; nameSize = '16px'; scoreSize = '13px'; medalSize = '60px'; medalFont = '1.5rem'; ribbonW = '18px'; ribbonH = '18px'; ribbonM = '-8px';
-            } else if (count >= 5) {
-                width = '186px'; padding = '1.5rem 0.2rem 0.5rem 0.2rem'; nameSize = '14px'; scoreSize = '11px'; medalSize = '50px'; medalFont = '1.2rem'; ribbonW = '15px'; ribbonH = '15px'; ribbonM = '-6px';
-            }
-
-            return { width, padding, nameSize, scoreSize, medalSize, medalFont, ribbonW, ribbonH, ribbonM };
+            let width = '320px'; let padding = '2.2rem 1rem 2.5rem 1rem'; let nameSize = '18px'; let scoreSize = '14px'; let medalSize = '75px'; let medalFont = '30px'; 
+            if (isTop1 && count === 1) { width = '500px'; padding = '3rem 1.5rem 2.8rem 1.5rem'; nameSize = '28px'; scoreSize = '20px'; medalSize = '100px'; medalFont = '40px'; } 
+            else if (count === 1) { width = '450px'; padding = '2.5rem 1.5rem 2.5rem 1.5rem'; nameSize = '24px'; scoreSize = '18px'; medalSize = '85px'; medalFont = '36px'; } 
+            else if (count === 2) { width = '420px'; padding = '2.5rem 1.5rem 2.5rem 1.5rem'; nameSize = '22px'; scoreSize = '16px'; medalSize = '80px'; medalFont = '34px'; } 
+            else if (count === 3) { width = '315px'; padding = '2rem 0.5rem 2.2rem 0.5rem'; nameSize = '18px'; scoreSize = '14px'; medalSize = '70px'; medalFont = '28px'; } 
+            else if (count === 4) { width = '234px'; padding = '1.8rem 0.5rem 1.8rem 0.5rem'; nameSize = '16px'; scoreSize = '13px'; medalSize = '60px'; medalFont = '22px'; } 
+            else if (count >= 5) { width = '186px'; padding = '1.5rem 0.2rem 1.5rem 0.2rem'; nameSize = '14px'; scoreSize = '11px'; medalSize = '50px'; medalFont = '18px'; }
+            return { width, padding, nameSize, scoreSize, medalSize, medalFont };
         }
 
         function createStudentCard(student, isTop1Single, countInRow) {
-            let conf = getMedalConfig(student.class_rank);
-            let style = getCardStyle(countInRow, isTop1Single);
-            
-            let rankKhm = toKhmerNum(student.class_rank);
-            let isA = student.grade_letter.toUpperCase() === 'A' ? 'a-grade' : '';
+            let rankNum = parseRank(student.class_rank); let conf = getMedalConfig(rankNum); let style = getCardStyle(countInRow, isTop1Single);
+            let score = student.average || '-'; let grd = student.final_result || '-'; let rankKhm = toKhmerNum(rankNum); let isA = grd.toUpperCase() === 'A' ? 'a-grade' : ''; let displayName = student.student_name.trim();
             let medalTop = -(parseInt(style.medalSize) / 2 + 5) + 'px';
 
             return `
             <div class="student-card ${conf.cls}" style="width: ${style.width}; padding: ${style.padding};">
                 <div class="card-top-line"></div>
+                
                 <div class="medal-container" style="top: ${medalTop};">
                     <div class="medal ${conf.color}" style="width: ${style.medalSize}; height: ${style.medalSize}; font-size: ${style.medalFont};">
-                        <div class="medal-inner">${rankKhm}</div>
+                        <span>${rankKhm}</span>
                     </div>
-                    <div class="ribbon" style="width: ${style.ribbonW}; height: ${style.ribbonH}; margin-top: ${style.ribbonM};"></div>
+                    <div class="ribbon"></div>
                 </div>
-                <h3 class="font-bold stu-name mt-2 text-center w-full drop-shadow-sm truncate px-1" style="font-size: ${style.nameSize};">${student.student_name}</h3>
+                
+                <div style="width: 100%; text-align: center; margin-top: 15px; margin-bottom: 5px;">
+                    <h3 class="font-bold" style="color: var(--txt-name); font-size: ${style.nameSize}; display: block; padding-bottom: 10px; margin: 0; line-height: 1.5;">${displayName}</h3>
+                </div>
+                
                 <hr class="divider">
-                <div class="w-full flex justify-between px-2 stu-score font-bold items-center" style="font-size: ${style.scoreSize};">
-                    <span>ពិន្ទុ: <span class="text-blue-600">${student.score}</span></span>
-                    <span class="flex items-center gap-1">និទ្ទេស: <span class="grade-badge px-2 py-0.5 ${isA}">${student.grade_letter}</span></span>
+                
+                <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 0 10px;">
+                    <div style="color: var(--txt-score); font-size: ${style.scoreSize}; font-weight: bold; display: inline-block;">
+                        ពិន្ទុ: <span class="text-blue-600">${score}</span>
+                    </div>
+                    <div style="color: var(--txt-score); font-size: ${style.scoreSize}; font-weight: bold; display: flex; align-items: center;">
+                        និទ្ទេស: <span class="grade-badge px-2 py-0.5 ${isA}" style="margin-left: 4px;">${grd}</span>
+                    </div>
                 </div>
             </div>`;
         }
 
         function generateCanvasHTML(className, students, periodLabel, yearLabel, schoolName, index, themeClass) {
             let canvasId = `canvas-${index}`;
-
             let html = `
             <div class="canvas-wrapper">
-                <button onclick="downloadImage('${canvasId}', '${className}')" class="btn-download-img">⬇️ ទាញយកជារូបភាពថ្នាក់ ${className}</button>
+                <button onclick="downloadImage('${canvasId}', '${className}')" class="btn-download-img no-print">⬇️ ទាញយកជារូបភាពថ្នាក់ ${className}</button>
                 
                 <div id="${canvasId}" class="fb-post-canvas ${themeClass}">
-                    <div class="canvas-border-outer"></div>
-                    <div class="canvas-border-inner"></div>
-                    <div class="corner c-tl"></div><div class="corner c-tr"></div>
-                    <div class="corner c-bl"></div><div class="corner c-br"></div>
+                    <div class="canvas-border-outer"></div><div class="canvas-border-inner"></div>
+                    <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
 
-                    <!-- HEADER -->
-                    <div class="header-area w-full relative z-20">
-                        <div class="w-full flex justify-center mb-5 mt-2">
-                            <span class="font-moul text-xl school-btn-bg px-10 py-3.5 rounded-full border-2 border-[#D4AF37] shadow-lg tracking-widest">
-                                ${schoolName}
-                            </span>
-                        </div>
-                        <h1 class="font-moul title-main text-center mb-6 leading-tight">អបអរសាទរជ័យលាភីចំណាត់ថ្នាក់<br>លេខ១ - លេខ៥</h1>
+                    <div class="header-area w-full relative z-20 pb-0">
                         
-                        <div class="flex justify-center gap-6 mt-4">
-                            <div class="info-badge">${periodLabel}</div>
-                            <div class="info-badge">ឆ្នាំសិក្សា ${yearLabel}</div>
-                            <div class="info-badge">ថ្នាក់ទី ${className}</div>
+                        <div class="school-header-wrapper">
+                            <div class="school-stars">✦ ✦ ✦</div>
+                            <!-- 🌟 ប្រអប់នេះមាន white-space: nowrap ការពារការធ្លាក់បន្ទាត់ 🌟 -->
+                            <h2 class="school-title-new">${schoolName}</h2>
+                            <div class="school-divider"></div>
+                        </div>
+                        
+                        <h1 class="font-moul title-main text-center mb-2">អបអរសាទរជ័យលាភីចំណាត់ថ្នាក់<br>លេខ១ - លេខ៥</h1>
+                        
+                        <div class="flex justify-center gap-6 mt-4 mb-2"> 
+                            <div class="info-badge"><span>${periodLabel}</span></div>
+                            <div class="info-badge"><span>ឆ្នាំសិក្សា ${yearLabel}</span></div>
+                            <div class="info-badge"><span>ថ្នាក់ទី ${className}</span></div>
                         </div>
                     </div>
 
-                    <!-- STUDENTS -->
-                    <div class="students-area flex flex-col justify-evenly h-[800px] w-full relative z-10 px-2">`;
+                    <div class="students-area flex flex-col justify-evenly flex-1 w-full relative z-10 px-2 mt-4">`;
 
-            // បែងចែក ៣ ជួរ
-            let row1 = students.filter(s => s.class_rank === 1);
-            let row2 = students.filter(s => s.class_rank === 2 || s.class_rank === 3);
-            let row3 = students.filter(s => s.class_rank === 4 || s.class_rank === 5);
+            let row1 = students.filter(s => parseRank(s.class_rank) === 1); let row2 = students.filter(s => parseRank(s.class_rank) === 2 || parseRank(s.class_rank) === 3); let row3 = students.filter(s => parseRank(s.class_rank) === 4 || parseRank(s.class_rank) === 5);
+            if (row1.length > 0) { html += `<div class="w-full flex justify-center gap-4 flex-nowrap mt-4">`; row1.forEach(s => { html += createStudentCard(s, row1.length === 1, row1.length); }); html += `</div>`; }
+            if (row2.length > 0) { html += `<div class="w-full flex justify-center gap-4 flex-nowrap mt-6">`; row2.forEach(s => { html += createStudentCard(s, false, row2.length); }); html += `</div>`; }
+            if (row3.length > 0) { html += `<div class="w-full flex justify-center gap-4 flex-nowrap mt-6">`; row3.forEach(s => { html += createStudentCard(s, false, row3.length); }); html += `</div>`; }
 
-            if (row1.length > 0) {
-                html += `<div class="w-full flex justify-center gap-4 flex-nowrap mt-8">`;
-                row1.forEach(s => { html += createStudentCard(s, row1.length === 1, row1.length); });
-                html += `</div>`;
-            }
-
-            if (row2.length > 0) {
-                html += `<div class="w-full flex justify-center gap-4 flex-nowrap mt-8">`;
-                row2.forEach(s => { html += createStudentCard(s, false, row2.length); });
-                html += `</div>`;
-            }
-
-            if (row3.length > 0) {
-                html += `<div class="w-full flex justify-center gap-4 flex-nowrap mt-8">`;
-                row3.forEach(s => { html += createStudentCard(s, false, row3.length); });
-                html += `</div>`;
-            }
-
-            html += `
-                    </div> 
-
-                    <!-- FOOTER -->
-                    <div class="w-full mt-auto mb-6 z-10 flex justify-center">
-                        <div class="blessing-box shadow-lg mx-10 relative overflow-hidden">
-                            <p class="text-[24px] font-moul blessing-text leading-relaxed drop-shadow-sm m-0">
-                                <span class="text-2xl">៚</span> សូមជូនពរឱ្យប្អូនៗទទួលបានជោគជ័យក្នុងការសិក្សាបន្តបន្ទាប់ទៀត <br>
-                                និងក្លាយជាកូនល្អ សិស្សល្អ មិត្តល្អ និងពលរដ្ឋល្អក្នុងសង្គម <span class="text-2xl">៙</span>
+            html += `</div> 
+                    <div class="w-full mt-auto mb-4 z-10 flex justify-center">
+                        <div class="blessing-box shadow-lg mx-10">
+                            <p class="text-[24px] font-moul blessing-text m-0">
+                                <span class="text-2xl inline-block mr-1">៚</span> 
+                                សូមជូនពរឱ្យប្អូនៗទទួលបានជោគជ័យក្នុងការសិក្សាបន្តបន្ទាប់ទៀត <br>
+                                និងក្លាយជាកូនល្អ សិស្សល្អ មិត្តល្អ និងពលរដ្ឋល្អក្នុងសង្គម 
+                                <span class="text-2xl inline-block ml-1">៙</span>
                             </p>
                         </div>
                     </div>
                 </div> 
             </div>`;
-
             return html;
         }
 
         // =========================================================
-        // 📸 DOWNLOAD IMAGE
+        // 📸 DOWNLOAD LOGIC (USING html-to-image)
         // =========================================================
         function downloadImage(canvasId, className) {
-            const element = document.getElementById(canvasId);
+            const element = document.getElementById(canvasId); 
             const wrapper = element.parentElement;
-            
             Swal.fire({ title: 'កំពុងបង្កើតរូបភាព...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
             const originalTransform = wrapper.style.transform;
-            wrapper.style.transform = "scale(1)";
-            wrapper.style.width = "1080px";
+            wrapper.style.transform = "scale(1)"; 
+            wrapper.style.width = "1080px"; 
             wrapper.style.height = "1350px";
 
             setTimeout(() => {
-                html2canvas(element, {
-                    scale: 2, 
-                    useCORS: true,
-                    backgroundColor: null, 
-                    width: 1080, height: 1350,
-                    logging: false
-                }).then(canvas => {
+                htmlToImage.toPng(element, {
+                    pixelRatio: 2, 
+                    width: 1080,
+                    height: 1350,
+                    style: { transform: 'none' }
+                })
+                .then(function (dataUrl) {
                     wrapper.style.transform = originalTransform; 
-                    wrapper.style.width = ""; wrapper.style.height = "";
-                    
-                    const link = document.createElement('a');
-                    link.download = `Honor_Roll_${className}.png`;
-                    link.href = canvas.toDataURL('image/png', 1.0);
-                    link.click();
+                    wrapper.style.width = ""; 
+                    wrapper.style.height = "";
+                    const link = document.createElement('a'); 
+                    link.download = `Honor_Roll_${className}.png`; 
+                    link.href = dataUrl;
+                    link.click(); 
                     Swal.close();
-                }).catch(err => {
-                    wrapper.style.transform = originalTransform;
-                    Swal.fire("មានបញ្ហា", "មិនអាចបង្កើតរូបភាពបានទេ", "error");
+                })
+                .catch(function (error) {
+                    console.error('oops, something went wrong!', error);
+                    wrapper.style.transform = originalTransform; 
+                    Swal.fire("បញ្ហា", "មិនអាចបង្កើតរូបភាពបាន", "error");
                 });
-            }, 300); 
+            }, 500); 
+        }
+
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf; 
+            const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [1080, 1350] });
+            const canvases = document.querySelectorAll('.fb-post-canvas');
+            if(canvases.length === 0) return;
+
+            Swal.fire({ title: 'កំពុងបង្កើតឯកសារ PDF...', html: 'សូមរង់ចាំបន្តិច...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+            for (let i = 0; i < canvases.length; i++) {
+                const element = canvases[i]; 
+                const wrapper = element.parentElement; 
+                const originalTransform = wrapper.style.transform;
+                
+                wrapper.style.transform = "scale(1)"; 
+                wrapper.style.width = "1080px"; 
+                wrapper.style.height = "1350px";
+                
+                await new Promise(resolve => setTimeout(resolve, 600)); 
+                
+                try {
+                    const dataUrl = await htmlToImage.toPng(element, {
+                        pixelRatio: 2,
+                        width: 1080,
+                        height: 1350,
+                        style: { transform: 'none' }
+                    });
+                    
+                    wrapper.style.transform = originalTransform; 
+                    wrapper.style.width = ""; 
+                    wrapper.style.height = "";
+                    
+                    if (i > 0) pdf.addPage();
+                    pdf.addImage(dataUrl, 'PNG', 0, 0, 1080, 1350);
+                } catch(err) {
+                    console.error(err);
+                }
+            }
+            pdf.save("Honor_Roll_Cards.pdf"); 
+            Swal.close(); 
+            Swal.fire('ជោគជ័យ', 'ទាញយក PDF រួចរាល់!', 'success');
         }
     </script>
 </body>
