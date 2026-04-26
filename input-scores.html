@@ -21,7 +21,10 @@
     .table thead th { position: sticky; top: 0; background: #212529; color: white; z-index: 10; padding: 12px; text-align: center; white-space: nowrap; }
     .score-input { width: 75px; text-align: center; font-weight: bold; border: 2px solid #ccc; border-radius: 6px; padding: 5px; font-size: 15px; }
     .score-input:focus { border-color: var(--primary); outline: none; background: #eef6ff; transform: scale(1.05); }
-    .score-input:disabled { background-color: #ffdce0; color: #d32f2f; border-color: #ffc1c8; cursor: pointer; }
+    
+    /* Input Disabled States */
+    .score-input:disabled { background-color: #e9ecef; color: #6c757d; border-color: #ced4da; cursor: not-allowed; }
+    .score-input.absent-disabled { background-color: #ffdce0 !important; color: #d32f2f !important; border-color: #ffc1c8 !important; cursor: pointer; }
     
     .input-error { background-color: #ffe5e5 !important; border-color: #dc3545 !important; color: #dc3545 !important; animation: shake 0.4s; }
     @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-4px); } 100% { transform: translateX(0); } }
@@ -108,13 +111,17 @@
                 <div class="col-6 col-md-2"><label class="small fw-bold">ឆ្នាំសិក្សា</label><select id="gYear" class="form-select border-primary" onchange="refreshData()"></select></div>
                 <div class="col-6 col-md-2"><label class="small fw-bold">ឆមាស</label><select id="gSemester" class="form-select border-primary" onchange="refreshData()"><option value="ឆមាសទី១">ឆមាសទី១</option><option value="ឆមាសទី២">ឆមាសទី២</option></select></div>
                 <div class="col-6 col-md-2"><label class="small fw-bold">ខែប្រឡង</label><select id="gMonth" class="form-select border-primary" onchange="refreshData()"></select></div>
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-2">
                     <div class="form-check form-switch bg-light p-2 rounded border border-primary text-center d-flex justify-content-center align-items-center">
                         <input class="form-check-input ms-0" type="checkbox" id="mode70" checked onchange="updateMaxLabel()">
-                        <label class="form-check-label fw-bold text-primary ms-2" for="mode70">យក ៧០% (បង្គត់ឡើង)</label>
+                        <label class="form-check-label fw-bold text-primary ms-2" for="mode70" style="font-size: 11px;">យក ៧០%</label>
                     </div>
                 </div>
-                <div class="col-12 col-md-3 text-end"><button class="btn btn-danger btn-sm rounded-pill px-4 fw-bold shadow-sm" onclick="handleLogout()">ចាកចេញ</button></div>
+                <div class="col-12 col-md-4 text-end d-flex justify-content-end align-items-center gap-2">
+                    <!-- ប៊ូតុងចាក់សោរប្រព័ន្ធ សម្រាប់តែ Admin -->
+                    <button id="lockSystemBtn" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm d-none" onclick="toggleSystemLock()"><i class="fa-solid fa-unlock"></i> ចាក់សោរប្រព័ន្ធ</button>
+                    <button class="btn btn-secondary btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="handleLogout()">ចាកចេញ</button>
+                </div>
             </div>
         </div>
 
@@ -138,7 +145,7 @@
               <div class="row g-2 mb-3 align-items-end border-bottom pb-3">
                 <div class="col-6 col-md-4"><label class="small fw-bold">បន្ទប់</label><select id="roomSelect" class="form-select fw-bold border-primary" onchange="onFilterChange()"></select></div>
                 <div class="col-6 col-md-5"><label class="small fw-bold text-primary">មុខវិជ្ជា</label><select id="subjectSelect" class="form-select fw-bold border-primary" onchange="onFilterChange()"></select></div>
-                <div class="col-12 col-md-3"><button class="btn btn-success w-100 fw-bold shadow mt-2 mt-md-0" onclick="manualSaveScores()"><i class="fa-solid fa-save"></i> រក្សាទុកពិន្ទុ</button></div>
+                <div class="col-12 col-md-3"><button id="saveScoreBtn" class="btn btn-success w-100 fw-bold shadow mt-2 mt-md-0" onclick="manualSaveScores()"><i class="fa-solid fa-save"></i> រក្សាទុកពិន្ទុ</button></div>
               </div>
 
               <div id="currentInputTitle" class="alert alert-primary py-2 mb-3 text-center fw-bold hidden shadow-sm" style="border-left: 5px solid #0d6efd; background-color: #eef6ff;"></div>
@@ -158,7 +165,6 @@
                   <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                       <h6 class="fw-bold text-success small mb-0"><i class="fa-solid fa-chart-pie me-1"></i> វឌ្ឍនភាព និងរបាយការណ៍រួម</h6>
                       <div class="d-flex align-items-center">
-                          <!-- Dropdown សម្រាប់ច្រោះថ្នាក់ -->
                           <select id="reportGradeFilter" class="form-select form-select-sm border-primary fw-bold me-2 shadow-sm" style="width: auto;" onchange="filterReportTable()">
                               <option value="ALL">-- គ្រប់ថ្នាក់ --</option>
                               <option value="7">ថ្នាក់ទី 7</option>
@@ -239,9 +245,11 @@
     const SB_URL = "https://jmyfcgtvwlbtzfxgmyai.supabase.co";
     const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpteWZjZ3R2d2xidHpmeGdteWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NzEzODcsImV4cCI6MjA5MTE0NzM4N30.9CD_yAFGBTylqPjivqSHoyTYvL_b1PP27WUi2yL9CbQ";
     const _sb = supabase.createClient(SB_URL, SB_KEY);
+    
     let currentUser = null, allStudentsCache = [];
     let saveTimeout = null; 
     let hasUnsavedChanges = false; 
+    let isSystemLocked = false; // System lock variable
 
     const defaultSubjectOrder = [
         "ភាសាខ្មែរ", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", 
@@ -251,7 +259,7 @@
     ];
 
     window.addEventListener('beforeunload', function (e) {
-        if (hasUnsavedChanges) { e.preventDefault(); e.returnValue = ''; }
+        if (hasUnsavedChanges && !isSystemLocked) { e.preventDefault(); e.returnValue = ''; }
     });
 
     (function initUI() {
@@ -277,6 +285,43 @@
         return results;
     }
 
+    // --- LOCK SYSTEM FUNCTIONS ---
+    async function getLockStatus() {
+        const { data } = await _sb.from('subject_configs').select('*').eq('subject_name', 'SYSTEM_SETTINGS').eq('class_name', 'LOCKED').maybeSingle();
+        isSystemLocked = (data && data.max_score === 1);
+        updateLockUI();
+    }
+
+    async function toggleSystemLock() {
+        if(currentUser.role !== 'Admin') return;
+        const { data } = await _sb.from('subject_configs').select('*').eq('subject_name', 'SYSTEM_SETTINGS').eq('class_name', 'LOCKED').maybeSingle();
+        const newStatus = !isSystemLocked ? 1 : 0;
+        
+        if(data) {
+            await _sb.from('subject_configs').update({ max_score: newStatus }).eq('subject_name', 'SYSTEM_SETTINGS').eq('class_name', 'LOCKED');
+        } else {
+            await _sb.from('subject_configs').insert({ subject_name: 'SYSTEM_SETTINGS', class_name: 'LOCKED', max_score: newStatus });
+        }
+        
+        isSystemLocked = !isSystemLocked;
+        updateLockUI();
+        Swal.fire('ជោគជ័យ', isSystemLocked ? 'ប្រព័ន្ធត្រូវបានចាក់សោរ! (គ្មានអ្នកណាអាចបញ្ចូលពិន្ទុបានទេ)' : 'ប្រព័ន្ធត្រូវបានបើកឱ្យបញ្ចូលពិន្ទុវិញហើយ!', 'success');
+        loadInputList();
+    }
+
+    function updateLockUI() {
+        const btn = document.getElementById('lockSystemBtn');
+        if(!btn) return;
+        if(isSystemLocked) {
+            btn.innerHTML = '<i class="fa-solid fa-lock"></i> បើកសោរប្រព័ន្ធ';
+            btn.classList.replace('btn-outline-danger', 'btn-danger');
+        } else {
+            btn.innerHTML = '<i class="fa-solid fa-unlock"></i> ចាក់សោរប្រព័ន្ធ';
+            btn.classList.replace('btn-danger', 'btn-outline-danger');
+        }
+    }
+    // -----------------------------
+
     async function handleLogin() {
         const { data, error } = await _sb.auth.signInWithPassword({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPass').value });
         if(error) return Swal.fire('បរាជ័យ', 'អ៊ីមែល ឬលេខសម្ងាត់មិនត្រឹមត្រូវ', 'error');
@@ -285,12 +330,18 @@
         document.getElementById('authSection').classList.add('hidden');
         document.getElementById('appSection').classList.remove('hidden');
         document.getElementById('userDisplay').innerText = `អ្នកប្រើ៖ ${prof.full_name} (${prof.role})`;
-        if(prof.role === 'Admin') document.getElementById('adminOnly').classList.remove('d-none');
+        
+        if(prof.role === 'Admin') {
+            document.getElementById('adminOnly').classList.remove('d-none');
+            document.getElementById('lockSystemBtn').classList.remove('d-none');
+        }
         
         const { data: lastSt } = await _sb.from('students').select('academic_year, semester, month_name').order('created_at', {ascending: false}).limit(1).maybeSingle();
         if(lastSt) { document.getElementById('gYear').value = lastSt.academic_year; document.getElementById('gSemester').value = lastSt.semester; document.getElementById('gMonth').value = lastSt.month_name; }
         
-        await refreshData(); updateMotivation();
+        await getLockStatus(); // Check lock status when login
+        await refreshData(); 
+        updateMotivation();
     }
 
     async function refreshData() {
@@ -303,13 +354,13 @@
         document.getElementById('absRoomSelect').innerHTML = `<option value="ALL">-- បង្ហាញទាំងអស់ --</option>` + roomOpts;
         
         const { data: subs } = await _sb.from('subject_configs').select('subject_name');
-        if(subs) { document.getElementById('subjectSelect').innerHTML = [...new Set(subs.map(s => s.subject_name))].map(s => `<option value="${s}">${s}</option>`).join(''); }
+        if(subs) { document.getElementById('subjectSelect').innerHTML = [...new Set(subs.map(s => s.subject_name))].filter(s => s !== 'SYSTEM_SETTINGS').map(s => `<option value="${s}">${s}</option>`).join(''); }
         
         loadInputList();
     }
 
     async function onFilterChange() {
-        if(hasUnsavedChanges && document.querySelectorAll('.stu-row').length > 0) {
+        if(hasUnsavedChanges && document.querySelectorAll('.stu-row').length > 0 && !isSystemLocked) {
             await saveScoresCore(true); 
         }
         loadInputList();
@@ -326,6 +377,7 @@
         if(!r || !sub) { titleDiv.classList.add('hidden'); return; }
         
         titleDiv.innerHTML = `កំពុងបញ្ចូលពិន្ទុ៖ បន្ទប់ <span class="text-danger mx-1">${r}</span> | មុខវិជ្ជា <span class="text-primary mx-1">${sub}</span>`;
+        if (isSystemLocked) titleDiv.innerHTML += ` <span class="badge bg-danger ms-2"><i class="fa-solid fa-lock"></i> ប្រព័ន្ធត្រូវបានចាក់សោរ</span>`;
         titleDiv.classList.remove('hidden');
 
         tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> ទាញទិន្នន័យ...</td></tr>';
@@ -340,8 +392,19 @@
             let rowBgClass = (gradeNum >= 7 && gradeNum <= 12) ? `bg-grade-${gradeNum}` : '';
 
             const max = cfgs.find(c => String(c.class_name).trim() === classStr)?.max_score || 100;
-            const mySc = scores.find(x => String(x.student_id).trim() === String(s.student_id).trim() && String(x.subject_name).trim() === String(sub).trim())?.score_value || '';
-            const isAbs = scores.some(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value === 'A' || x.score_value === 'P'));
+            
+            // ស្វែងរកមុខវិជ្ជាជាក់លាក់
+            let mySc = scores.find(x => String(x.student_id).trim() === String(s.student_id).trim() && String(x.subject_name).trim() === String(sub).trim())?.score_value || '';
+            
+            // ស្វែងរកមើលថាតើសិស្សនេះត្រូវបាន Owner ដាក់អវត្តមាន A/P ក្នុងខែនេះដែរឬទេ ទោះនៅមុខវិជ្ជាណាក៏ដោយ
+            const absRecord = scores.find(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value === 'A' || x.score_value === 'P'));
+            const isAbs = !!absRecord;
+            
+            // បើអវត្តមាន បង្ខំឱ្យបង្ហាញអក្សរ A តែម្តង កុំឱ្យចេញតែក្រហម
+            if (isAbs) { mySc = absRecord.score_value; }
+            
+            let disabledClass = isAbs ? 'absent-disabled' : '';
+            let inputDisabled = (isAbs || isSystemLocked) ? 'disabled' : '';
             
             return `<tr class="stu-row border-bottom ${rowBgClass}" data-id="${s.student_id}" data-room="${s.room_number}" data-name="${s.full_name}" data-class="${s.class_name}">
                 <td class="text-center border-end-0">${i+1}</td>
@@ -351,13 +414,17 @@
                     ${s.full_name} <span class="badge bg-secondary ms-1" style="font-size: 10px;">${classStr}</span>
                     <div class="small text-muted fw-normal mt-1">Max: <span class="max-label">${max}</span></div>
                 </td>
-                <td class="border-end-0"><input type="text" class="form-control score-input mx-auto shadow-sm" value="${mySc}" data-max="${max}" onblur="triggerAutoSave()" oninput="validateInput(this)" ondblclick="adminUnlock('${s.student_id}', '${sub}', this.value)" ${isAbs?'disabled':''}></td>
+                <td class="border-end-0"><input type="text" class="form-control score-input mx-auto shadow-sm ${disabledClass}" value="${mySc}" data-max="${max}" onblur="triggerAutoSave()" oninput="validateInput(this)" ondblclick="adminUnlock('${s.student_id}', '${sub}', this.value)" ${inputDisabled}></td>
             </tr>`;
         }).join('');
-        setupSmartPaste('.score-input'); updateMaxLabel();
+        
+        document.getElementById('saveScoreBtn').disabled = isSystemLocked; // បិទប៊ូតុង Save ពេល Locked
+        setupSmartPaste('.score-input'); 
+        updateMaxLabel();
     }
 
     function validateInput(inp, isPasteMode = false) { 
+        if(isSystemLocked) return false; // បិទមិនឱ្យវាយចូលបើ Locked
         hasUnsavedChanges = true; inp.classList.remove('input-error'); 
         const originalValue = inp.value;
         inp.value = inp.value.toUpperCase().replace(/[^0-9.AP]/g, ''); 
@@ -384,6 +451,8 @@
     function manualSaveScores() { saveScoresCore(false); }
 
     async function saveScoresCore(isAutoSave = false) { 
+        if(isSystemLocked) return; // មិនអនុញ្ញាតឱ្យរក្សាទុកបើ Locked
+        
         const pUpsert = []; const pDelete = []; let hasError = false;
         const sub = document.getElementById('subjectSelect').value, y = document.getElementById('gYear').value, sem = document.getElementById('gSemester').value, m = document.getElementById('gMonth').value; 
         const mode = document.getElementById('mode70').checked ? 70 : 100;
@@ -413,7 +482,7 @@
 
     async function openSubjectOrderModal() {
         const cf = await fetchAllData('subject_configs');
-        let allSubs = [...new Set(cf.map(c=>c.subject_name))];
+        let allSubs = [...new Set(cf.map(c=>c.subject_name))].filter(s => s !== 'SYSTEM_SETTINGS');
         let currentOrder = JSON.parse(localStorage.getItem('customSubjectOrder')) || defaultSubjectOrder;
 
         allSubs.sort((a, b) => {
@@ -463,7 +532,7 @@
         }
 
         let activeOrder = JSON.parse(localStorage.getItem('customSubjectOrder')) || defaultSubjectOrder;
-        let uniqueSubs = [...new Set(cf.map(c=>c.subject_name))]; 
+        let uniqueSubs = [...new Set(cf.map(c=>c.subject_name))].filter(s => s !== 'SYSTEM_SETTINGS'); 
         uniqueSubs.sort((a, b) => { let idxA = activeOrder.indexOf(a); let idxB = activeOrder.indexOf(b); if (idxA === -1) idxA = 999; if (idxB === -1) idxB = 999; return idxA - idxB; });
         
         document.getElementById('reportHead').innerHTML = `<tr><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th>${uniqueSubs.map(s => `<th>${s}</th>`).join('')}</tr>`; 
@@ -475,7 +544,7 @@
             const classStr = String(s.class_name).trim(); const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
             if(gradeStats[gradeNum]) {
                 gradeStats[gradeNum].students++;
-                const numSubjects = cf.filter(c => String(c.class_name).trim() === classStr).length;
+                const numSubjects = cf.filter(c => String(c.class_name).trim() === classStr && c.subject_name !== 'SYSTEM_SETTINGS').length;
                 gradeStats[gradeNum].expected += numSubjects;
             }
         });
@@ -483,8 +552,6 @@
         let tableRows = '';
         sortedStds.forEach(s => { 
             const classStr = String(s.class_name).trim(); const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
-            
-            // Add class report-row and data-grade for filtering
             let h = `<tr class="report-row" data-grade="${gradeNum}"><td>${s.room_number}</td><td>${s.desk_number}</td><td>${s.student_id}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td>${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td>${s.class_name}</td>`; 
             
             const myScores = sc.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
@@ -529,11 +596,9 @@
         });
         statsArea.innerHTML = statsHTML;
         
-        // អនុវត្តការច្រោះ (Filter) បើសិនជាមានការជ្រើសរើសរួចហើយ
         filterReportTable();
     }
 
-    // មុខងារច្រោះថ្នាក់នៅក្នុងរបាយការណ៍រួម
     function filterReportTable() {
         const selectedGrade = document.getElementById('reportGradeFilter').value;
         document.querySelectorAll('.report-row').forEach(row => {
@@ -563,7 +628,7 @@
                 gradeDetails[g] = { totalStudents: stdsInGrade.length, subjects: {} };
                 let stuIds = stdsInGrade.map(s => s.student_id);
                 let gradeClasses = [...new Set(stdsInGrade.map(s => String(s.class_name).trim()))];
-                let gradeSubs = [...new Set(cf.filter(c => gradeClasses.includes(String(c.class_name).trim())).map(c => c.subject_name))];
+                let gradeSubs = [...new Set(cf.filter(c => gradeClasses.includes(String(c.class_name).trim()) && c.subject_name !== 'SYSTEM_SETTINGS').map(c => c.subject_name))];
 
                 gradeSubs.forEach(sub => { gradeDetails[g].subjects[sub] = { actual: 0, inputters: new Set() }; });
                 let gradeScores = sc.filter(x => stuIds.includes(x.student_id));
@@ -692,7 +757,7 @@
         updateSaveStatus('saving');
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value; 
         const cf = await fetchAllData('subject_configs'); 
-        const subs = [...new Set(cf.map(s => s.subject_name))]; 
+        const subs = [...new Set(cf.map(s => s.subject_name))].filter(s => s !== 'SYSTEM_SETTINGS'); 
 
         try {
             if (val === "") {
@@ -744,7 +809,7 @@
     function jumpToInput(r) { document.getElementById('roomSelect').value = r; switchTab('input'); loadInputList(); }
 
     async function switchTab(t) { 
-        if (t !== 'input' && document.querySelectorAll('.stu-row').length > 0) { triggerAutoSave(); }
+        if (t !== 'input' && document.querySelectorAll('.stu-row').length > 0 && !isSystemLocked) { triggerAutoSave(); }
         document.querySelectorAll('.tab-pane-custom').forEach(p => p.classList.add('hidden')); 
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
         document.getElementById('tab-'+t).classList.remove('hidden'); 
@@ -756,6 +821,10 @@
     
     async function adminUnlock(sid, sub, val) { 
         if(currentUser.role !== 'Admin' || (val !== 'A' && val !== 'P')) return; 
+        if(isSystemLocked) {
+            Swal.fire('បដិសេធ', 'សូមចុចបើកសោរប្រព័ន្ធ(Unlock System) នៅផ្នែកខាងលើជាមុនសិន!', 'warning');
+            return;
+        }
         const { isConfirmed } = await Swal.fire({ title: 'ដោះសោ?', text: "លុបអវត្តមាននេះដើម្បីបញ្ចូលពិន្ទុមែនទេ?", icon: 'warning', showCancelButton: true }); 
         if(isConfirmed) { await _sb.from('scores').delete().match({ student_id: sid, subject_name: sub, academic_year: document.getElementById('gYear').value, month_name: document.getElementById('gMonth').value, semester: document.getElementById('gSemester').value }); loadInputList(); } 
     }
@@ -783,7 +852,9 @@
         ins.forEach((inp, i) => { 
             inp.onkeydown = (e) => { if(e.key==='Enter'||e.key==='ArrowDown') focusNext(ins, i, 1); if(e.key==='ArrowUp') focusNext(ins, i, -1); }; 
             inp.onpaste = (e) => { 
-                e.preventDefault(); hasUnsavedChanges = true; 
+                e.preventDefault(); 
+                if(isSystemLocked) return; // មិនឱ្យ Paste ចូលទេបើ Locked
+                hasUnsavedChanges = true; 
                 const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/\r/g, '').split('\n'); 
                 let pasteIdx = 0; let hasPasteError = false;
 
@@ -808,16 +879,8 @@
     
     function exportExcel(id) { 
         let tableClone = document.getElementById(id).cloneNode(true);
-        
-        // ប្រសិនបើ Export តារាងរបាយការណ៍រួម ត្រូវដក Filter ថ្នាក់ចេញសិន ដើម្បី Export ទាំងអស់
-        if(id === 'reportTable') {
-            tableClone.querySelectorAll('.report-row').forEach(row => row.classList.remove('hidden'));
-        }
-
-        if(id === 'absHistoryTable') {
-            const rows = tableClone.querySelectorAll('tr');
-            rows.forEach(row => { if(row.children.length > 0) row.removeChild(row.lastElementChild); });
-        }
+        if(id === 'reportTable') { tableClone.querySelectorAll('.report-row').forEach(row => row.classList.remove('hidden')); }
+        if(id === 'absHistoryTable') { const rows = tableClone.querySelectorAll('tr'); rows.forEach(row => { if(row.children.length > 0) row.removeChild(row.lastElementChild); }); }
         
         const a = document.createElement("a"); 
         a.href = URL.createObjectURL(new Blob(['\ufeff', tableClone.outerHTML], { type: 'application/vnd.ms-excel' })); 
