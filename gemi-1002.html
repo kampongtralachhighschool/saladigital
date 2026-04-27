@@ -12,8 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@300;400;700;900&family=Moul&display=swap" rel="stylesheet">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- html2canvas for Image Download -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         body {
@@ -60,16 +58,6 @@
             transform: translateY(-5px);
         }
 
-        [contenteditable="true"] {
-            outline: 3px dashed #3b82f6;
-            outline-offset: 4px;
-            cursor: text;
-        }
-        [contenteditable="true"]:focus {
-            outline: 3px solid #2563eb;
-            background-color: #f8fafc;
-        }
-
         /* Responsive scaling */
         @media (max-width: 1200px) {
             .slides-wrapper { transform: scale(0.8); }
@@ -83,16 +71,6 @@
     </style>
 </head>
 <body>
-
-    <!-- Action Buttons -->
-    <div class="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md shadow-md p-4 flex justify-center gap-4 border-b border-gray-200">
-        <button onclick="downloadImages()" id="downloadBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg flex items-center gap-2 transition-all text-lg">
-            <i class="fas fa-image"></i> ទាញយករូបភាពទាំង៤ (PNG)
-        </button>
-        <button id="editBtn" onclick="toggleEditMode()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-8 rounded-full shadow transition-all flex items-center gap-2 text-lg">
-            <i class="fas fa-edit"></i> <span id="editText">កែប្រែព័ត៌មាន</span>
-        </button>
-    </div>
 
     <div id="all-slides" class="slides-wrapper">
 
@@ -332,7 +310,7 @@
                         <div>
                             <p class="text-[22px] text-gray-500 mb-1">ចែករំលែកដោយ៖</p>
                             <p class="font-moul text-[32px] text-gray-800 mb-2">លោក ហុន ម៉ុម</p>
-                            <p class="text-[24px] text-gray-600">គ្រូបង្រៀនគណិតវិទ្យា វិ.ហ៊៊ុនសែន កំពង់ត្រឡាច</p>
+                            <p class="text-[28px] text-gray-600">គ្រូបង្រៀនគណិតវិទ្យា វិ.ហ៊៊ុនសែន កំពង់ត្រឡាច</p>
                         </div>
                     </div>
                     
@@ -354,93 +332,5 @@
 
     </div>
 
-    <script>
-        // Function to download all 4 slides as PNG images
-        async function downloadImages() {
-            // Exit edit mode first
-            if(isEditing) toggleEditMode();
-            
-            const btn = document.getElementById('downloadBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> កំពុងទាញយករូបភាព...';
-            btn.disabled = true;
-
-            const slides = document.querySelectorAll('.slide');
-            
-            // Temporary remove the wrapper scaling during canvas capture to ensure high quality
-            const wrapper = document.getElementById('all-slides');
-            const originalTransform = wrapper.style.transform;
-            wrapper.style.transform = 'none';
-
-            try {
-                for (let i = 0; i < slides.length; i++) {
-                    const slide = slides[i];
-                    
-                    // html2canvas configuration for high-quality export
-                    const canvas = await html2canvas(slide, {
-                        scale: 2, // 2x scale for Retina-like sharpness (2160x2160 output)
-                        useCORS: true,
-                        backgroundColor: '#ffffff',
-                        logging: false
-                    });
-
-                    // Create download link
-                    const imageURL = canvas.toDataURL("image/png");
-                    const link = document.createElement('a');
-                    link.href = imageURL;
-                    link.download = `Gemini_Workshop_Slide_${i + 1}.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    // Small pause between downloads to prevent browser blocking multiple downloads
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                }
-            } catch (error) {
-                console.error("Error generating images:", error);
-                alert("មានបញ្ហាក្នុងការទាញយករូបភាព។ សូមព្យាយាមម្តងទៀត។");
-            } finally {
-                // Restore wrapper scaling
-                wrapper.style.transform = originalTransform;
-                
-                // Restore button
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        // Edit Mode Toggle Function
-        let isEditing = false;
-        function toggleEditMode() {
-            const container = document.getElementById('all-slides');
-            const btn = document.getElementById('editBtn');
-            const textSpan = document.getElementById('editText');
-            
-            isEditing = !isEditing;
-            
-            if (isEditing) {
-                // Turn on editing
-                container.setAttribute('contenteditable', 'true');
-                
-                // Update Button UI
-                btn.classList.replace('bg-gray-200', 'bg-green-500');
-                btn.classList.replace('hover:bg-gray-300', 'hover:bg-green-600');
-                btn.classList.replace('text-gray-800', 'text-white');
-                textSpan.innerText = 'រក្សាទុក (Save)';
-                btn.querySelector('i').classList.replace('fa-edit', 'fa-save');
-                
-            } else {
-                // Turn off editing
-                container.setAttribute('contenteditable', 'false');
-                
-                // Update Button UI
-                btn.classList.replace('bg-green-500', 'bg-gray-200');
-                btn.classList.replace('hover:bg-green-600', 'hover:bg-gray-300');
-                btn.classList.replace('text-white', 'text-gray-800');
-                textSpan.innerText = 'កែប្រែព័ត៌មាន';
-                btn.querySelector('i').classList.replace('fa-save', 'fa-edit');
-            }
-        }
-    </script>
 </body>
 </html>
