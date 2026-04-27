@@ -118,7 +118,6 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-4 text-end d-flex justify-content-end align-items-center gap-2">
-                    <!-- ប៊ូតុងចាក់សោរប្រព័ន្ធ សម្រាប់តែ Admin -->
                     <button id="lockSystemBtn" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm d-none" onclick="toggleSystemLock()"><i class="fa-solid fa-unlock"></i> ចាក់សោរប្រព័ន្ធ</button>
                     <button class="btn btn-secondary btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="handleLogout()">ចាកចេញ</button>
                 </div>
@@ -221,12 +220,15 @@
           <div id="tab-absence" class="tab-pane-custom hidden">
               <div class="card p-2 border-danger shadow-sm border-0">
                   <div class="row g-2 mb-2 align-items-center border-bottom pb-2">
-                      <div class="col-12 col-md-5">
+                      <div class="col-12 col-md-3">
                           <label class="small fw-bold text-danger mb-1">ជ្រើសរើសបន្ទប់</label>
                           <select id="absRoomSelect" class="form-select fw-bold border-danger" onchange="loadAbsenceList()"></select>
                       </div>
-                      <div class="col-12 col-md-7 text-start text-md-end mt-2 mt-md-0">
-                          <span class="small text-muted"><i class="fa-solid fa-circle-info text-primary"></i> ជ្រើសរើស A ឬ P វានឹងរក្សាទុកដោយស្វ័យប្រវត្តិ។</span>
+                      <div class="col-12 col-md-9 text-start text-md-end mt-2 mt-md-0 d-flex flex-column align-items-end justify-content-end">
+                          <button class="btn btn-warning fw-bold shadow-sm mb-1" onclick="syncAbsencesToAllSubjects()">
+                              <i class="fa-solid fa-rotate"></i> បញ្ជូនអវត្តមានទៅគ្រប់មុខវិជ្ជា
+                          </button>
+                          <span class="small text-muted"><i class="fa-solid fa-circle-info text-primary"></i> ប្រើប៊ូតុងនេះដើម្បីធានាថាឈ្មោះអវត្តមាន ត្រូវសរសេរជាន់ពីលើគ្រប់មុខវិជ្ជាទាំងអស់ ទោះជាសិស្សមានពិន្ទុខ្លះហើយក៏ដោយ។</span>
                       </div>
                   </div>
                   <div class="table-responsive table-container border shadow-sm mt-2">
@@ -543,7 +545,6 @@
         let tableRows = '';
         sortedStds.forEach(s => { 
             const classStr = String(s.class_name).trim(); const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
-            // បន្ថែម style mso-number-format:'\@'; ការពារ Excel កុំឲ្យបម្លែងជា Date/Time
             let h = `<tr class="report-row" data-grade="${gradeNum}"><td>${s.room_number}</td><td>${s.desk_number}</td><td style="mso-number-format:'\@';">${s.student_id}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${s.class_name}</td>`; 
             
             const myScores = sc.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
@@ -565,7 +566,6 @@
                     if (dictObj || essayObj) {
                         let dVal = parseFloat(dictObj?.score_value) || 0; let eVal = parseFloat(essayObj?.score_value) || 0;
                         if (!isNaN(dVal) && !isNaN(eVal) && dictObj?.score_value !== 'A' && essayObj?.score_value !== 'A') {
-                            // បានលុបសញ្ញាផ្កាយ (*) ចេញតាមការស្នើសុំ
                             v = `<span class="text-primary fw-bold" title="គណនាអូតូ: អាន(${dVal}) + តែង(${eVal})">${dVal + eVal}</span>`; inputBy = "ប្រព័ន្ធអូតូ";
                         }
                     }
@@ -766,6 +766,91 @@
         } catch (error) { updateSaveStatus('error'); }
     }
 
+    // មុខងារថ្មីសម្រាប់ប៊ូតុង "បញ្ជូនអវត្តមានទៅគ្រប់មុខវិជ្ជា"
+    async function syncAbsencesToAllSubjects() {
+        if(currentUser.role !== 'Admin') return;
+        
+        const y = document.getElementById('gYear').value;
+        const m = document.getElementById('gMonth').value;
+        const sem = document.getElementById('gSemester').value;
+
+        const { isConfirmed } = await Swal.fire({
+            title: 'បញ្ជាក់ការបញ្ជូន?',
+            text: `សកម្មភាពនេះនឹងទាញយកសិស្សដែលអវត្តមាន (A/P) ទាំងអស់ក្នុងខែ ${m} ទៅសរសេរជាន់ពីលើពិន្ទុគ្រប់មុខវិជ្ជា។ ទោះមានពិន្ទុហើយក៏ដោយក៏ប្តូរជា A/P ដែរ។ តើអ្នកចង់បន្តទេ?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fa-solid fa-check"></i> បញ្ជូនឥឡូវនេះ',
+            cancelButtonText: 'បិទ'
+        });
+
+        if(!isConfirmed) return;
+
+        Swal.fire({ title: 'កំពុងដំណើរការបញ្ជូន...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        try {
+            // ទាញយកពិន្ទុទាំងអស់ក្នុងខែនេះ
+            const sc = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
+            
+            // រកមើលសិស្សដែលមាន A ឬ P
+            let absentStudents = {}; // ចងក្រង student_id -> 'A' ឬ 'P'
+            let studentDetails = {}; 
+            
+            sc.forEach(row => {
+                if(row.score_value === 'A' || row.score_value === 'P') {
+                    absentStudents[row.student_id] = row.score_value;
+                    studentDetails[row.student_id] = { 
+                        full_name: row.full_name, 
+                        class_name: row.class_name, 
+                        room_number: row.room_number 
+                    };
+                }
+            });
+
+            const studentIds = Object.keys(absentStudents);
+            if(studentIds.length === 0) {
+                Swal.fire('ជោគជ័យ', `គ្មានសិស្សអវត្តមានក្នុងខែ ${m} ដែលត្រូវបញ្ជូនទេ!`, 'info');
+                return;
+            }
+
+            // ទាញយកមុខវិជ្ជាទាំងអស់
+            const cf = await fetchAllData('subject_configs');
+            const subs = [...new Set(cf.map(s => s.subject_name))].filter(s => s !== 'SYSTEM_SETTINGS');
+
+            // រៀបចំទិន្នន័យ (Payload) ដើម្បី Upsert
+            let payload = [];
+            studentIds.forEach(stuId => {
+                const val = absentStudents[stuId];
+                const details = studentDetails[stuId];
+                subs.forEach(sub => {
+                    payload.push({
+                        student_id: stuId,
+                        subject_name: sub,
+                        score_value: val,
+                        academic_year: y,
+                        semester: sem,
+                        month_name: m,
+                        room_number: details.room_number,
+                        full_name: details.full_name,
+                        class_name: details.class_name,
+                        input_by: currentUser.full_name
+                    });
+                });
+            });
+
+            // អាប់ដេតចូល Database ម្តងទាំងអស់
+            await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
+
+            Swal.fire('ជោគជ័យ!', 'បានបញ្ជូនទិន្នន័យអវត្តមានទៅគ្រប់មុខវិជ្ជារួចរាល់។', 'success');
+            
+            // Refresh ការបង្ហាញ
+            loadAbsenceList();
+
+        } catch (error) {
+            Swal.fire('បរាជ័យ', 'មានកំហុសក្នុងការបញ្ជូនទិន្នន័យ!', 'error');
+            console.error(error);
+        }
+    }
+
     async function loadAbsenceHistoryReport() { 
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value; 
         const tbody = document.getElementById('absHistoryTableBody'); 
@@ -781,7 +866,6 @@
             const myAbs = absData.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
             const curSt = [...new Set(myAbs.filter(x => x.month_name === m && x.semester === sem).map(x=>x.score_value))].join('/'); 
             const hist = [...new Set(myAbs.filter(x => x.month_name !== m).map(x=>`${x.month_name}(${x.score_value})`))].join(', '); 
-            // បន្ថែម style mso-number-format:'\@'; ការពារ Excel កុំឲ្យបម្លែងជា Date/Time
             return `<tr><td>${s.room_number}</td><td>${s.desk_number}</td><td style="mso-number-format:'\@';">${s.student_id}</td><td class="text-start fw-bold">${s.full_name}</td><td>${s.gender||''}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${s.class_name}</td><td class="bg-danger text-white">${curSt}</td><td>${hist||'-'}</td><td><button class="btn btn-sm btn-danger shadow-sm" onclick="revertAbs('${s.student_id}')">លុប</button></td></tr>`; 
         }).join(''); 
     }
