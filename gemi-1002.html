@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>វគ្គចែករំលែក៖ Gemini សម្រាប់គ្រូបង្រៀន (1:1 Slides)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Khmer -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@300;400;700;900&family=Moul&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2canvas for Image Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Battambang', cursive, sans-serif;
+            background-color: #1e293b;
+            margin: 0;
+            padding: 0;
+        }
+        .font-moul {
+            font-family: 'Moul', serif;
+        }
+        
+        /* 1:1 Slide Container - Exactly 1080x1080px */
+        .slide {
+            width: 1080px;
+            height: 1080px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Keep content strictly inside */
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .slides-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            align-items: center;
+            padding: 2rem;
+            transform-origin: top center;
+        }
+
+        .gemini-gradient {
+            background: linear-gradient(135deg, #1b61da 0%, #8b5cf6 50%, #e879f9 100%);
+        }
+
+        .topic-card {
+            transition: transform 0.2s;
+        }
+        .topic-card:hover {
+            transform: translateY(-5px);
+        }
+
+        [contenteditable="true"] {
+            outline: 3px dashed #3b82f6;
+            outline-offset: 4px;
+            cursor: text;
+        }
+        [contenteditable="true"]:focus {
+            outline: 3px solid #2563eb;
+            background-color: #f8fafc;
+        }
+
+        /* Responsive scaling */
+        @media (max-width: 1200px) {
+            .slides-wrapper { transform: scale(0.8); }
+        }
+        @media (max-width: 900px) {
+            .slides-wrapper { transform: scale(0.6); }
+        }
+        @media (max-width: 600px) {
+            .slides-wrapper { transform: scale(0.35); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Action Buttons -->
+    <div class="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md shadow-md p-4 flex justify-center gap-4 border-b border-gray-200">
+        <button onclick="downloadImages()" id="downloadBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg flex items-center gap-2 transition-all text-lg">
+            <i class="fas fa-image"></i> ទាញយករូបភាពទាំង៤ (PNG)
+        </button>
+        <button id="editBtn" onclick="toggleEditMode()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-8 rounded-full shadow transition-all flex items-center gap-2 text-lg">
+            <i class="fas fa-edit"></i> <span id="editText">កែប្រែព័ត៌មាន</span>
+        </button>
+    </div>
+
+    <div id="all-slides" class="slides-wrapper">
+
+        <!-- ================= SLIDE 1: Poster Layout (Left Image, Right Text) ================= -->
+        <div class="slide rounded-3xl flex flex-row" id="slide-1">
+            
+            <!-- Left Side: Speaker Photo (42%) -->
+            <div class="w-[42%] h-full gemini-gradient flex flex-col items-center justify-center p-8 relative">
+                <!-- Decorative pattern -->
+                <div class="absolute inset-0 bg-white/5 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]"></div>
+                
+                <div class="relative z-10 flex flex-col items-center">
+                    <div class="relative mb-10">
+                        <img src="https://i.ibb.co/kswSq0Dz/photo-teacher.jpg" alt="លោក ហុន ម៉ុម" class="w-[340px] h-[340px] object-cover rounded-full border-[12px] border-white shadow-2xl">
+                        <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-blue-900 font-bold px-8 py-3 rounded-full text-[26px] shadow-xl border-[4px] border-white whitespace-nowrap">
+                            ចែករំលែកដោយ
+                        </div>
+                    </div>
+                    <h2 class="font-moul text-[48px] text-white mt-4 drop-shadow-md text-center">លោក ហុន ម៉ុម</h2>
+                    <p class="text-[26px] mt-4 text-white font-bold bg-black/20 px-8 py-2.5 rounded-full shadow-inner border border-white/20 mb-4">
+                        គ្រូបង្រៀនគណិតវិទ្យា
+                    </p>
+
+                    <!-- New Price and Support Section -->
+                    <div class="w-full max-w-[95%] bg-white/10 backdrop-blur-md border border-white/30 rounded-[24px] p-6 text-center shadow-xl mt-4">
+                        <div class="flex items-center justify-center gap-3 mb-2">
+                            <span class="text-white text-[28px] font-bold drop-shadow-sm">តម្លៃសិក្សា៖</span>
+                            <span class="font-moul text-yellow-300 text-[56px] drop-shadow-md">9.9$</span>
+                        </div>
+                        <div class="border-t border-white/30 pt-4 mt-2">
+                            <p class="text-white text-[22px] leading-[1.6] font-bold">
+                                <i class="fab fa-telegram text-[28px] text-blue-200 align-middle mr-2"></i>
+                                ជួយគាំទ្របច្ចេកទេសតាមក្រុម Telegram ពេលរៀនចប់ដើម្បីអនុវត្តគម្រោង។
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Text & Info (58%) -->
+            <div class="w-[58%] h-full bg-white flex flex-col justify-center px-12 py-16 relative">
+                <!-- Soft background blobs -->
+                <div class="absolute top-[-50px] right-[-50px] w-80 h-80 bg-purple-100 rounded-full blur-3xl opacity-60"></div>
+                <div class="absolute bottom-[-50px] left-[-50px] w-80 h-80 bg-blue-100 rounded-full blur-3xl opacity-60"></div>
+                
+                <div class="relative z-10">
+                    <span class="inline-flex items-center gap-3 bg-blue-50 text-blue-700 px-6 py-2.5 rounded-full text-[22px] font-bold mb-8 border border-blue-200 shadow-sm">
+                        <i class="fas fa-video"></i> វគ្គចែករំលែកអនឡាញ (Online)
+                    </span>
+                    
+                    <h1 class="font-moul text-[52px] leading-[1.4] text-gray-800 mb-8 drop-shadow-sm">
+                        របៀបប្រើប្រាស់ <span class="text-blue-600">Google Gemini</span><br>សម្រាប់ជួយសម្រួលការងារគ្រូបង្រៀន
+                    </h1>
+                    
+                    <p class="text-[26px] text-gray-700 leading-relaxed border-l-[8px] border-purple-500 pl-6 mb-12 bg-gray-50 py-5 pr-5 rounded-r-2xl font-bold">
+                        "បច្ចេកវិទ្យា AI នឹងមិនជំនួសគ្រូបង្រៀនទេ តែគ្រូដែលចេះ AI នឹងជំនួសគ្រូដែលមិនចេះ AI!"
+                    </p>
+
+                    <!-- Info Boxes Grid -->
+                    <div class="flex flex-col gap-6">
+                        <!-- Date Box (Full Width) -->
+                        <div class="flex items-center gap-6 bg-white p-6 rounded-[24px] shadow-lg border border-gray-100">
+                            <div class="w-[80px] h-[80px] rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-[36px] shrink-0">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div>
+                                <p class="text-[20px] text-gray-500 font-bold mb-1">កាលបរិច្ឆេទ (វគ្គ១)</p>
+                                <p class="font-bold text-[32px] text-gray-800">ពុធ ព្រហស្បតិ៍ សុក្រ ថ្ងៃទី៦-៧-៨ ឧសភា ២០២៦</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Time and Location (Split) -->
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="flex items-center gap-5 bg-white p-5 rounded-[24px] shadow-lg border border-gray-100">
+                                <div class="w-[70px] h-[70px] rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-[32px] shrink-0">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[18px] text-gray-500 font-bold mb-1">ម៉ោង</p>
+                                    <p class="font-bold text-[26px] text-gray-800">៨:៣០ យប់</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-5 bg-white p-5 rounded-[24px] shadow-lg border border-gray-100">
+                                <div class="w-[70px] h-[70px] rounded-full bg-pink-100 flex items-center justify-center text-pink-600 text-[32px] shrink-0">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[18px] text-gray-500 font-bold mb-1">ទីតាំង</p>
+                                    <p class="font-bold text-[26px] text-gray-800">Google Meet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SLIDE 2: Topics 1 to 4 (Bigger Fonts) ================= -->
+        <div class="slide rounded-3xl bg-gray-50 p-14 flex flex-col" id="slide-2">
+            <h2 class="font-moul text-[48px] mb-10 text-gray-800 border-l-[12px] border-purple-500 pl-8 h-[70px] flex items-center">
+                ខ្លឹមសារសំខាន់ៗនៃកម្មវិធី (១/២)
+            </h2>
+
+            <div class="grid grid-cols-2 grid-rows-2 gap-10 flex-grow">
+                <!-- Topic 1 -->
+                <div class="topic-card bg-white p-10 rounded-[32px] border-2 border-gray-100 shadow-sm flex flex-col">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 w-[80px] h-[80px] rounded-2xl flex items-center justify-center text-white shadow-md shrink-0">
+                            <i class="fas fa-robot text-[36px]"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-[32px] leading-tight">១. ការស្វែងយល់ពី Gemini</h3>
+                    </div>
+                    <p class="text-gray-600 text-[26px] leading-[1.6]">វិធីប្រើប្រាស់ Gemini ជាជំនួយការផ្ទាល់ខ្លួន ដើម្បីសម្រួលការងារទូទៅប្រចាំថ្ងៃរបស់គ្រូបង្រៀនឱ្យចំណេញពេលវេលា។</p>
+                </div>
+
+                <!-- Topic 2 -->
+                <div class="topic-card bg-white p-10 rounded-[32px] border-2 border-gray-100 shadow-sm flex flex-col">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="bg-gradient-to-br from-purple-500 to-purple-600 w-[80px] h-[80px] rounded-2xl flex items-center justify-center text-white shadow-md shrink-0">
+                            <i class="fas fa-keyboard text-[36px]"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-[32px] leading-tight">២. សិល្បៈនៃការសរសេរ Prompt</h3>
+                    </div>
+                    <p class="text-gray-600 text-[26px] leading-[1.6]">តិចនិកសរសេរបញ្ជា (Prompt) ងាយៗ ខ្លីៗ តែបានលទ្ធផលចំគោលដៅ មិនបាច់សរសេរវែងអន្លាយ។</p>
+                </div>
+
+                <!-- Topic 3 -->
+                <div class="topic-card bg-white p-10 rounded-[32px] border-2 border-gray-100 shadow-sm flex flex-col">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 w-[80px] h-[80px] rounded-2xl flex items-center justify-center text-white shadow-md shrink-0">
+                            <i class="fas fa-gem text-[36px]"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-[32px] leading-tight">៣. ការបង្កើត និងប្រើប្រាស់ Gems</h3>
+                    </div>
+                    <p class="text-gray-600 text-[26px] leading-[1.6]">របៀបបង្វឹក (Train) AI ឲ្យក្លាយជាអ្នកឯកទេសតាមមុខវិជ្ជាជាក់លាក់ (ឧ. គ្រូគណិត, គ្រូអក្សរសាស្ត្រ) ដោយប្រើ Gems។</p>
+                </div>
+
+                <!-- Topic 4 -->
+                <div class="topic-card bg-white p-10 rounded-[32px] border-2 border-gray-100 shadow-sm flex flex-col">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="bg-gradient-to-br from-green-500 to-green-600 w-[80px] h-[80px] rounded-2xl flex items-center justify-center text-white shadow-md shrink-0">
+                            <i class="fas fa-book-open text-[36px]"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-[32px] leading-tight">៤. កិច្ចតែងការ & កម្រងសំណួរ</h3>
+                    </div>
+                    <p class="text-gray-600 text-[26px] leading-[1.6]">ឲ្យ AI ជួយបង្កើតមេរៀន (Lesson Plan) វិញ្ញាសាប្រឡង និង Rubric ដាក់ពិន្ទុក្នុងរយៈពេលប៉ុន្មានវិនាទី។</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SLIDE 3: Topics 5 to 8 (Bigger Fonts) ================= -->
+        <div class="slide rounded-3xl bg-gray-50 p-14 flex flex-col" id="slide-3">
+            <h2 class="font-moul text-[48px] mb-10 text-gray-800 border-l-[12px] border-blue-500 pl-8 h-[70px] flex items-center">
+                ខ្លឹមសារសំខាន់ៗនៃកម្មវិធី (២/២)
+            </h2>
+
+            <div class="grid grid-cols-2 grid-rows-2 gap-10 flex-grow">
+                <!-- Topic 5 -->
+                <div class="topic-card bg-white p-10 rounded-[32px] border-2 border-gray-100 shadow-sm flex flex-col">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="bg-gradient-to-br from-yellow-500 to-orange-600 w-[80px] h-[80px] rounded-2xl flex items-center justify-center text-white shadow-md shrink-0">
+                            <i class="fas fa-laptop-code text-[36px]"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-[30px] leading-tight">៥. ការបង្កើត Web App</h3>
+                    </div>
+                    <p class="text-gray-600 text-[26px] leading-[1.6]">ប្រើ Gemini សរសេរកូដបង្កើត App តូចៗ (ឧ. កត់អវត្តមាន, គណនាពិន្ទុ) ទោះមិនចេះ IT ក៏ធ្វើបាន។</p>
+                </div>
+
+                <!-- Topic 6 -->
+                <div class="topic-card bg-white p-10 rounded-[32px] border-2 border-gray-100 shadow-sm flex flex-col">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="bg-gradient-to-br from-red-500 to-pink-600 w-[80px] h-[80px] rounded-2xl flex items-center justify-center text-white shadow-md shrink-0">
+                            <i class="fas fa-cloud-upload-alt text-[36px]"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-[30px] leading-tight">៦. Google AI Studio</h3>
+                    </div>
+                    <p class="text-gray-600 text-[26px] leading-[1.6]">ការប្រើ Google AI Studio ដើម្បី Build App និងការយកកូដទៅបង្ហោះ (Deploy) លើអ៊ីនធឺណិត។</p>
+                </div>
+
+                <!-- Topic 7 -->
+                <div class="topic-card bg-white p-10 rounded-[32px] border-2 border-gray-100 shadow-sm flex flex-col">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="bg-gradient-to-br from-teal-500 to-teal-600 w-[80px] h-[80px] rounded-2xl flex items-center justify-center text-white shadow-md shrink-0">
+                            <i class="fas fa-book text-[36px]"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-[30px] leading-tight">៧. បង្កើតសៀវភៅអេឡិចត្រូនិក</h3>
+                    </div>
+                    <p class="text-gray-600 text-[26px] leading-[1.6]">ប្រើ AI ជួយស្រាវជ្រាវ ចងក្រង និងរៀបចំអត្ថបទសម្រាប់ធ្វើជាសៀវភៅអេឡិចត្រូនិកចែករំលែកដល់សិស្ស។</p>
+                </div>
+
+                <!-- Topic 8 -->
+                <div class="topic-card bg-white p-10 rounded-[32px] border-2 border-gray-100 shadow-sm flex flex-col">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="bg-gradient-to-br from-cyan-500 to-cyan-600 w-[80px] h-[80px] rounded-2xl flex items-center justify-center text-white shadow-md shrink-0">
+                            <i class="fas fa-chart-line text-[36px]"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-[30px] leading-tight">៨. ការវិភាគទិន្នន័យពិន្ទុ</h3>
+                    </div>
+                    <p class="text-gray-600 text-[26px] leading-[1.6]">បោះទិន្នន័យ Excel ឲ្យ Gemini វិភាគរកសិស្សខ្សោយ សិស្សពូកែ និងបង្កើតតារាងក្រាហ្វិកដោយស្វ័យប្រវត្តិ។</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SLIDE 4: Audience & Contact ================= -->
+        <div class="slide rounded-3xl p-14 flex flex-col justify-between gemini-gradient" id="slide-4">
+            
+            <div class="bg-white/95 backdrop-blur-md rounded-[40px] p-12 shadow-2xl flex-grow flex flex-col">
+                <h2 class="font-moul text-[52px] text-center mb-12 text-blue-800 drop-shadow-sm">
+                    សូមស្វាគមន៍ការចូលរួម!
+                </h2>
+
+                <div class="grid grid-cols-2 gap-8 mb-10">
+                    <!-- Target Audience -->
+                    <div class="bg-blue-50 border-2 border-blue-200 rounded-[32px] p-10">
+                        <h3 class="font-moul text-blue-800 mb-6 text-[32px]"><i class="fas fa-users mr-3"></i> អ្នកណាខ្លះគួរចូលរួម?</h3>
+                        <ul class="list-disc list-inside text-gray-800 text-[28px] space-y-4 ml-2 leading-[1.5]">
+                            <li>លោកគ្រូ អ្នកគ្រូគ្រប់កម្រិត</li>
+                            <li>គណៈគ្រប់គ្រងសាលា</li>
+                            <li>អ្នកចង់ចំណេញពេលរដ្ឋបាល</li>
+                            <li>មិនចេះ IT ក៏រៀនបាន១០០%</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Bonus -->
+                    <div class="bg-green-50 border-2 border-green-200 rounded-[32px] p-10">
+                        <h3 class="font-moul text-green-800 mb-6 text-[32px]"><i class="fas fa-gift mr-3"></i> ការគាំទ្រពិសេស</h3>
+                        <p class="text-gray-800 text-[28px] leading-[1.6] mt-4">
+                            មានក្រុម Telegram សម្រាប់ជួយដោះស្រាយបញ្ហា និងឆ្លើយសំណួរ <strong class="text-green-700">ដោយមិនកំណត់ពេលវេលាឡើយ</strong> បន្ទាប់ពីបញ្ចប់វគ្គ។
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Footer / Contact -->
+                <div class="mt-auto bg-gray-50 border-2 border-gray-200 rounded-[32px] p-10 flex justify-between items-center">
+                    <div class="flex items-center gap-6">
+                        <img src="https://i.ibb.co/kswSq0Dz/photo-teacher.jpg" alt="លោក ហុន ម៉ុម" class="w-32 h-32 rounded-full border-4 border-purple-300 shadow-md object-cover">
+                        <div>
+                            <p class="text-[22px] text-gray-500 mb-1">ចែករំលែកដោយ៖</p>
+                            <p class="font-moul text-[32px] text-gray-800 mb-2">លោក ហុន ម៉ុម</p>
+                            <p class="text-[24px] text-gray-600">គ្រូបង្រៀនគណិតវិទ្យា វិ.ហ៊៊ុនសែន កំពង់ត្រឡាច</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-8 text-right border-l-4 border-gray-200 pl-8">
+                        <div>
+                            <p class="text-[22px] text-gray-500 mb-2 font-bold">ចុះឈ្មោះទីនេះ៖</p>
+                            <p class="font-bold text-blue-600 text-[25px] mb-2"><i class="fab fa-telegram text-[22px] align-middle"></i> @rean_org_bot</p>
+                            <p class="font-bold text-blue-600 text-[25px]"><i class="fas fa-phone-alt text-[22px] align-middle"></i> 017 47 66 64</p>
+                        </div>
+                        <div class="flex flex-col items-center bg-white p-4 rounded-[24px] shadow-sm border border-gray-200 shrink-0">
+                            <img src="https://i.ibb.co/XxWLfhNx/rean-org-bot.jpg" alt="QR Code" class="w-28 h-28 rounded-xl">
+                            <p class="text-[18px] text-gray-800 mt-2 font-bold">ស្កេនចូល Telegram</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Function to download all 4 slides as PNG images
+        async function downloadImages() {
+            // Exit edit mode first
+            if(isEditing) toggleEditMode();
+            
+            const btn = document.getElementById('downloadBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> កំពុងទាញយករូបភាព...';
+            btn.disabled = true;
+
+            const slides = document.querySelectorAll('.slide');
+            
+            // Temporary remove the wrapper scaling during canvas capture to ensure high quality
+            const wrapper = document.getElementById('all-slides');
+            const originalTransform = wrapper.style.transform;
+            wrapper.style.transform = 'none';
+
+            try {
+                for (let i = 0; i < slides.length; i++) {
+                    const slide = slides[i];
+                    
+                    // html2canvas configuration for high-quality export
+                    const canvas = await html2canvas(slide, {
+                        scale: 2, // 2x scale for Retina-like sharpness (2160x2160 output)
+                        useCORS: true,
+                        backgroundColor: '#ffffff',
+                        logging: false
+                    });
+
+                    // Create download link
+                    const imageURL = canvas.toDataURL("image/png");
+                    const link = document.createElement('a');
+                    link.href = imageURL;
+                    link.download = `Gemini_Workshop_Slide_${i + 1}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Small pause between downloads to prevent browser blocking multiple downloads
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            } catch (error) {
+                console.error("Error generating images:", error);
+                alert("មានបញ្ហាក្នុងការទាញយករូបភាព។ សូមព្យាយាមម្តងទៀត។");
+            } finally {
+                // Restore wrapper scaling
+                wrapper.style.transform = originalTransform;
+                
+                // Restore button
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Edit Mode Toggle Function
+        let isEditing = false;
+        function toggleEditMode() {
+            const container = document.getElementById('all-slides');
+            const btn = document.getElementById('editBtn');
+            const textSpan = document.getElementById('editText');
+            
+            isEditing = !isEditing;
+            
+            if (isEditing) {
+                // Turn on editing
+                container.setAttribute('contenteditable', 'true');
+                
+                // Update Button UI
+                btn.classList.replace('bg-gray-200', 'bg-green-500');
+                btn.classList.replace('hover:bg-gray-300', 'hover:bg-green-600');
+                btn.classList.replace('text-gray-800', 'text-white');
+                textSpan.innerText = 'រក្សាទុក (Save)';
+                btn.querySelector('i').classList.replace('fa-edit', 'fa-save');
+                
+            } else {
+                // Turn off editing
+                container.setAttribute('contenteditable', 'false');
+                
+                // Update Button UI
+                btn.classList.replace('bg-green-500', 'bg-gray-200');
+                btn.classList.replace('hover:bg-green-600', 'hover:bg-gray-300');
+                btn.classList.replace('text-white', 'text-gray-800');
+                textSpan.innerText = 'កែប្រែព័ត៌មាន';
+                btn.querySelector('i').classList.replace('fa-save', 'fa-edit');
+            }
+        }
+    </script>
+</body>
+</html>
