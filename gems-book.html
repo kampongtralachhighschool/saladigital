@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* [បិទមិនឲ្យ Highlight អក្សរ Copy បាន] */
+        /* ================= ការពារសុវត្ថិភាព (Anti-Copy) ================= */
         body { -webkit-user-select: none; -ms-user-select: none; user-select: none; }
 
         :root {
@@ -69,6 +69,7 @@
 
         .divider { height: 1px; background: var(--border-color); width: 100%; margin: 25px 0; }
 
+        /* ឈ្មោះគ្រូដឹកនាំ */
         .instructor-badge {
             display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
             background: var(--primary-light); color: var(--primary); 
@@ -78,21 +79,14 @@
         .instructor-badge .name { font-weight: bold; font-size: 15px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;}
         .instructor-badge .phone { color: #1557b0; font-weight: 900; display: flex; align-items: center; gap: 8px;}
 
-        /* ================= ផ្ទាំង Main App ================= */
-        #main-app { display: none; height: 100vh; flex-direction: row; position: relative;}
+        /* ================= ផ្ទាំង Main App (មេរៀន) ================= */
+        #main-app { display: none; height: 100vh; flex-direction: row; position: relative; }
         
-        /* Mobile Top Bar (Hidden on Desktop) */
+        /* Mobile Topbar */
         #mobile-topbar {
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 20px;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 200;
-            width: 100%;
+            display: none; justify-content: space-between; align-items: center;
+            padding: 12px 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 200; width: 100%;
         }
         .mobile-title { font-family: 'Battambang', sans-serif; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px;}
         .mobile-title img { height: 30px; }
@@ -110,7 +104,7 @@
         .menu li.active { background: var(--primary-light); color: var(--primary); border-left: 5px solid var(--primary); border-radius: 0 10px 10px 0; }
         .menu li.active i { color: var(--primary); }
         
-        /* ធ្វើឲ្យប៊ូតុង Logout តូចស្អាត */
+        /* ប៊ូតុង Logout តូចស្អាត */
         .btn-logout { 
             background: #fff; color: var(--accent2); padding: 10px 20px; 
             margin: 15px auto 25px auto; text-align: center; border-radius: 8px; 
@@ -119,7 +113,7 @@
         }
         .btn-logout:hover { background: #fce8e6; }
         
-        /* Content Area */
+        /* Content Area (អនុញ្ញាតឲ្យ Highlight ក្នុងនេះ) */
         .content-area { flex: 1; padding: 40px; overflow-y: auto; background: var(--bg-color); scroll-behavior: smooth; user-select: text; }
         .section { background: white; border-radius: 15px; padding: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); max-width: 900px; margin: 0 auto; display: none; animation: slideUp 0.4s ease-out; }
         .section.active { display: block; }
@@ -154,44 +148,24 @@
         /* ================= Mobile Design (ការកែប្រែសម្រាប់ទូរស័ព្ទ) ================= */
         @media (max-width: 768px) {
             #main-app { flex-direction: column; overflow-y: auto; }
-            
-            /* បង្ហាញរបារខាងលើ និង Hamburger Menu */
             #mobile-topbar { display: flex; }
-            
-            /* លាក់ក្បាល Sidebar ចាស់ចោល */
             .sidebar-header { display: none; }
             
-            /* កែប្រែ Sidebar ទៅជាម៉ឺនុយទម្លាក់ចុះ (Dropdown Menu) */
+            /* Sidebar ដូរទៅជា Dropdown លើទូរស័ព្ទ */
             .sidebar { 
-                position: absolute; 
-                top: 55px; /* នៅក្រោម Topbar */
-                left: 0; 
-                width: 100%; 
-                height: auto;
-                max-height: calc(100vh - 55px);
-                background: white; 
-                z-index: 150; 
+                position: absolute; top: 55px; left: 0; width: 100%; height: auto;
+                max-height: calc(100vh - 55px); background: white; z-index: 150; 
                 box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-                transform: translateY(-150%); /* លាក់ទៅលើបាត់ */
-                transition: transform 0.3s ease-in-out;
-                border-bottom-left-radius: 15px;
-                border-bottom-right-radius: 15px;
-                overflow: hidden;
+                transform: translateY(-150%); transition: transform 0.3s ease-in-out;
+                border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; overflow: hidden;
             }
+            .sidebar.mobile-open { transform: translateY(0); }
             
-            /* ពេលចុចប៊ូតុង ☰ ឲ្យម៉ឺនុយរត់ចុះមកក្រោម */
-            .sidebar.mobile-open {
-                transform: translateY(0);
-            }
-
             .menu { padding: 15px; overflow-y: auto;}
             .menu li { margin-bottom: 5px; border: 1px solid transparent; }
-            .menu li i { display: inline-block; } /* បង្ហាញ Icon ក្នុង Menu ទូរស័ព្ទវិញ */
-            
-            /* ប៊ូតុង Logout ក្នុង Menu ទូរស័ព្ទ */
+            .menu li i { display: inline-block; }
             .btn-logout { margin: 10px auto; display: flex; justify-content: center; width: max-content;}
-
-            /* ទីតាំងអត្ថបទមេរៀន */
+            
             .content-area { overflow-y: visible; padding: 15px;}
             .section { padding: 25px 20px; }
             h1 { font-size: 22px;}
@@ -204,8 +178,10 @@
     <!-- ================= ផ្ទាំង Login / Register ================= -->
     <div id="auth-screen">
         <div class="auth-card">
+            <!-- ឡូហ្គោសាលា -->
             <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Rean.org Logo" class="auth-logo">
             
+            <!-- កុងតឺន័រ Login -->
             <div id="login-container">
                 <h2 class="auth-title">ចូលរៀន</h2>
                 <p class="auth-subtitle">សូមបញ្ចូលលេខទូរសព្ទរបស់អ្នក</p>
@@ -215,6 +191,7 @@
                 <p class="auth-switch">មិនទាន់មានឈ្មោះ? <span onclick="showRegister()">ស្នើសុំចុះឈ្មោះ</span></p>
             </div>
 
+            <!-- កុងតឺន័រ Register -->
             <div id="register-container" style="display: none;">
                 <h2 class="auth-title">ស្នើសុំចុះឈ្មោះ</h2>
                 <p class="auth-subtitle">សូមបំពេញព័ត៌មានពិតប្រាកដ</p>
@@ -227,6 +204,7 @@
 
             <div class="divider"></div>
 
+            <!-- ឈ្មោះគ្រូដឹកនាំ -->
             <div class="instructor-badge">
                 <div class="name"><i class="fas fa-chalkboard-teacher"></i> ដឹកនាំដោយ៖ លោកគ្រូ ហុន ម៉ុម</div>
                 <div class="phone"><i class="fas fa-phone-alt"></i> 017 47 66 64</div>
@@ -249,7 +227,6 @@
         </div>
 
         <aside class="sidebar" id="sidebar-menu">
-            <!-- ក្បាល Sidebar នេះនឹងត្រូវបានលាក់ពេលមើលលើទូរស័ព្ទ -->
             <div class="sidebar-header">
                 <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Logo" style="max-width: 60%; margin-bottom: 10px;">
                 <div style="color: var(--primary); font-weight: bold; font-size: 14px;">វគ្គបណ្តុះបណ្តាល AI សម្រាប់គ្រូ</div>
@@ -260,9 +237,9 @@
                 <li onclick="switchTab(event, 's2')"><i class="fas fa-file-alt"></i> ២. ការងាររដ្ឋបាល & បង្រៀន</li>
                 <li onclick="switchTab(event, 's3')"><i class="fas fa-chart-bar"></i> ៣. ការវិភាគទិន្នន័យសិស្ស</li>
                 <li onclick="switchTab(event, 's4')"><i class="fas fa-laptop-code"></i> ៤. ការបង្កើត Web App ងាយៗ</li>
-                <li onclick="switchTab(event, 's5')"><i class="fas fa-robot"></i> ៥. ការបង្កើត Gems</li>
+                <li onclick="switchTab(event, 's5')"><i class="fas fa-robot"></i> ៥. ការបង្កើត Gems (ជំនួយការ)</li>
                 <li onclick="switchTab(event, 's6')"><i class="fas fa-sliders-h"></i> ៦. បង្វឹកក្នុង Google AI Studio</li>
-                <li onclick="switchTab(event, 's7')" style="color: var(--accent2);"><i class="fas fa-tools"></i> ៧. ឧបករណ៍បង្កើត Prompt</li>
+                <li onclick="switchTab(event, 's7')" style="color: var(--accent2);"><i class="fas fa-tools"></i> ៧. ឧបករណ៍បង្កើត Prompt អូតូ</li>
             </ul>
             <!-- ប៊ូតុង Logout តូចស្អាត -->
             <div class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ចាកចេញ</div>
@@ -273,53 +250,86 @@
             <!-- មេរៀនទី១ -->
             <div id="s1" class="section active">
                 <h1>១. ក្បួនសរសេរ Prompt បញ្ជា AI ឲ្យបានត្រឹមត្រូវ</h1>
-                <p>សូមស្វាគមន៍លោកគ្រូអ្នកគ្រូនៃ <strong>Rean.org</strong> ទាំងអស់គ្នា! បច្ចុប្បន្ននេះ ការចេះប្រើប្រាស់ AI គឺជាជំនាញដ៏ចាំបាច់បំផុត។ AI ប្រៀបបាននឹងសិស្សដ៏មហាឆ្លាតម្នាក់ តែវាមិនដឹងថាចៅហ្វាយនាយចង់បានអ្វីឲ្យប្រាកដនោះទេ។</p>
+                <p>សូមស្វាគមន៍លោកគ្រូអ្នកគ្រូនៃ <strong>Rean.org</strong> ទាំងអស់គ្នា! បច្ចុប្បន្ននេះ ការចេះប្រើប្រាស់ AI (ដូចជា Google Gemini ឬ ChatGPT) គឺជាជំនាញដ៏ចាំបាច់បំផុត។ AI ប្រៀបបាននឹងសិស្សដ៏មហាឆ្លាតម្នាក់ ដែលបានអានសៀវភៅអស់រាប់លានក្បាលជុំវិញពិភពលោក ប៉ុន្តែបញ្ហារបស់វាគឺ <strong>"វាមិនដឹងថាចៅហ្វាយនាយ (គឺរូបយើង) ចង់បានអ្វីឲ្យប្រាកដនោះទេ"</strong>។</p>
+                <p>ប្រសិនបើយើងសួរវាដោយប្រើពាក្យខ្លីៗ ទូទៅពេក វានឹងឆ្លើយមកវិញបែបខ្លីៗ ទូទៅ និងជួនកាលខុសពីអ្វីដែលយើងចង់បាន។ ដូច្នេះហើយ ទើបយើងត្រូវរៀនពីសិល្បៈនៃការបញ្ជា ដែលគេហៅថា <strong>"Prompt Engineering"</strong>។</p>
                 
                 <div class="concept-box">
-                    <strong>រូបមន្តបញ្ជាស្នូលទាំង ៥ ចំណុច៖</strong>
+                    <strong>រូបមន្តបញ្ជា "៥ ចំណុច" សម្រាប់គ្រូបង្រៀន (The 5 Pillars)៖</strong>
+                    ដើម្បីឲ្យ AI ឆ្លើយតបបានចំគោលដៅ ១០០% លោកគ្រូអ្នកគ្រូត្រូវសរសេរប្រយោគបញ្ជាដោយរួមបញ្ចូលធាតុទាំង ៥ នេះ៖
                     <ol>
-                        <li><strong>តួនាទី (Role)៖</strong> ប្រាប់ AI ឲ្យដើរតួជាអ្នកជំនាញអ្វីមួយ ដើម្បីប្តូរវាក្យសព្ទ។</li>
-                        <li><strong>កិច្ចការ (Task)៖</strong> តើចង់ឲ្យវាធ្វើអ្វីពិតប្រាកដ? (សរសេរលិខិត, បង្កើតលំហាត់...)</li>
-                        <li><strong>បរិបទ (Context)៖</strong> តើអ្នកយកលទ្ធផលនេះទៅប្រើជាមួយនរណា?</li>
-                        <li><strong>ទម្រង់ (Format)៖</strong> ចង់បានលទ្ធផលចេញមកជារាងអ្វី?</li>
-                        <li><strong>ដែនកំណត់ (Constraint)៖</strong> ប្រាប់ពីអ្វីដែលវា <strong>ហាមធ្វើ</strong> ដាច់ខាត។</li>
+                        <li><strong>តួនាទី (Role)៖</strong> ត្រូវប្រាប់ AI ឲ្យដើរតួជាអ្នកជំនាញអ្វីមួយ ដើម្បីឲ្យវាប្តូរវាក្យសព្ទ និងកម្រិតចំណេះដឹង។ <em>(ឧទាហរណ៍៖ "ចូរអ្នកដើរតួជាគ្រូបង្រៀនគណិតវិទ្យា...")</em></li>
+                        <li><strong>កិច្ចការ (Task)៖</strong> តើចង់ឲ្យវាធ្វើអ្វីពិតប្រាកដ? <em>(ឧទាហរណ៍៖ "សូមបង្កើតលំហាត់ប្រឡងប្រចាំខែចំនួន ១០...")</em></li>
+                        <li><strong>បរិបទ (Context)៖</strong> តើអ្នកយកលទ្ធផលនេះទៅប្រើជាមួយនរណា? កម្រិតណា? <em>(ឧទាហរណ៍៖ "សម្រាប់សិស្សថ្នាក់ទី១០ ដែលមានកម្រិតមធ្យម...")</em></li>
+                        <li><strong>ទម្រង់ (Format)៖</strong> ចង់បានលទ្ធផលចេញមកជារាងអ្វី? <em>(ឧទាហរណ៍៖ "សូមសរសេរជាទម្រង់តារាង និងមានចម្លើយនៅខាងក្រោម...")</em></li>
+                        <li><strong>ដែនកំណត់ (Constraint)៖</strong> ប្រាប់ពីអ្វីដែលវា <strong>ហាមធ្វើ</strong> ដាច់ខាត។ <em>(ឧទាហរណ៍៖ "ហាមប្រើពាក្យបច្ចេកទេសកម្រិតសាកលវិទ្យាល័យដែលពិបាកយល់...")</em></li>
                     </ol>
                 </div>
 
+                <h3><i class="fas fa-balance-scale"></i> ការប្រៀបធៀបដើម្បីឲ្យងាយយល់៖</h3>
+                <p>❌ <strong>បញ្ជាមិនល្អ (ខ្វះទិន្នន័យ)៖</strong> <em>"រកលំហាត់គណិតឲ្យមួយមក។"</em><br>
+                (លទ្ធផល៖ AI អាចនឹងឲ្យលំហាត់ថ្នាក់មហាវិទ្យាល័យ ដែលសិស្សយើងរៀនមិនទាន់ដល់ ឬឲ្យលំហាត់បូកដកលេខក្មេងថ្នាក់ទី១ ព្រោះយើងអត់បានប្រាប់កម្រិតវា។)</p>
+                
                 <div class="prompt-box">
-                    <p>✅ <strong>បញ្ជាល្អឥតខ្ចោះ៖</strong><br><br>
-                    "[១. តួនាទី] ចូរអ្នកដើរតួជាគ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាដ៏ពូកែម្នាក់។ <br><br>
+                    <p>✅ <strong>បញ្ជាល្អឥតខ្ចោះ (មានរូបមន្តទាំង៥)៖</strong><br><br>
+                    "[១. តួនាទី] ចូរអ្នកដើរតួជាគ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាដ៏ពូកែម្នាក់ប្រចាំវិទ្យាល័យ។ <br><br>
                     [២. កិច្ចការ] សូមជួយបង្កើតលំហាត់អនុវត្តន៍ចំនួន ៥ ទាក់ទងនឹងមេរៀនសមីការដឺក្រេទី២។ <br><br>
-                    [៣. បរិបទ] លំហាត់ទាំងនេះសម្រាប់សិស្សថ្នាក់ទី១០ ដែលទើបតែរៀនមេរៀននេះដំបូង។ <br><br>
-                    [៤. ទម្រង់] សូមរៀបចំពីងាយទៅពិបាក ហើយសូមផ្តល់នូវរបៀបដោះស្រាយមួយជំហានម្តងៗ។ <br><br>
-                    [៥. ដែនកំណត់] សូមកុំដាក់លំហាត់ណាដែលមានចម្លើយជាឫសសាំញ៉ាំពេក។"</p>
+                    [៣. បរិបទ] លំហាត់ទាំងនេះគឺរៀបចំឡើងសម្រាប់សិស្សថ្នាក់ទី១០ ដែលទើបតែរៀនមេរៀននេះដំបូង។ ដូច្នេះពួកគេត្រូវការលំហាត់ដែលមានការពន្យល់ច្បាស់លាស់។ <br><br>
+                    [៤. ទម្រង់] សូមរៀបចំលំហាត់ពីងាយទៅពិបាក ហើយសូមផ្តល់នូវរបៀបដោះស្រាយមួយជំហានម្តងៗ (Step-by-step) នៅផ្នែកខាងក្រោមនៃលំហាត់នីមួយៗ។ <br><br>
+                    [៥. ដែនកំណត់] សូមកុំដាក់លំហាត់ណាដែលមានចម្លើយជាឫសសាំញ៉ាំពេក ព្រោះចង់ឲ្យសិស្សងាយយល់ពីគោលការណ៍គ្រឹះសិន។"</p>
                 </div>
             </div>
 
             <!-- មេរៀនទី២ -->
             <div id="s2" class="section">
                 <h1>២. ការងាររដ្ឋបាល ការបង្រៀន និងបង្កើតគម្រោង</h1>
-                <p>យើងអាចប្រគល់ការងាររដ្ឋបាល និងកិច្ចតែងការឲ្យ AI ធ្វើជំនួសបាន។</p>
+                <p>ក្នុងនាមជាគ្រូបង្រៀន យើងមិនត្រឹមតែបង្រៀនក្នុងថ្នាក់ទេ តែយើងត្រូវចំណាយពេលរាប់ម៉ោងលើការងាររដ្ឋបាល សរសេរលិខិតផ្សេងៗ រៀបចំកិច្ចតែងការ និងរកនឹកវិធីសាស្ត្របង្រៀនថ្មីៗ។ ឥឡូវនេះ លោកគ្រូអ្នកគ្រូអាចប្រគល់ការងារទាំងនេះឲ្យ AI ធ្វើជំនួសបាន ដោយចំណាយពេលមិនដល់ ២នាទីឡើយ។</p>
 
-                <h3>ក. ការព្រាងលិខិតផ្លូវការ</h3>
+                <h3><i class="fas fa-envelope-open-text"></i> ក. ការព្រាងលិខិតផ្លូវការ ឬលិខិតរដ្ឋបាល</h3>
                 <div class="prompt-box">
-                    <p>"ចូរអ្នកដើរតួជាលេខាធិការសាលាដ៏មានបទពិសោធន៍។ សូមជួយព្រាងលិខិតអញ្ជើញអាណាព្យាបាលសិស្សមកប្រជុំ ដើម្បីពិភាក្សាអំពីលទ្ធផលសិក្សាប្រចាំឆមាសទី១។ សូមសរសេរជាទម្រង់ផ្លូវការ និងគួរសមបំផុត។"</p>
+                    <p>"ចូរអ្នកដើរតួជាលេខាធិការសាលាដ៏មានបទពិសោធន៍។ សូមជួយព្រាងលិខិតអញ្ជើញអាណាព្យាបាលសិស្សមកប្រជុំ។ <br>
+                    - គោលបំណង៖ ដើម្បីពិភាក្សាអំពីលទ្ធផលសិក្សាប្រចាំឆមាសទី១ និងបញ្ហាវិន័យសិស្ស (ការគេចសាលា) របស់សិស្សមួយចំនួន។<br>
+                    - ទម្រង់៖ សូមសរសេរជាទម្រង់ផ្លូវការ មានការគោរពខ្ពស់ និងប្រើប្រាស់ពាក្យពេចន៍ទន់ភ្លន់តែម៉ឺងម៉ាត់។ <br>
+                    - សូមបញ្ជាក់ប្រាប់ពួកគាត់ថា ការចូលរួមរបស់មាតាបិតាមានសារៈសំខាន់ខ្លាំងណាស់ក្នុងការកែប្រែអនាគតកូនៗ។ <br>
+                    - នៅខាងចុង សូមទុកចន្លោះទំនេរសម្រាប់បំពេញ កាលបរិច្ឆេទ ម៉ោង ទីកន្លែង និងកន្លែងសម្រាប់ខ្ញុំ (គ្រូបន្ទុកថ្នាក់) ចុះហត្ថលេខា។"</p>
                 </div>
 
-                <h3>ខ. ការរៀបចំកិច្ចតែងការបង្រៀន</h3>
+                <h3><i class="fas fa-book-reader"></i> ខ. ការរៀបចំកិច្ចតែងការបង្រៀន (Detailed Lesson Plan)</h3>
                 <div class="prompt-box">
-                    <p>"ខ្ញុំជាគ្រូបង្រៀនមុខវិជ្ជារូបវិទ្យាថ្នាក់ទី១១។ សូមជួយព្រាងកិច្ចតែងការបង្រៀនរយៈពេល ៦០នាទី សម្រាប់មេរៀន 'ថាមពលស៊ីនេទិច'។ សូមបែងចែកជា ៥ ដំណាក់កាល រួមទាំងការពិសោធន៍ងាយៗ។"</p>
+                    <p>"ខ្ញុំជាគ្រូបង្រៀនមុខវិជ្ជារូបវិទ្យាថ្នាក់ទី១១។ សូមជួយព្រាងកិច្ចតែងការបង្រៀនរយៈពេល ១ម៉ោង (៦០នាទី) សម្រាប់មេរៀន 'ថាមពលស៊ីនេទិច'។ សូមបែងចែកកិច្ចតែងការនេះជា ៥ ដំណាក់កាល៖<br>
+                    ១. រំលឹកមេរៀនចាស់ (៥នាទី)<br>
+                    ២. ការទាក់ទាញចំណាប់អារម្មណ៍/Hook (៥នាទី) - សូមរកវិធីចាប់ផ្តើមមេរៀនឲ្យភ្ញាក់ផ្អើល<br>
+                    ៣. ការពន្យល់មេរៀនថ្មី (៣០នាទី) - ពន្យល់ទ្រឹស្តី និងរូបមន្ត<br>
+                    ៤. ការអនុវត្តន៍ជាក្រុម (១៥នាទី) - សូមបង្កើតសកម្មភាពមួយឲ្យសិស្សពិភាក្សាគ្នា<br>
+                    ៥. សំណួរពង្រឹងចំណេះ (៥នាទី)<br>
+                    ចំណាំ៖ សូមណែនាំការពិសោធន៍ងាយៗដែលគ្រូអាចធ្វើបានក្នុងថ្នាក់ ដោយប្រើតែសម្ភារៈប្រចាំថ្ងៃ។"</p>
+                </div>
+
+                <h3><i class="fas fa-users"></i> គ. ការរកដំណោះស្រាយបញ្ហាវិន័យ និងចិត្តវិទ្យាសិស្ស</h3>
+                <div class="prompt-box">
+                    <p>"ចូរអ្នកដើរតួជាអ្នកជំនាញចិត្តវិទ្យាអប់រំកុមារនិងយុវជន។ ខ្ញុំមានសិស្សប្រុសម្នាក់រៀនថ្នាក់ទី១០។ គាត់ជាក្មេងឆ្លាត ប៉ុន្តែថ្មីៗនេះគាត់តែងតែឡូឡាក្នុងថ្នាក់ ចូលចិត្តរំខានអ្នកដទៃពេលកំពុងរៀន និងហាក់ដូចជាចង់ទាមទារចំណាប់អារម្មណ៍។ <br>
+                    តើខ្ញុំជាគ្រូបង្រៀន គួរប្រើវិធីសាស្ត្រនិយាយទល់មុខជាមួយគាត់បែបណា ដើម្បីកុំឲ្យគាត់មានអារម្មណ៍ថាត្រូវគេស្តីបន្ទោសរើសអើង តែអាចធ្វើឲ្យគាត់យល់ពីកំហុស និងកែប្រែឥរិយាបថគាត់បាន? សូមប្រាប់ខ្ញុំពីជំហាននៃការនិយាយស្តីជាចំណុចៗមក។"</p>
                 </div>
             </div>
 
             <!-- មេរៀនទី៣ -->
             <div id="s3" class="section">
                 <h1>៣. ការវិភាគពិន្ទុ និងទិន្នន័យសិស្សយ៉ាងរហ័ស</h1>
-                <p>លោកគ្រូអ្នកគ្រូគ្រាន់តែ <strong>Copy ទិន្នន័យចេញពី Excel ហើយ Paste បញ្ចូលទៅក្នុង AI</strong> នោះវានឹងធ្វើការវិភាគជំនួស។</p>
+                <p>ការអង្គុយបូកសរុបពិន្ទុ រកមើលសិស្សដែលខ្សោយ ឬរៀបចំចំណាត់ថ្នាក់ គឺជាការងារដែលហត់នឿយ និងចំណាយពេលរាប់ម៉ោងនៅចុងខែនីមួយៗ។ ជាមួយ Google AI (ជាពិសេសបើលោកគ្រូអ្នកគ្រូប្រើ Gemini Advanced) លោកគ្រូអ្នកគ្រូគ្រាន់តែ <strong>Copy ទិន្នន័យចេញពី Excel ហើយ Paste បញ្ចូលទៅក្នុង AI</strong> នោះវានឹងក្លាយជាអ្នកវិភាគទិន្នន័យប្រចាំខ្លួនយើងតែម្តង។</p>
+
+                <div class="step-box">
+                    <div class="step-title">របៀបអនុវត្តជាក់ស្តែង (Step-by-Step)៖</div>
+                    ១. បើកឯកសារ Excel ដែលមានបញ្ជីឈ្មោះ និងពិន្ទុសិស្សរបស់លោកគ្រូអ្នកគ្រូ។<br>
+                    ២. Highlight តារាងនោះទាំងមូល (រួមទាំងក្បាលតារាងដូចជា ឈ្មោះ, ភេទ, ពិន្ទុគណិត, ពិន្ទុខ្មែរ...) រួចចុច <strong>Ctrl + C (Copy)</strong>។<br>
+                    ៣. បើកកម្មវិធី Google Gemini រួច Paste <strong>(Ctrl + V)</strong> ទិន្នន័យនោះចូលក្នុងប្រអប់វាយអត្ថបទ។<br>
+                    ៤. កុំទាន់អាលចុចបញ្ជូន! សូមវាយថែមប្រយោគបញ្ជា (Prompt) ដ៏លម្អិតដូចខាងក្រោម រួចសឹមចុច Enter។
+                </div>
+
                 <div class="prompt-box">
-                    <p>"ខាងក្រោមនេះគឺជាទិន្នន័យពិន្ទុប្រឡងរបស់សិស្ស៖<br><br>
-                    ១. សូមទាញយកឈ្មោះសិស្ស ៥នាក់ ដែលមានពិន្ទុសរុបទាបជាងគេ។<br>
-                    ២. សូមទាញយកឈ្មោះសិស្សដែលធ្លាក់មុខវិជ្ជា 'គណិតវិទ្យា' មកបង្កើតជាតារាងថ្មីមួយ ដើម្បីខ្ញុំហៅមករៀនបំប៉ន។<br><br>
+                    <p>"ចូរអ្នកដើរតួជាអ្នកវិភាគទិន្នន័យអប់រំដ៏ជំនាញ។ ខាងក្រោមនេះគឺជាទិន្នន័យពិន្ទុប្រឡងប្រចាំខែរបស់សិស្សក្នុងបន្ទប់ដែលខ្ញុំគ្រប់គ្រង។ ដោយផ្អែកលើទិន្នន័យនេះ សូមអ្នកជួយធ្វើការវិភាគ និងផ្តល់ចម្លើយតាមសំណូមពរខាងក្រោម៖<br><br>
+                    ១. <strong>ស្វែងរកសិស្សខ្សោយ៖</strong> សូមទាញយកឈ្មោះសិស្ស ៥នាក់ ដែលមានពិន្ទុសរុបទាបជាងគេបំផុត និងបញ្ជាក់ថាពួកគេខ្សោយមុខវិជ្ជាអ្វីខ្លាំងជាងគេ។<br>
+                    ២. <strong>ស្វែងរកសិស្សរីកចម្រើន៖</strong> សូមរកមើលសិស្សណាខ្លះ ដែលខែមុនមានពិន្ទុទាប ប៉ុន្តែខែនេះមានពិន្ទុកើនឡើងខ្ពស់គួរឲ្យកត់សម្គាល់ ដើម្បីខ្ញុំអាចរៀបចំរង្វាន់លើកទឹកចិត្តពួកគាត់។<br>
+                    ៣. <strong>បង្កើតតារាងបំប៉ន៖</strong> សូមទាញយកឈ្មោះសិស្សទាំងអស់ដែលធ្លាក់ (ពិន្ទុក្រោមមធ្យមភាគ) លើមុខវិជ្ជា 'គណិតវិទ្យា' មកបង្កើតជាតារាងថ្មីមួយ ដើម្បីខ្ញុំងាយស្រួលកោះហៅពួកគាត់មករៀនបំប៉នបន្ថែម។<br>
+                    ៤. <strong>សេចក្តីសន្និដ្ឋានទូទៅ៖</strong> តើជារួម សិស្សក្នុងថ្នាក់នេះរៀនខ្សោយមុខវិជ្ជាអ្វីជាងគេ? តើខ្ញុំគួរមានវិធានការបែបណា?<br><br>
                     [ចុច Paste ទិន្នន័យ Excel របស់អ្នកនៅទីនេះ]"</p>
                 </div>
             </div>
@@ -327,71 +337,114 @@
             <!-- មេរៀនទី៤ -->
             <div id="s4" class="section">
                 <h1>៤. ការបង្កើត Web App ដោយមិនចាំបាច់សរសេរកូដ</h1>
-                <p>លោកគ្រូអ្នកគ្រូអាចបញ្ជាឲ្យ AI សរសេរកូដបង្កើតជាកម្មវិធីខ្នាតតូច សម្រាប់ប្រើប្រាស់ក្នុងថ្នាក់រៀនដោយឥតគិតថ្លៃ។</p>
+                <p>នេះជាជំនាញកម្រិតខ្ពស់ដ៏គួរឲ្យភ្ញាក់ផ្អើលមួយ! លោកគ្រូអ្នកគ្រូអាចបញ្ជាឲ្យ AI សរសេរកូដបង្កើតជាកម្មវិធីខ្នាតតូច (Web App) សម្រាប់ប្រើប្រាស់ក្នុងថ្នាក់រៀនដោយឥតគិតថ្លៃ ទោះបីជាលោកគ្រូអ្នកគ្រូមិនចេះមុខវិជ្ជាកុំព្យូទ័រទាល់តែសោះក៏ដោយ។</p>
+
+                <div class="concept-box">
+                    <strong>ក្បួនវេទមន្ត៖</strong> ដើម្បីឲ្យកម្មវិធីនេះដើរបានដោយមិនបាច់ប្រើ Server ឬ Internet លោកគ្រូអ្នកគ្រូត្រូវបញ្ជាដាច់ខាតទៅ AI ថា <em>"សូមសរសេរកូដ HTML, CSS និង JavaScript ទាំងអស់បញ្ចូលគ្នានៅក្នុង File តែមួយ (Single HTML File)"</em>។
+                </div>
+
                 <div class="step-box">
-                    <div class="step-title">របៀបធ្វើ៖</div>
-                    ១. បញ្ជា AI ថា៖ <strong>"សូមសរសេរកូដ HTML, CSS និង JS បញ្ចូលគ្នាតែមួយ (Single File) ដើម្បីបង្កើតកម្មវិធីហៅឈ្មោះសិស្សចាប់ឆ្នោតពណ៌ស្រស់ស្អាត។"</strong><br>
-                    ២. Copy កូដដែល AI លោតឲ្យ។<br>
-                    ៣. បើកកម្មវិធី <strong>Notepad</strong> រួច Paste កូដចូល។<br>
-                    ៤. ចុច Save As... ដាក់ឈ្មោះថា <strong>Random.html</strong> រួចបើកប្រើបានភ្លាម!
+                    <div class="step-title">ជំហាននៃការធ្វើ (ឧទាហរណ៍៖ កម្មវិធីចាប់ឆ្នោតហៅឈ្មោះសិស្ស)</div>
+                    ១. ចូលទៅកាន់ Google Gemini ។<br>
+                    ២. <strong>Copy ល្បះនេះយកទៅបញ្ជាវា៖</strong><br>
+                        <div class="prompt-box" style="margin: 10px 0;">
+                            <p>"សូមអ្នកដើរតួជាអ្នកសរសេរកូដកម្មវិធីដ៏ពូកែម្នាក់។ សូមជួយបង្កើតកម្មវិធី Web App សម្រាប់គ្រូបង្រៀនហៅឈ្មោះសិស្សចាប់ឆ្នោត (Random Name Picker)។<br>
+                            លក្ខខណ្ឌដែលត្រូវគោរព៖<br>
+                            - ត្រូវសរសេរកូដ HTML, CSS និង JS ទាំងអស់បញ្ចូលគ្នាតែមួយ (Single File)។<br>
+                            - ត្រូវមានប្រអប់ Textbox ធំមួយសម្រាប់ឲ្យគ្រូ Paste បញ្ជីឈ្មោះសិស្សចូល (មួយឈ្មោះមួយបន្ទាត់)។<br>
+                            - ត្រូវមានប៊ូតុងធំមួយពណ៌ខៀវដាក់ពាក្យថា 'ចាប់ឆ្នោតឥឡូវនេះ'។<br>
+                            - ពេលចុចប៊ូតុង ត្រូវមានចលនា (Animation) ឈ្មោះរត់ញាប់ៗរយៈពេល ៣វិនាទី រួចទើបលោតបញ្ចេញឈ្មោះសិស្សដែលកោះហៅចំកណ្តាលអេក្រង់ដោយមានអក្សរធំៗ និងមាន Effect ក្រដាសពណ៌ធ្លាក់ចុះមក (Confetti Effect) អបអរសាទរ។<br>
+                            - សូមរចនា UI ឲ្យមានភាពទាន់សម័យ មានស្រមោល (Shadow) និងមាន Background ពណ៌ Gradient ស្រស់ស្អាត។"</p>
+                        </div>
+                    ៣. ពេល AI សរសេរកូដចេញមកចប់ វាមានកូដអក្សរអង់គ្លេសញឹកៗ។ សូមកុំខ្វល់! គ្រាន់តែចុចប៊ូតុង <strong>Copy code</strong> នៅជ្រុងខាងស្តាំខាងលើនៃប្រអប់កូដនោះ។<br>
+                    ៤. បើកកម្មវិធី <strong>Notepad</strong> នៅក្នុងកុំព្យូទ័ររបស់អ្នក (ចុច Start រួចវាយពាក្យ Notepad)។<br>
+                    ៥. ចុច Paste (Ctrl+V) កូដដែលទើប Copy នោះចូលក្នុង Notepad។<br>
+                    ៦. ចុច File > Save As... ដាក់ឈ្មោះថា <strong>Random.html</strong> (ចាំបាច់ត្រូវមានពាក្យ .html នៅចុងបញ្ចប់) ហើយត្រង់ Save as type: ជ្រើសរើសយក <strong>All Files (*.*)</strong><br>
+                    ៧. ចុច Save។ ឥឡូវនេះសូមទៅចុចបើក File ដែលអ្នកទើបតែ Save នោះ វានឹងលោតចេញជាកម្មវិធីកោះហៅឈ្មោះសិស្សយ៉ាងឡូយ ដែលជាស្នាដៃរបស់អ្នកផ្ទាល់!
                 </div>
             </div>
 
             <!-- មេរៀនទី៥ -->
             <div id="s5" class="section">
                 <h1>៥. ការបង្កើត Gems (ជំនួយការផ្ទាល់ខ្លួន)</h1>
-                <p>Gems អនុញ្ញាតឲ្យលោកគ្រូអ្នកគ្រូបង្កើត AI ផ្ទាល់ខ្លួនមួយ ដែលយើងបាន "បញ្ចូលច្បាប់វិន័យ" ទុកជាមុន មិនបាច់សរសេរ Prompt ដដែលៗរាល់ថ្ងៃ។</p>
-                <div class="prompt-box">
-                    <p><strong>ឧទាហរណ៍ការដាក់ក្នុង Instructions របស់ Gem:</strong><br>
-                    "អ្នកគឺជាជំនួយការផ្នែកចេញវិញ្ញាសា។ រាល់ពេលខ្ញុំប្រាប់ចំណងជើងមេរៀន អ្នកត្រូវបង្កើតលំហាត់ប្រឡងចំនួន ១០ ដែលបែងចែកជា ៣កម្រិត (ងាយ, មធ្យម, ពិបាក) ព្រមទាំងមានចម្លើយនៅទំព័របន្ទាប់ជានិច្ច។"</p>
+                <p>តើលោកគ្រូអ្នកគ្រូហត់នឿយនឹងការវាយ Prompt ប្រាប់តួនាទី និងក្បួនខ្នាតទៅកាន់ AI ដដែលៗរាល់ថ្ងៃមែនទេ? <strong>Gems នៅក្នុង Google Gemini</strong> (សម្រាប់គណនី Advanced) គឺជាមុខងារដែលអនុញ្ញាតឲ្យលោកគ្រូអ្នកគ្រូបង្កើត AI ផ្ទាល់ខ្លួនមួយ ដែលយើងបាន "បញ្ចូលខួរក្បាល និងចរិតលក្ខណៈ" ទុកជាមុន។</p>
+
+                <h3><i class="fas fa-user-friends"></i> គំនិតបង្កើត Gems សម្រាប់គ្រូបង្រៀនមានដូចជា៖</h3>
+                <ul>
+                    <li><strong>Gem គ្រូចេញវិញ្ញាសា៖</strong> យើងប្រាប់វាទុកជាមុនថាត្រូវចេញសំនួររបៀបម៉េច។ ពេលយើងប្រើ យើងគ្រាន់តែវាយពាក្យ "មេរៀនរស្មីសំយោគ" វានឹងរៀបចំវិញ្ញាសាចេញមកមួយសន្លឹកពេញភ្លាម ដោយមិនបាច់យើងបញ្ជាអីច្រើនទៀតទេ។</li>
+                    <li><strong>Gem អ្នកកែវេយ្យាករណ៍ និងរចនាបថ៖</strong> គ្រាន់តែទម្លាក់អត្ថបទចូល វានឹងកែពាក្យខុសអក្ខរាវិរុទ្ធខ្មែរ ឬកែប្រយោគឲ្យទៅជាទម្រង់រដ្ឋបាល ដោយស្វ័យប្រវត្តិ។</li>
+                </ul>
+
+                <div class="step-box">
+                    <div class="step-title">របៀបបង្កើត Gem ដ៏មានប្រសិទ្ធភាព៖</div>
+                    <p>នៅពេលលោកគ្រូអ្នកគ្រូចុចបង្កើត Gem វានឹងមានប្រអប់ធំមួយឈ្មោះថា <strong>Instructions</strong>។ ទីនេះមិនមែនជាកន្លែងសួរសំណួរទេ តែវាជាកន្លែងសរសេរ "ច្បាប់វិន័យ" ដែល Gem នោះត្រូវអនុវត្តតាមមួយជីវិត។ ឧទាហរណ៍ ការបង្កើត Gem ចេញវិញ្ញាសា៖</p>
+                    <div class="prompt-box" style="margin-top: 10px;">
+                        <p>"អ្នកគឺជាជំនួយការដ៏តឹងរ៉ឹងផ្នែកចេញវិញ្ញាសាគណិតវិទ្យាសម្រាប់វិទ្យាល័យ។ កាតព្វកិច្ចតែមួយគត់របស់អ្នកគឺ៖ រាល់ពេលដែលខ្ញុំប្រាប់ពីចំណងជើងមេរៀន អ្នកត្រូវបង្កើតលំហាត់ប្រឡងចំនួន ១០ ដែលបែងចែកជា ៣កម្រិតជានិច្ច (ងាយ ៣, មធ្យម ៤, ពិបាក ៣)។ <br><br>
+                        វិន័យដែលត្រូវអនុវត្តដាច់ខាត៖<br>
+                        ១. អ្នកមិនត្រូវនិយាយពាក្យសួស្តី ឬពន្យល់អ្វីវែងឆ្ងាយនៅដើមទីឡើយ គឺត្រូវចេញវិញ្ញាសាមកតែម្តង។<br>
+                        ២. រាល់លំហាត់ទាំងអស់ត្រូវតែមានចម្លើយ និងរបៀបដោះស្រាយយ៉ាងលម្អិត ប៉ុន្តែត្រូវដាក់វានៅទំព័របន្ទាប់ (ខាងក្រោមគេបង្អស់) ដើម្បីកុំឲ្យសិស្សឃើញចម្លើយមុនធ្វើលំហាត់។<br>
+                        ៣. ប្រើប្រាស់ភាសាខ្មែរឲ្យបានត្រឹមត្រូវបំផុតតាមវចនានុក្រមសម្តេចជួនណាត។"</p>
+                    </div>
                 </div>
             </div>
 
             <!-- មេរៀនទី៦ -->
             <div id="s6" class="section">
                 <h1>៦. ការបង្វឹកស៊ីជម្រៅក្នុង Google AI Studio</h1>
-                <p><strong>Google AI Studio</strong> គឺជា "ផ្ទះបាយផ្នែកខាងក្រោយ" របស់ AI។</p>
+                <p>ប្រសិនបើលោកគ្រូអ្នកគ្រូចង់ក្លាយជាអ្នកជំនាញ AI ពេញតួ <strong>Google AI Studio (aistudio.google.com)</strong> គឺជាកន្លែងដែលត្រូវទៅ។ វាប្រៀបដូចជា "ផ្ទះបាយផ្នែកខាងក្រោយ" ដែលអនុញ្ញាតឲ្យយើងចូលទៅកាច់ចង្កូត ឬកំណត់គ្រឿងផ្សំរបស់ AI ដល់ឫសគល់តែម្តង មិនមែនគ្រាន់តែជាអ្នកប្រើប្រាស់ពីខាងក្រៅទៀតទេ។</p>
+
+                <h3>១. System Instructions (ការណែនាំប្រព័ន្ធកម្រិតខ្ពស់)</h3>
+                <p>វាមិនមែនជា Prompt ធម្មតាទេ តែវាជា <strong>វិន័យដែក (Core Behavior)</strong> ដែល AI ត្រូវតែគោរព ទោះបីជាអ្នកប្រើប្រាស់ព្យាយាមវាយសួរ ឬបោកបញ្ឆោតវាយ៉ាងណាក៏ដោយ។</p>
+                <div class="concept-box">
+                    <strong>ឧទាហរណ៍ System Instruction សម្រាប់ភ្ជាប់ក្នុងសាលា Rean.org៖</strong><br>
+                    "អ្នកគឺជា AI តំណាងឲ្យសាលា Rean.org។ តួនាទីរបស់អ្នកគឺឆ្លើយតបតែរឿងទាក់ទងនឹងការសិក្សា គរុកោសល្យ និងវិន័យសាលាប៉ុណ្ណោះ។ ប្រសិនបើសិស្សសួររឿងនយោបាយ សាសនា រឿងហ្គេម ឬរឿងកម្សាន្តដែលមិនទាក់ទងនឹងការរៀនសូត្រ អ្នកត្រូវតែបដិសេធដោយគួរសមបំផុត ហើយទាញពួកគេឲ្យត្រឡប់មកពិភាក្សាពីរឿងរៀនសូត្រវិញជានិច្ច។ អ្នកមិនត្រូវនិយាយភាសាផ្សេងក្រៅពីភាសាខ្មែរឡើយ។"
+                </div>
+
+                <h3>២. ការប្រើប្រាស់មុខងារ Temperature (សីតុណ្ហភាពនៃការគិត)</h3>
+                <p>នៅក្នុង AI Studio មានប្រអប់មួយនៅខាងស្តាំឲ្យយើងទាញសារ៉េលេខ <strong>Temperature ចាប់ពី 0.0 ដល់ 2.0</strong>។ តើវាមានន័យដូចម្តេច? វាគឺជាការកំណត់កម្រិតនៃការ "ស្រមើស្រមៃ ឬការប្រថុយប្រថាន" របស់ AI។</p>
                 <ul>
-                    <li><strong>System Instructions៖</strong> ជាវិន័យដែក។ (ឧ. "អ្នកត្រូវតែឆ្លើយជាភាសាខ្មែរជានិច្ច ទោះសិស្សសួរជាភាសាអ្វីក៏ដោយ")</li>
-                    <li><strong>Temperature៖</strong> បើទាញយកលេខ 0 វាឆ្លើយត្រង់ៗ (ល្អសម្រាប់គណិតវិទ្យា)។ បើទាញយកលេខ 1 វាមានការស្រមើស្រមៃ (ល្អសម្រាប់អក្សរសាស្ត្រ)។</li>
+                    <li><strong>Temperature ចន្លោះ 0.0 ដល់ 0.3៖</strong> AI នឹងឆ្លើយតបបែបត្រង់ៗ ម៉ឺងម៉ាត់ មានរបៀបរៀបរយ ដូចម៉ាស៊ីនគិតលេខ។ វាជាការកំណត់ដ៏ល្អបំផុតសម្រាប់៖ <strong>មុខវិជ្ជាគណិតវិទ្យា រូបវិទ្យា ការសរសេរកូដ និងការបូកសរុបទិន្នន័យពិន្ទុ</strong> ព្រោះយើងមិនចង់ឲ្យ AI ស្រមើស្រមៃបង្កើតចម្លើយខុសពីការពិតនោះទេ។</li>
+                    <li><strong>Temperature ចន្លោះ 0.7 ដល់ 1.0 ឡើងទៅ៖</strong> AI នឹងចាប់ផ្តើមប្រើការស្រមើស្រមៃខ្ពស់ សរសេរមានទឹកដម ប្រើពាក្យប្លែកៗ និងមានគំនិតច្នៃប្រឌិត។ វាជាការកំណត់ដ៏ល្អបំផុតសម្រាប់៖ <strong>មុខវិជ្ជាអក្សរសាស្ត្រ ការតែងសេចក្តី រកគំនិតធ្វើគម្រោងថ្មីៗ ឬសរសេរកំណាព្យ</strong> ជាដើម។</li>
                 </ul>
             </div>
 
             <!-- មេរៀនទី៧ -->
             <div id="s7" class="section">
                 <h1><i class="fas fa-tools" style="color: var(--accent2);"></i> ៧. ឧបករណ៍បង្កើត Prompt ដោយស្វ័យប្រវត្តិ</h1>
-                <p>សូមបំពេញចន្លោះនីមួយៗខាងក្រោម រួចប្រព័ន្ធរបស់យើងនឹងចងក្រងវាទៅជា Prompt ស្តង់ដារមួយ ដើម្បីឲ្យលោកគ្រូអ្នកគ្រូ Copy យកទៅប្រើប្រាស់។</p>
+                <p>ដើម្បីសម្រួលដល់ការងារ កុំបារម្ភប្រសិនបើលោកគ្រូអ្នកគ្រូទន្ទេញរូបមន្ត "៥ចំណុច" មិនចាំ! លោកគ្រូអ្នកគ្រូគ្រាន់តែបំពេញចន្លោះនីមួយៗខាងក្រោមឲ្យបានខ្លីៗ រួចប្រព័ន្ធរបស់យើងនឹងចងក្រងវាទៅជា <strong>Prompt ដ៏មានអានុភាព និងត្រូវតាមស្តង់ដារមួយ</strong> ដើម្បីឲ្យលោកគ្រូអ្នកគ្រូ Copy យកទៅប្រើប្រាស់ក្នុង AI ភ្លាមៗ។</p>
 
                 <div class="form-group">
-                    <label>១. 🎭 តួនាទី (Role)៖</label>
-                    <textarea id="inp-role" rows="2" placeholder="ឧ. ចូរអ្នកដើរតួជាគ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាដ៏ពូកែម្នាក់។"></textarea>
+                    <label>១. 🎭 តួនាទី (Role)៖ តើចង់ឲ្យ AI ដើរតួជាអ្វី?</label>
+                    <textarea id="inp-role" rows="2" placeholder="ឧ. ចូរអ្នកដើរតួជាគ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាថ្នាក់ទី១២ដ៏ពូកែម្នាក់ប្រចាំវិទ្យាល័យ។"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>២. 🎯 កិច្ចការ (Task)៖</label>
-                    <textarea id="inp-task" rows="2" placeholder="ឧ. សូមជួយបង្កើតលំហាត់អនុវត្តន៍ចំនួន ៥ ទាក់ទងនឹងមេរៀនលីមីត។"></textarea>
+                    <label>២. 🎯 កិច្ចការដែលត្រូវធ្វើ (Task)៖ ចង់បញ្ជាឲ្យធ្វើអីពិតប្រាកដ?</label>
+                    <textarea id="inp-task" rows="2" placeholder="ឧ. សូមជួយបង្កើតលំហាត់អនុវត្តន៍ចំនួន ៥ ទាក់ទងនឹងមេរៀនលីមីតនៃអនុគមន៍។"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>៣. 🌍 បរិបទ (Context)៖</label>
-                    <textarea id="inp-context" rows="2" placeholder="ឧ. សម្រាប់សិស្សថ្នាក់ទី១២ ដែលរៀនរាងយឺត។"></textarea>
+                    <label>៣. 🌍 បរិបទ (Context)៖ សម្រាប់សិស្សបែបណា? ស្ថានភាពបែបណា?</label>
+                    <textarea id="inp-context" rows="2" placeholder="ឧ. លំហាត់នេះគឺសម្រាប់សិស្សដែលរៀនរាងយឺត ទើបរៀនមេរៀននេះដំបូង ដូច្នេះពួកគេត្រូវការការពន្យល់មួយជំហានម្តងៗឲ្យច្បាស់លាស់។"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>៤. 📊 ទម្រង់លទ្ធផល (Format)៖</label>
-                    <textarea id="inp-format" rows="2" placeholder="ឧ. សូមរៀបចំវាជាទម្រង់តារាង។"></textarea>
+                    <label>៤. 📊 ទម្រង់លទ្ធផល (Format)៖ ចង់ឲ្យចេញមកជារាងអី?</label>
+                    <textarea id="inp-format" rows="2" placeholder="ឧ. សូមរៀបចំវាជាទម្រង់តារាង និងមានផ្តល់ចម្លើយលម្អិតនៅខាងក្រោមនៃលំហាត់នីមួយៗជានិច្ច។"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>៥. 🚫 បម្រាម (Constraints)៖</label>
-                    <textarea id="inp-constraint" rows="2" placeholder="ឧ. សូមកុំប្រើពាក្យបច្ចេកទេសពិបាកយល់ពេក។"></textarea>
+                    <label>៥. 🚫 បម្រាម ឬ ដែនកំណត់ (Constraints)៖ អ្វីដែលហាមដាច់ខាត!</label>
+                    <textarea id="inp-constraint" rows="2" placeholder="ឧ. សូមកុំប្រើពាក្យបច្ចេកទេសសាកលវិទ្យាល័យដែលពិបាកយល់ពេក និងហាមដាក់លំហាត់ដែលមានចម្លើយវែងជាងមួយទំព័រ។"></textarea>
                 </div>
 
                 <button class="btn-generate" onclick="generatePrompt()">
-                    <i class="fas fa-magic"></i> ចុចបង្កើត Prompt នៅទីនេះ
+                    <i class="fas fa-magic"></i> ចុចបង្កើត Prompt របស់អ្នកនៅទីនេះ
                 </button>
 
+                <!-- Result Box -->
                 <div class="result-container">
-                    <div class="result-title">លទ្ធផល Prompt របស់អ្នក៖</div>
-                    <div id="final-prompt-text" class="result-text">សូមបំពេញព័ត៌មានខាងលើ រួចចុចប៊ូតុងបង្កើត...</div>
+                    <div class="result-title">លទ្ធផល Prompt របស់អ្នក (ត្រៀមយកទៅប្រើ)៖</div>
+                    <div id="final-prompt-text" class="result-text">សូមបំពេញព័ត៌មាននៅក្នុងប្រអប់ខាងលើ រួចចុចប៊ូតុង "ចុចបង្កើត Prompt របស់អ្នកនៅទីនេះ"...</div>
+                    
                     <button id="copy-btn" class="btn-copy" onclick="copyToClipboard()">
-                        <i class="fas fa-copy"></i> Copy យកទៅ Paste ក្នុង AI
+                        <i class="fas fa-copy"></i> Copy យកទៅ Paste ក្នុង Google AI / Gemini
                     </button>
                 </div>
             </div>
@@ -401,7 +454,7 @@
 
     <!-- ================= កូដ JavaScript / Supabase ================= -->
     <script>
-        // ១. បញ្ចូល URL និង KEY របស់ Supabase នៅទីនេះ
+        // ១. បញ្ចូល URL និង KEY របស់ Supabase នៅទីនេះ (សំខាន់ណាស់!!!)
         const SUPABASE_URL = 'https://jmyfcgtvwlbtzfxgmyai.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpteWZjZ3R2d2xidHpmeGdteWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NzEzODcsImV4cCI6MjA5MTE0NzM4N30.9CD_yAFGBTylqPjivqSHoyTYvL_b1PP27WUi2yL9CbQ';
         
@@ -438,7 +491,11 @@
             btn.disabled = true; btn.innerText = "កំពុងពិនិត្យ...";
 
             try {
-                const { data, error } = await db.from('trainees').select('*').eq('phone', phone).single();
+                const { data, error } = await db
+                    .from('trainees')
+                    .select('*')
+                    .eq('phone', phone)
+                    .single();
 
                 if (error || !data) {
                     showAlert(alertBox, 'រកមិនឃើញលេខនេះទេ។ សូមស្នើសុំចុះឈ្មោះ!', false);
@@ -466,7 +523,9 @@
             btn.disabled = true; btn.innerText = "កំពុងបញ្ជូន...";
 
             try {
-                const { error } = await db.from('trainees').insert([{ phone: phone, full_name: name, is_approved: false }]);
+                const { error } = await db
+                    .from('trainees')
+                    .insert([{ phone: phone, full_name: name, is_approved: false }]);
 
                 if (error) {
                     if(error.code === '23505') { 
