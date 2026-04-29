@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>សៀវភៅណែនាំ Google AI - Rean.org</title>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- បញ្ចូល Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* [រក្សាស្តាយចាស់ទាំងអស់នៅដដែល និងថែមស្តាយសម្រាប់ Login] */
+        :root {
+            --primary: #1a73e8; --primary-light: #e8f0fe; --secondary: #34A853; 
+            --accent1: #FBBC05; --accent2: #EA4335; --bg-color: #f4f7f6;
+            --text-dark: #202124; --text-gray: #5f6368; --border-color: #e0e0e0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Battambang', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); overflow: hidden; height: 100vh; }
+
+        /* ================= Auth Screen (ផ្ទាំង Login) ================= */
+        #auth-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #f8f9fa, #e8f0fe);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+            padding: 20px;
+        }
+        .auth-card {
+            background: white; padding: 40px; border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(26,115,232,0.1); width: 100%; max-width: 450px;
+            text-align: center; animation: slideUp 0.5s ease-out;
+        }
+        .auth-logo { max-width: 200px; margin-bottom: 20px; }
+        
+        .instructor-badge {
+            display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--primary-light), #d2e3fc);
+            color: var(--primary); padding: 10px 20px; border-radius: 15px; font-size: 14px;
+            border: 1px solid #c5d9fb; margin-bottom: 25px; width: 100%;
+        }
+        .instructor-badge .name { font-weight: bold; font-size: 15px;}
+        .instructor-badge .phone { color: #1557b0; font-weight: 900; margin-top: 5px;}
+
+        .auth-title { font-family: 'Moul', serif; color: var(--primary); font-size: 20px; margin-bottom: 5px;}
+        .auth-subtitle { color: var(--text-gray); font-size: 14px; margin-bottom: 25px;}
+
+        .form-input {
+            width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid var(--border-color);
+            border-radius: 10px; font-size: 16px; outline: none; transition: 0.3s;
+        }
+        .form-input:focus { border-color: var(--primary); background: #fafafa;}
+        
+        .btn-auth {
+            width: 100%; padding: 15px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn-auth:hover { background: #0d47a1; }
+        .btn-auth:disabled { background: #9aa0a6; cursor: not-allowed; }
+
+        .auth-switch { margin-top: 20px; font-size: 14px; color: var(--text-gray); cursor: pointer;}
+        .auth-switch span { color: var(--primary); font-weight: bold; }
+        
+        .alert-msg { margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 14px; display: none; }
+        .alert-error { background: #fce8e6; color: var(--accent2); border: 1px solid #fad2cf; }
+        .alert-success { background: #e6f4ea; color: var(--secondary); border: 1px solid #ceead6; }
+
+        /* ================= Main App ================= */
+        #main-app { display: none; height: 100vh; flex-direction: row; }
+        
+        /* [បញ្ចូល CSS Sidebar និង Content ពីមុនមកទីនេះ] */
+        .sidebar { width: 360px; background: #ffffff; display: flex; flex-direction: column; box-shadow: 4px 0 20px rgba(0,0,0,0.04); z-index: 100;}
+        .sidebar-header { padding: 30px 20px 20px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .menu { list-style: none; overflow-y: auto; flex: 1; padding: 20px 15px; }
+        .menu li { padding: 14px 18px; margin-bottom: 8px; cursor: pointer; border-radius: 10px; color: var(--text-gray); font-weight: 700; display: flex; align-items: center; gap: 15px; }
+        .menu li i { font-size: 18px; width: 25px; text-align: center; color: #9aa0a6; }
+        .menu li.active { background: var(--primary-light); color: var(--primary); border-left: 5px solid var(--primary); border-radius: 0 10px 10px 0; }
+        .menu li.active i { color: var(--primary); }
+        .btn-logout { background: #fce8e6; color: var(--accent2); padding: 12px; margin: 15px; text-align: center; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        
+        .content-area { flex: 1; padding: 40px; overflow-y: auto; background: var(--bg-color); scroll-behavior: smooth;}
+        .section { background: white; border-radius: 15px; padding: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); max-width: 900px; margin: 0 auto; display: none; }
+        .section.active { display: block; }
+        h1 { font-family: 'Moul', serif; color: var(--primary); font-size: 26px; border-bottom: 2px solid var(--primary-light); padding-bottom: 15px; margin-bottom: 25px; }
+
+        @media (max-width: 768px) {
+            #main-app { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; position: sticky; top: 0; z-index: 100; }
+            .menu { display: flex; flex-direction: row; overflow-x: auto; white-space: nowrap; }
+            .content-area { overflow-y: visible; padding: 15px;}
+            .section { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= ផ្ទាំង Login / Register ================= -->
+    <div id="auth-screen">
+        <div class="auth-card">
+            <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Rean.org Logo" class="auth-logo">
+            
+            <div class="instructor-badge">
+                <div class="name"><i class="fas fa-chalkboard-teacher"></i> ដឹកនាំដោយ៖ លោកគ្រូ ហុន ម៉ុម</div>
+                <div class="phone"><i class="fas fa-phone-alt"></i> 017 47 66 64</div>
+            </div>
+
+            <div id="login-form-container">
+                <h2 class="auth-title">ចូលរៀន</h2>
+                <p class="auth-subtitle">សូមបញ្ចូលលេខទូរសព្ទរបស់អ្នក</p>
+                <input type="tel" id="login-phone" class="form-input" placeholder="ឧ. 012345678" autocomplete="off">
+                <button class="btn-auth" id="btn-login" onclick="login()">ចូលមើលឯកសារ</button>
+                <div id="login-alert" class="alert-msg alert-error">លេខទូរសព្ទមិនត្រឹមត្រូវ</div>
+                <p class="auth-switch" onclick="toggleAuth()">មិនទាន់មានឈ្មោះ? <span>ស្នើសុំចុះឈ្មោះ</span></p>
+            </div>
+
+            <div id="register-form-container" style="display: none;">
+                <h2 class="auth-title">ស្នើសុំចុះឈ្មោះ</h2>
+                <p class="auth-subtitle">សូមបំពេញព័ត៌មានពិតប្រាកដ</p>
+                <input type="text" id="reg-name" class="form-input" placeholder="ឈ្មោះពេញ (ឧ. សុខ សាន្ត)" autocomplete="off">
+                <input type="tel" id="reg-phone" class="form-input" placeholder="លេខទូរសព្ទ (ឧ. 012345678)" autocomplete="off">
+                <button class="btn-auth" id="btn-register" onclick="register()">បញ្ជូនការស្នើសុំ</button>
+                <div id="reg-alert" class="alert-msg"></div>
+                <p class="auth-switch" onclick="toggleAuth()">មានឈ្មោះហើយ? <span>ត្រឡប់ទៅ Login</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ផ្ទាំងមេរៀន (Main App) ================= -->
+    <div id="main-app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Logo" style="max-width: 60%; margin-bottom: 10px;">
+                <div style="color: var(--primary); font-weight: bold;">លោកគ្រូ ហុន ម៉ុម (017 47 66 64)</div>
+            </div>
+            <ul class="menu">
+                <li class="active" onclick="switchTab(event, 's1')"><i class="fas fa-magic"></i> ១. ក្បួនសរសេរ Prompt</li>
+                <li onclick="switchTab(event, 's2')"><i class="fas fa-book-reader"></i> ២. ការងាររដ្ឋបាលគ្រូ</li>
+                <!-- ថែមម៉ឺនុយផ្សេងទៀតតាមចិត្ត... -->
+            </ul>
+            <div class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ចាកចេញ (Logout)</div>
+        </aside>
+
+        <main class="content-area">
+            <div id="s1" class="section active">
+                <h1>១. ស្វាគមន៍មកកាន់វគ្គបណ្តុះបណ្តាល AI</h1>
+                <p>សូមអបអរសាទរ! លោកគ្រូអ្នកគ្រូបាន Login ចូលដោយជោគជ័យ។ ឯកសារខាងក្រោមនេះគឺជាទ្រព្យសម្បត្តិបញ្ញាដែលរក្សាទុកសម្រាប់តែសិក្ខាកាមប៉ុណ្ណោះ។</p>
+                <!-- [ដាក់មេរៀនរបស់លោកគ្រូនៅទីនេះ] -->
+            </div>
+            
+            <div id="s2" class="section">
+                <h1>២. ការងាររដ្ឋបាល និងកិច្ចតែងការ</h1>
+                <p>ខ្លឹមសារមេរៀនទី២...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= JavaScript / Supabase Logic ================= -->
+    <script>
+        // ១. កំណត់ Supabase Credentials (យកពី Project Settings របស់អ្នក)
+        const SUPABASE_URL = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpteWZjZ3R2d2xidHpmeGdteWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NzEzODcsImV4cCI6MjA5MTE0NzM4N30.9CD_yAFGBTylqPjivqSHoyTYvL_b1PP27WUi2yL9CbQ';
+        const SUPABASE_ANON_KEY = 'https://jmyfcgtvwlbtzfxgmyai.supabase.co';
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ២. ឆែកមើលពេលបើកវេបសាយភ្លាមៗ
+        document.addEventListener("DOMContentLoaded", () => {
+            const session = localStorage.getItem("trainee_phone");
+            if (session) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'flex';
+            }
+        });
+
+        // ៣. បិទបើកផ្ទាំង Login និង Register
+        function toggleAuth() {
+            const loginForm = document.getElementById('login-form-container');
+            const regForm = document.getElementById('register-form-container');
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                regForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                regForm.style.display = 'block';
+            }
+        }
+
+        // ៤. អនុគមន៍ Login
+        async function login() {
+            const phone = document.getElementById('login-phone').value.trim();
+            const alertBox = document.getElementById('login-alert');
+            const btn = document.getElementById('btn-login');
+
+            if (!phone) { showAlert(alertBox, 'សូមបញ្ចូលលេខទូរសព្ទ!', false); return; }
+
+            btn.disabled = true; btn.innerText = "កំពុងពិនិត្យ...";
+
+            try {
+                // ទាញទិន្នន័យពី Supabase
+                const { data, error } = await supabase
+                    .from('trainees')
+                    .select('*')
+                    .eq('phone', phone)
+                    .single();
+
+                if (error || !data) {
+                    showAlert(alertBox, 'រកមិនឃើញលេខទូរសព្ទនេះទេ។ សូមស្នើសុំចុះឈ្មោះ!', false);
+                } else if (data.is_approved === false) {
+                    showAlert(alertBox, 'គណនីរបស់អ្នកកំពុងរង់ចាំការអនុម័តពីលោកគ្រូ ហុន ម៉ុម។', false);
+                } else {
+                    // Login ជោគជ័យ
+                    localStorage.setItem("trainee_phone", data.phone);
+                    document.getElementById('auth-screen').style.display = 'none';
+                    document.getElementById('main-app').style.display = 'flex';
+                }
+            } catch (err) {
+                showAlert(alertBox, 'មានបញ្ហាភ្ជាប់អ៊ីនធឺណិត។', false);
+            }
+            btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ";
+        }
+
+        // ៥. អនុគមន៍ Register (ស្នើសុំ)
+        async function register() {
+            const name = document.getElementById('reg-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const alertBox = document.getElementById('reg-alert');
+            const btn = document.getElementById('btn-register');
+
+            if (!name || !phone) { showAlert(alertBox, 'សូមបំពេញឈ្មោះ និងលេខទូរសព្ទ!', false); return; }
+
+            btn.disabled = true; btn.innerText = "កំពុងបញ្ជូន...";
+
+            try {
+                // បញ្ចូលទិន្នន័យទៅ Supabase
+                const { error } = await supabase
+                    .from('trainees')
+                    .insert([{ phone: phone, full_name: name, is_approved: false }]);
+
+                if (error) {
+                    if(error.code === '23505') { // លេខនេះមានរួចហើយ (Unique constraint)
+                        showAlert(alertBox, 'លេខទូរសព្ទនេះបានស្នើសុំរួចហើយ។', false);
+                    } else {
+                        showAlert(alertBox, 'មានបញ្ហាទិន្នន័យ សូមសាកល្បងម្តងទៀត។', false);
+                    }
+                } else {
+                    showAlert(alertBox, 'ការស្នើសុំជោគជ័យ! សូមរង់ចាំការអនុម័ត។', true);
+                    document.getElementById('reg-name').value = '';
+                    document.getElementById('reg-phone').value = '';
+                }
+            } catch (err) {
+                showAlert(alertBox, 'មានបញ្ហាភ្ជាប់អ៊ីនធឺណិត។', false);
+            }
+            btn.disabled = false; btn.innerText = "បញ្ជូនការស្នើសុំ";
+        }
+
+        // ៦. អនុគមន៍ចាកចេញ (Logout)
+        function logout() {
+            localStorage.removeItem("trainee_phone");
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('login-phone').value = '';
+        }
+
+        // អនុគមន៍ជំនួយ
+        function showAlert(element, message, isSuccess) {
+            element.innerText = message;
+            element.style.display = 'block';
+            element.className = isSuccess ? 'alert-msg alert-success' : 'alert-msg alert-error';
+            setTimeout(() => { element.style.display = 'none'; }, 5000);
+        }
+
+        // [រក្សាកូដ Switch Tab របស់មេរៀននៅដដែល]
+        function switchTab(event, sectionId) {
+            document.querySelectorAll('.menu li').forEach(li => li.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById(sectionId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
