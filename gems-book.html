@@ -11,11 +11,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* [បិទមិនឲ្យ Highlight អក្សរ Copy បាន] */
+        /* [បិទមិនឲ្យ Highlight អក្សរ Copy បាន លើកលែងតែក្នុងមេរៀន] */
         body {
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10 and IE 11 */
-            user-select: none; /* Standard syntax */
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none; 
         }
 
         :root {
@@ -42,7 +42,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
         .auth-logo { max-width: 180px; margin-bottom: 25px; }
-
         .auth-title { font-family: 'Moul', serif; color: var(--primary); font-size: 22px; margin-bottom: 8px;}
         .auth-subtitle { color: var(--text-gray); font-size: 14px; margin-bottom: 25px;}
 
@@ -74,7 +73,6 @@
 
         .divider { height: 1px; background: var(--border-color); width: 100%; margin: 25px 0; }
 
-        /* ឈ្មោះគ្រូដឹកនាំ */
         .instructor-badge {
             display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
             background: var(--primary-light); color: var(--primary); 
@@ -100,14 +98,41 @@
         .btn-logout { background: #fce8e6; color: var(--accent2); padding: 12px; margin: 15px; text-align: center; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s;}
         .btn-logout:hover { background: var(--accent2); color: white;}
         
-        .content-area { flex: 1; padding: 40px; overflow-y: auto; background: var(--bg-color); scroll-behavior: smooth; user-select: text; /* អាចឲ្យ Highlight តែខាងក្នុងមេរៀន */}
+        /* អនុញ្ញាតឲ្យសិក្ខាកាម Highlight អក្សរក្នុងមេរៀនបាន */
+        .content-area { flex: 1; padding: 40px; overflow-y: auto; background: var(--bg-color); scroll-behavior: smooth; user-select: text; }
         .section { background: white; border-radius: 15px; padding: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); max-width: 900px; margin: 0 auto; display: none; animation: slideUp 0.4s ease-out; }
         .section.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Typography មេរៀន */
         h1 { font-family: 'Moul', serif; color: var(--primary); font-size: 26px; border-bottom: 2px solid var(--primary-light); padding-bottom: 15px; margin-bottom: 25px; line-height: 1.6;}
+        h3 { color: var(--primary); margin: 35px 0 15px 0; font-size: 20px; display: flex; align-items: center; gap: 10px; font-weight: bold;}
         p { margin-bottom: 15px; text-align: justify; line-height: 1.8;}
+        ul, ol { margin-left: 30px; margin-bottom: 20px; line-height: 1.8; }
+        li { margin-bottom: 10px; }
         
+        /* ប្រអប់រចនាបថក្នុងមេរៀន */
+        .concept-box { background: var(--primary-light); border-left: 5px solid var(--primary); padding: 25px; border-radius: 0 10px 10px 0; margin: 25px 0; }
+        .concept-box strong { color: var(--primary); font-size: 18px; display: block; margin-bottom: 10px;}
+        
+        .prompt-box { background: #fff; border: 2px dashed #f28b82; padding: 25px; border-radius: 10px; margin: 25px 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
+        .prompt-box::before { content: 'ឧទាហរណ៍នៃការបញ្ជា (Copy យកទៅសាកល្បងបាន)'; position: absolute; top: -14px; left: 20px; background: var(--accent2); color: white; padding: 4px 15px; font-size: 13px; border-radius: 15px; font-weight: bold; }
+        .prompt-box p { font-family: monospace; font-size: 16px; color: #b31412; margin: 0; }
+
+        .step-box { background: #e6f4ea; border-radius: 10px; padding: 25px; margin: 25px 0; border: 1px solid #ceead6; }
+        .step-title { font-weight: bold; color: var(--secondary); margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid #ceead6; padding-bottom: 10px;}
+
+        /* Generator Styles */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: var(--primary); font-size: 15px;}
+        .form-group textarea { width: 100%; padding: 15px; border: 2px solid #dadce0; border-radius: 10px; font-size: 15px; resize: vertical; transition: 0.3s; background: #fafafa;}
+        .form-group textarea:focus { border-color: var(--primary); background: #fff; outline: none;}
+        .btn-generate { background: var(--primary); color: white; border: none; padding: 14px 25px; font-size: 16px; font-weight: bold; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; width: 100%; justify-content: center;}
+        .result-container { margin-top: 35px; background: #202124; border-radius: 12px; padding: 25px;}
+        .result-title { color: #8ab4f8; font-family: 'Moul', serif; margin-bottom: 15px; border-bottom: 1px solid #3c4043; padding-bottom: 10px; }
+        .result-text { color: #e8eaed; font-family: monospace; font-size: 16px; white-space: pre-wrap; margin-bottom: 20px; min-height: 60px; line-height: 1.8;}
+        .btn-copy { background: var(--secondary); color: white; border: none; padding: 12px 20px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;}
+
         @media (max-width: 768px) {
             #main-app { flex-direction: column; overflow-y: auto; }
             .sidebar { width: 100%; position: sticky; top: 0; z-index: 100; }
@@ -117,7 +142,6 @@
             .menu li i { display: none; }
             .content-area { overflow-y: visible; padding: 15px;}
             .section { padding: 25px 20px; }
-            .auth-card { padding: 30px 20px; margin: 15px; }
         }
     </style>
 </head>
@@ -126,10 +150,8 @@
     <!-- ================= ផ្ទាំង Login / Register ================= -->
     <div id="auth-screen">
         <div class="auth-card">
-            <!-- ឡូហ្គោសាលា -->
             <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Rean.org Logo" class="auth-logo">
             
-            <!-- កុងតឺន័រ Login -->
             <div id="login-container">
                 <h2 class="auth-title">ចូលរៀន</h2>
                 <p class="auth-subtitle">សូមបញ្ចូលលេខទូរសព្ទរបស់អ្នក</p>
@@ -139,7 +161,6 @@
                 <p class="auth-switch">មិនទាន់មានឈ្មោះ? <span onclick="showRegister()">ស្នើសុំចុះឈ្មោះ</span></p>
             </div>
 
-            <!-- កុងតឺន័រ Register -->
             <div id="register-container" style="display: none;">
                 <h2 class="auth-title">ស្នើសុំចុះឈ្មោះ</h2>
                 <p class="auth-subtitle">សូមបំពេញព័ត៌មានពិតប្រាកដ</p>
@@ -150,10 +171,8 @@
                 <p class="auth-switch">មានឈ្មោះហើយ? <span onclick="showLogin()">ត្រឡប់ទៅចូលរៀនវិញ</span></p>
             </div>
 
-            <!-- បន្ទាត់ខណ្ឌ -->
             <div class="divider"></div>
 
-            <!-- ឈ្មោះគ្រូដឹកនាំ -->
             <div class="instructor-badge">
                 <div class="name"><i class="fas fa-chalkboard-teacher"></i> ដឹកនាំដោយ៖ លោកគ្រូ ហុន ម៉ុម</div>
                 <div class="phone"><i class="fas fa-phone-alt"></i> 017 47 66 64</div>
@@ -161,7 +180,7 @@
         </div>
     </div>
 
-    <!-- ================= ផ្ទាំងមេរៀន (Main App) ================= -->
+    <!-- ================= ផ្ទាំងមេរៀនពេញលេញ (Main App) ================= -->
     <div id="main-app">
         <aside class="sidebar">
             <div class="sidebar-header">
@@ -169,31 +188,191 @@
                 <div style="color: var(--primary); font-weight: bold; font-size: 14px;">វគ្គបណ្តុះបណ្តាល AI សម្រាប់គ្រូ</div>
             </div>
             <ul class="menu">
-                <li class="active" onclick="switchTab(event, 's1')"><i class="fas fa-magic"></i> ១. ក្បួនសរសេរ Prompt</li>
-                <li onclick="switchTab(event, 's2')"><i class="fas fa-file-alt"></i> ២. ការងាររដ្ឋបាលគ្រូ</li>
+                <li class="active" onclick="switchTab(event, 's1')"><i class="fas fa-magic"></i> ១. ក្បួនសរសេរ Prompt បញ្ជា AI</li>
+                <li onclick="switchTab(event, 's2')"><i class="fas fa-file-alt"></i> ២. ការងាររដ្ឋបាល & បង្រៀន</li>
+                <li onclick="switchTab(event, 's3')"><i class="fas fa-chart-bar"></i> ៣. ការវិភាគទិន្នន័យសិស្ស</li>
+                <li onclick="switchTab(event, 's4')"><i class="fas fa-laptop-code"></i> ៤. ការបង្កើត Web App ងាយៗ</li>
+                <li onclick="switchTab(event, 's5')"><i class="fas fa-robot"></i> ៥. ការបង្កើត Gems (ជំនួយការ)</li>
+                <li onclick="switchTab(event, 's6')"><i class="fas fa-sliders-h"></i> ៦. បង្វឹកក្នុង Google AI Studio</li>
+                <li onclick="switchTab(event, 's7')" style="color: var(--accent2);"><i class="fas fa-tools"></i> ៧. ឧបករណ៍បង្កើត Prompt អូតូ</li>
             </ul>
             <div class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ចាកចេញពីគណនី</div>
         </aside>
 
         <main class="content-area">
+            
+            <!-- មេរៀនទី១ -->
             <div id="s1" class="section active">
                 <h1>១. ក្បួនសរសេរ Prompt បញ្ជា AI ឲ្យបានត្រឹមត្រូវ</h1>
-                <p>សូមអបអរសាទរ! លោកគ្រូអ្នកគ្រូបាន Login ចូលរៀនដោយជោគជ័យ។ [យកមេរៀនពីកូដចាស់មកដាក់ទីនេះបានធម្មតា]</p>
+                <p>សូមស្វាគមន៍លោកគ្រូអ្នកគ្រូនៃ <strong>Rean.org</strong> ទាំងអស់គ្នា! បច្ចុប្បន្ននេះ ការចេះប្រើប្រាស់ AI គឺជាជំនាញដ៏ចាំបាច់បំផុត។ AI ប្រៀបបាននឹងសិស្សដ៏មហាឆ្លាតម្នាក់ តែវាមិនដឹងថាចៅហ្វាយនាយចង់បានអ្វីឲ្យប្រាកដនោះទេ។ ប្រសិនបើយើងសួរវាដោយប្រើពាក្យខ្លីៗ ទូទៅពេក វានឹងឆ្លើយមកវិញបែបខ្លីៗ។ ដូច្នេះហើយ ទើបយើងត្រូវរៀនពីសិល្បៈនៃការបញ្ជា ដែលគេហៅថា <strong>"Prompt Engineering"</strong>។</p>
+                
+                <div class="concept-box">
+                    <strong>រូបមន្តបញ្ជាស្នូលទាំង ៥ ចំណុច៖</strong>
+                    <ol>
+                        <li><strong>តួនាទី (Role)៖</strong> ប្រាប់ AI ឲ្យដើរតួជាអ្នកជំនាញអ្វីមួយ ដើម្បីប្តូរវាក្យសព្ទ។</li>
+                        <li><strong>កិច្ចការ (Task)៖</strong> តើចង់ឲ្យវាធ្វើអ្វីពិតប្រាកដ? (សរសេរលិខិត, បង្កើតលំហាត់...)</li>
+                        <li><strong>បរិបទ (Context)៖</strong> តើអ្នកយកលទ្ធផលនេះទៅប្រើជាមួយនរណា? (សិស្សកម្រិតណា?)</li>
+                        <li><strong>ទម្រង់ (Format)៖</strong> ចង់បានលទ្ធផលចេញមកជារាងអ្វី? (តារាង, ចំណុចៗ)</li>
+                        <li><strong>ដែនកំណត់ (Constraint)៖</strong> ប្រាប់ពីអ្វីដែលវា <strong>ហាមធ្វើ</strong> ដាច់ខាត។</li>
+                    </ol>
+                </div>
+
+                <h3>ការប្រៀបធៀប៖</h3>
+                <p>❌ <strong>បញ្ជាមិនល្អ៖</strong> <em>"រកលំហាត់គណិតឲ្យមួយមក។"</em></p>
+                
+                <div class="prompt-box">
+                    <p>✅ <strong>បញ្ជាល្អឥតខ្ចោះ (មានរូបមន្តទាំង៥)៖</strong><br><br>
+                    "[១. តួនាទី] ចូរអ្នកដើរតួជាគ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាដ៏ពូកែម្នាក់ប្រចាំវិទ្យាល័យ។ <br><br>
+                    [២. កិច្ចការ] សូមជួយបង្កើតលំហាត់អនុវត្តន៍ចំនួន ៥ ទាក់ទងនឹងមេរៀនសមីការដឺក្រេទី២។ <br><br>
+                    [៣. បរិបទ] លំហាត់ទាំងនេះគឺរៀបចំឡើងសម្រាប់សិស្សថ្នាក់ទី១០ ដែលទើបតែរៀនមេរៀននេះដំបូង។ <br><br>
+                    [៤. ទម្រង់] សូមរៀបចំលំហាត់ពីងាយទៅពិបាក ហើយសូមផ្តល់នូវរបៀបដោះស្រាយមួយជំហានម្តងៗ នៅផ្នែកខាងក្រោមនៃលំហាត់នីមួយៗ។ <br><br>
+                    [៥. ដែនកំណត់] សូមកុំដាក់លំហាត់ណាដែលមានចម្លើយជាឫសសាំញ៉ាំពេក។"</p>
+                </div>
             </div>
+
+            <!-- មេរៀនទី២ -->
             <div id="s2" class="section">
                 <h1>២. ការងាររដ្ឋបាល ការបង្រៀន និងបង្កើតគម្រោង</h1>
-                <p>ខ្លឹមសារមេរៀនទី២...</p>
+                <p>ក្នុងនាមជាគ្រូបង្រៀន យើងត្រូវចំណាយពេលរាប់ម៉ោងលើការងាររដ្ឋបាល សរសេរលិខិតផ្សេងៗ រៀបចំកិច្ចតែងការ និងរកនឹកវិធីសាស្ត្របង្រៀន។ ឥឡូវនេះ យើងអាចប្រគល់ការងារទាំងនេះឲ្យ AI ធ្វើជំនួសបាន។</p>
+
+                <h3>ក. ការព្រាងលិខិតផ្លូវការ ឬលិខិតរដ្ឋបាល</h3>
+                <div class="prompt-box">
+                    <p>"ចូរអ្នកដើរតួជាលេខាធិការសាលាដ៏មានបទពិសោធន៍។ សូមជួយព្រាងលិខិតអញ្ជើញអាណាព្យាបាលសិស្សមកប្រជុំ។ <br>
+                    - គោលបំណង៖ ដើម្បីពិភាក្សាអំពីលទ្ធផលសិក្សាប្រចាំឆមាសទី១ និងបញ្ហាវិន័យសិស្ស។<br>
+                    - ទម្រង់៖ សូមសរសេរជាទម្រង់ផ្លូវការ មានការគោរពខ្ពស់។ <br>
+                    - នៅខាងចុង សូមទុកចន្លោះទំនេរសម្រាប់បំពេញ កាលបរិច្ឆេទ ម៉ោង និងហត្ថលេខា។"</p>
+                </div>
+
+                <h3>ខ. ការរៀបចំកិច្ចតែងការបង្រៀន (Lesson Plan)</h3>
+                <div class="prompt-box">
+                    <p>"ខ្ញុំជាគ្រូបង្រៀនមុខវិជ្ជារូបវិទ្យាថ្នាក់ទី១១។ សូមជួយព្រាងកិច្ចតែងការបង្រៀនរយៈពេល ៦០នាទី សម្រាប់មេរៀន 'ថាមពលស៊ីនេទិច'។ សូមបែងចែកជា ៥ ដំណាក់កាល៖ រំលឹកមេរៀនចាស់ (៥នាទី), ការទាក់ទាញចំណាប់អារម្មណ៍ (៥នាទី), ការពន្យល់មេរៀនថ្មី (៣០នាទី), ការអនុវត្តន៍ជាក្រុម (១៥នាទី), និងសំណួរពង្រឹងចំណេះ (៥នាទី)។"</p>
+                </div>
+                
+                <h3>គ. ការរកដំណោះស្រាយបញ្ហាវិន័យសិស្ស</h3>
+                <div class="prompt-box">
+                    <p>"ចូរអ្នកដើរតួជាអ្នកជំនាញចិត្តវិទ្យាអប់រំ។ ខ្ញុំមានសិស្សម្នាក់រៀនថ្នាក់ទី១០។ គាត់ឆ្លាត ប៉ុន្តែតែងតែឡូឡាក្នុងថ្នាក់។ តើខ្ញុំគួរប្រើវិធីសាស្ត្រនិយាយទល់មុខជាមួយគាត់បែបណា ដើម្បីកុំឲ្យគាត់មានអារម្មណ៍ថាត្រូវគេស្តីបន្ទោស តែអាចកែប្រែឥរិយាបថគាត់បាន?"</p>
+                </div>
             </div>
+
+            <!-- មេរៀនទី៣ -->
+            <div id="s3" class="section">
+                <h1>៣. ការវិភាគពិន្ទុ និងទិន្នន័យសិស្សយ៉ាងរហ័ស</h1>
+                <p>ការអង្គុយបូកសរុបពិន្ទុ និងរកមើលសិស្សដែលខ្សោយ គឺជារឿងហត់នឿយ។ ជាមួយ Google AI លោកគ្រូអ្នកគ្រូគ្រាន់តែ <strong>Copy ទិន្នន័យចេញពី Excel ហើយ Paste បញ្ចូលទៅក្នុង AI</strong> នោះវានឹងធ្វើការវិភាគជំនួស។</p>
+
+                <div class="step-box">
+                    <div class="step-title">របៀបអនុវត្តជាក់ស្តែង៖</div>
+                    ១. បើកឯកសារ Excel ទិន្នន័យសិស្ស។<br>
+                    ២. Highlight តារាងទាំងមូល រួចចុច <strong>Ctrl + C (Copy)</strong>។<br>
+                    ៣. បើក Google Gemini រួច Paste <strong>(Ctrl + V)</strong> ទិន្នន័យនោះចូល។<br>
+                    ៤. វាយប្រយោគបញ្ជាខាងក្រោម រួចចុច Enter។
+                </div>
+
+                <div class="prompt-box">
+                    <p>"ខាងក្រោមនេះគឺជាទិន្នន័យពិន្ទុប្រឡងប្រចាំខែរបស់សិស្សក្នុងថ្នាក់របស់ខ្ញុំ។ សូមជួយវិភាគ៖<br><br>
+                    ១. សូមទាញយកឈ្មោះសិស្ស ៥នាក់ ដែលមានពិន្ទុសរុបទាបជាងគេបំផុត។<br>
+                    ២. សូមរកមើលសិស្សណាខ្លះ ដែលខែមុនពិន្ទុទាប តែខែនេះមានពិន្ទុកើនឡើងខ្ពស់ ដើម្បីខ្ញុំលើកទឹកចិត្ត។<br>
+                    ៣. សូមទាញយកឈ្មោះសិស្សដែលធ្លាក់មុខវិជ្ជា 'គណិតវិទ្យា' មកបង្កើតជាតារាងថ្មីមួយ ដើម្បីខ្ញុំហៅមករៀនបំប៉ន។<br><br>
+                    [ចុច Paste ទិន្នន័យ Excel របស់អ្នកនៅទីនេះ]"</p>
+                </div>
+            </div>
+
+            <!-- មេរៀនទី៤ -->
+            <div id="s4" class="section">
+                <h1>៤. ការបង្កើត Web App ដោយមិនចាំបាច់សរសេរកូដ</h1>
+                <p>លោកគ្រូអ្នកគ្រូអាចបញ្ជាឲ្យ AI សរសេរកូដបង្កើតជាកម្មវិធីខ្នាតតូច (Web App) សម្រាប់ប្រើប្រាស់ក្នុងថ្នាក់រៀនដោយឥតគិតថ្លៃ ទោះបីជាមិនចេះមុខវិជ្ជាកុំព្យូទ័រក៏ដោយ។</p>
+
+                <div class="step-box">
+                    <div class="step-title">ឧទាហរណ៍៖ ការបង្កើតកម្មវិធីចាប់ឆ្នោតហៅឈ្មោះសិស្ស</div>
+                    ១. ចូលទៅកាន់ Google Gemini រួចបញ្ជាថា៖ <strong>"សូមសរសេរកូដ HTML, CSS និង JS បញ្ចូលគ្នាតែមួយ (Single File) ដើម្បីបង្កើតកម្មវិធីហៅឈ្មោះសិស្សចាប់ឆ្នោត។ ត្រូវមានប្រអប់បញ្ចូលឈ្មោះ និងប៊ូតុងធំមួយដើម្បីចុចចាប់ឆ្នោត។ ពេលចុច ត្រូវមានឈ្មោះរត់ញាប់ៗ រួចលោតបញ្ចេញឈ្មោះអ្នកឈ្នះចំកណ្តាលអេក្រង់។"</strong><br>
+                    ២. ពេល AI សរសេរកូដចេញមកចប់ សូមចុចប៊ូតុង <strong>Copy code</strong>។<br>
+                    ៣. បើកកម្មវិធី <strong>Notepad</strong> ក្នុងកុំព្យូទ័រ រួច Paste កូដចូល។<br>
+                    ៤. ចុច File > Save As... ដាក់ឈ្មោះថា <strong>Random.html</strong> (ត្រង់ Save as type ជ្រើសរើស All Files)។<br>
+                    ៥. ចុច Save រួចបើក File នោះ វានឹងលោតចេញជាកម្មវិធីក្នុង Browser របស់អ្នកភ្លាមៗ!
+                </div>
+            </div>
+
+            <!-- មេរៀនទី៥ -->
+            <div id="s5" class="section">
+                <h1>៥. ការបង្កើត Gems (ជំនួយការផ្ទាល់ខ្លួន)</h1>
+                <p>តើហត់នឿយនឹងការវាយ Prompt ប្រាប់តួនាទីដដែលៗរាល់ថ្ងៃមែនទេ? <strong>Gems</strong> អនុញ្ញាតឲ្យលោកគ្រូអ្នកគ្រូបង្កើត AI ផ្ទាល់ខ្លួនមួយ ដែលយើងបាន "បញ្ចូលចរិតលក្ខណៈ និងក្បួនខ្នាត" ទុកជាមុន។</p>
+
+                <h3>របៀបបង្កើត Gem ចេញវិញ្ញាសា៖</h3>
+                <p>នៅពេលបង្កើត Gem វានឹងមានប្រអប់ <strong>Instructions</strong>។ ទីនោះមិនមែនសម្រាប់សួរសំណួរទេ តែជាកន្លែងដាក់ "ច្បាប់វិន័យ"។</p>
+                <div class="prompt-box">
+                    <p>"អ្នកគឺជាជំនួយការដ៏តឹងរ៉ឹងផ្នែកចេញវិញ្ញាសា។ រាល់ពេលដែលខ្ញុំប្រាប់ពីចំណងជើងមេរៀន អ្នកត្រូវបង្កើតលំហាត់ប្រឡងចំនួន ១០ ដែលបែងចែកជា ៣កម្រិត (ងាយ ៣, មធ្យម ៤, ពិបាក ៣)។ <br><br>
+                    វិន័យដែលត្រូវអនុវត្តដាច់ខាត៖<br>
+                    ១. មិនត្រូវនិយាយពាក្យសួស្តីទេ គឺត្រូវចេញវិញ្ញាសាមកតែម្តង។<br>
+                    ២. រាល់លំហាត់ត្រូវតែមានចម្លើយ និងរបៀបដោះស្រាយលម្អិត ប៉ុន្តែត្រូវដាក់វានៅទំព័របន្ទាប់ (ខាងក្រោមគេបង្អស់) ដើម្បីកុំឲ្យសិស្សឃើញចម្លើយមុនធ្វើលំហាត់។"</p>
+                </div>
+            </div>
+
+            <!-- មេរៀនទី៦ -->
+            <div id="s6" class="section">
+                <h1>៦. ការបង្វឹកស៊ីជម្រៅក្នុង Google AI Studio</h1>
+                <p><strong>Google AI Studio (aistudio.google.com)</strong> គឺជា "ផ្ទះបាយផ្នែកខាងក្រោយ" ដែលអនុញ្ញាតឲ្យយើងកំណត់គ្រឿងផ្សំរបស់ AI ដល់ឫសគល់។</p>
+
+                <h3>១. System Instructions (ការណែនាំប្រព័ន្ធ)</h3>
+                <p>វាជាវិន័យដែក ដែល AI ត្រូវតែគោរព ទោះជាគេព្យាយាមវាយសួរយ៉ាងណាក៏ដោយ។</p>
+                <div class="concept-box">
+                    <strong>ឧទាហរណ៍៖</strong> "អ្នកគឺជា AI តំណាងឲ្យសាលា Rean.org។ ប្រសិនបើសិស្សសួររឿងនយោបាយ សាសនា ឬរឿងហ្គេម អ្នកត្រូវតែបដិសេធដោយគួរសម ហើយទាញពួកគេឲ្យត្រឡប់មកពិភាក្សាពីរឿងរៀនសូត្រវិញជានិច្ច។"
+                </div>
+
+                <h3>២. Temperature (សីតុណ្ហភាពនៃការគិត)</h3>
+                <p>វាគឺជាការកំណត់កម្រិតនៃការ "ស្រមើស្រមៃ" របស់ AI។</p>
+                <ul>
+                    <li><strong>Temperature ពី 0.0 ដល់ 0.3៖</strong> ឆ្លើយត្រង់ៗ ម៉ឺងម៉ាត់។ ល្អបំផុតសម្រាប់៖ <strong>គណិតវិទ្យា រូបវិទ្យា និងការបូកសរុបទិន្នន័យ</strong>។</li>
+                    <li><strong>Temperature ពី 0.7 ដល់ 1.0 ឡើង៖</strong> ប្រើការស្រមើស្រមៃខ្ពស់ សរសេរមានទឹកដម។ ល្អបំផុតសម្រាប់៖ <strong>អក្សរសាស្ត្រ ការតែងសេចក្តី ឬសរសេរកំណាព្យ</strong>។</li>
+                </ul>
+            </div>
+
+            <!-- មេរៀនទី៧ -->
+            <div id="s7" class="section">
+                <h1><i class="fas fa-tools" style="color: var(--accent2);"></i> ៧. ឧបករណ៍បង្កើត Prompt ដោយស្វ័យប្រវត្តិ</h1>
+                <p>សូមបំពេញចន្លោះនីមួយៗខាងក្រោមឲ្យបានខ្លីៗ រួចប្រព័ន្ធរបស់យើងនឹងចងក្រងវាទៅជា Prompt ស្តង់ដារមួយ ដើម្បីឲ្យលោកគ្រូអ្នកគ្រូ Copy យកទៅប្រើប្រាស់។</p>
+
+                <div class="form-group">
+                    <label>១. 🎭 តួនាទី (Role)៖</label>
+                    <textarea id="inp-role" rows="2" placeholder="ឧ. ចូរអ្នកដើរតួជាគ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាដ៏ពូកែម្នាក់។"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>២. 🎯 កិច្ចការដែលត្រូវធ្វើ (Task)៖</label>
+                    <textarea id="inp-task" rows="2" placeholder="ឧ. សូមជួយបង្កើតលំហាត់អនុវត្តន៍ចំនួន ៥ ទាក់ទងនឹងមេរៀនលីមីតនៃអនុគមន៍។"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>៣. 🌍 បរិបទ (Context)៖</label>
+                    <textarea id="inp-context" rows="2" placeholder="ឧ. លំហាត់នេះគឺសម្រាប់សិស្សថ្នាក់ទី១២ ដែលរៀនរាងយឺត។"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>៤. 📊 ទម្រង់លទ្ធផល (Format)៖</label>
+                    <textarea id="inp-format" rows="2" placeholder="ឧ. សូមរៀបចំវាជាទម្រង់តារាង។"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>៥. 🚫 បម្រាម ឬ ដែនកំណត់ (Constraints)៖</label>
+                    <textarea id="inp-constraint" rows="2" placeholder="ឧ. សូមកុំប្រើពាក្យបច្ចេកទេសពិបាកយល់ពេក។"></textarea>
+                </div>
+
+                <button class="btn-generate" onclick="generatePrompt()">
+                    <i class="fas fa-magic"></i> ចុចបង្កើត Prompt របស់អ្នកនៅទីនេះ
+                </button>
+
+                <div class="result-container">
+                    <div class="result-title">លទ្ធផល Prompt របស់អ្នក (ត្រៀមយកទៅប្រើ)៖</div>
+                    <div id="final-prompt-text" class="result-text">សូមបំពេញព័ត៌មានខាងលើ រួចចុចប៊ូតុងបង្កើត...</div>
+                    <button id="copy-btn" class="btn-copy" onclick="copyToClipboard()">
+                        <i class="fas fa-copy"></i> Copy យកទៅ Paste ក្នុង AI
+                    </button>
+                </div>
+            </div>
+
         </main>
     </div>
 
-    <!-- ================= កូដ JavaScript / Supabase (បានជួសជុលបញ្ហា Error) ================= -->
+    <!-- ================= កូដ JavaScript / Supabase ================= -->
     <script>
-        // ១. ដាក់ URL និង KEY របស់ Supabase នៅទីនេះ
+        // ១. បញ្ចូល URL និង KEY របស់ Supabase នៅទីនេះ (សំខាន់ណាស់!!!)
         const SUPABASE_URL = 'https://jmyfcgtvwlbtzfxgmyai.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpteWZjZ3R2d2xidHpmeGdteWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NzEzODcsImV4cCI6MjA5MTE0NzM4N30.9CD_yAFGBTylqPjivqSHoyTYvL_b1PP27WUi2yL9CbQ';
         
-        // ជួសជុលបញ្ហា Error (ជាន់ឈ្មោះអញ្ញាត): ប្រើឈ្មោះ 'db' ជំនួស 'supabase'
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ២. ឆែកមើលពេលបើកវេបសាយ 
@@ -205,7 +384,6 @@
             }
         });
 
-        // ៣. បិទបើកផ្ទាំង Login និង Register 
         function showRegister() {
             document.getElementById('login-container').style.display = 'none';
             document.getElementById('register-container').style.display = 'block';
@@ -218,7 +396,6 @@
             document.getElementById('login-alert').style.display = 'none';
         }
 
-        // ៤. អនុគមន៍ Login
         async function login() {
             const phone = document.getElementById('login-phone').value.trim();
             const alertBox = document.getElementById('login-alert');
@@ -250,7 +427,6 @@
             btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ";
         }
 
-        // ៥. អនុគមន៍ Register (ស្នើសុំ)
         async function register() {
             const name = document.getElementById('reg-name').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
@@ -284,7 +460,6 @@
             btn.disabled = false; btn.innerText = "បញ្ជូនការស្នើសុំ";
         }
 
-        // ៦. អនុគមន៍ចាកចេញ (Logout)
         function logout() {
             localStorage.removeItem("trainee_phone");
             document.getElementById('auth-screen').style.display = 'flex';
@@ -292,7 +467,6 @@
             document.getElementById('login-phone').value = '';
         }
 
-        // អនុគមន៍ជំនួយបង្ហាញសារ
         function showAlert(element, message, isSuccess) {
             element.innerText = message;
             element.style.display = 'block';
@@ -308,21 +482,59 @@
             if(window.innerWidth <= 768) { document.querySelector('.content-area').scrollTop = 0; }
         }
 
+        // មុខងារសម្រាប់ Prompt Generator
+        function generatePrompt() {
+            const role = document.getElementById('inp-role').value.trim();
+            const task = document.getElementById('inp-task').value.trim();
+            const context = document.getElementById('inp-context').value.trim();
+            const format = document.getElementById('inp-format').value.trim(); 
+            const constraint = document.getElementById('inp-constraint').value.trim();
+
+            let finalPrompt = "";
+
+            if(role) finalPrompt += role + "\n\n";
+            if(task) finalPrompt += "📌 កិច្ចការដែលត្រូវធ្វើ៖ \n" + task + "\n\n";
+            if(context) finalPrompt += "🎯 បរិបទ៖ \n" + context + "\n\n";
+            if(format) finalPrompt += "📊 ទម្រង់លទ្ធផលដែលចង់បាន៖ \n" + format + "\n\n";
+            if(constraint) finalPrompt += "🚫 លក្ខខណ្ឌ និងបម្រាម៖ \n" + constraint + "\n";
+
+            const resultBox = document.getElementById('final-prompt-text');
+            const copyBtn = document.getElementById('copy-btn');
+
+            if(finalPrompt === "") {
+                resultBox.innerText = "សូមបំពេញព័ត៌មានក្នុងប្រអប់ណាមួយខាងលើសិន...";
+            } else {
+                resultBox.innerText = finalPrompt;
+                copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy យកទៅ Paste ក្នុង AI';
+            }
+        }
+
+        function copyToClipboard() {
+            const textToCopy = document.getElementById('final-prompt-text').innerText;
+            const copyBtn = document.getElementById('copy-btn');
+
+            if(textToCopy === "" || textToCopy.includes("សូមបំពេញព័ត៌មាន")) {
+                alert("មិនមានអ្វីសម្រាប់ Copy ទេ!");
+                return;
+            }
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> បាន Copy ជោគជ័យ';
+                setTimeout(() => { copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy យកទៅ Paste ក្នុង AI'; }, 3000);
+            }).catch(err => {
+                alert("សូម Highlight លើអក្សររួចចុច Copy (Ctrl+C) ដោយខ្លួនឯង។");
+            });
+        }
+
         // =================================================================
         // កូដការពារសុវត្ថិភាព (Anti-Inspect & Anti-Copy)
         // =================================================================
-        document.addEventListener('contextmenu', event => event.preventDefault()); // បិទម៉ៅស្តាំ
-        
+        document.addEventListener('contextmenu', event => event.preventDefault()); 
         document.onkeydown = function(e) {
-            // បិទ F12
             if(e.keyCode == 123) { return false; }
-            // បិទ Ctrl+Shift+I (Chrome DevTools)
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
-            // បិទ Ctrl+Shift+C (Inspect Element)
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
-            // បិទ Ctrl+Shift+J (Console)
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
-            // បិទ Ctrl+U (View Source)
             if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
         }
     </script>
