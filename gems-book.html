@@ -9,6 +9,15 @@
     
     <!-- បញ្ចូល Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- បញ្ចូល Tailwind CSS សម្រាប់សៀវភៅទី២ -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // បិទ Preflight ដើម្បីកុំឲ្យ Tailwind ទៅលុបចោលទម្រង់ CSS ដើមរបស់សៀវភៅទី១
+        tailwind.config = {
+            corePlugins: { preflight: false }
+        }
+    </script>
 
     <style>
         /* ================= ការពារសុវត្ថិភាព (Anti-Copy) ================= */
@@ -69,7 +78,6 @@
 
         .divider { height: 1px; background: var(--border-color); width: 100%; margin: 25px 0; }
 
-        /* ឈ្មោះគ្រូដឹកនាំ */
         .instructor-badge {
             display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
             background: var(--primary-light); color: var(--primary); 
@@ -82,7 +90,6 @@
         /* ================= ផ្ទាំង Main App (មេរៀន) ================= */
         #main-app { display: none; height: 100vh; flex-direction: row; position: relative; }
         
-        /* Mobile Topbar */
         #mobile-topbar {
             display: none; justify-content: space-between; align-items: center;
             padding: 12px 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -92,19 +99,25 @@
         .mobile-title img { height: 30px; }
         .menu-toggle-btn { font-size: 22px; color: var(--text-gray); cursor: pointer; padding: 5px;}
 
-        /* Sidebar Styling */
         .sidebar { width: 340px; background: #ffffff; display: flex; flex-direction: column; box-shadow: 4px 0 20px rgba(0,0,0,0.04); z-index: 100;}
         .sidebar-header { padding: 30px 20px 20px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        .menu { list-style: none; overflow-y: auto; flex: 1; padding: 20px 15px; }
+        
+        /* Menu Categories */
+        .menu-category {
+            padding: 10px 15px; font-size: 13px; font-weight: bold; color: var(--primary);
+            background: var(--primary-light); margin: 15px 15px 5px 15px; border-radius: 8px;
+            font-family: 'Moul', serif;
+        }
+
+        .menu { list-style: none; overflow-y: auto; flex: 1; padding: 10px 15px; }
         .menu::-webkit-scrollbar { width: 6px; }
         .menu::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
-        .menu li { padding: 14px 18px; margin-bottom: 8px; cursor: pointer; border-radius: 10px; color: var(--text-gray); font-weight: 700; display: flex; align-items: center; gap: 15px; transition: 0.2s;}
+        .menu li { padding: 12px 18px; margin-bottom: 5px; cursor: pointer; border-radius: 10px; color: var(--text-gray); font-weight: 700; display: flex; align-items: center; gap: 15px; transition: 0.2s;}
         .menu li i { font-size: 18px; width: 25px; text-align: center; color: #9aa0a6; }
         .menu li:hover { background: #f8f9fa; color: var(--primary); }
         .menu li.active { background: var(--primary-light); color: var(--primary); border-left: 5px solid var(--primary); border-radius: 0 10px 10px 0; }
         .menu li.active i { color: var(--primary); }
         
-        /* ប៊ូតុង Logout តូចស្អាត */
         .btn-logout { 
             background: #fff; color: var(--accent2); padding: 10px 20px; 
             margin: 15px auto 25px auto; text-align: center; border-radius: 8px; 
@@ -113,18 +126,17 @@
         }
         .btn-logout:hover { background: #fce8e6; }
         
-        /* Content Area (អនុញ្ញាតឲ្យ Highlight ក្នុងនេះ) */
         .content-area { flex: 1; padding: 40px; overflow-y: auto; background: var(--bg-color); scroll-behavior: smooth; user-select: text; }
         .section { background: white; border-radius: 15px; padding: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); max-width: 900px; margin: 0 auto; display: none; animation: slideUp 0.4s ease-out; }
         .section.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Typography មេរៀន */
-        h1 { font-family: 'Moul', serif; color: var(--primary); font-size: 26px; border-bottom: 2px solid var(--primary-light); padding-bottom: 15px; margin-bottom: 25px; line-height: 1.6;}
-        h3 { color: var(--primary); margin: 35px 0 15px 0; font-size: 20px; display: flex; align-items: center; gap: 10px; font-weight: bold;}
-        p { margin-bottom: 15px; text-align: justify; line-height: 1.8;}
-        ul, ol { margin-left: 30px; margin-bottom: 20px; line-height: 1.8; }
-        li { margin-bottom: 10px; }
+        /* Typography មេរៀនទី១ */
+        .section h1 { font-family: 'Moul', serif; color: var(--primary); font-size: 26px; border-bottom: 2px solid var(--primary-light); padding-bottom: 15px; margin-bottom: 25px; line-height: 1.6;}
+        .section h3 { color: var(--primary); margin: 35px 0 15px 0; font-size: 20px; display: flex; align-items: center; gap: 10px; font-weight: bold;}
+        .section p { margin-bottom: 15px; text-align: justify; line-height: 1.8;}
+        .section ul, .section ol { margin-left: 30px; margin-bottom: 20px; line-height: 1.8; }
+        .section li { margin-bottom: 10px; }
         
         .concept-box { background: var(--primary-light); border-left: 5px solid var(--primary); padding: 25px; border-radius: 0 10px 10px 0; margin: 25px 0; }
         .concept-box strong { color: var(--primary); font-size: 18px; display: block; margin-bottom: 10px;}
@@ -145,13 +157,10 @@
         .result-text { color: #e8eaed; font-family: monospace; font-size: 16px; white-space: pre-wrap; margin-bottom: 20px; min-height: 60px; line-height: 1.8;}
         .btn-copy { background: var(--secondary); color: white; border: none; padding: 12px 20px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;}
 
-        /* ================= Mobile Design (ការកែប្រែសម្រាប់ទូរស័ព្ទ) ================= */
         @media (max-width: 768px) {
             #main-app { flex-direction: column; overflow-y: auto; }
             #mobile-topbar { display: flex; }
             .sidebar-header { display: none; }
-            
-            /* Sidebar ដូរទៅជា Dropdown លើទូរស័ព្ទ */
             .sidebar { 
                 position: absolute; top: 55px; left: 0; width: 100%; height: auto;
                 max-height: calc(100vh - 55px); background: white; z-index: 150; 
@@ -160,16 +169,9 @@
                 border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; overflow: hidden;
             }
             .sidebar.mobile-open { transform: translateY(0); }
-            
             .menu { padding: 15px; overflow-y: auto;}
-            .menu li { margin-bottom: 5px; border: 1px solid transparent; }
-            .menu li i { display: inline-block; }
-            .btn-logout { margin: 10px auto; display: flex; justify-content: center; width: max-content;}
-            
             .content-area { overflow-y: visible; padding: 15px;}
             .section { padding: 25px 20px; }
-            h1 { font-size: 22px;}
-            .auth-card { padding: 30px 20px; margin: 15px; }
         }
     </style>
 </head>
@@ -178,10 +180,8 @@
     <!-- ================= ផ្ទាំង Login / Register ================= -->
     <div id="auth-screen">
         <div class="auth-card">
-            <!-- ឡូហ្គោសាលា -->
             <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Rean.org Logo" class="auth-logo">
             
-            <!-- កុងតឺន័រ Login -->
             <div id="login-container">
                 <h2 class="auth-title">ចូលរៀន</h2>
                 <p class="auth-subtitle">សូមបញ្ចូលលេខទូរសព្ទរបស់អ្នក</p>
@@ -191,7 +191,6 @@
                 <p class="auth-switch">មិនទាន់មានឈ្មោះ? <span onclick="showRegister()">ស្នើសុំចុះឈ្មោះ</span></p>
             </div>
 
-            <!-- កុងតឺន័រ Register -->
             <div id="register-container" style="display: none;">
                 <h2 class="auth-title">ស្នើសុំចុះឈ្មោះ</h2>
                 <p class="auth-subtitle">សូមបំពេញព័ត៌មានពិតប្រាកដ</p>
@@ -203,8 +202,6 @@
             </div>
 
             <div class="divider"></div>
-
-            <!-- ឈ្មោះគ្រូដឹកនាំ -->
             <div class="instructor-badge">
                 <div class="name"><i class="fas fa-chalkboard-teacher"></i> ដឹកនាំដោយ៖ លោកគ្រូ ហុន ម៉ុម</div>
                 <div class="phone"><i class="fas fa-phone-alt"></i> 017 47 66 64</div>
@@ -215,12 +212,10 @@
     <!-- ================= ផ្ទាំងមេរៀន (Main App) ================= -->
     <div id="main-app">
         
-        <!-- របារខាងលើសម្រាប់ទូរស័ព្ទ (Mobile Topbar) -->
         <div id="mobile-topbar">
             <div class="mobile-title">
                 <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Logo"> Rean.org
             </div>
-            <!-- ប៊ូតុង Hamburger Menu (☰) -->
             <div class="menu-toggle-btn" onclick="toggleMobileMenu()">
                 <i class="fas fa-bars"></i>
             </div>
@@ -229,25 +224,36 @@
         <aside class="sidebar" id="sidebar-menu">
             <div class="sidebar-header">
                 <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Logo" style="max-width: 60%; margin-bottom: 10px;">
-                <div style="color: var(--primary); font-weight: bold; font-size: 14px;">វគ្គបណ្តុះបណ្តាល AI សម្រាប់គ្រូ</div>
+                <div style="color: var(--primary); font-weight: bold; font-size: 14px;">បណ្ណាល័យ AI សម្រាប់គ្រូ</div>
             </div>
             
             <ul class="menu">
-                <li class="active" onclick="switchTab(event, 's1')"><i class="fas fa-magic"></i> ១. ក្បួនសរសេរ Prompt បញ្ជា AI</li>
+                <!-- សៀវភៅទី១ -->
+                <div class="menu-category">សៀវភៅទី១៖ ក្បួនបញ្ជា AI</div>
+                <li class="active" onclick="switchTab(event, 's1')"><i class="fas fa-magic"></i> ១. ក្បួនសរសេរ Prompt</li>
                 <li onclick="switchTab(event, 's2')"><i class="fas fa-file-alt"></i> ២. ការងាររដ្ឋបាល & បង្រៀន</li>
                 <li onclick="switchTab(event, 's3')"><i class="fas fa-chart-bar"></i> ៣. ការវិភាគទិន្នន័យសិស្ស</li>
-                <li onclick="switchTab(event, 's4')"><i class="fas fa-laptop-code"></i> ៤. ការបង្កើត Web App ងាយៗ</li>
-                <li onclick="switchTab(event, 's5')"><i class="fas fa-robot"></i> ៥. ការបង្កើត Gems (ជំនួយការ)</li>
-                <li onclick="switchTab(event, 's6')"><i class="fas fa-sliders-h"></i> ៦. បង្វឹកក្នុង Google AI Studio</li>
-                <li onclick="switchTab(event, 's7')" style="color: var(--accent2);"><i class="fas fa-tools"></i> ៧. ឧបករណ៍បង្កើត Prompt អូតូ</li>
+                <li onclick="switchTab(event, 's4')"><i class="fas fa-laptop-code"></i> ៤. ការបង្កើត Web App</li>
+                <li onclick="switchTab(event, 's5')"><i class="fas fa-robot"></i> ៥. ការបង្កើត Gems</li>
+                <li onclick="switchTab(event, 's6')"><i class="fas fa-sliders-h"></i> ៦. បង្វឹកក្នុង AI Studio</li>
+                <li onclick="switchTab(event, 's7')" style="color: var(--accent2);"><i class="fas fa-tools"></i> ៧. ឧបករណ៍បង្កើត Prompt</li>
+
+                <!-- សៀវភៅទី២ -->
+                <div class="menu-category" style="background: #d1fae5; color: #059669;">សៀវភៅទី២៖ AI រដ្ឋបាលសាលា</div>
+                <li onclick="switchTab(event, 'book2')" style="color: #059669;"><i class="fas fa-book-reader"></i> ចូលអានសៀវភៅទី២</li>
+
+                <!-- របៀបបន្ថែមសៀវភៅទី៣ (គ្រាន់តែ Copy កូដខាងក្រោមនេះ ហើយដក Comment ចេញ) -->
+                <!-- 
+                <div class="menu-category" style="background: #fef3c7; color: #d97706;">សៀវភៅទី៣៖ ចំណងជើងថ្មី</div>
+                <li onclick="switchTab(event, 'book3')" style="color: #d97706;"><i class="fas fa-book"></i> ចូលអានសៀវភៅទី៣</li> 
+                -->
             </ul>
-            <!-- ប៊ូតុង Logout តូចស្អាត -->
             <div class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ចាកចេញ</div>
         </aside>
 
         <main class="content-area">
             
-            <!-- មេរៀនទី១ -->
+            <!-- ================= សៀវភៅទី១ (Sections 1 to 7) ពេញលេញ ================= -->
             <div id="s1" class="section active">
                 <h1>១. ក្បួនសរសេរ Prompt បញ្ជា AI ឲ្យបានត្រឹមត្រូវ</h1>
                 <p>សូមស្វាគមន៍លោកគ្រូអ្នកគ្រូនៃ <strong>Rean.org</strong> ទាំងអស់គ្នា! បច្ចុប្បន្ននេះ ការចេះប្រើប្រាស់ AI (ដូចជា Google Gemini ឬ ChatGPT) គឺជាជំនាញដ៏ចាំបាច់បំផុត។ AI ប្រៀបបាននឹងសិស្សដ៏មហាឆ្លាតម្នាក់ ដែលបានអានសៀវភៅអស់រាប់លានក្បាលជុំវិញពិភពលោក ប៉ុន្តែបញ្ហារបស់វាគឺ <strong>"វាមិនដឹងថាចៅហ្វាយនាយ (គឺរូបយើង) ចង់បានអ្វីឲ្យប្រាកដនោះទេ"</strong>។</p>
@@ -279,7 +285,6 @@
                 </div>
             </div>
 
-            <!-- មេរៀនទី២ -->
             <div id="s2" class="section">
                 <h1>២. ការងាររដ្ឋបាល ការបង្រៀន និងបង្កើតគម្រោង</h1>
                 <p>ក្នុងនាមជាគ្រូបង្រៀន យើងមិនត្រឹមតែបង្រៀនក្នុងថ្នាក់ទេ តែយើងត្រូវចំណាយពេលរាប់ម៉ោងលើការងាររដ្ឋបាល សរសេរលិខិតផ្សេងៗ រៀបចំកិច្ចតែងការ និងរកនឹកវិធីសាស្ត្របង្រៀនថ្មីៗ។ ឥឡូវនេះ លោកគ្រូអ្នកគ្រូអាចប្រគល់ការងារទាំងនេះឲ្យ AI ធ្វើជំនួសបាន ដោយចំណាយពេលមិនដល់ ២នាទីឡើយ។</p>
@@ -311,7 +316,6 @@
                 </div>
             </div>
 
-            <!-- មេរៀនទី៣ -->
             <div id="s3" class="section">
                 <h1>៣. ការវិភាគពិន្ទុ និងទិន្នន័យសិស្សយ៉ាងរហ័ស</h1>
                 <p>ការអង្គុយបូកសរុបពិន្ទុ រកមើលសិស្សដែលខ្សោយ ឬរៀបចំចំណាត់ថ្នាក់ គឺជាការងារដែលហត់នឿយ និងចំណាយពេលរាប់ម៉ោងនៅចុងខែនីមួយៗ។ ជាមួយ Google AI (ជាពិសេសបើលោកគ្រូអ្នកគ្រូប្រើ Gemini Advanced) លោកគ្រូអ្នកគ្រូគ្រាន់តែ <strong>Copy ទិន្នន័យចេញពី Excel ហើយ Paste បញ្ចូលទៅក្នុង AI</strong> នោះវានឹងក្លាយជាអ្នកវិភាគទិន្នន័យប្រចាំខ្លួនយើងតែម្តង។</p>
@@ -334,7 +338,6 @@
                 </div>
             </div>
 
-            <!-- មេរៀនទី៤ -->
             <div id="s4" class="section">
                 <h1>៤. ការបង្កើត Web App ដោយមិនចាំបាច់សរសេរកូដ</h1>
                 <p>នេះជាជំនាញកម្រិតខ្ពស់ដ៏គួរឲ្យភ្ញាក់ផ្អើលមួយ! លោកគ្រូអ្នកគ្រូអាចបញ្ជាឲ្យ AI សរសេរកូដបង្កើតជាកម្មវិធីខ្នាតតូច (Web App) សម្រាប់ប្រើប្រាស់ក្នុងថ្នាក់រៀនដោយឥតគិតថ្លៃ ទោះបីជាលោកគ្រូអ្នកគ្រូមិនចេះមុខវិជ្ជាកុំព្យូទ័រទាល់តែសោះក៏ដោយ។</p>
@@ -364,7 +367,6 @@
                 </div>
             </div>
 
-            <!-- មេរៀនទី៥ -->
             <div id="s5" class="section">
                 <h1>៥. ការបង្កើត Gems (ជំនួយការផ្ទាល់ខ្លួន)</h1>
                 <p>តើលោកគ្រូអ្នកគ្រូហត់នឿយនឹងការវាយ Prompt ប្រាប់តួនាទី និងក្បួនខ្នាតទៅកាន់ AI ដដែលៗរាល់ថ្ងៃមែនទេ? <strong>Gems នៅក្នុង Google Gemini</strong> (សម្រាប់គណនី Advanced) គឺជាមុខងារដែលអនុញ្ញាតឲ្យលោកគ្រូអ្នកគ្រូបង្កើត AI ផ្ទាល់ខ្លួនមួយ ដែលយើងបាន "បញ្ចូលខួរក្បាល និងចរិតលក្ខណៈ" ទុកជាមុន។</p>
@@ -388,7 +390,6 @@
                 </div>
             </div>
 
-            <!-- មេរៀនទី៦ -->
             <div id="s6" class="section">
                 <h1>៦. ការបង្វឹកស៊ីជម្រៅក្នុង Google AI Studio</h1>
                 <p>ប្រសិនបើលោកគ្រូអ្នកគ្រូចង់ក្លាយជាអ្នកជំនាញ AI ពេញតួ <strong>Google AI Studio (aistudio.google.com)</strong> គឺជាកន្លែងដែលត្រូវទៅ។ វាប្រៀបដូចជា "ផ្ទះបាយផ្នែកខាងក្រោយ" ដែលអនុញ្ញាតឲ្យយើងចូលទៅកាច់ចង្កូត ឬកំណត់គ្រឿងផ្សំរបស់ AI ដល់ឫសគល់តែម្តង មិនមែនគ្រាន់តែជាអ្នកប្រើប្រាស់ពីខាងក្រៅទៀតទេ។</p>
@@ -408,7 +409,6 @@
                 </ul>
             </div>
 
-            <!-- មេរៀនទី៧ -->
             <div id="s7" class="section">
                 <h1><i class="fas fa-tools" style="color: var(--accent2);"></i> ៧. ឧបករណ៍បង្កើត Prompt ដោយស្វ័យប្រវត្តិ</h1>
                 <p>ដើម្បីសម្រួលដល់ការងារ កុំបារម្ភប្រសិនបើលោកគ្រូអ្នកគ្រូទន្ទេញរូបមន្ត "៥ចំណុច" មិនចាំ! លោកគ្រូអ្នកគ្រូគ្រាន់តែបំពេញចន្លោះនីមួយៗខាងក្រោមឲ្យបានខ្លីៗ រួចប្រព័ន្ធរបស់យើងនឹងចងក្រងវាទៅជា <strong>Prompt ដ៏មានអានុភាព និងត្រូវតាមស្តង់ដារមួយ</strong> ដើម្បីឲ្យលោកគ្រូអ្នកគ្រូ Copy យកទៅប្រើប្រាស់ក្នុង AI ភ្លាមៗ។</p>
@@ -438,35 +438,143 @@
                     <i class="fas fa-magic"></i> ចុចបង្កើត Prompt របស់អ្នកនៅទីនេះ
                 </button>
 
-                <!-- Result Box -->
                 <div class="result-container">
                     <div class="result-title">លទ្ធផល Prompt របស់អ្នក (ត្រៀមយកទៅប្រើ)៖</div>
                     <div id="final-prompt-text" class="result-text">សូមបំពេញព័ត៌មាននៅក្នុងប្រអប់ខាងលើ រួចចុចប៊ូតុង "ចុចបង្កើត Prompt របស់អ្នកនៅទីនេះ"...</div>
                     
-                    <button id="copy-btn" class="btn-copy" onclick="copyToClipboard()">
+                    <button id="copy-btn" class="btn-copy" onclick="copyToClipboardText()">
                         <i class="fas fa-copy"></i> Copy យកទៅ Paste ក្នុង Google AI / Gemini
                     </button>
                 </div>
             </div>
 
+            <!-- ================= សៀវភៅទី២ (Book 2 Content) ពេញលេញ ================= -->
+            <div id="book2" class="section" style="max-width: 1000px; padding: 0; background: transparent; box-shadow: none;">
+                
+                <!-- Hero / Cover -->
+                <section class="bg-gradient-to-br from-emerald-600 to-teal-800 rounded-3xl p-8 md:p-12 text-white shadow-xl relative overflow-hidden mb-12">
+                    <div class="absolute -right-10 -top-10 opacity-10">
+                        <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path></svg>
+                    </div>
+                    <div class="relative z-10 text-center">
+                        <span class="bg-emerald-500/30 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wider uppercase backdrop-blur-sm border border-emerald-400/50">សៀវភៅទី២</span>
+                        <h2 style="font-family: 'Moul', serif;" class="text-3xl md:text-5xl mt-6 mb-6 leading-tight">វិធីសាស្ត្រប្រើប្រាស់ Google AI Studio <br> <span class="text-emerald-200">សម្រាប់ការងាររដ្ឋបាលសាលា</span></h2>
+                        <p class="text-emerald-50 text-lg md:text-xl max-w-2xl mx-auto font-light">ជួយសន្សំសំចៃពេលវេលា ធានាភាពត្រឹមត្រូវ និងពង្រឹងគុណភាពឯកសារផ្លូវការក្នុងស្ថាប័នអប់រំរបស់អ្នក។</p>
+                    </div>
+                </section>
+
+                <!-- Section: Formula -->
+                <section class="mb-12">
+                    <h2 style="font-family: 'Moul', serif;" class="text-2xl text-slate-800 border-l-4 border-emerald-500 pl-4 mb-6">រូបមន្ត ៥ ចំណុច & System Prompt</h2>
+                    <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+                        <p class="mb-6 text-lg text-slate-600 leading-relaxed">ដើម្បីឱ្យ AI យល់ពីការងាររដ្ឋបាល សូមប្រើរូបមន្ត <strong>R-C-T-F-T</strong>៖ <br>
+                        <span class="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded mt-2 font-bold text-sm">Role (តួនាទី)</span>
+                        <span class="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded mt-2 font-bold text-sm">Context (បរិបទ)</span>
+                        <span class="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded mt-2 font-bold text-sm">Task (ភារកិច្ច)</span>
+                        <span class="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded mt-2 font-bold text-sm">Format (ទម្រង់)</span>
+                        <span class="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded mt-2 font-bold text-sm">Tone (សម្លេង)</span>
+                        </p>
+                        
+                        <div class="bg-amber-50/50 rounded-2xl p-6 border border-amber-200 mt-4 relative group shadow-inner">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                                <h4 class="font-bold text-amber-900 flex items-center text-lg">
+                                    <i class="fas fa-robot mr-2 text-amber-600"></i> System Instructions
+                                </h4>
+                                <button onclick="copyElementText(this, 'sys-prompt')" class="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md">
+                                    <i class="fas fa-copy mr-2"></i> Copy Prompt
+                                </button>
+                            </div>
+                            <div id="sys-prompt" class="font-mono text-sm sm:text-base text-slate-700 leading-relaxed bg-white p-5 rounded-xl border border-amber-100 shadow-sm whitespace-pre-wrap">អ្នកគឺជាប្រធានរដ្ឋបាលសាលារៀនដ៏ឆ្នើមម្នាក់ និងមានបទពិសោធន៍ខ្ពស់។ ភារកិច្ចចម្បងរបស់អ្នកគឺជួយរៀបចំលិខិតបទដ្ឋានគតិយុត្ត សេចក្តីជូនដំណឹង របាយការណ៍ និងឆ្លើយតបទៅកាន់មាតាបិតាសិស្ស ឬបុគ្គលិក ប្រកបដោយវិជ្ជាជីវៈ។
+
+គោលការណ៍ត្រូវអនុវត្ត៖
+1. រាល់ការសរសេរលិខិត ត្រូវមានទម្រង់ផ្លូវការ (មានកាលបរិច្ឆេទ, កម្មវត្ថុ, សេចក្តីផ្តើម, ខ្លឹមសារ, និងបញ្ចប់)។
+2. រាល់ការឆ្លើយតបសំណួរមាតាបិតា ត្រូវទន់ភ្លន់ មានសុជីវធម៌ និងផ្តល់ដំណោះស្រាយច្បាស់លាស់។
+3. ការតាក់តែងលិខិតរដ្ឋបាលទាក់ទងនឹងបុគ្គលិក ត្រូវរក្សាការសម្ងាត់ និងមានភាពម៉ឺងម៉ាត់។
+4. រាល់ពេលស្នើសុំបង្កើតរបាយការណ៍ទិន្នន័យ ត្រូវរៀបចំជាទម្រង់ 'តារាង (Table)'។
+5. ប្រសិនបើព័ត៌មានមិនច្បាស់លាស់ ត្រូវសួរដេញដោលបញ្ជាក់សិន ហាមទាយស្មាន។
+6. ប្រើប្រាស់ភាសាខ្មែរផ្លូវការ ត្រឹមត្រូវតាមអក្ខរាវិរុទ្ធជានិច្ច។</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Settings -->
+                <section class="flex flex-col md:flex-row gap-6 mb-12">
+                    <div class="bg-slate-800 text-white rounded-3xl p-8 w-full md:w-1/2 relative overflow-hidden shadow-lg">
+                        <h3 style="font-family: 'Moul', serif;" class="text-2xl mb-4 relative z-10 text-emerald-300">ការកំណត់ Model</h3>
+                        <p class="text-slate-300 text-base relative z-10 leading-relaxed mb-6">ដើម្បីឱ្យឯកសាររដ្ឋបាលត្រឹមត្រូវ កុំឱ្យ AI ចេះតែប្រឌិត ឬប្រើពាក្យសិល្បៈពេក៖</p>
+                        <div class="relative z-10 bg-slate-900/50 p-4 rounded-xl border border-slate-700 text-center">
+                            <span class="block text-sm text-slate-400 mb-1">សូមកំណត់ Temperature ត្រឹម៖</span>
+                            <span class="text-4xl font-bold text-emerald-400 font-mono">0.1 - 0.3</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 text-emerald-900 rounded-3xl p-8 w-full md:w-1/2 border border-emerald-100 shadow-sm relative">
+                        <h3 style="font-family: 'Moul', serif;" class="text-2xl mb-4 relative z-10 text-emerald-800">អាថ៌កំបាំងទិន្នន័យចាស់</h3>
+                        <p class="text-slate-700 text-base leading-relaxed relative z-10 mb-4">កុំឱ្យ AI គិតទម្រង់ថ្មីខ្លួនឯង បើអ្នកមានទម្រង់ Word/Excel ចាស់ គ្រាន់តែ <strong>Copy ក្បាលតារាង</strong> បញ្ចូលទៅវា រួចប្រាប់វាថា៖</p>
+                        <div class="bg-white p-4 rounded-xl border border-emerald-200 text-slate-600 font-mono text-sm shadow-sm relative z-10">
+                            "ខាងក្រោមជាទម្រង់របាយការណ៍សាលាខ្ញុំ៖[Paste ចូល]។ សូមយកទិន្នន័យថ្មីនេះ បញ្ចូលក្នុងទម្រង់នោះឱ្យដូចដើមបេះបិទ!"
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 10 Examples Header -->
+                <div class="flex items-center gap-6 py-8">
+                    <hr class="flex-grow border-emerald-200">
+                    <div class="flex flex-col items-center">
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full mb-2 tracking-widest uppercase">Copy & Paste</span>
+                        <h2 style="font-family: 'Moul', serif;" class="text-2xl md:text-3xl text-emerald-800 text-center">ឧទាហរណ៍ជាក់ស្តែងទាំង ១០</h2>
+                    </div>
+                    <hr class="flex-grow border-emerald-200">
+                </div>
+
+                <!-- Container សម្រាប់ឧទាហរណ៍ទាំង១០ -->
+                <div id="examples-container" class="space-y-10"></div>
+
+            </div>
+
+            <!-- របៀបបន្ថែមសៀវភៅទី៣ (បង្កើត div ថ្មីនៅទីនេះ) -->
+            <!-- 
+            <div id="book3" class="section">
+                <h1>ចំណងជើងសៀវភៅទី៣</h1>
+                <p>ខ្លឹមសារសៀវភៅទី៣ ដាក់នៅទីនេះ...</p>
+            </div> 
+            -->
+
         </main>
     </div>
-
-    <!-- ================= កូដ JavaScript / Supabase ================= -->
+<!-- ================= កូដ JavaScript / Supabase / Telegram ================= -->
     <script>
-        // ១. បញ្ចូល URL និង KEY របស់ Supabase នៅទីនេះ (សំខាន់ណាស់!!!)
+        // ១. បញ្ចូល URL និង KEY របស់ Supabase
         const SUPABASE_URL = 'https://jmyfcgtvwlbtzfxgmyai.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpteWZjZ3R2d2xidHpmeGdteWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NzEzODcsImV4cCI6MjA5MTE0NzM4N30.9CD_yAFGBTylqPjivqSHoyTYvL_b1PP27WUi2yL9CbQ';
-        
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ២. ឆែកមើលពេលបើកវេបសាយ 
+        // ២. កំណត់ Telegram Bot នៅទីនេះ
+        const TELEGRAM_BOT_TOKEN = 'ដាក់_TOKEN_របស់_BOT_នៅទីនេះ'; // ឧ. 7123456789:AAH...
+        const TELEGRAM_CHAT_ID = 'ដាក់_ID_របស់លោកគ្រូនៅទីនេះ'; // ឧ. 123456789
+
+        // ================= មុខងារសុវត្ថិភាព (Device ID) =================
+        function getDeviceType() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'mobile' : 'pc';
+        }
+
+        function getLocalDeviceId() {
+            let deviceId = localStorage.getItem('rean_device_id');
+            if (!deviceId) {
+                deviceId = 'dev_' + Math.random().toString(36).substr(2, 12);
+                localStorage.setItem('rean_device_id', deviceId);
+            }
+            return deviceId;
+        }
+
+        // ឆែកមើលពេលបើកវេបសាយ 
         document.addEventListener("DOMContentLoaded", () => {
             const session = localStorage.getItem("trainee_phone");
             if (session) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'flex';
             }
+            renderBook2Examples(); // បង្ហាញឧទាហរណ៍សៀវភៅទី២ទាំង១០
         });
 
         function showRegister() {
@@ -481,6 +589,7 @@
             document.getElementById('login-alert').style.display = 'none';
         }
 
+        // ================= មុខងារ Login & Device Check =================
         async function login() {
             const phone = document.getElementById('login-phone').value.trim();
             const alertBox = document.getElementById('login-alert');
@@ -502,16 +611,37 @@
                 } else if (data.is_approved === false) {
                     showAlert(alertBox, 'គណនីរបស់អ្នកកំពុងរង់ចាំការអនុម័តពីលោកគ្រូ។', false);
                 } else {
-                    localStorage.setItem("trainee_phone", data.phone);
-                    document.getElementById('auth-screen').style.display = 'none';
-                    document.getElementById('main-app').style.display = 'flex';
+                    // ពិនិត្យ Device ID (សុវត្ថិភាព ១ទូរសព្ទ ១កុំព្យូទ័រ)
+                    const deviceType = getDeviceType();
+                    const localDeviceId = getLocalDeviceId();
+                    const dbColumn = deviceType === 'mobile' ? 'phone_device_id' : 'pc_device_id';
+                    const deviceNameKh = deviceType === 'mobile' ? 'ទូរសព្ទ' : 'កុំព្យូទ័រ';
+
+                    if (!data[dbColumn]) {
+                        // ចូលលើកដំបូងសម្រាប់ប្រភេទឧបករណ៍នេះ -> Save ចូល DB
+                        await db.from('trainees').update({ [dbColumn]: localDeviceId }).eq('phone', phone);
+                        grantAccess(data.phone);
+                    } else if (data[dbColumn] === localDeviceId) {
+                        // ឧបករណ៍ត្រឹមត្រូវ
+                        grantAccess(data.phone);
+                    } else {
+                        // ឧបករណ៍ខុសពីអ្វីដែលបានចុះឈ្មោះ
+                        showAlert(alertBox, `គណនីនេះបានភ្ជាប់ជាមួយ${deviceNameKh}ផ្សេងរួចហើយ! មិនអាចចូលបានទេ។`, false);
+                    }
                 }
             } catch (err) {
-                showAlert(alertBox, 'មានបញ្ហាភ្ជាប់អ៊ីនធឺណិត។', false);
+                showAlert(alertBox, 'មានបញ្ហាភ្ជាប់អ៊ីនធឺណិត ឬ Database មិនទាន់បាន Update Column ថ្មី។', false);
             }
             btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ";
         }
 
+        function grantAccess(phone) {
+            localStorage.setItem("trainee_phone", phone);
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'flex';
+        }
+
+        // ================= មុខងារ Register & Telegram Notification =================
         async function register() {
             const name = document.getElementById('reg-name').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
@@ -535,6 +665,10 @@
                     }
                 } else {
                     showAlert(alertBox, 'ការស្នើសុំជោគជ័យ! សូមរង់ចាំការអនុម័ត។', true);
+                    
+                    // ផ្ញើសារទៅកាន់ Telegram Bot
+                    sendTelegramNotification(name, phone);
+
                     document.getElementById('reg-name').value = '';
                     document.getElementById('reg-phone').value = '';
                     setTimeout(showLogin, 3000);
@@ -543,6 +677,19 @@
                 showAlert(alertBox, 'មានបញ្ហាភ្ជាប់អ៊ីនធឺណិត។', false);
             }
             btn.disabled = false; btn.innerText = "បញ្ជូនការស្នើសុំ";
+        }
+
+        function sendTelegramNotification(name, phone) {
+            if(TELEGRAM_BOT_TOKEN === 'ដាក់_TOKEN_របស់_BOT_នៅទីនេះ') return; // បើមិនទាន់ដាក់ Token មិនបាច់ផ្ញើទេ
+            
+            const message = `🔔 <b>មានការស្នើសុំចូលរៀនថ្មី!</b>\n\n👤 ឈ្មោះ៖ <b>${name}</b>\n📱 លេខទូរសព្ទ៖ <b>${phone}</b>\n\n👉 សូមលោកគ្រូចូលទៅកាន់ Supabase ដើម្បីចុច Approve (Tick យក True ត្រង់ is_approved)។`;
+            const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            
+            fetch(telegramUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'HTML' })
+            }).catch(err => console.error("Telegram Error:", err));
         }
 
         function logout() {
@@ -559,7 +706,7 @@
             setTimeout(() => { element.style.display = 'none'; }, 5000);
         }
 
-        // ================= មុខងារ Mobile Menu (Hamburger) =================
+        // ================= មុខងារ Mobile Menu & Tabs =================
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar-menu');
             sidebar.classList.toggle('mobile-open');
@@ -571,14 +718,13 @@
             event.currentTarget.classList.add('active');
             document.getElementById(sectionId).classList.add('active');
             
-            // ពេលចុច Menu រួច ឲ្យអូសទៅលើ និងបិទ Menu (សម្រាប់ទូរស័ព្ទ)
             if(window.innerWidth <= 768) { 
                 document.querySelector('.content-area').scrollTop = 0; 
-                document.getElementById('sidebar-menu').classList.remove('mobile-open'); // បិទ Menu
+                document.getElementById('sidebar-menu').classList.remove('mobile-open'); 
             }
         }
 
-        // មុខងារសម្រាប់ Prompt Generator
+        // ================= មុខងារ Prompt Generator (សៀវភៅទី១) =================
         function generatePrompt() {
             const role = document.getElementById('inp-role').value.trim();
             const task = document.getElementById('inp-task').value.trim();
@@ -587,7 +733,6 @@
             const constraint = document.getElementById('inp-constraint').value.trim();
 
             let finalPrompt = "";
-
             if(role) finalPrompt += role + "\n\n";
             if(task) finalPrompt += "📌 កិច្ចការដែលត្រូវធ្វើ៖ \n" + task + "\n\n";
             if(context) finalPrompt += "🎯 បរិបទ៖ \n" + context + "\n\n";
@@ -595,30 +740,125 @@
             if(constraint) finalPrompt += "🚫 លក្ខខណ្ឌ និងបម្រាម៖ \n" + constraint + "\n";
 
             const resultBox = document.getElementById('final-prompt-text');
-            const copyBtn = document.getElementById('copy-btn');
-
-            if(finalPrompt === "") {
-                resultBox.innerText = "សូមបំពេញព័ត៌មានក្នុងប្រអប់ណាមួយខាងលើសិន...";
-            } else {
-                resultBox.innerText = finalPrompt;
-                copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy យកទៅ Paste ក្នុង AI';
-            }
+            resultBox.innerText = finalPrompt === "" ? "សូមបំពេញព័ត៌មានក្នុងប្រអប់ណាមួយខាងលើសិន..." : finalPrompt;
         }
 
-        function copyToClipboard() {
+        function copyToClipboardText() {
             const textToCopy = document.getElementById('final-prompt-text').innerText;
-            const copyBtn = document.getElementById('copy-btn');
-
             if(textToCopy === "" || textToCopy.includes("សូមបំពេញព័ត៌មាន")) {
-                alert("មិនមានអ្វីសម្រាប់ Copy ទេ!");
-                return;
+                alert("មិនមានអ្វីសម្រាប់ Copy ទេ!"); return;
             }
+            navigator.clipboard.writeText(textToCopy).then(() => { alert("បាន Copy ជោគជ័យ!"); });
+        }
 
+        // ================= មុខងារ Render ឧទាហរណ៍ទាំង១០ (សៀវភៅទី២) =================
+        function renderBook2Examples() {
+            const examples =[
+                {
+                    id: "ex1", title: "១៖ លិខិតអនុញ្ញាតច្បាប់ឈប់សម្រាក (គ្រូ)",
+                    prompt: "ជួយធ្វើលិខិតអនុញ្ញាតច្បាប់ឈប់សម្រាករដ្ឋបាល សម្រាប់លោកគ្រូ សុខ សាន្ត បង្រៀនគណិតវិទ្យាថ្នាក់ទី១០។ គាត់សុំឈប់ ២ថ្ងៃ (ថ្ងៃទី០៤-០៥ ឧសភា ២០២៦) ដោយសារបញ្ហាសុខភាព។",
+                    output: "<strong>កម្មវត្ថុ៖</strong> ការអនុញ្ញាតច្បាប់ឈប់សម្រាកដោយមូលហេតុសុខភាព។<br><strong>យោង៖</strong> ការស្នើសុំរបស់លោកគ្រូ សុខ សាន្ត ចុះថ្ងៃទី ០២ ខែឧសភា ឆ្នាំ២០២៦។<br><br>សេចក្តីដូចមានចែងក្នុងកម្មវត្ថុ និងយោងខាងលើ រដ្ឋបាលសាលា សូមជម្រាបជូន លោកគ្រូ សុខ សាន្ត គ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាថ្នាក់ទី១០ ជ្រាបថា សាលាឯកភាពអនុញ្ញាតឱ្យលោកគ្រូឈប់សម្រាកចំនួន ០២ ថ្ងៃ គឺចាប់ពីថ្ងៃទី០៤ ដល់ថ្ងៃទី០៥ ខែឧសភា ឆ្នាំ២០២៦។<br><br>សូមលោកគ្រូ ថែរក្សាសុខភាព និងត្រឡប់មកបំពេញការងារវិញតាមកាលកំណត់。"
+                },
+                {
+                    id: "ex2", title: "២៖ សេចក្តីជូនដំណឹងដល់មាតាបិតា (ថ្ងៃឈប់សម្រាក)",
+                    prompt: "សរសេរសេចក្តីជូនដំណឹងខ្លី ផ្លូវការ ទៅកាន់អាណាព្យាបាល ថា សាលានឹងឈប់សម្រាកបុណ្យចម្រើនព្រះជន្មព្រះមហាក្សត្រ នៅថ្ងៃទី១៤ ឧសភា ហើយចូលរៀនវិញថ្ងៃទី១៥ ឧសភា។",
+                    output: "<strong>សេចក្តីជូនដំណឹង!</strong><br><br>សូមគោរពជម្រាបជូន មាតាបិតា និងអ្នកអាណាព្យាបាលសិស្សានុសិស្សទាំងអស់ឱ្យបានជ្រាបថា៖<br>សាលារៀននឹងអនុញ្ញាតឱ្យសិស្សានុសិស្សឈប់សម្រាកការសិក្សារយៈពេល ០១ ថ្ងៃ ក្នុងឱកាស \"ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម ព្រះករុណាព្រះបាទសម្តេចព្រះបរមនាថ នរោត្តម សីហមុនី ព្រះមហាក្សត្រនៃព្រះរាជាណាចក្រកម្ពុជា\" ដែលនឹងប្រព្រឹត្តទៅនៅថ្ងៃព្រហស្បតិ៍ ទី១៤ ខែឧសភា ឆ្នាំ២០២៦។<br><br>សិស្សានុសិស្សទាំងអស់នឹងត្រូវចូលរៀនជាធម្មតាវិញ នៅថ្ងៃសុក្រ ទី១៥ ខែឧសភា ឆ្នាំ២០២៦។ សូមអរគុណ!"
+                },
+                {
+                    id: "ex3", title: "៣៖ លិខិតអញ្ជើញប្រជុំមាតាបិតាសិស្ស",
+                    prompt: "រៀបចំលិខិតអញ្ជើញប្រជុំមាតាបិតាសិស្សថ្នាក់ទី១២ ប្រចាំឆមាសទី១។ ពេលវេលា៖ ថ្ងៃសៅរ៍ ទី១៦ ឧសភា ម៉ោង ៨:០០ ព្រឹក។ ទីកន្លែង៖ បណ្ណាល័យសាលា។ គោលបំណង៖ ពិភាក្សាពីលទ្ធផលសិក្សា និងការត្រៀមប្រឡងបាក់ឌុប។",
+                    output: "<strong>កម្មវត្ថុ៖</strong> ការអញ្ជើញចូលរួមប្រជុំមាតាបិតា និងអាណាព្យាបាលសិស្សថ្នាក់ទី១២។<br><br>តបតាមកម្មវត្ថុខាងលើ រដ្ឋបាលសាលា សូមគោរពអញ្ជើញ មាតាបិតា និងអ្នកអាណាព្យាបាលសិស្សថ្នាក់ទី១២ ទាំងអស់ ចូលរួមក្នុងកិច្ចប្រជុំប្រចាំឆមាសទី១ ដើម្បីពិភាក្សាអំពីលទ្ធផលសិក្សារបស់សិស្សានុសិស្ស និងការត្រៀមលក្ខណៈសម្រាប់ការប្រឡងសញ្ញាបត្រមធ្យមសិក្សាទុតិយភូមិខាងមុខនេះ។<br><br>កិច្ចប្រជុំនេះនឹងប្រព្រឹត្តទៅតាមកម្មវិធីដូចខាងក្រោម៖<br>&#x2022; កាលបរិច្ឆេទ៖ ថ្ងៃសៅរ៍ ទី១៦ ខែឧសភា ឆ្នាំ២០២៦<br>&#x2022; ពេលវេលា៖ ម៉ោង ០៨:០០ នាទីព្រឹក<br>&#x2022; ទីកន្លែង៖ បណ្ណាល័យសាលា<br><br>អាស្រ័យហេតុនេះ សូម មាតាបិតា និងអ្នកអាណាព្យាបាល មេត្តាអញ្ជើញចូលរួមឱ្យបានទាន់ពេលវេលា និងគ្រប់ៗគ្នា។ សូមគោរពអរគុណ。"
+                },
+                {
+                    id: "ex4", title: "៤៖ របាយការណ៍សង្ខេបអំពីអវត្តមានគ្រូប្រចាំខែ",
+                    prompt: "រៀបចំរបាយការណ៍ជាតារាងស្តីពីអវត្តមានគ្រូខែមេសា។ មានគ្រូ ៣នាក់៖ ១. ចាន់ រិទ្ធី (គណិត) ឈប់ ២ថ្ងៃ សុំច្បាប់។ ២. កែវ ស៊ីណាត (អក្សរសាស្ត្រខ្មែរ) ឈប់ ១ថ្ងៃ ឥតច្បាប់។ ៣. លី វណ្ណៈ (រូបវិទ្យា) ឈប់ ៣ថ្ងៃ ឈឺមានសំបុត្រពេទ្យ។",
+                    output: "<strong>របាយការណ៍សង្ខេបស្តីពីអវត្តមានគ្រូបង្រៀន ប្រចាំខែមេសា ឆ្នាំ២០២៦</strong><br><br><div class='overflow-x-auto mt-4'><table class='w-full text-left text-sm border-collapse border border-emerald-200 min-w-max'><thead class='bg-emerald-50 text-emerald-800'><tr><th class='border border-emerald-200 p-3'>ល.រ</th><th class='border border-emerald-200 p-3'>ឈ្មោះ</th><th class='border border-emerald-200 p-3'>មុខវិជ្ជា</th><th class='border border-emerald-200 p-3'>ថ្ងៃឈប់</th><th class='border border-emerald-200 p-3'>ប្រភេទច្បាប់</th></tr></thead><tbody><tr class='bg-white'><td class='border border-emerald-200 p-3 text-center'>១</td><td class='border border-emerald-200 p-3'>ចាន់ រិទ្ធី</td><td class='border border-emerald-200 p-3'>គណិត</td><td class='border border-emerald-200 p-3 text-center'>០២</td><td class='border border-emerald-200 p-3'>សុំច្បាប់</td></tr><tr class='bg-slate-50'><td class='border border-emerald-200 p-3 text-center'>២</td><td class='border border-emerald-200 p-3'>កែវ ស៊ីណាត</td><td class='border border-emerald-200 p-3'>ខ្មែរ</td><td class='border border-emerald-200 p-3 text-center'>០១</td><td class='border border-emerald-200 p-3 text-red-600 font-bold'>ឥតច្បាប់</td></tr><tr class='bg-white'><td class='border border-emerald-200 p-3 text-center'>៣</td><td class='border border-emerald-200 p-3'>លី វណ្ណៈ</td><td class='border border-emerald-200 p-3'>រូបវិទ្យា</td><td class='border border-emerald-200 p-3 text-center'>០៣</td><td class='border border-emerald-200 p-3'>ឈឺ (ពេទ្យ)</td></tr></tbody></table></div>"
+                },
+                {
+                    id: "ex5", title: "៥៖ លិខិតព្រមាន ឬណែនាំវិន័យ (ផ្ទៃក្នុង)",
+                    prompt: "សរសេរលិខិតណែនាំវិន័យផ្លូវការ និងតឹងរ៉ឹង ដល់បុគ្គលិកឈ្មោះ ម៉ៅ សុវណ្ណ ផ្នែកសន្តិសុខ ដែលបានមកធ្វើការយឺតម៉ោង ៣ដងក្នុងខែនេះ ដោយគ្មានហេតុផលសមរម្យ។ នេះជាការព្រមានលើកទី១។",
+                    output: "<strong>កម្មវត្ថុ៖</strong> ការណែនាំស្តីពីវិន័យការងារ (ការព្រមានជាលាយលក្ខណ៍អក្សរលើកទី១)។<br><br>សេចក្តីដូចមានចែងក្នុងកម្មវត្ថុខាងលើ រដ្ឋបាលសាលា សូមជម្រាបជូន លោក ម៉ៅ សុវណ្ណ បុគ្គលិកផ្នែកសន្តិសុខ ជ្រាបថា យោងតាមកំណត់ត្រាវត្តមាន លោកបានមកបំពេញការងារយឺតយ៉ាវខុសម៉ោងកំណត់ចំនួន ០៣ ដង ក្នុងអំឡុងខែនេះ ដោយពុំមានការអនុញ្ញាត ឬផ្តល់ហេតុផលសមស្រប។<br><br>ទង្វើនេះផ្ទុយទៅនឹងបទបញ្ជាផ្ទៃក្នុងរបស់សាលារៀន។ អាស្រ័យហេតុនេះ រដ្ឋបាលសាលាសូមធ្វើការណែនាំ និងព្រមានជាលាយលក្ខណ៍អក្សរជាលើកទី១។ សូមលោកកែលម្អភាពខ្វះចន្លោះនេះជាបន្ទាន់។ បើមានបន្តទៀត នឹងចាត់វិធានការតាមលក្ខន្តិកៈការងារ។"
+                },
+                {
+                    id: "ex6", title: "៦៖ ការឆ្លើយតបសារតវ៉ាពីអាណាព្យាបាល",
+                    prompt: "អាណាព្យាបាលម្នាក់ផ្ញើសារមកខឹងសម្បារថា ហេតុអ្វីកូនគាត់ធ្លាក់ចំណាត់ថ្នាក់ខែនេះ។ សូមសរសេរសារតបវិញឱ្យបានទន់ភ្លន់ បង្ហាញការយកចិត្តទុកដាក់ និងអញ្ជើញគាត់មកជួបគ្រូបន្ទុកថ្នាក់ដើម្បីពិភាក្សាលម្អិត។",
+                    output: "សូមគោរពជម្រាបសួរលោក/លោកស្រី ជាមាតាបិតាសិស្ស,<br><br>ជាបឋម សាលារៀនសូមអរគុណចំពោះការយកចិត្តទុកដាក់ និងទំនាក់ទំនងមកកាន់សាលា។ យើងខ្ញុំពិតជាយល់ពីក្តីបារម្ភរបស់លោក/លោកស្រីទាក់ទងនឹងលទ្ធផលសិក្សារបស់ប្អូនក្នុងខែនេះ។<br><br>លទ្ធផលចំណាត់ថ្នាក់ប្រែប្រួលអាចបណ្តាលមកពីកត្តាជាច្រើននៃការវាយតម្លៃ។ ដើម្បីឱ្យលោក/លោកស្រីទទួលបានព័ត៌មានលម្អិតពីការសិក្សាជាក់ស្តែងរបស់គាត់ សាលាសូមគោរពអញ្ជើញលោក/លោកស្រី មកជួបពិភាក្សាផ្ទាល់ជាមួយលោកគ្រូ/អ្នកគ្រូបន្ទុកថ្នាក់ នៅរៀងរាល់ម៉ោងធ្វើការ។<br><br>យើងខ្ញុំរង់ចាំសហការជានិច្ច។ សូមគោរពអរគុណ។"
+                },
+                {
+                    id: "ex7", title: "៧៖ សេចក្តីប្រកាសជ្រើសរើសបុគ្គលិក/គ្រូបង្រៀន",
+                    prompt: "រៀបចំសេចក្តីប្រកាសជ្រើសរើសគ្រូបង្រៀនមុខវិជ្ជាភាសាអង់គ្លេស ២នាក់។ លក្ខខណ្ឌ៖ បរិញ្ញាបត្រភាសាអង់គ្លេស ឬសញ្ញាបត្រគរុកោសល្យ មានបទពិសោធន៍ ១ឆ្នាំ។ ផុតកំណត់ទទួលពាក្យ៖ ៣១ ឧសភា ២០២៦។",
+                    output: "<strong>សេចក្តីប្រកាសជ្រើសរើសបុគ្គលិក</strong><br><br>សាលារៀនយើងត្រូវការជ្រើសរើសបុគ្គលិក សម្រាប់មុខតំណែង៖<br><strong>គ្រូបង្រៀនមុខវិជ្ជាភាសាអង់គ្លេស (ចំនួន ០២ នាក់)</strong><br><br><strong>លក្ខខណ្ឌជ្រើសរើស៖</strong><br>&#x2022; មានបរិញ្ញាបត្រឯកទេសភាសាអង់គ្លេស ឬមានសញ្ញាបត្រគរុកោសល្យ។<br>&#x2022; មានបទពិសោធន៍បង្រៀនយ៉ាងតិច ០១ ឆ្នាំ។<br>&#x2022; មានគរុកោសល្យល្អ និងការទទួលខុសត្រូវខ្ពស់។<br><br>បេក្ខជនដែលមានចំណាប់អារម្មណ៍ សូមផ្ញើ CV មកកាន់ការិយាល័យរដ្ឋបាលសាលា។<br>&#x2022; កាលបរិច្ឆេទឈប់ទទួលពាក្យ៖ ថ្ងៃទី៣១ ខែឧសភា ឆ្នាំ២០២៦"
+                },
+                {
+                    id: "ex8", title: "៨៖ លិខិតបញ្ជាក់ការសិក្សា (សម្រាប់សិស្ស)",
+                    prompt: "ធ្វើទម្រង់លិខិតបញ្ជាក់ការសិក្សា សម្រាប់សិស្សឈ្មោះ ហេង មករា ភេទប្រុស កើតថ្ងៃទី ១០ មករា ២០១០ កំពុងសិក្សាថ្នាក់ទី១០ 'ក' ក្នុងឆ្នាំសិក្សា ២០២៥-២០២៦។",
+                    output: "<div class='text-center mb-6'><h4 class=\"text-lg font-bold\">លិខិតបញ្ជាក់ការសិក្សា</h4></div>នាយកសាលា សូមបញ្ជាក់ថា៖<br><br>សិស្សឈ្មោះ៖ <strong>ហេង មករា</strong> ភេទ៖ ប្រុស<br>ថ្ងៃខែឆ្នាំកំណើត៖ ១០ មករា ២០១០<br><br>ពិតជាសិស្សកំពុងសិក្សានៅថ្នាក់ទី ១០ \"ក\" នៃសាលារៀនយើង ក្នុងឆ្នាំសិក្សា ២០២៥-២០២៦ ប្រាកដមែន។ លិខិតបញ្ជាក់នេះ ចេញជូនសាមីជនដើម្បីយកទៅប្រើប្រាស់តាមការចាំបាច់ និងស្របច្បាប់។<br><br><div class='text-right mt-6'>ធ្វើនៅ................., ថ្ងៃទី.....ខែ.....ឆ្នាំ......<br><strong>នាយកសាលា</strong></div>"
+                },
+                {
+                    id: "ex9", title: "៩៖ កម្មវិធីប្រជុំ (Agenda) ក្រុមប្រឹក្សាគ្រូ",
+                    prompt: "រៀបចំរបៀបវារៈប្រជុំ (Agenda) ក្រុមប្រឹក្សាគ្រូប្រចាំខែ។ ម៉ោង ៩:០០ ដល់ ១១:០០។ មាន ៣ចំណុច៖ ១. វាយតម្លៃវិន័យសិស្ស ២. ការត្រៀមចេញវិញ្ញាសាប្រឡង ៣. បញ្ហាផ្សេងៗ។",
+                    output: "<strong>របៀបវារៈកិច្ចប្រជុំក្រុមប្រឹក្សាគ្រូបង្រៀនប្រចាំខែ</strong><br><br>&#x2022; ពេលវេលា៖ ម៉ោង ០៩:០០ ព្រឹក ដល់ ១១:០០ ព្រឹក<br>&#x2022; ទីកន្លែង៖ បន្ទប់ប្រជុំសាលា<br><br><strong>កម្មវិធីលម្អិត៖</strong><br><ul class='space-y-2 mt-2'><li><span class='font-bold w-32 inline-block'>០៩:០០ - ០៩:១៥:</span> មតិស្វាគមន៍ និងបើកកិច្ចប្រជុំ</li><li><span class='font-bold w-32 inline-block'>០៩:១៥ - ០៩:៤៥:</span> របៀបវារៈទី១៖ វាយតម្លៃលើការអនុវត្តវិន័យសិស្ស</li><li><span class='font-bold w-32 inline-block'>០៩:៤៥ - ១០:៣០:</span> របៀបវារៈទី២៖ ត្រៀមចេញវិញ្ញាសាប្រឡង</li><li><span class='font-bold w-32 inline-block'>០៩:۳០ - ១០:៥០:</span> របៀបវារៈទី៣៖ បញ្ហាផ្សេងៗ (សំណូមពរ)</li><li><span class='font-bold w-32 inline-block'>១០:៥០ - ១១:០០:</span> ការសន្និដ្ឋាន និងបិទបញ្ចប់កិច្ចប្រជុំ។</li></ul>"
+                },
+                {
+                    id: "ex10", title: "១០៖ សេចក្តីជូនដំណឹងស្តីពីការបង់ថ្លៃសិក្សា",
+                    prompt: "សរសេរលិខិតរំលឹកការបង់ប្រាក់ថ្លៃសិក្សាឆមាសទី២ ឱ្យបានទន់ភ្លន់ និងប្រកបដោយវិជ្ជាជីវៈ។ កាលបរិច្ឆេទផុតកំណត់៖ ថ្ងៃទី ២៥ ឧសភា។",
+                    output: "<strong>សេចក្តីជូនដំណឹងស្តីពីការបង់ថ្លៃសិក្សា ឆមាសទី២</strong><br><br>រដ្ឋបាលសាលា សូមថ្លែងអំណរគុណយ៉ាងជ្រាលជ្រៅចំពោះការជឿទុកចិត្ត និងការសហការយ៉ាងល្អប្រសើរកន្លងមក។ យើងខ្ញុំសូមគោរពរំលឹកជូន លោក/លោកស្រី មេត្តាអញ្ជើញមកបង់ប្រាក់ថ្លៃសិក្សាសម្រាប់ឆមាសទី២ ឆ្នាំសិក្សា ២០២៥-២០២៦ ឱ្យបានរួសរាន់ ដែលកាលបរិច្ឆេទចុងក្រោយនឹងត្រូវផុតកំណត់ត្រឹម <strong>ថ្ងៃទី២៥ ខែឧសភា ឆ្នាំ២០២៦</strong>។<br><br>លោក/លោកស្រី អាចធ្វើការបង់ប្រាក់ផ្ទាល់នៅការិយាល័យ ឬផ្ទេរប្រាក់តាមគណនីធនាគារ។ ករណីបានបង់រួច សូមអធ្យាស្រ័យចំពោះការជូនដំណឹងនេះ។ សូមគោរពអរគុណ។"
+                }
+            ];
+
+            const container = document.getElementById('examples-container');
+            if(!container) return;
+
+            examples.forEach((ex) => {
+                const html = `
+                <div class="bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden">
+                    <div class="bg-slate-50 px-6 sm:px-8 py-5 border-b border-slate-100 flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold mr-4 flex-shrink-0">
+                            ${ex.id.replace('ex', '')}
+                        </div>
+                        <h3 style="font-family: 'Moul', serif;" class="text-lg md:text-xl text-slate-800 m-0">${ex.title.substring(ex.title.indexOf('៖') + 1).trim()}</h3>
+                    </div>
+                    
+                    <div class="p-6 sm:p-8">
+                        <div class="mb-8">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                                <span class="font-bold text-slate-700 flex items-center text-sm sm:text-base">
+                                    <span class="bg-indigo-100 text-indigo-700 w-8 h-8 flex items-center justify-center rounded-full mr-3 shadow-sm">✍️</span> 
+                                    អត្ថបទសម្រាប់ Copy បញ្ចូលប្រអប់ Chat៖
+                                </span>
+                                <button onclick="copyElementText(this, 'prompt-${ex.id}')" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-xl flex justify-center items-center font-bold shadow-md">
+                                    <i class="fas fa-copy mr-2"></i> Copy យកទៅប្រើ
+                                </button>
+                            </div>
+                            <div id="prompt-${ex.id}" class="bg-indigo-50/30 p-5 rounded-2xl border border-indigo-100 text-indigo-900 font-mono text-sm sm:text-base leading-relaxed">${ex.prompt}</div>
+                        </div>
+
+                        <div class="relative bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100 mt-6">
+                            <span class="absolute -top-4 left-6 bg-emerald-100 border border-emerald-200 text-emerald-800 px-4 py-1 rounded-full text-xs font-bold shadow-sm flex items-center">
+                                ✅ លទ្ធផលរំពឹងទុក
+                            </span>
+                            <div class="text-slate-700 text-sm sm:text-base leading-relaxed mt-2 font-serif">
+                                ${ex.output}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function copyElementText(buttonElement, targetId) {
+            const targetEl = document.getElementById(targetId);
+            const textToCopy = targetEl.innerText || targetEl.textContent;
             navigator.clipboard.writeText(textToCopy).then(() => {
-                copyBtn.innerHTML = '<i class="fas fa-check"></i> បាន Copy ជោគជ័យ';
-                setTimeout(() => { copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy យកទៅ Paste ក្នុង AI'; }, 3000);
-            }).catch(err => {
-                alert("សូម Highlight លើអក្សររួចចុច Copy (Ctrl+C) ដោយខ្លួនឯង។");
+                const originalHTML = buttonElement.innerHTML;
+                buttonElement.innerHTML = `<i class="fas fa-check mr-2"></i> បានចម្លង`;
+                buttonElement.classList.replace('bg-slate-800', 'bg-emerald-600');
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalHTML;
+                    buttonElement.classList.replace('bg-emerald-600', 'bg-slate-800');
+                }, 2000);
             });
         }
 
