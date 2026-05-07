@@ -10,7 +10,7 @@
     <!-- បញ្ចូល Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- បញ្ចូល Tailwind CSS សម្រាប់សៀវភៅទី២ -->
+    <!-- បញ្ចូល Tailwind CSS សម្រាប់សៀវភៅទី២ និង Admin -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         // បិទ Preflight ដើម្បីកុំឲ្យ Tailwind ទៅលុបចោលទម្រង់ CSS ដើមរបស់សៀវភៅទី១
@@ -242,11 +242,9 @@
                 <div class="menu-category" style="background: #d1fae5; color: #059669;">សៀវភៅទី២៖ AI រដ្ឋបាលសាលា</div>
                 <li onclick="switchTab(event, 'book2')" style="color: #059669;"><i class="fas fa-book-reader"></i> ចូលអានសៀវភៅទី២</li>
 
-                <!-- របៀបបន្ថែមសៀវភៅទី៣ (គ្រាន់តែ Copy កូដខាងក្រោមនេះ ហើយដក Comment ចេញ) -->
-                <!-- 
-                <div class="menu-category" style="background: #fef3c7; color: #d97706;">សៀវភៅទី៣៖ ចំណងជើងថ្មី</div>
-                <li onclick="switchTab(event, 'book3')" style="color: #d97706;"><i class="fas fa-book"></i> ចូលអានសៀវភៅទី៣</li> 
-                -->
+                <!-- ផ្នែកគ្រប់គ្រង Admin -->
+                <div class="menu-category" style="background: #fee2e2; color: #b91c1c;">ផ្នែកគ្រប់គ្រង (Admin)</div>
+                <li onclick="switchTab(event, 'admin-video')" style="color: #b91c1c;"><i class="fas fa-video"></i> វីដេអូមេរៀន (YouTube)</li>
             </ul>
             <div class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ចាកចេញ</div>
         </aside>
@@ -277,11 +275,9 @@
                 
                 <div class="prompt-box">
                     <p>✅ <strong>បញ្ជាល្អឥតខ្ចោះ (មានរូបមន្តទាំង៥)៖</strong><br><br>
-                    "[១. តួនាទី] ចូរអ្នកដើរតួជាគ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាដ៏ពូកែម្នាក់ប្រចាំវិទ្យាល័យ។ <br><br>
-                    [២. កិច្ចការ] សូមជួយបង្កើតលំហាត់អនុវត្តន៍ចំនួន ៥ ទាក់ទងនឹងមេរៀនសមីការដឺក្រេទី២។ <br><br>
+                    "[១. តួនាទី] ចូរអ្នកដើរតួជាគ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាដ៏ពូកែម្នាក់ប្រចាំវិទ្យាល័យ។ <br><br>[២. កិច្ចការ] សូមជួយបង្កើតលំហាត់អនុវត្តន៍ចំនួន ៥ ទាក់ទងនឹងមេរៀនសមីការដឺក្រេទី២។ <br><br>
                     [៣. បរិបទ] លំហាត់ទាំងនេះគឺរៀបចំឡើងសម្រាប់សិស្សថ្នាក់ទី១០ ដែលទើបតែរៀនមេរៀននេះដំបូង។ ដូច្នេះពួកគេត្រូវការលំហាត់ដែលមានការពន្យល់ច្បាស់លាស់។ <br><br>
-                    [៤. ទម្រង់] សូមរៀបចំលំហាត់ពីងាយទៅពិបាក ហើយសូមផ្តល់នូវរបៀបដោះស្រាយមួយជំហានម្តងៗ (Step-by-step) នៅផ្នែកខាងក្រោមនៃលំហាត់នីមួយៗ។ <br><br>
-                    [៥. ដែនកំណត់] សូមកុំដាក់លំហាត់ណាដែលមានចម្លើយជាឫសសាំញ៉ាំពេក ព្រោះចង់ឲ្យសិស្សងាយយល់ពីគោលការណ៍គ្រឹះសិន។"</p>
+                    [៤. ទម្រង់] សូមរៀបចំលំហាត់ពីងាយទៅពិបាក ហើយសូមផ្តល់នូវរបៀបដោះស្រាយមួយជំហានម្តងៗ (Step-by-step) នៅផ្នែកខាងក្រោមនៃលំហាត់នីមួយៗ។ <br><br>[៥. ដែនកំណត់] សូមកុំដាក់លំហាត់ណាដែលមានចម្លើយជាឫសសាំញ៉ាំពេក ព្រោះចង់ឲ្យសិស្សងាយយល់ពីគោលការណ៍គ្រឹះសិន។"</p>
                 </div>
             </div>
 
@@ -532,17 +528,59 @@
 
             </div>
 
-            <!-- របៀបបន្ថែមសៀវភៅទី៣ (បង្កើត div ថ្មីនៅទីនេះ) -->
-            <!-- 
-            <div id="book3" class="section">
-                <h1>ចំណងជើងសៀវភៅទី៣</h1>
-                <p>ខ្លឹមសារសៀវភៅទី៣ ដាក់នៅទីនេះ...</p>
-            </div> 
-            -->
+            <!-- ================= ផ្ទាំង Admin: បញ្ចូលវីដេអូមេរៀន ================= -->
+            <div id="admin-video" class="section" style="max-width: 1000px; padding: 0; background: transparent; box-shadow: none;">
+                
+                <!-- Hero Section សម្រាប់ Admin -->
+                <section class="bg-gradient-to-br from-red-600 to-rose-800 rounded-3xl p-8 md:p-12 text-white shadow-xl relative overflow-hidden mb-8">
+                    <div class="absolute -right-10 -top-10 opacity-10">
+                        <i class="fas fa-video text-[250px]"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <span class="bg-red-500/30 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wider uppercase backdrop-blur-sm border border-red-400/50">Admin Panel</span>
+                        <h2 style="font-family: 'Moul', serif;" class="text-3xl md:text-4xl mt-6 mb-4 leading-tight">គ្រប់គ្រងវីដេអូមេរៀន</h2>
+                        <p class="text-red-50 text-lg max-w-2xl font-light">លោកគ្រូអាចបញ្ចូលតំណភ្ជាប់ (Link) ពី YouTube នៅទីនេះ ដើម្បីបង្ហាញវីដេអូមេរៀនដល់សិស្សានុសិស្ស។</p>
+                    </div>
+                </section>
+
+                <!-- Form បញ្ចូលវីដេអូ -->
+                <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 mb-10">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
+                        <i class="fas fa-plus-circle text-red-600 mr-3"></i> បន្ថែមវីដេអូថ្មី
+                    </h3>
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-bold text-slate-600 mb-2">ចំណងជើងវីដេអូ</label>
+                            <input type="text" id="yt-title" placeholder="ឧ. មេរៀនទី១៖ ការប្រើប្រាស់ AI..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-red-500 focus:bg-white transition-all">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-bold text-slate-600 mb-2">តំណភ្ជាប់ YouTube (Link)</label>
+                            <input type="text" id="yt-link" placeholder="ឧ. https://youtu.be/..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-red-500 focus:bg-white transition-all">
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="addYouTubeVideo()" class="w-full md:w-auto bg-gradient-to-r from-red-600 to-rose-600 text-white px-8 py-4 rounded-xl font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all flex items-center justify-center">
+                                <i class="fas fa-upload mr-2"></i> បញ្ចូល
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- កន្លែងបង្ហាញវីដេអូ (Gallery) -->
+                <div class="flex items-center gap-4 mb-6">
+                    <h3 class="text-xl font-bold text-slate-800 m-0">បញ្ជីវីដេអូដែលបានបញ្ចូល</h3>
+                    <span id="video-count" class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-bold">0</span>
+                </div>
+                
+                <div id="video-gallery" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- វីដេអូនឹងលោតចូលទីនេះដោយស្វ័យប្រវត្តិ -->
+                </div>
+
+            </div>
 
         </main>
     </div>
-<!-- ================= កូដ JavaScript / Supabase / Telegram ================= -->
+
+    <!-- ================= កូដ JavaScript / Supabase / Telegram ================= -->
     <script>
         // ១. បញ្ចូល URL និង KEY របស់ Supabase
         const SUPABASE_URL = 'https://jmyfcgtvwlbtzfxgmyai.supabase.co';
@@ -575,6 +613,7 @@
                 document.getElementById('main-app').style.display = 'flex';
             }
             renderBook2Examples(); // បង្ហាញឧទាហរណ៍សៀវភៅទី២ទាំង១០
+            renderVideos(); // បង្ហាញវីដេអូ Admin ពេលបើកវេបសាយ
         });
 
         function showRegister() {
@@ -862,15 +901,87 @@
             });
         }
 
-        // មុខងារការពារសុវត្ថិភាព (Anti-Inspect & Anti-Copy)
-        document.addEventListener('contextmenu', event => event.preventDefault()); 
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) { return false; }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+        // ================= មុខងារ Admin: បញ្ចូលវីដេអូ YouTube =================
+        
+        // ទាញយក Video ID ពី Link YouTube គ្រប់ទម្រង់
+        function getYouTubeID(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
         }
-    </script>
-</body>
-</html>
+
+        // បន្ថែមវីដេអូថ្មី
+        function addYouTubeVideo() {
+            const title = document.getElementById('yt-title').value.trim();
+            const link = document.getElementById('yt-link').value.trim();
+
+            if (!title || !link) {
+                alert("សូមបំពេញចំណងជើង និង Link វីដេអូឱ្យបានត្រឹមត្រូវ!");
+                return;
+            }
+
+            const videoId = getYouTubeID(link);
+            if (!videoId) {
+                alert("Link YouTube មិនត្រឹមត្រូវទេ! សូមពិនិត្យម្តងទៀត។");
+                return;
+            }
+
+            // រក្សាទុកក្នុង LocalStorage (បើចង់ឱ្យសិស្សឃើញគ្រប់គ្នា ត្រូវ Save ចូល Supabase)
+            let videos = JSON.parse(localStorage.getItem('admin_videos')) ||[];
+            
+            // បញ្ចូលវីដេអូថ្មីទៅខាងលើគេ
+            videos.unshift({ 
+                id: videoId, 
+                title: title, 
+                date: new Date().toLocaleDateString('km-KH') 
+            });
+            
+            localStorage.setItem('admin_videos', JSON.stringify(videos));
+
+            // សម្អាតប្រអប់វាយអត្ថបទ
+            document.getElementById('yt-title').value = '';
+            document.getElementById('yt-link').value = '';
+
+            // បង្ហាញវីដេអូឡើងវិញ
+            renderVideos();
+        }
+
+        // បង្ហាញវីដេអូទាំងអស់
+        function renderVideos() {
+            const gallery = document.getElementById('video-gallery');
+            const countBadge = document.getElementById('video-count');
+            let videos = JSON.parse(localStorage.getItem('admin_videos')) ||[];
+
+            countBadge.innerText = videos.length;
+
+            if (videos.length === 0) {
+                gallery.innerHTML = `
+                    <div class="col-span-full text-center bg-slate-50 rounded-2xl py-12 border-2 border-dashed border-slate-200">
+                        <i class="fas fa-film text-4xl text-slate-300 mb-3"></i>
+                        <p class="text-slate-500 font-bold">មិនទាន់មានវីដេអូមេរៀននៅឡើយទេ</p>
+                    </div>`;
+                return;
+            }
+
+            gallery.innerHTML = videos.map((vid, index) => `
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
+                    <div class="relative pb-[56.25%] h-0 bg-slate-100">
+                        <iframe src="https://www.youtube.com/embed/${vid.id}" class="absolute top-0 left-0 w-full h-full" allowfullscreen></iframe>
+                    </div>
+                    <div class="p-5 flex justify-between items-start gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800 leading-snug mb-1">${vid.title}</h3>
+                            <p class="text-xs text-slate-500"><i class="far fa-calendar-alt mr-1"></i> បានបញ្ចូល៖ ${vid.date}</p>
+                        </div>
+                        <button onclick="deleteVideo(${index})" class="text-slate-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors" title="លុបវីដេអូនេះ">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // លុបវីដេអូ
+        function deleteVideo(index) {
+            if(confirm("តើលោកគ្រូពិតជាចង់លុបវីដេអូនេះមែនទេ?")) {
+                let videos = JSON.parse(localStorage.getItem('admin_videos')) ||
