@@ -755,11 +755,15 @@
         }
             btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ";
         }
-
-        function grantAccess(phone) {
+        
+           function grantAccess(phone) {
             localStorage.setItem("trainee_phone", phone);
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'flex';
+            
+            // បន្ថែមកូដ ២ បន្ទាត់នេះដើម្បីឲ្យវាស្គាល់ Admin និង Video
+            currentUserPhone = phone;
+            updateVideoMenuVisibility();
         }
 
         // ================= មុខងារ Register & Telegram Notification =================
@@ -1025,13 +1029,6 @@
             });
         }
 
-        // ── Override grantAccess ដើម្បីដំណើរការ Video Menu ──────────
-        const _origGrantAccess = grantAccess;
-        function grantAccess(phone) {
-            _origGrantAccess(phone);
-            currentUserPhone = phone;
-            updateVideoMenuVisibility();
-        }
 
         // ── Extract YouTube ID ───────────────────────────────────────
         function extractYouTubeId(url) {
