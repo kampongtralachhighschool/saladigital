@@ -749,9 +749,10 @@
                         showAlert(alertBox, `គណនីនេះបានភ្ជាប់ជាមួយ${deviceNameKh}ផ្សេងរួចហើយ! មិនអាចចូលបានទេ។`, false);
                     }
                 }
-            } catch (err) {
-                showAlert(alertBox, 'មានបញ្ហាភ្ជាប់អ៊ីនធឺណិត ឬ Database មិនទាន់បាន Update Column ថ្មី។', false);
-            }
+        } catch (err) {
+            showAlert(alertBox, 'Error: ' + err.message, false);
+            console.error(err);
+        }
             btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ";
         }
 
