@@ -216,14 +216,7 @@
         .empty-video-state i { font-size: 50px; color: #dadce0; margin-bottom: 15px; display: block; }
         .empty-video-state p { font-size: 15px; }
 
-        /* ================= ការពារ YouTube Link Copy ================= */
-        .video-shield {
-            position: absolute; top: 0; left: 0;
-            width: 100%;
-            bottom: 48px; /* ទុក controls bar (Fullscreen/Play/Volume) ឲ្យដំណើរការ */
-            z-index: 10;
-            background: transparent;
-        }
+        /* shield លុបចោល — video ដើរតាមធម្មជាតិ */
 
         /* ================= Admin Users Panel ================= */
         .user-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 15px; }
@@ -1167,7 +1160,6 @@
                                 title="${escHtml(v.title)}" allowfullscreen loading="lazy"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen">
                             </iframe>
-                            <div class="video-shield" oncontextmenu="return false;"></div>
                         </div>
                         <div class="video-info">
                             <div class="video-title">${escHtml(v.title)}</div>
@@ -1209,7 +1201,6 @@
                                 title="${escHtml(v.title)}" allowfullscreen loading="lazy"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen">
                             </iframe>
-                            <div class="video-shield" oncontextmenu="return false;"></div>
                         </div>
                         <div class="video-info">
                             <div class="video-title">${escHtml(v.title)}</div>
