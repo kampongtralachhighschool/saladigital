@@ -216,6 +216,26 @@
         .empty-video-state i { font-size: 50px; color: #dadce0; margin-bottom: 15px; display: block; }
         .empty-video-state p { font-size: 15px; }
 
+        /* ================= ការពារ YouTube Link Copy ================= */
+        .video-shield {
+            position: absolute; top: 0; left: 0;
+            width: 100%;
+            bottom: 48px; /* ទុក controls bar (Fullscreen/Play/Volume) ឲ្យដំណើរការ */
+            z-index: 10;
+            background: transparent;
+        }
+
+        /* ================= Admin Users Panel ================= */
+        .user-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 15px; }
+        .user-table th { background: #1a73e8; color: white; padding: 10px 12px; text-align: left; font-weight: bold; }
+        .user-table td { padding: 10px 12px; border-bottom: 1px solid #dadce0; vertical-align: middle; }
+        .user-table tr:hover td { background: #f0f4f8; }
+        .badge-approved { background: #e6f4ea; color: #1e8e3e; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .badge-pending  { background: #fff8e1; color: #e37400; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .badge-locked   { background: #fce8e6; color: #c5221f; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .btn-reset-device { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 5px 10px; border-radius: 7px; font-size: 12px; cursor: pointer; font-weight: bold; }
+        .btn-reset-device:hover { background: #ffe0b2; }
+
         @media (max-width: 768px) {
             #main-app { flex-direction: column; overflow-y: auto; }
             #mobile-topbar { display: flex; }
@@ -304,6 +324,7 @@
                 <!-- Admin Panel (បង្ហាញតែ Admin ប៉ុណ្ណោះ) -->
                 <div class="menu-category" style="background: #fce8e6; color: #c5221f;">🔐 Admin Panel</div>
                 <li id="admin-video-menu-item" onclick="openAdminVideoPanel()" style="color: #c5221f; display: none;"><i class="fas fa-video"></i> គ្រប់គ្រង Video មេរៀន</li>
+                <li id="admin-users-menu-item" onclick="openAdminUsersPanel()" style="color: #c5221f; display: none;"><i class="fas fa-users-cog"></i> Reset ឧបករណ៍អ្នករៀន</li>
                 
                 <!-- User Video (បង្ហាញតែ User ធម្មតា) -->
                 <div class="menu-category" style="background: #e8f5e9; color: #2e7d32;">📹 Video មេរៀន</div>
@@ -639,6 +660,35 @@
                 </div>
             </div>
 
+            <!-- ================= Admin Users Panel ================= -->
+            <div id="s-admin-users" class="section">
+                <div class="admin-toolbar">
+                    <div class="toolbar-left">
+                        <h2><i class="fas fa-users-cog"></i> គ្រប់គ្រងអ្នករៀន & Reset ឧបករណ៍</h2>
+                        <p>អនុម័ត | បដិសេធ | Reset Device Lock</p>
+                    </div>
+                    <button class="btn-add-video" onclick="renderAdminUsers()">
+                        <i class="fas fa-sync-alt"></i> ផ្ទុកឡើងវិញ
+                    </button>
+                </div>
+
+                <!-- ── Tab Buttons ── -->
+                <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+                    <button id="tab-pending-btn" onclick="showUsersTab('pending')"
+                        style="padding:9px 18px;border-radius:9px;border:2px solid #1a73e8;background:#1a73e8;color:white;font-weight:bold;cursor:pointer;font-size:14px;">
+                        <i class="fas fa-clock"></i> រង់ចាំអនុម័ត <span id="pending-count" style="background:white;color:#1a73e8;border-radius:10px;padding:1px 7px;margin-left:5px;font-size:12px;"></span>
+                    </button>
+                    <button id="tab-active-btn" onclick="showUsersTab('active')"
+                        style="padding:9px 18px;border-radius:9px;border:2px solid #dadce0;background:white;color:#5f6368;font-weight:bold;cursor:pointer;font-size:14px;">
+                        <i class="fas fa-users"></i> អ្នករៀនទាំងអស់
+                    </button>
+                </div>
+
+                <div id="admin-users-container">
+                    <div class="empty-video-state"><i class="fas fa-spinner fa-spin"></i><p>សូមរង់ចាំ...</p></div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -687,6 +737,15 @@
             return deviceId;
         }
 
+        // ── Normalize phone: "0123456789" ↔ "+855123456789" ──────────
+        function normalizePhone(raw) {
+            let p = String(raw).replace(/[\s\-\(\)\.]/g, '');
+            if (p.startsWith('+855')) p = '0' + p.slice(4);
+            else if (/^855\d{8,9}$/.test(p)) p = '0' + p.slice(3);
+            return p;
+        }
+        function toIntlPhone(local) { return '+855' + local.slice(1); }
+
         // ឆែកមើលពេលបើកវេបសាយ 
         document.addEventListener("DOMContentLoaded", () => {
             const session = localStorage.getItem("trainee_phone");
@@ -711,48 +770,87 @@
 
         // ================= មុខងារ Login & Device Check =================
         async function login() {
-            const phone = document.getElementById('login-phone').value.trim();
+            const rawPhone = document.getElementById('login-phone').value.trim();
             const alertBox = document.getElementById('login-alert');
             const btn = document.getElementById('btn-login');
 
-            if (!phone) { showAlert(alertBox, 'សូមបញ្ចូលលេខទូរសព្ទរបស់អ្នក!', false); return; }
+            if (!rawPhone) { showAlert(alertBox, 'សូមបញ្ចូលលេខទូរសព្ទរបស់អ្នក!', false); return; }
 
             btn.disabled = true; btn.innerText = "កំពុងពិនិត្យ...";
 
+            // Normalize: handle both "0123..." and "+85523..." formats
+            const localPhone = normalizePhone(rawPhone);
+            const intlPhone  = toIntlPhone(localPhone);
+
             try {
-                const { data, error } = await db
-                    .from('trainees')
-                    .select('*')
-                    .eq('phone', phone)
-                    .single();
+                // ── Step 1: ពិនិត្យ users table (ប្រព័ន្ធចុះឈ្មោះចម្បង) ──
+                const { data: userRec } = await db.from('users')
+                    .select('id, name, phone, status')
+                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
+                    .maybeSingle();
 
-                if (error || !data) {
-                    showAlert(alertBox, 'រកមិនឃើញលេខនេះទេ។ សូមស្នើសុំចុះឈ្មោះ!', false);
-                } else if (data.is_approved === false) {
-                    showAlert(alertBox, 'គណនីរបស់អ្នកកំពុងរង់ចាំការអនុម័តពីលោកគ្រូ។', false);
-                } else {
-                    // ពិនិត្យ Device ID (សុវត្ថិភាព ១ទូរសព្ទ ១កុំព្យូទ័រ)
-                    const deviceType = getDeviceType();
-                    const localDeviceId = getLocalDeviceId();
-                    const dbColumn = deviceType === 'mobile' ? 'phone_device_id' : 'pc_device_id';
-                    const deviceNameKh = deviceType === 'mobile' ? 'ទូរសព្ទ' : 'កុំព្យូទ័រ';
+                let traineeRec = null;
 
-                    if (!data[dbColumn]) {
-                        // ចូលលើកដំបូងសម្រាប់ប្រភេទឧបករណ៍នេះ -> Save ចូល DB
-                        await db.from('trainees').update({ [dbColumn]: localDeviceId }).eq('phone', phone);
-                        grantAccess(data.phone);
-                    } else if (data[dbColumn] === localDeviceId) {
-                        // ឧបករណ៍ត្រឹមត្រូវ
-                        grantAccess(data.phone);
+                if (userRec && userRec.status === 'approved') {
+                    // ── User approved ក្នុង main system → auto-sync ចូល trainees ──
+                    const { data: existing } = await db.from('trainees')
+                        .select('*')
+                        .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
+                        .maybeSingle();
+
+                    if (!existing) {
+                        // បង្កើត trainees record ថ្មី
+                        await db.from('trainees').insert([{
+                            phone: localPhone, full_name: userRec.name,
+                            is_approved: true, course_id: COURSE_ID
+                        }]);
+                        traineeRec = { phone: localPhone, phone_device_id: null, pc_device_id: null };
                     } else {
-                        // ឧបករណ៍ខុសពីអ្វីដែលបានចុះឈ្មោះ
-                        showAlert(alertBox, `គណនីនេះបានភ្ជាប់ជាមួយ${deviceNameKh}ផ្សេងរួចហើយ! មិនអាចចូលបានទេ។`, false);
+                        // Sync: ធ្វើ approve បើមិនទាន់ approved
+                        if (!existing.is_approved) {
+                            await db.from('trainees').update({ is_approved: true }).eq('phone', existing.phone);
+                        }
+                        traineeRec = existing;
                     }
+
+                } else {
+                    // ── Step 2: ពិនិត្យ trainees table (ចុះឈ្មោះដោយដៃ) ──
+                    const { data: existing } = await db.from('trainees')
+                        .select('*')
+                        .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
+                        .maybeSingle();
+
+                    if (!existing) {
+                        showAlert(alertBox, 'រកមិនឃើញលេខនេះទេ។ សូមស្នើសុំចុះឈ្មោះ!', false);
+                        btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ"; return;
+                    }
+                    if (!existing.is_approved) {
+                        showAlert(alertBox, 'គណនីរបស់អ្នកកំពុងរង់ចាំការអនុម័តពីលោកគ្រូ។', false);
+                        btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ"; return;
+                    }
+                    traineeRec = existing;
                 }
-        } catch (err) {
-            showAlert(alertBox, 'Error: ' + err.message, false);
-            console.error(err);
-        }
+
+                // ── Step 3: Device Check ──────────────────────────────────
+                const deviceType    = getDeviceType();
+                const localDeviceId = getLocalDeviceId();
+                const dbColumn      = deviceType === 'mobile' ? 'phone_device_id' : 'pc_device_id';
+                const deviceNameKh  = deviceType === 'mobile' ? 'ទូរសព្ទ' : 'កុំព្យូទ័រ';
+                const recPhone      = traineeRec.phone;
+
+                if (!traineeRec[dbColumn]) {
+                    await db.from('trainees').update({ [dbColumn]: localDeviceId }).eq('phone', recPhone);
+                    grantAccess(recPhone);
+                } else if (traineeRec[dbColumn] === localDeviceId) {
+                    grantAccess(recPhone);
+                } else {
+                    showDeviceLockAlert(alertBox, recPhone, deviceNameKh);
+                }
+
+            } catch (err) {
+                showAlert(alertBox, 'Error: ' + err.message, false);
+                console.error(err);
+            }
             btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ";
         }
         
@@ -991,9 +1089,11 @@
         // Admin & Video Management — Supabase Integration
         // ================================================================
         const ADMIN_EMAIL = 'hon.mom.is@gmail.com';
-        let currentUserPhone = null;   // phone ដែល login ស្រាប់
-        let isAdmin = false;           // true បើ phone នេះជា admin
+        const COURSE_ID   = 1002; // course_id របស់វគ្គនេះក្នុង users table
+        let currentUserPhone = null;
+        let isAdmin = false;
         let editingVideoId = null;
+        let currentUsersTab = 'pending'; // tab ដែលកំពុងបើក
 
         // ── ពេលបើក app ដំបូង ──────────────────────────────────────
         // extend DOMContentLoaded ដែលមានស្រាប់ ដើម្បី init video state
@@ -1019,13 +1119,14 @@
             const phone = localStorage.getItem('trainee_phone');
             if (!phone) return;
             currentUserPhone = phone;
-            // ពិនិត្យ admin async
             checkIsAdmin(phone).then(admin => {
                 isAdmin = admin;
-                const adminMenu = document.getElementById('admin-video-menu-item');
-                const userVideoMenu = document.getElementById('user-video-menu-item');
-                if (adminMenu)    adminMenu.style.display    = admin ? 'flex' : 'none';
-                if (userVideoMenu) userVideoMenu.style.display = admin ? 'none' : 'flex';
+                const adminMenu      = document.getElementById('admin-video-menu-item');
+                const adminUsersMenu = document.getElementById('admin-users-menu-item');
+                const userVideoMenu  = document.getElementById('user-video-menu-item');
+                if (adminMenu)      adminMenu.style.display      = admin ? 'flex' : 'none';
+                if (adminUsersMenu) adminUsersMenu.style.display  = admin ? 'flex' : 'none';
+                if (userVideoMenu)  userVideoMenu.style.display   = admin ? 'none' : 'flex';
             });
         }
 
@@ -1062,10 +1163,11 @@
                 container.innerHTML = data.map(v => `
                     <div class="video-card">
                         <div class="video-thumb-wrap">
-                            <iframe src="https://www.youtube.com/embed/${v.yt_id}"
+                            <iframe src="https://www.youtube-nocookie.com/embed/${v.yt_id}?rel=0&modestbranding=1&enablejsapi=1"
                                 title="${escHtml(v.title)}" allowfullscreen loading="lazy"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen">
                             </iframe>
+                            <div class="video-shield" oncontextmenu="return false;"></div>
                         </div>
                         <div class="video-info">
                             <div class="video-title">${escHtml(v.title)}</div>
@@ -1103,10 +1205,11 @@
                 container.innerHTML = data.map(v => `
                     <div class="video-card" id="vcard-${v.id}">
                         <div class="video-thumb-wrap">
-                            <iframe src="https://www.youtube.com/embed/${v.yt_id}"
+                            <iframe src="https://www.youtube-nocookie.com/embed/${v.yt_id}?rel=0&modestbranding=1&enablejsapi=1"
                                 title="${escHtml(v.title)}" allowfullscreen loading="lazy"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen">
                             </iframe>
+                            <div class="video-shield" oncontextmenu="return false;"></div>
                         </div>
                         <div class="video-info">
                             <div class="video-title">${escHtml(v.title)}</div>
@@ -1222,7 +1325,210 @@
         function escAttr(str) {
             return String(str).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
         }
+        // ── Device Lock: បង្ហាញ message + ប៊ូតុងស្នើ Reset ──────────
+        function showDeviceLockAlert(alertBox, phone, deviceNameKh) {
+            alertBox.style.display = 'block';
+            alertBox.className = 'alert-msg alert-error';
+            alertBox.innerHTML = `
+                <strong>⛔ ${deviceNameKh}នេះមិនត្រូវគ្នា!</strong><br>
+                គណនីនេះបានភ្ជាប់ជាមួយ${deviceNameKh}ផ្សេងរួចហើយ។<br>
+                <span style="font-size:13px;">ប្រសិនបើអ្នកប្តូរ${deviceNameKh}ថ្មី ឬ Clear Browser សូមទំនាក់ទំនងលោកគ្រូ ហុន ម៉ុម: <strong>017 47 66 64</strong></span><br>
+                <button onclick="requestDeviceReset('${phone}','${deviceNameKh}')"
+                    style="margin-top:8px;background:#1a73e8;color:white;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:bold;">
+                    <i class="fas fa-paper-plane"></i> ស្នើ Reset ឧបករណ៍
+                </button>`;
+            setTimeout(() => { alertBox.style.display = 'none'; }, 15000);
+        }
+
+        function requestDeviceReset(phone, deviceNameKh) {
+            if (TELEGRAM_BOT_TOKEN === 'ដាក់_TOKEN_របស់_BOT_នៅទីនេះ') {
+                alert('សូមទំនាក់ទំនងលោកគ្រូ ហុន ម៉ុម: 017 47 66 64 ដើម្បី Reset ឧបករណ៍!');
+                return;
+            }
+            const msg = `🔔 <b>ស្នើ Reset ឧបករណ៍!</b>\n\n📱 លេខ: <b>${phone}</b>\n🖥 ប្រភេទ: <b>${deviceNameKh}</b>\n\n👉 ចូលទៅ Admin Panel ➜ "Reset ឧបករណ៍អ្នករៀន" រួចចុច Reset ឲ្យ User នេះ។`;
+            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'HTML' })
+            }).then(() => alert('✅ បានផ្ញើសារទៅលោកគ្រូរួចហើយ! សូមរង់ចាំការអនុម័ត។'))
+              .catch(() => alert('សូមទំនាក់ទំនងលោកគ្រូ ហុន ម៉ុម: 017 47 66 64'));
+        }
+
+        // ── Admin Users Panel ────────────────────────────────────────
+        async function openAdminUsersPanel() {
+            if (!isAdmin) { alert('⛔ អ្នកមិនមែនជា Admin ទេ!'); return; }
+            switchTab(null, 's-admin-users');
+            await renderAdminUsers();
+        }
+
+        function showUsersTab(tab) {
+            currentUsersTab = tab;
+            const pendBtn = document.getElementById('tab-pending-btn');
+            const actBtn  = document.getElementById('tab-active-btn');
+            if (pendBtn) {
+                pendBtn.style.background = tab === 'pending' ? '#1a73e8' : 'white';
+                pendBtn.style.color      = tab === 'pending' ? 'white'   : '#5f6368';
+                pendBtn.style.border     = tab === 'pending' ? '2px solid #1a73e8' : '2px solid #dadce0';
+            }
+            if (actBtn) {
+                actBtn.style.background = tab === 'active' ? '#1a73e8' : 'white';
+                actBtn.style.color      = tab === 'active' ? 'white'   : '#5f6368';
+                actBtn.style.border     = tab === 'active' ? '2px solid #1a73e8' : '2px solid #dadce0';
+            }
+            renderAdminUsers();
+        }
+
+        async function renderAdminUsers() {
+            const container = document.getElementById('admin-users-container');
+            if (!container) return;
+            container.innerHTML = `<div class="empty-video-state"><i class="fas fa-spinner fa-spin" style="font-size:36px;color:#1a73e8;"></i><p style="margin-top:12px;">កំពុងទាញទិន្នន័យ...</p></div>`;
+            try {
+                // ── ទាញ trainees ──
+                const { data: trainees, error } = await db.from('trainees')
+                    .select('phone, full_name, is_approved, phone_device_id, pc_device_id, created_at')
+                    .order('created_at', { ascending: false });
+                if (error) throw error;
+
+                // ── ទាញ users (main system) ──
+                const { data: mainUsers } = await db.from('users')
+                    .select('name, phone, status')
+                    .eq('course_id', COURSE_ID);
+
+                // Build phone→mainUser map (normalized)
+                const mainMap = {};
+                (mainUsers || []).forEach(u => { mainMap[normalizePhone(u.phone)] = u; });
+
+                const isPending = t => t.is_approved === false;
+                const list = currentUsersTab === 'pending'
+                    ? (trainees || []).filter(isPending)
+                    : (trainees || []).filter(t => !isPending(t));
+
+                // Update pending badge count
+                const pendCount = document.getElementById('pending-count');
+                if (pendCount) pendCount.textContent = (trainees||[]).filter(isPending).length || '';
+
+                if (!list.length) {
+                    const msg = currentUsersTab === 'pending'
+                        ? 'មិនមានការស្នើសុំថ្មីទេ 🎉'
+                        : 'មិនទាន់មានអ្នករៀនណាទេ។';
+                    container.innerHTML = `<div class="empty-video-state"><i class="fas fa-check-circle" style="color:#34a853;"></i><p>${msg}</p></div>`;
+                    return;
+                }
+
+                const rows = list.map(u => {
+                    const nPhone   = normalizePhone(u.phone);
+                    const inMain   = mainMap[nPhone];
+                    const mainBadge = inMain
+                        ? `<span class="badge-approved" title="status: ${inMain.status}"><i class="fas fa-link"></i> ចុះឈ្មោះដោយ Bot</span>`
+                        : `<span style="color:#9aa0a6;font-size:12px;">ដោយដៃ</span>`;
+
+                    const phoneLock = u.phone_device_id
+                        ? `<span class="badge-locked"><i class="fas fa-mobile-alt"></i> Lock</span>`
+                        : `<span style="color:#9aa0a6;font-size:12px;">—</span>`;
+                    const pcLock = u.pc_device_id
+                        ? `<span class="badge-locked"><i class="fas fa-desktop"></i> Lock</span>`
+                        : `<span style="color:#9aa0a6;font-size:12px;">—</span>`;
+
+                    const actionBtns = currentUsersTab === 'pending'
+                        ? `<button class="btn-reset-device" style="background:#e6f4ea;color:#1e8e3e;border-color:#ceead6;" onclick="approveTrainee('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-check"></i> អនុម័ត</button>
+                           <button class="btn-reset-device" style="margin-left:5px;" onclick="rejectTrainee('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-times"></i> បដិសេធ</button>`
+                        : (u.phone_device_id || u.pc_device_id)
+                            ? `<button class="btn-reset-device" onclick="resetUserDevice('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-undo"></i> Reset Device</button>`
+                            : `<span style="color:#9aa0a6;font-size:12px;">គ្មាន Lock</span>`;
+
+                    return `<tr>
+                        <td style="font-weight:bold;">${escHtml(u.full_name || '—')}</td>
+                        <td>${escHtml(u.phone)}</td>
+                        <td>${mainBadge}</td>
+                        <td>${phoneLock}</td>
+                        <td>${pcLock}</td>
+                        <td style="white-space:nowrap;">${actionBtns}</td>
+                    </tr>`;
+                }).join('');
+
+                container.innerHTML = `
+                    <div style="overflow-x:auto;">
+                    <table class="user-table">
+                        <thead><tr>
+                            <th>ឈ្មោះ</th><th>លេខទូរសព្ទ</th><th>ប្រភព</th>
+                            <th><i class="fas fa-mobile-alt"></i></th>
+                            <th><i class="fas fa-desktop"></i></th>
+                            <th>សកម្មភាព</th>
+                        </tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                    </div>
+                    <p style="margin-top:12px;font-size:13px;color:#5f6368;">
+                        <i class="fas fa-users"></i> បង្ហាញ <strong>${list.length}</strong> នាក់
+                    </p>`;
+            } catch (e) {
+                container.innerHTML = `<div class="empty-video-state"><i class="fas fa-exclamation-circle" style="color:#ea4335;"></i><p>Error: ${escHtml(e.message)}</p></div>`;
+            }
+        }
+
+        async function approveTrainee(phone, name) {
+            if (!confirm(`អនុម័តឲ្យ "${name}" (${phone}) ?\nពួកគេនឹងអាចចូលរៀនបានភ្លាម។`)) return;
+            try {
+                const { error } = await db.from('trainees')
+                    .update({ is_approved: true })
+                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`);
+                if (error) throw error;
+                // ផ្ញើ Telegram
+                if (TELEGRAM_BOT_TOKEN !== 'ដាក់_TOKEN_របស់_BOT_នៅទីនេះ') {
+                    const msg = `✅ <b>បានអនុម័ត!</b>\n👤 ${name}\n📱 ${phone}`;
+                    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+                        method:'POST', headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:msg,parse_mode:'HTML'})
+                    });
+                }
+                await renderAdminUsers();
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        async function rejectTrainee(phone, name) {
+            if (!confirm(`បដិសេធ + លុប "${name}" (${phone}) ?\nសកម្មភាពនេះមិនអាចត្រឡប់វិញ!`)) return;
+            try {
+                const { error } = await db.from('trainees')
+                    .delete()
+                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`);
+                if (error) throw error;
+                await renderAdminUsers();
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        async function resetUserDevice(phone, name) {
+            if (!confirm(`Reset Device Lock ឲ្យ "${name}" (${phone}) ?\nពួកគេនឹងអាច Login ពីឧបករណ៍ថ្មីបាន។`)) return;
+            try {
+                const { error } = await db.from('trainees')
+                    .update({ phone_device_id: null, pc_device_id: null })
+                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`);
+                if (error) throw error;
+                alert(`✅ Reset Device Lock ឲ្យ ${name} ជោគជ័យ!`);
+                await renderAdminUsers();
+            } catch (e) { alert(`Error: ${e.message}`); }
+        }
+
         // ===== END Admin & Video Logic =====
+
+        // ── Auto-pause videos ពេល video មួយ Play ──────────────────────
+        window.addEventListener('message', function(e) {
+            if (!String(e.origin).includes('youtube')) return;
+            try {
+                const d = JSON.parse(e.data);
+                // playerState === 1 មានន័យថាកំពុង Play
+                if (d.event === 'infoDelivery' && d.info && d.info.playerState === 1) {
+                    document.querySelectorAll('.video-thumb-wrap iframe').forEach(function(iframe) {
+                        try {
+                            if (iframe.contentWindow !== e.source) {
+                                iframe.contentWindow.postMessage(
+                                    '{"event":"command","func":"pauseVideo","args":""}', '*'
+                                );
+                            }
+                        } catch(ex) {}
+                    });
+                }
+            } catch(ex) {}
+        });
 
         // មុខងារការពារសុវត្ថិភាព (Anti-Inspect & Anti-Copy)
         document.addEventListener('contextmenu', event => event.preventDefault()); 
