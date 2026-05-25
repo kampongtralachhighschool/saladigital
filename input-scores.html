@@ -46,6 +46,11 @@
     tr.bg-grade-10 td { background-color: #fce4ec !important; } 
     tr.bg-grade-11 td { background-color: #fff8e1 !important; } 
     tr.bg-grade-12 td { background-color: #e0f7fa !important; } 
+    /* ឈ្មោះសិស្ស: បន្ថយពណ៌កុំឲ្យចាំងភ្នែក */
+    .student-name { color: #1f3a5f !important; font-weight: 700; }
+    .student-class-badge { background: #64748b !important; color: #fff; font-size: 10px; }
+    body.dark-mode .student-name { color: #bfdbfe !important; }
+    .room-grade-option-hint { font-size: 10px; color: #64748b; }
     .stu-row:hover td, .abs-row:hover td { filter: brightness(0.95); transition: 0.2s; }
 
     #saveStatus { font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 15px; margin-left: 10px; opacity: 0; transition: opacity 0.3s ease; }
@@ -62,9 +67,72 @@
     .btn-check:checked + .btn-outline-secondary { background-color: #6c757d; color: white; }
     .btn-check:checked + .btn-outline-danger { background-color: #dc3545; color: white; }
     .btn-check:checked + .btn-outline-warning { background-color: #ffc107; color: #000; }
+
+
+    /* ===== Modern UX Upgrade ===== */
+    :root {
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --text: #172033;
+      --muted: #64748b;
+      --ring: rgba(13, 110, 253, .18);
+    }
+    body { color: var(--text); }
+    .app-header { position: sticky; top: 0; z-index: 1020; }
+    .glass-card { background: rgba(255,255,255,.88); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.55); }
+    .quick-stat { border-radius: 16px; background: var(--surface); border: 1px solid #e8edf5; padding: 12px; min-height: 76px; }
+    .quick-stat .num { font-size: 22px; font-weight: 800; line-height: 1; }
+    .quick-stat .lbl { font-size: 11px; color: var(--muted); margin-top: 5px; }
+    .toolbar-btn { border-radius: 999px; font-weight: 700; font-size: 12px; }
+    .form-control:focus, .form-select:focus { box-shadow: 0 0 0 .22rem var(--ring); }
+    .table-container { box-shadow: inset 0 1px 0 rgba(255,255,255,.65); }
+    .table tbody tr { transition: transform .12s ease, box-shadow .12s ease; }
+    .table tbody tr:hover { transform: translateY(-1px); }
+    .empty-state { padding: 36px 12px; color: var(--muted); text-align: center; }
+    .kbd-hint { font-size: 10px; color: var(--muted); background: #f1f5f9; border: 1px solid #dbe4ee; border-radius: 6px; padding: 2px 6px; }
+    .toast-container { z-index: 3000; }
+    body.dark-mode { --bg: #0f172a; --surface: #111827; --surface-2: #1f2937; --text: #e5e7eb; --muted: #94a3b8; background: var(--bg); }
+    body.dark-mode .card, body.dark-mode .filter-card, body.dark-mode .table-container, body.dark-mode .quick-stat { background: var(--surface); color: var(--text); border-color: #243145 !important; }
+    body.dark-mode .form-control, body.dark-mode .form-select { background: #0b1220; color: var(--text); border-color: #334155; }
+    body.dark-mode .motivation-box { background: #10233d; color: #bfdbfe; }
+    body.dark-mode .table { color: var(--text); }
+    body.dark-mode .table-light { --bs-table-bg: #1f2937; --bs-table-color: #e5e7eb; }
+    @media (max-width: 768px) {
+      body { font-size: 12px; }
+      .app-header { border-radius: 0 0 16px 16px; padding: 12px 8px; }
+      .filter-card { margin-top: -14px; }
+      .nav-pills .nav-link { padding: 8px 12px; }
+      .score-input { width: 68px; font-size: 14px; }
+      .table thead th { padding: 9px 6px; }
+    }
+    @media print {
+      #authSection, .filter-card, .nav, #motivationArea, .btn, .toolbar-print-hide { display: none !important; }
+      #appSection, .tab-pane-custom:not(.hidden) { display: block !important; }
+      .table-container { max-height: none !important; overflow: visible !important; border: none !important; }
+      .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+    }
+
+
+    /* ===== Compact score-entry mode: លាក់ក្បាលទំព័រ ដើម្បីមានកន្លែងបញ្ចូលពិន្ទុច្រើន ===== */
+    body.compact-score-mode .app-header,
+    body.compact-score-mode #quickStats,
+    body.compact-score-mode #motivationArea { display: none !important; }
+    body.compact-score-mode .container-fluid.px-3.mt-4 { margin-top: .55rem !important; }
+    body.compact-score-mode .filter-card { margin-top: 0 !important; padding: 8px 10px !important; margin-bottom: 8px !important; border-bottom-width: 2px; }
+    body.compact-score-mode #pills-tab { margin-bottom: 8px !important; }
+    body.compact-score-mode .nav-pills .nav-link { padding: 6px 12px; }
+    body.compact-score-mode #tab-input .card { margin-bottom: 6px; }
+    body.compact-score-mode #tab-input .row.border-bottom { padding-bottom: 8px !important; margin-bottom: 8px !important; }
+    body.compact-score-mode #currentInputTitle { padding-top: 6px !important; padding-bottom: 6px !important; margin-bottom: 6px !important; }
+    body.compact-score-mode .table-container { max-height: 76vh; }
+    body.compact-score-mode .score-input { padding: 4px; }
+    body.compact-score-mode .student-name { color: #24435f !important; }
+    body.dark-mode.compact-score-mode .student-name { color: #c7d2fe !important; }
+
   </style>
 </head>
 <body>
+  <div class="toast-container position-fixed top-0 end-0 p-3" id="toastArea"></div>
 
   <!-- AUTH SECTION -->
   <div id="authSection" class="container">
@@ -105,6 +173,18 @@
     </div>
 
     <div class="container-fluid px-3 mt-4">
+        <div class="row g-2 mb-3" id="quickStats">
+          <div class="col-6 col-md-3"><div class="quick-stat shadow-sm"><div class="num text-primary" id="statStudents">0</div><div class="lbl">សិស្សសរុប</div></div></div>
+          <div class="col-6 col-md-3"><div class="quick-stat shadow-sm"><div class="num text-success" id="statRooms">0</div><div class="lbl">បន្ទប់សរុប</div></div></div>
+          <div class="col-6 col-md-3"><div class="quick-stat shadow-sm"><div class="num text-warning" id="statSubjects">0</div><div class="lbl">មុខវិជ្ជាសរុប</div></div></div>
+          <div class="col-6 col-md-3"><div class="quick-stat shadow-sm"><div class="num text-danger" id="statAbsents">0</div><div class="lbl">អវត្តមានខែនេះ</div></div></div>
+        </div>
+        <div class="d-flex flex-wrap justify-content-end gap-2 mb-3 toolbar-print-hide">
+          <button class="btn btn-light border toolbar-btn shadow-sm" onclick="refreshData()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+          <button id="compactModeBtn" class="btn btn-warning border toolbar-btn shadow-sm" onclick="toggleCompactMode()"><i class="fa-solid fa-compress me-1"></i> លាក់ក្បាល</button>
+          <button class="btn btn-light border toolbar-btn shadow-sm" onclick="toggleDarkMode()"><i class="fa-solid fa-moon me-1"></i> Dark</button>
+          <button class="btn btn-light border toolbar-btn shadow-sm" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Print</button>
+        </div>
         <!-- GLOBAL FILTERS -->
         <div class="card filter-card shadow-sm mb-4 border-0">
             <div class="row g-2 align-items-end">
@@ -134,6 +214,7 @@
           <li class="nav-item"><a class="nav-link" onclick="switchTab('report')">របាយការណ៍រួម</a></li>
           <li class="nav-item"><a class="nav-link" onclick="switchTab('abs-report')">តាមដានអវត្តមាន</a></li>
           <li class="nav-item"><a class="nav-link" onclick="switchTab('search')">ស្វែងរកសិស្ស</a></li>
+          <li id="studentImportOnly" class="nav-item d-none"><a class="nav-link text-primary border border-primary ms-2" onclick="switchTab('student-import')"><i class="fa-solid fa-file-import me-1"></i>បញ្ចូលសិស្ស</a></li>
           <li id="adminOnly" class="nav-item d-none"><a class="nav-link text-danger border border-danger ms-2" onclick="switchTab('absence')">ដាក់អវត្តមាន</a></li>
         </ul>
 
@@ -147,7 +228,11 @@
                 <div class="col-12 col-md-3"><button id="saveScoreBtn" class="btn btn-success w-100 fw-bold shadow mt-2 mt-md-0" onclick="manualSaveScores()"><i class="fa-solid fa-save"></i> រក្សាទុកពិន្ទុ</button></div>
               </div>
 
-              <div id="currentInputTitle" class="alert alert-primary py-2 mb-3 text-center fw-bold hidden shadow-sm" style="border-left: 5px solid #0d6efd; background-color: #eef6ff;"></div>
+              <div id="currentInputTitle" class="alert alert-primary py-2 mb-2 text-center fw-bold hidden shadow-sm" style="border-left: 5px solid #0d6efd; background-color: #eef6ff;"></div>
+              <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                <input type="text" id="inputSearch" class="form-control form-control-sm border-primary" style="max-width: 320px;" placeholder="ស្វែងរកក្នុងបន្ទប់៖ ឈ្មោះ / អត្តលេខ / តុ" oninput="filterInputRows()">
+                <div class="d-flex gap-1 flex-wrap"><span class="kbd-hint">Enter/↓ ទៅបន្ទាប់</span><span class="kbd-hint">↑ ត្រឡប់ក្រោយ</span><span class="kbd-hint">Paste ពិន្ទុពី Excel បាន</span></div>
+              </div>
 
               <div class="table-responsive table-container border shadow-sm">
                   <table class="table align-middle mb-0 text-center border-0">
@@ -216,6 +301,50 @@
               </div>
           </div>
 
+
+
+          <!-- TAB: STUDENT IMPORT -->
+          <div id="tab-student-import" class="tab-pane-custom hidden">
+              <div class="card p-3 shadow-sm border-0">
+                  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                      <div>
+                          <h6 class="fw-bold text-primary mb-1"><i class="fa-solid fa-file-import me-1"></i> បញ្ចូលឈ្មោះសិស្សតាមខែ</h6>
+                          <div class="small text-muted">Copy ពី Excel/Google Sheets មក Paste ខាងក្រោម។ ប្រព័ន្ធនឹងភ្ជាប់ទៅឆ្នាំសិក្សា ឆមាស និងខែដែលបានជ្រើសខាងលើដោយស្វ័យប្រវត្តិ។</div>
+                      </div>
+                      <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="fillStudentImportExample()"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> ដាក់គំរូ</button>
+                  </div>
+
+                  <div class="alert alert-info py-2 small mb-3">
+                      <b>លំដាប់ Column ដែលគាំទ្រ៖</b> បន្ទប់ | តុ | អត្តលេខ | ឈ្មោះ | ភេទ | ថ្ងៃខែឆ្នាំកំណើត | ថ្នាក់<br>
+                      <span class="text-muted">ក៏គាំទ្រលំដាប់ចាស់៖ តុ | អត្តលេខ | ឈ្មោះ | ភេទ | ថ្ងៃកំណើត | ថ្នាក់ | បន្ទប់។ ប្រព័ន្ធនឹងស្គាល់ដោយស្វ័យប្រវត្តិ។</span>
+                  </div>
+
+                  <div class="row g-2 mb-3">
+                      <div class="col-6 col-md-2"><label class="small fw-bold">បន្ទប់លំនាំដើម</label><input id="importDefaultRoom" class="form-control border-primary" placeholder="ឧ. 1"></div>
+                      <div class="col-6 col-md-2"><label class="small fw-bold">ថ្នាក់លំនាំដើម</label><input id="importDefaultClass" class="form-control border-primary" placeholder="ឧ. 7A"></div>
+                      <div class="col-12 col-md-4"><label class="small fw-bold">របៀបរក្សាទុក</label><select id="importMode" class="form-select border-primary"><option value="upsert">បន្ថែម/កែសិស្សដែលមានស្រាប់</option><option value="replace-room">លុបសិស្សក្នុងបន្ទប់នេះសិន រួចបញ្ចូលថ្មី</option><option value="replace-month">លុបសិស្សទាំងអស់ក្នុងខែនេះសិន រួចបញ្ចូលថ្មី</option></select></div>
+                      <div class="col-12 col-md-4"><label class="small fw-bold">ខែគោលដៅ</label><div id="studentImportPeriod" class="form-control bg-light fw-bold text-primary"></div></div>
+                  </div>
+
+                  <textarea id="studentPasteBox" class="form-control border-primary" rows="9" placeholder="Paste ទិន្នន័យពី Excel នៅទីនេះ..." oninput="parseStudentImport()"></textarea>
+
+                  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 my-3">
+                      <div id="studentImportSummary" class="small fw-bold text-muted">មិនទាន់មានទិន្នន័យ Preview</div>
+                      <div class="d-flex gap-2">
+                          <button class="btn btn-outline-primary btn-sm fw-bold" onclick="parseStudentImport()"><i class="fa-solid fa-eye me-1"></i> Preview</button>
+                          <button class="btn btn-success btn-sm fw-bold" onclick="saveImportedStudents()"><i class="fa-solid fa-cloud-arrow-up me-1"></i> រក្សាទុកសិស្ស</button>
+                      </div>
+                  </div>
+
+                  <div class="table-responsive table-container border shadow-sm" style="max-height: 42vh;">
+                      <table class="table table-sm table-hover align-middle mb-0 text-center">
+                          <thead><tr><th>#</th><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th><th>ស្ថានភាព</th></tr></thead>
+                          <tbody id="studentImportPreview"><tr><td colspan="9" class="empty-state">Paste ទិន្នន័យពី Excel ដើម្បីមើល Preview</td></tr></tbody>
+                      </table>
+                  </div>
+              </div>
+          </div>
+
           <!-- TAB: ABSENCE INPUT -->
           <div id="tab-absence" class="tab-pane-custom hidden">
               <div class="card p-2 border-danger shadow-sm border-0">
@@ -260,6 +389,100 @@
         "កីឡា", "ពលកម្ម", "កសិកម្ម", "គេហវិទ្យា", "ព័ត៌មានវិទ្យា"
     ];
 
+    const $ = (id) => document.getElementById(id);
+    const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+    const normalizeText = (v) => String(v ?? '').trim().toLowerCase();
+    const safeNumber = (v, fallback = 0) => Number.isFinite(parseFloat(v)) ? parseFloat(v) : fallback;
+    const sortKh = (arr) => arr.sort((a,b) => String(a).localeCompare(String(b), 'km', { numeric: true }));
+    const normalizeClassName = (value) => String(value ?? '').trim().replace(/\s+/g, '').toUpperCase();
+    const gradeLevelOrder = { '7': 1, '8': 2, '9': 3, '10': 4, '11SC': 5, '12SC': 6, '11SS': 7, '12SS': 8, '11': 9, '12': 10 };
+    function getGradeLevel(className) {
+      const cls = normalizeClassName(className);
+      const num = (cls.match(/\d{1,2}/) || [''])[0];
+      if(!num) return cls;
+      if(num === '11' || num === '12') {
+        if(/SC|SCI|វិទ្យាសាស្រ|វិទ្យា/.test(cls)) return `${num}SC`;
+        if(/SS|SOC|សង្គម/.test(cls)) return `${num}SS`;
+        return num;
+      }
+      if(['7','8','9','10'].includes(num)) return num;
+      return num;
+    }
+    function gradeLevelLabel(level) {
+      if(!level) return '';
+      if(level === '11SC') return 'ថ្នាក់ទី 11SC';
+      if(level === '12SC') return 'ថ្នាក់ទី 12SC';
+      if(level === '11SS') return 'ថ្នាក់ទី 11SS';
+      if(level === '12SS') return 'ថ្នាក់ទី 12SS';
+      return `ថ្នាក់ទី ${level}`;
+    }
+    const roomClassValue = (room, gradeLevel) => `${String(room ?? '').trim()}|||${String(gradeLevel ?? '').trim()}`;
+    const parseRoomClassValue = (value) => {
+      const parts = String(value ?? '').split('|||');
+      return { room: parts[0] || '', className: parts.slice(1).join('|||') || '' };
+    };
+    function buildRoomClassOptions(students, includeAll = false) {
+      const map = new Map();
+      students.forEach(stu => {
+        const room = String(stu.room_number ?? '').trim();
+        const level = getGradeLevel(stu.class_name);
+        if(!room || !level) return;
+        const key = roomClassValue(room, level);
+        if(!map.has(key)) map.set(key, { room, className: level, count: 0 });
+        map.get(key).count++;
+      });
+      const items = Array.from(map.values()).sort((a,b) =>
+        String(a.room).localeCompare(String(b.room), 'km', { numeric: true }) ||
+        (gradeLevelOrder[a.className] || 999) - (gradeLevelOrder[b.className] || 999) ||
+        String(a.className).localeCompare(String(b.className), 'km', { numeric: true })
+      );
+      const opts = items.map(item => `<option value="${esc(roomClassValue(item.room, item.className))}">បន្ទប់ ${esc(item.room)} (${esc(gradeLevelLabel(item.className))}) — ${item.count} នាក់</option>`).join('');
+      return (includeAll ? '<option value="ALL">-- បង្ហាញទាំងអស់ --</option>' : '') + (opts || '<option value="">--គ្មានបន្ទប់--</option>');
+    }
+
+    function showToast(message, type = 'primary') {
+      const area = $('toastArea');
+      if(!area) return;
+      const id = 'toast_' + Date.now();
+      area.insertAdjacentHTML('beforeend', `<div id="${id}" class="toast align-items-center text-bg-${type} border-0 show mb-2" role="alert"><div class="d-flex"><div class="toast-body fw-bold">${esc(message)}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="document.getElementById('${id}')?.remove()"></button></div></div>`);
+      setTimeout(() => document.getElementById(id)?.remove(), 3200);
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('hs_kpt_dark', document.body.classList.contains('dark-mode') ? '1' : '0');
+    }
+    if(localStorage.getItem('hs_kpt_dark') === '1') document.body.classList.add('dark-mode');
+
+    function applyCompactMode() {
+      const enabled = localStorage.getItem('hs_kpt_compact') === '1';
+      document.body.classList.toggle('compact-score-mode', enabled);
+      const btn = document.getElementById('compactModeBtn');
+      if(btn) {
+        btn.innerHTML = enabled
+          ? '<i class="fa-solid fa-expand me-1"></i> បង្ហាញក្បាល'
+          : '<i class="fa-solid fa-compress me-1"></i> លាក់ក្បាល';
+        btn.classList.toggle('btn-warning', !enabled);
+        btn.classList.toggle('btn-success', enabled);
+      }
+    }
+
+    function toggleCompactMode() {
+      const enabled = !document.body.classList.contains('compact-score-mode');
+      localStorage.setItem('hs_kpt_compact', enabled ? '1' : '0');
+      applyCompactMode();
+      showToast(enabled ? 'បានលាក់ក្បាលទំព័រ ដើម្បីបញ្ចូលពិន្ទុបានងាយ' : 'បានបង្ហាញក្បាលទំព័រវិញ', enabled ? 'success' : 'primary');
+    }
+    window.addEventListener('DOMContentLoaded', applyCompactMode);
+
+
+    function setLoading(el, message = 'កំពុងទាញទិន្នន័យ...') {
+      if(el) el.innerHTML = `<tr><td colspan="30" class="empty-state"><i class="fas fa-spinner fa-spin me-1"></i>${esc(message)}</td></tr>`;
+    }
+
+    function isAdmin() { return currentUser && currentUser.role === 'Admin'; }
+
+
     window.addEventListener('beforeunload', function (e) {
         if (hasUnsavedChanges && !isSystemLocked) { e.preventDefault(); e.returnValue = ''; }
     });
@@ -279,7 +502,8 @@
             for (const k in eqFilters) query = query.eq(k, eqFilters[k]);
             if (inFilter) query = query.in(inFilter.col, inFilter.vals);
             const { data, error } = await query;
-            if (error || !data || data.length === 0) break;
+            if (error) { console.error(`Supabase error on ${table}:`, error); showToast('មានបញ្ហាក្នុងការទាញទិន្នន័យ', 'danger'); break; }
+            if (!data || data.length === 0) break;
             results = results.concat(data);
             if (data.length < step) break;
             from += step;
@@ -294,7 +518,7 @@
     }
 
     async function toggleSystemLock() {
-        if(currentUser.role !== 'Admin') return;
+        if(!isAdmin()) return;
         const { data } = await _sb.from('subject_configs').select('*').eq('subject_name', 'SYSTEM_SETTINGS').eq('class_name', 'LOCKED').maybeSingle();
         const newStatus = !isSystemLocked ? 1 : 0;
         
@@ -323,9 +547,13 @@
     }
 
     async function handleLogin() {
-        const { data, error } = await _sb.auth.signInWithPassword({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPass').value });
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPass').value;
+        if(!email || !password) return Swal.fire('សូមបំពេញព័ត៌មាន', 'បញ្ចូលអ៊ីមែល និងលេខសម្ងាត់ជាមុនសិន', 'warning');
+        const { data, error } = await _sb.auth.signInWithPassword({ email, password });
         if(error) return Swal.fire('បរាជ័យ', 'អ៊ីមែល ឬលេខសម្ងាត់មិនត្រឹមត្រូវ', 'error');
-        const { data: prof } = await _sb.from('profiles').select('*').eq('id', data.user.id).single();
+        const { data: prof, error: profErr } = await _sb.from('profiles').select('*').eq('id', data.user.id).maybeSingle();
+        if(profErr || !prof) return Swal.fire('បរាជ័យ', 'រកមិនឃើញ Profile របស់អ្នកប្រើនេះទេ។', 'error');
         currentUser = prof;
         document.getElementById('authSection').classList.add('hidden');
         document.getElementById('appSection').classList.remove('hidden');
@@ -333,6 +561,7 @@
         
         if(prof.role === 'Admin') {
             document.getElementById('adminOnly').classList.remove('d-none');
+            document.getElementById('studentImportOnly').classList.remove('d-none');
             document.getElementById('lockSystemBtn').classList.remove('d-none');
         }
         
@@ -346,17 +575,32 @@
 
     async function refreshData() {
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, s = document.getElementById('gSemester').value;
+        setLoading(document.getElementById('inputListBody'), 'កំពុងទាញបញ្ជីសិស្ស...');
         allStudentsCache = await fetchAllData('students', { academic_year: y, month_name: m, semester: s });
         
-        const rooms = [...new Set(allStudentsCache.map(r => r.room_number))].sort((a,b)=>a-b);
-        const roomOpts = rooms.length ? rooms.map(r => `<option value="${r}">${r}</option>`).join('') : '<option value="">--គ្មានបន្ទប់--</option>';
+        const roomOpts = buildRoomClassOptions(allStudentsCache, false);
         document.getElementById('roomSelect').innerHTML = roomOpts;
-        document.getElementById('absRoomSelect').innerHTML = `<option value="ALL">-- បង្ហាញទាំងអស់ --</option>` + roomOpts;
+        document.getElementById('absRoomSelect').innerHTML = buildRoomClassOptions(allStudentsCache, true);
         
-        const { data: subs } = await _sb.from('subject_configs').select('subject_name');
-        if(subs) { document.getElementById('subjectSelect').innerHTML = [...new Set(subs.map(s => s.subject_name))].filter(s => s !== 'SYSTEM_SETTINGS').map(s => `<option value="${s}">${s}</option>`).join(''); }
-        
+        const { data: subs, error: subErr } = await _sb.from('subject_configs').select('subject_name');
+        if(subErr) showToast('មិនអាចទាញមុខវិជ្ជាបាន', 'danger');
+        if(subs) {
+          let subjectList = [...new Set(subs.map(s => s.subject_name).filter(s => s && s !== 'SYSTEM_SETTINGS'))];
+          let activeOrder = JSON.parse(localStorage.getItem('customSubjectOrder') || 'null') || defaultSubjectOrder;
+          subjectList.sort((a,b) => { let ia = activeOrder.indexOf(a), ib = activeOrder.indexOf(b); if(ia < 0) ia = 999; if(ib < 0) ib = 999; return ia - ib || a.localeCompare(b, 'km'); });
+          document.getElementById('subjectSelect').innerHTML = subjectList.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+          document.getElementById('statSubjects').innerText = subjectList.length;
+        }
+        await updateQuickStats();
         loadInputList();
+    }
+
+    async function updateQuickStats() {
+        document.getElementById('statStudents').innerText = allStudentsCache.length;
+        document.getElementById('statRooms').innerText = new Set(allStudentsCache.map(s => s.room_number)).size;
+        const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value;
+        const abs = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem }, { col: 'score_value', vals: ['A','P'] });
+        document.getElementById('statAbsents').innerText = new Set(abs.map(x => String(x.student_id).trim())).size;
     }
 
     async function onFilterChange() {
@@ -368,7 +612,8 @@
 
     async function loadInputList() {
         hasUnsavedChanges = false;
-        const r = document.getElementById('roomSelect').value, sub = document.getElementById('subjectSelect').value;
+        const selectedRoomClass = parseRoomClassValue(document.getElementById('roomSelect').value);
+        const r = selectedRoomClass.room, selectedClass = selectedRoomClass.className, sub = document.getElementById('subjectSelect').value;
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value;
         
         const tbody = document.getElementById('inputListBody'); 
@@ -376,16 +621,19 @@
 
         if(!r || !sub) { titleDiv.classList.add('hidden'); return; }
         
-        titleDiv.innerHTML = `កំពុងបញ្ចូលពិន្ទុ៖ បន្ទប់ <span class="text-danger mx-1">${r}</span> | មុខវិជ្ជា <span class="text-primary mx-1">${sub}</span>`;
+        titleDiv.innerHTML = `កំពុងបញ្ចូលពិន្ទុ៖ <span class="text-danger mx-1">បន្ទប់ ${esc(r)} (${esc(gradeLevelLabel(selectedClass))})</span> | មុខវិជ្ជា <span class="text-primary mx-1">${esc(sub)}</span>`;
         if (isSystemLocked) titleDiv.innerHTML += ` <span class="badge bg-danger ms-2"><i class="fa-solid fa-lock"></i> ប្រព័ន្ធត្រូវបានចាក់សោរ</span>`;
         titleDiv.classList.remove('hidden');
 
         tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> ទាញទិន្នន័យ...</td></tr>';
         
-        const stds = allStudentsCache.filter(s => String(s.room_number) === String(r)).sort((a,b) => a.desk_number - b.desk_number);
+        const stds = allStudentsCache
+            .filter(s => String(s.room_number).trim() === String(r).trim() && (!selectedClass || getGradeLevel(s.class_name) === String(selectedClass).trim()))
+            .sort((a,b) => safeNumber(a.desk_number, 9999) - safeNumber(b.desk_number, 9999) || String(a.class_name ?? '').localeCompare(String(b.class_name ?? ''), 'km', { numeric: true }));
         const scores = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
         const cfgs = await fetchAllData('subject_configs', { subject_name: sub });
         
+        if(stds.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">មិនមានសិស្សក្នុងបន្ទប់នេះទេ</td></tr>'; return; }
         tbody.innerHTML = stds.map((s, i) => {
             const classStr = s.class_name ? String(s.class_name).trim() : '';
             const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
@@ -400,15 +648,15 @@
             let disabledClass = isAbs ? 'absent-disabled' : '';
             let inputDisabled = (isAbs || isSystemLocked) ? 'disabled' : '';
             
-            return `<tr class="stu-row border-bottom ${rowBgClass}" data-id="${s.student_id}" data-room="${s.room_number}" data-name="${s.full_name}" data-class="${s.class_name}">
+            return `<tr class="stu-row border-bottom ${rowBgClass}" data-id="${esc(s.student_id)}" data-room="${esc(s.room_number)}" data-name="${esc(s.full_name)}" data-class="${esc(s.class_name)}">
                 <td class="text-center border-end-0">${i+1}</td>
-                <td class="fw-bold border-end-0">${s.desk_number}</td>
-                <td class="small border-end-0">${s.student_id}</td>
-                <td class="text-start fw-bold text-primary border-end-0">
-                    ${s.full_name} <span class="badge bg-secondary ms-1" style="font-size: 10px;">${classStr}</span>
+                <td class="fw-bold border-end-0">${esc(s.desk_number)}</td>
+                <td class="small border-end-0">${esc(s.student_id)}</td>
+                <td class="text-start border-end-0">
+                    <span class="student-name">${esc(s.full_name)}</span> <span class="badge student-class-badge ms-1">${esc(classStr)}</span>
                     <div class="small text-muted fw-normal mt-1">Max: <span class="max-label">${max}</span></div>
                 </td>
-                <td class="border-end-0"><input type="text" class="form-control score-input mx-auto shadow-sm ${disabledClass}" value="${mySc}" data-max="${max}" onblur="triggerAutoSave()" oninput="validateInput(this)" ondblclick="adminUnlock('${s.student_id}', '${sub}', this.value)" ${inputDisabled}></td>
+                <td class="border-end-0"><input type="text" class="form-control score-input mx-auto shadow-sm ${disabledClass}" value="${esc(mySc)}" data-max="${max}" onblur="triggerAutoSave()" oninput="validateInput(this)" ondblclick="adminUnlock('${String(s.student_id).replace(/'/g, '&amp;#39;')}', '${String(sub).replace(/'/g, '&amp;#39;')}', this.value)" ${inputDisabled}></td>
             </tr>`;
         }).join('');
         
@@ -418,19 +666,25 @@
     }
 
     function validateInput(inp, isPasteMode = false) { 
-        if(isSystemLocked) return false; 
-        hasUnsavedChanges = true; inp.classList.remove('input-error'); 
-        const originalValue = inp.value;
-        inp.value = inp.value.toUpperCase().replace(/[^0-9.AP]/g, ''); 
-        if ((inp.value.match(/\./g) || []).length > 1) { inp.value = inp.value.substring(0, inp.value.lastIndexOf('.')); }
-
-        if(inp.value === '') return true; 
-        if (originalValue !== inp.value && originalValue.length > 0) { inp.classList.add('input-error'); return false; }
-        if(inp.value === 'A' || inp.value === 'P') return true; 
-
+        if(isSystemLocked || inp.disabled) return false; 
+        hasUnsavedChanges = true; 
+        inp.classList.remove('input-error');
+        const raw = inp.value.trim().toUpperCase();
+        if(raw === '') { inp.value = ''; return true; }
+        if(raw === 'A' || raw === 'P') { inp.value = raw; return true; }
+        const cleaned = raw.replace(/[^0-9.]/g, '');
+        inp.value = cleaned;
+        const invalidFormat = cleaned === '' || (cleaned.match(/\./g) || []).length > 1 || !/^\d+(\.\d{0,2})?$/.test(cleaned);
         const is70 = document.getElementById('mode70').checked; 
-        let limit = is70 ? Math.ceil(parseFloat(inp.dataset.max)*0.7) : parseFloat(inp.dataset.max); 
-        if(parseFloat(inp.value) > limit) { inp.classList.add('input-error'); return false; } 
+        const maxScore = safeNumber(inp.dataset.max, 100);
+        let limit = is70 ? Math.ceil(maxScore * 0.7) : maxScore;
+        const score = parseFloat(cleaned);
+        if(invalidFormat || Number.isNaN(score) || score < 0 || score > limit) {
+            inp.classList.add('input-error');
+            inp.title = `ពិន្ទុត្រូវចន្លោះ 0 ដល់ ${limit}`;
+            return false;
+        }
+        inp.title = '';
         return true; 
     }
 
@@ -465,11 +719,17 @@
         if(pUpsert.length > 0 || pDelete.length > 0) { 
             updateSaveStatus('saving');
             try {
-                if(pDelete.length > 0) { await _sb.from('scores').delete().in('student_id', pDelete).eq('subject_name', sub).eq('academic_year', y).eq('month_name', m).eq('semester', sem); }
-                if(pUpsert.length > 0) { await _sb.from('scores').upsert(pUpsert, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'}); }
-                updateSaveStatus('saved'); hasUnsavedChanges = false;
+                if(pDelete.length > 0) {
+                    const { error } = await _sb.from('scores').delete().in('student_id', pDelete).eq('subject_name', sub).eq('academic_year', y).eq('month_name', m).eq('semester', sem);
+                    if(error) throw error;
+                }
+                if(pUpsert.length > 0) {
+                    const { error } = await _sb.from('scores').upsert(pUpsert, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
+                    if(error) throw error;
+                }
+                updateSaveStatus('saved'); hasUnsavedChanges = false; updateQuickStats();
                 if(!isAutoSave) Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'រក្សាទុករួចរាល់!', showConfirmButton: false, timer: 2000 });
-            } catch (err) { updateSaveStatus('error'); }
+            } catch (err) { console.error(err); updateSaveStatus('error'); if(!isAutoSave) Swal.fire('បរាជ័យ', 'រក្សាទុកមិនបាន សូមពិនិត្យ Internet ឬ Database policy។', 'error'); }
         } 
     }
 
@@ -545,7 +805,7 @@
         let tableRows = '';
         sortedStds.forEach(s => { 
             const classStr = String(s.class_name).trim(); const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
-            let h = `<tr class="report-row" data-grade="${gradeNum}"><td>${s.room_number}</td><td>${s.desk_number}</td><td style="mso-number-format:'\@';">${s.student_id}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${s.class_name}</td>`; 
+            let h = `<tr class="report-row" data-grade="${gradeNum}"><td>${s.room_number}</td><td>${esc(s.desk_number)}</td><td style="mso-number-format:'\@';">${esc(s.student_id)}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${s.class_name}</td>`; 
             
             const myScores = sc.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
             
@@ -705,7 +965,9 @@
     }
 
     async function loadAbsenceList() { 
-        const r = document.getElementById('absRoomSelect').value; 
+        const absSelectedValue = document.getElementById('absRoomSelect').value;
+        const selectedAbsRoomClass = parseRoomClassValue(absSelectedValue);
+        const r = selectedAbsRoomClass.room, selectedAbsClass = selectedAbsRoomClass.className; 
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value;
         const tbody = document.getElementById('absListBody'); 
         if(!r) return; 
@@ -713,8 +975,8 @@
         tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> ទាញទិន្នន័យ...</td></tr>'; 
         
         let stds = allStudentsCache;
-        if(r !== "ALL") { stds = stds.filter(s => String(s.room_number) === String(r)); }
-        stds.sort((a,b) => a.room_number - b.room_number || a.desk_number - b.desk_number);
+        if(absSelectedValue !== "ALL") { stds = stds.filter(s => String(s.room_number).trim() === String(r).trim() && (!selectedAbsClass || getGradeLevel(s.class_name) === String(selectedAbsClass).trim())); }
+        stds.sort((a,b) => safeNumber(a.room_number, 9999) - safeNumber(b.room_number, 9999) || (gradeLevelOrder[getGradeLevel(a.class_name)] || 999) - (gradeLevelOrder[getGradeLevel(b.class_name)] || 999) || safeNumber(a.desk_number, 9999) - safeNumber(b.desk_number, 9999));
 
         const sc = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
         
@@ -727,9 +989,9 @@
             
             return `<tr class="abs-row border-bottom ${rowBgClass}" data-id="${s.student_id}" data-name="${s.full_name}" data-class="${classStr}" data-room="${s.room_number}">
                 <td class="border-end-0">${i+1}</td>
-                <td class="fw-bold border-end-0">${s.room_number} / ${s.desk_number}</td>
-                <td class="small border-end-0">${s.student_id}</td>
-                <td class="text-start ps-4 fw-bold border-end-0 text-primary">${s.full_name} <span class="badge bg-secondary ms-1" style="font-size:10px;">${classStr}</span></td>
+                <td class="fw-bold border-end-0">${s.room_number} / ${esc(s.desk_number)}</td>
+                <td class="small border-end-0">${esc(s.student_id)}</td>
+                <td class="text-start ps-4 border-end-0"><span class="student-name">${esc(s.full_name)}</span> <span class="badge student-class-badge ms-1">${esc(classStr)}</span></td>
                 <td class="border-end-0">
                     <div class="btn-group btn-group-abs shadow-sm" role="group">
                         <input type="radio" class="btn-check" name="abs_${s.student_id}" id="none_${s.student_id}" value="" autocomplete="off" ${v===''?'checked':''} onchange="saveSingleAbsence('${s.student_id}', '${s.full_name}', '${classStr}', '${s.room_number}', '')">
@@ -762,13 +1024,13 @@
                 }));
                 await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
             }
-            updateSaveStatus('saved');
-        } catch (error) { updateSaveStatus('error'); }
+            updateSaveStatus('saved'); updateQuickStats();
+        } catch (error) { console.error(error); updateSaveStatus('error'); }
     }
 
     // មុខងារថ្មីសម្រាប់ប៊ូតុង "បញ្ជូនអវត្តមានទៅគ្រប់មុខវិជ្ជា"
     async function syncAbsencesToAllSubjects() {
-        if(currentUser.role !== 'Admin') return;
+        if(!isAdmin()) return;
         
         const y = document.getElementById('gYear').value;
         const m = document.getElementById('gMonth').value;
@@ -843,7 +1105,7 @@
             Swal.fire('ជោគជ័យ!', 'បានបញ្ជូនទិន្នន័យអវត្តមានទៅគ្រប់មុខវិជ្ជារួចរាល់។', 'success');
             
             // Refresh ការបង្ហាញ
-            loadAbsenceList();
+            loadAbsenceList(); updateQuickStats();
 
         } catch (error) {
             Swal.fire('បរាជ័យ', 'មានកំហុសក្នុងការបញ្ជូនទិន្នន័យ!', 'error');
@@ -866,7 +1128,7 @@
             const myAbs = absData.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
             const curSt = [...new Set(myAbs.filter(x => x.month_name === m && x.semester === sem).map(x=>x.score_value))].join('/'); 
             const hist = [...new Set(myAbs.filter(x => x.month_name !== m).map(x=>`${x.month_name}(${x.score_value})`))].join(', '); 
-            return `<tr><td>${s.room_number}</td><td>${s.desk_number}</td><td style="mso-number-format:'\@';">${s.student_id}</td><td class="text-start fw-bold">${s.full_name}</td><td>${s.gender||''}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${s.class_name}</td><td class="bg-danger text-white">${curSt}</td><td>${hist||'-'}</td><td><button class="btn btn-sm btn-danger shadow-sm" onclick="revertAbs('${s.student_id}')">លុប</button></td></tr>`; 
+            return `<tr><td>${s.room_number}</td><td>${esc(s.desk_number)}</td><td style="mso-number-format:'\@';">${esc(s.student_id)}</td><td class="text-start fw-bold">${s.full_name}</td><td>${s.gender||''}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${s.class_name}</td><td class="bg-danger text-white">${curSt}</td><td>${hist||'-'}</td><td><button class="btn btn-sm btn-danger shadow-sm" onclick="revertAbs('${s.student_id}')">លុប</button></td></tr>`; 
         }).join(''); 
     }
 
@@ -880,11 +1142,18 @@
         
         tbody.innerHTML = res.map(s => { 
             const abs = sc.find(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value==='A'||x.score_value==='P')); 
-            return `<tr><td>${s.room_number}/${s.desk_number}</td><td>${s.student_id}</td><td class="text-primary fw-bold">${s.full_name}</td><td>${s.class_name}</td><td>${abs?`<span class="badge bg-danger">អវត្តមាន</span>`:'-'}</td><td class="text-center">${abs?`<button class="btn btn-sm btn-warning" onclick="revertAbs('${s.student_id}')">ដោះវត្តមាន</button>`:`<button class="btn btn-sm btn-primary" onclick="jumpToInput('${s.room_number}')">ទៅបញ្ចូល</button>`}</td></tr>`; 
+            return `<tr><td>${s.room_number}/${esc(s.desk_number)}</td><td>${esc(s.student_id)}</td><td class="text-primary fw-bold">${s.full_name}</td><td>${s.class_name}</td><td>${abs?`<span class="badge bg-danger">អវត្តមាន</span>`:'-'}</td><td class="text-center">${abs?`<button class="btn btn-sm btn-warning" onclick="revertAbs('${s.student_id}')">ដោះវត្តមាន</button>`:`<button class="btn btn-sm btn-primary" onclick="jumpToInput('${s.room_number}', '${getGradeLevel(s.class_name)}')">ទៅបញ្ចូល</button>`}</td></tr>`; 
         }).join(''); 
     }
 
-    function jumpToInput(r) { document.getElementById('roomSelect').value = r; switchTab('input'); loadInputList(); }
+    function jumpToInput(r, className = '') {
+        const targetValue = roomClassValue(r, className);
+        const select = document.getElementById('roomSelect');
+        if(select && Array.from(select.options).some(opt => opt.value === targetValue)) select.value = targetValue;
+        else if(select && Array.from(select.options).some(opt => parseRoomClassValue(opt.value).room === String(r))) select.value = Array.from(select.options).find(opt => parseRoomClassValue(opt.value).room === String(r)).value;
+        switchTab('input');
+        loadInputList();
+    }
 
     async function switchTab(t) { 
         if (t !== 'input' && document.querySelectorAll('.stu-row').length > 0 && !isSystemLocked) { triggerAutoSave(); }
@@ -895,10 +1164,11 @@
         if(activeLink) activeLink.classList.add('active');
         if(t==='report') loadGlobalReport(); 
         if(t==='abs-report') loadAbsenceHistoryReport(); 
+        if(t==='student-import') updateStudentImportPeriod();
     }
     
     async function adminUnlock(sid, sub, val) { 
-        if(currentUser.role !== 'Admin' || (val !== 'A' && val !== 'P')) return; 
+        if(!isAdmin() || (val !== 'A' && val !== 'P')) return; 
         if(isSystemLocked) {
             Swal.fire('បដិសេធ', 'សូមចុចបើកសោរប្រព័ន្ធ(Unlock System) នៅផ្នែកខាងលើជាមុនសិន!', 'warning');
             return;
@@ -908,7 +1178,7 @@
     }
     
     async function revertAbs(sid) { 
-        if (currentUser.role !== 'Admin') {
+        if (!isAdmin()) {
             Swal.fire({ title: 'គ្មានសិទ្ធិអនុញ្ញាត', text: 'អ្នកមិនមានសិទ្ធិលុបអវត្តមានសិស្សទេ។ សូមទាក់ទង Admin ដើម្បីដោះស្រាយ!', icon: 'error', showCancelButton: true, confirmButtonColor: '#0088cc', cancelButtonColor: '#d33', confirmButtonText: '<i class="fa-brands fa-telegram me-1"></i> រាយការណ៍ទៅ Admin', cancelButtonText: 'បិទ' }).then((result) => { if (result.isConfirmed) { window.open('https://t.me/Mrmomhon', '_blank'); } });
             return;
         }
@@ -923,8 +1193,229 @@
         } 
     }
 
+
+    let studentImportRows = [];
+
+    function updateStudentImportPeriod() {
+        const box = document.getElementById('studentImportPeriod');
+        if(box) box.innerText = `${document.getElementById('gYear').value} | ${document.getElementById('gSemester').value} | ${document.getElementById('gMonth').value}`;
+        const roomInput = document.getElementById('importDefaultRoom');
+        if(roomInput && !roomInput.value && document.getElementById('roomSelect')?.value) roomInput.value = parseRoomClassValue(document.getElementById('roomSelect').value).room;
+    }
+
+    function fillStudentImportExample() {
+        updateStudentImportPeriod();
+        document.getElementById('studentPasteBox').value = [
+            '1\t1\t4250000551\tកង សុភ័ក្រា\tប្រុស\t11-09-2013\t7E',
+            '1\t2\t4250000550\tកុយ សុធា\tស្រី\t17-6-2012\t7D',
+            '1\t3\t4250000312\tកន សុជាតា\tស្រី\t11-10-2013\t7A'
+        ].join('\n');
+        parseStudentImport();
+    }
+
+    function splitStudentLine(line) {
+        const cleaned = String(line || '').replace(/\r/g, '').trim();
+        if(!cleaned) return [];
+        if(cleaned.includes('\t')) return cleaned.split('\t').map(v => v.trim());
+        if(cleaned.includes(',')) return cleaned.split(',').map(v => v.trim());
+        return cleaned.split(/\s{2,}/).map(v => v.trim());
+    }
+
+    function normalizeDob(raw) {
+        const v = String(raw || '').trim();
+        if(!v) return '';
+        if(/^\d{4}-\d{1,2}-\d{1,2}$/.test(v)) {
+            const [y,m,d] = v.split('-');
+            return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+        }
+        const m = v.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+        if(m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+        return v;
+    }
+
+    function looksLikeHeader(cols) {
+        const joined = cols.join(' ').toLowerCase();
+        return /ឈ្មោះ|អត្តលេខ|student|name|gender|class|room|dob/.test(joined);
+    }
+
+
+
+    function isLikelyStudentId(v) {
+        const x = String(v || '').trim();
+        return /^\d{6,}$/.test(x);
+    }
+
+    function isLikelyDesk(v) {
+        const x = String(v || '').trim();
+        return /^\d{1,3}$/.test(x);
+    }
+
+    function isLikelyClass(v) {
+        const x = String(v || '').trim().replace(/\s+/g, '');
+        return /^(ថ្នាក់ទី)?\d{1,2}([A-Z]{1,2}|[A-Zក-អ])?$/.test(x);
+    }
+
+    function parseStudentColumns(cols, defaultRoom, defaultClass) {
+        let room_number='', desk_number='', student_id='', full_name='', gender='', dob='', class_name='';
+
+        if(cols.length >= 7) {
+            // លំដាប់ថ្មីពី Excel របស់អ្នក៖ បន្ទប់ | តុ | អត្តលេខ | ឈ្មោះ | ភេទ | ថ្ងៃកំណើត | ថ្នាក់
+            // លំដាប់ចាស់៖ តុ | អត្តលេខ | ឈ្មោះ | ភេទ | ថ្ងៃកំណើត | ថ្នាក់ | បន្ទប់
+            const newOrderLooksRight = isLikelyDesk(cols[1]) && isLikelyStudentId(cols[2]);
+            const oldOrderLooksRight = isLikelyDesk(cols[0]) && isLikelyStudentId(cols[1]);
+            if(newOrderLooksRight || (!oldOrderLooksRight && isLikelyClass(cols[6]))) {
+                [room_number, desk_number, student_id, full_name, gender, dob, class_name] = cols;
+            } else {
+                [desk_number, student_id, full_name, gender, dob, class_name, room_number] = cols;
+            }
+        } else if(cols.length === 6) {
+            // អាចជា៖ តុ | អត្តលេខ | ឈ្មោះ | ភេទ | ថ្ងៃកំណើត | ថ្នាក់
+            [desk_number, student_id, full_name, gender, dob, class_name] = cols;
+            room_number = defaultRoom;
+        } else if(cols.length === 5) {
+            [desk_number, student_id, full_name, gender, dob] = cols;
+            class_name = defaultClass; room_number = defaultRoom;
+        } else if(cols.length === 4) {
+            [desk_number, student_id, full_name, gender] = cols;
+            class_name = defaultClass; room_number = defaultRoom;
+        } else {
+            return null;
+        }
+
+        return { room_number, desk_number, student_id, full_name, gender, dob, class_name };
+    }
+
+    function parseStudentImport() {
+        updateStudentImportPeriod();
+        const raw = document.getElementById('studentPasteBox')?.value || '';
+        const defaultRoom = document.getElementById('importDefaultRoom')?.value.trim() || '';
+        const defaultClass = document.getElementById('importDefaultClass')?.value.trim() || '';
+        const y = document.getElementById('gYear').value, sem = document.getElementById('gSemester').value, m = document.getElementById('gMonth').value;
+        const rows = [];
+        const errors = [];
+
+        raw.split('\n').forEach((line, idx) => {
+            const cols = splitStudentLine(line);
+            if(cols.length === 0) return;
+            if(idx === 0 && looksLikeHeader(cols)) return;
+
+            const parsed = parseStudentColumns(cols, defaultRoom, defaultClass);
+            if(!parsed) { errors.push(`ជួរ ${idx+1}: columns មិនគ្រប់`); return; }
+            let { room_number, desk_number, student_id, full_name, gender, dob, class_name } = parsed;
+
+            dob = normalizeDob(dob);
+            const rowErrors = [];
+            if(!student_id) rowErrors.push('ខ្វះអត្តលេខ');
+            if(!full_name) rowErrors.push('ខ្វះឈ្មោះ');
+            if(!room_number) rowErrors.push('ខ្វះបន្ទប់');
+            if(!class_name) rowErrors.push('ខ្វះថ្នាក់');
+            if(!desk_number) rowErrors.push('ខ្វះលេខតុ');
+
+            rows.push({
+                academic_year: y,
+                semester: sem,
+                month_name: m,
+                room_number: String(room_number).trim(),
+                desk_number: String(desk_number).trim(),
+                student_id: String(student_id).trim(),
+                full_name: String(full_name).trim(),
+                gender: String(gender).trim(),
+                dob,
+                class_name: String(class_name).trim(),
+                _errors: rowErrors
+            });
+        });
+
+        const seen = new Set();
+        rows.forEach(r => {
+            const key = `${r.student_id}|${r.academic_year}|${r.semester}|${r.month_name}`;
+            if(seen.has(key)) r._errors.push('អត្តលេខស្ទួនក្នុង Paste');
+            seen.add(key);
+        });
+
+        studentImportRows = rows;
+        renderStudentImportPreview(errors);
+    }
+
+    function renderStudentImportPreview(extraErrors = []) {
+        const tbody = document.getElementById('studentImportPreview');
+        const summary = document.getElementById('studentImportSummary');
+        if(!tbody || !summary) return;
+        const valid = studentImportRows.filter(r => r._errors.length === 0).length;
+        const invalid = studentImportRows.length - valid + extraErrors.length;
+        summary.innerHTML = `Preview: <span class="text-success">ត្រឹមត្រូវ ${valid}</span> / <span class="text-danger">កំហុស ${invalid}</span> / សរុប ${studentImportRows.length}`;
+        if(studentImportRows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" class="empty-state">មិនទាន់មានទិន្នន័យ Preview</td></tr>';
+            return;
+        }
+        tbody.innerHTML = studentImportRows.map((r, i) => {
+            const ok = r._errors.length === 0;
+            return `<tr class="${ok ? '' : 'table-danger'}"><td>${i+1}</td><td>${esc(r.room_number)}</td><td>${esc(r.desk_number)}</td><td style="mso-number-format:'\@';">${esc(r.student_id)}</td><td class="text-start student-name">${esc(r.full_name)}</td><td>${esc(r.gender)}</td><td>${esc(r.dob)}</td><td>${esc(r.class_name)}</td><td>${ok ? '<span class="badge bg-success">OK</span>' : '<span class="badge bg-danger">'+esc(r._errors.join(', '))+'</span>'}</td></tr>`;
+        }).join('') + extraErrors.map(e => `<tr class="table-warning"><td colspan="9" class="text-start text-danger fw-bold">${esc(e)}</td></tr>`).join('');
+    }
+
+    async function saveImportedStudents() {
+        if(!isAdmin()) return Swal.fire('គ្មានសិទ្ធិ', 'មុខងារនេះសម្រាប់ Admin ប៉ុណ្ណោះ', 'warning');
+        parseStudentImport();
+        const rows = studentImportRows.filter(r => r._errors.length === 0).map(({_errors, ...r}) => r);
+        if(rows.length === 0) return Swal.fire('គ្មានទិន្នន័យត្រឹមត្រូវ', 'សូម Paste ឈ្មោះសិស្ស ហើយពិនិត្យ Preview ជាមុនសិន។', 'warning');
+
+        const invalidCount = studentImportRows.length - rows.length;
+        if(invalidCount > 0) {
+            const c = await Swal.fire({ title: 'មានជួរខុស', text: `មាន ${invalidCount} ជួរមិនត្រឹមត្រូវ។ រក្សាទុកតែជួរ OK ឬទេ?`, icon: 'warning', showCancelButton: true, confirmButtonText: 'រក្សាទុកតែ OK', cancelButtonText: 'ត្រឡប់ទៅកែ' });
+            if(!c.isConfirmed) return;
+        }
+
+        const mode = document.getElementById('importMode').value;
+        const y = document.getElementById('gYear').value, sem = document.getElementById('gSemester').value, m = document.getElementById('gMonth').value;
+        const rooms = [...new Set(rows.map(r => r.room_number))];
+
+        const confirm = await Swal.fire({
+            title: 'បញ្ជាក់ការរក្សាទុក?',
+            html: `នឹងរក្សាទុកសិស្ស <b>${rows.length}</b> នាក់ ទៅ <b>${esc(y)} / ${esc(sem)} / ${esc(m)}</b><br>បន្ទប់: <b>${esc(rooms.join(', '))}</b>`,
+            icon: 'question', showCancelButton: true, confirmButtonText: 'រក្សាទុក', cancelButtonText: 'បោះបង់'
+        });
+        if(!confirm.isConfirmed) return;
+
+        updateSaveStatus('saving');
+        Swal.fire({ title: 'កំពុងរក្សាទុក...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        try {
+            if(mode === 'replace-month') {
+                const { error } = await _sb.from('students').delete().eq('academic_year', y).eq('semester', sem).eq('month_name', m);
+                if(error) throw error;
+            } else if(mode === 'replace-room') {
+                for(const room of rooms) {
+                    const { error } = await _sb.from('students').delete().eq('academic_year', y).eq('semester', sem).eq('month_name', m).eq('room_number', room);
+                    if(error) throw error;
+                }
+            }
+
+            const chunkSize = 500;
+            for(let i=0; i<rows.length; i+=chunkSize) {
+                const chunk = rows.slice(i, i+chunkSize);
+                const { error } = await _sb.from('students').upsert(chunk, { onConflict: 'student_id,academic_year,semester,month_name' });
+                if(error) throw error;
+            }
+            await refreshData();
+            updateSaveStatus('saved');
+            Swal.fire('ជោគជ័យ!', `បានបញ្ចូល/កែសិស្ស ${rows.length} នាក់រួចរាល់។`, 'success');
+        } catch (error) {
+            console.error(error);
+            updateSaveStatus('error');
+            Swal.fire('បរាជ័យ', error.message || 'មានបញ្ហាក្នុងការរក្សាទុកសិស្ស។ សូមពិនិត្យ unique constraint នៅ Supabase។', 'error');
+        }
+    }
+
     function updateMaxLabel() { const is70 = document.getElementById('mode70').checked; document.querySelectorAll('.stu-row').forEach(r => { const inp = r.querySelector('.score-input'); if(inp) { let m = parseFloat(inp.dataset.max); r.querySelector('.max-label').innerText = is70 ? Math.ceil(m * 0.7) : m; } }); }
     
+    function filterInputRows() {
+        const q = normalizeText(document.getElementById('inputSearch')?.value || '');
+        document.querySelectorAll('.stu-row').forEach(row => {
+            const hay = normalizeText(`${row.dataset.id} ${row.dataset.name} ${row.dataset.room} ${row.innerText}`);
+            row.classList.toggle('hidden', q && !hay.includes(q));
+        });
+    }
+
     function setupSmartPaste(sel) { 
         const ins = Array.from(document.querySelectorAll(sel)); 
         ins.forEach((inp, i) => { 
@@ -970,8 +1461,24 @@
     async function handleLogout() { await _sb.auth.signOut(); location.reload(); }
     _sb.auth.onAuthStateChange((ev) => { if(ev==="PASSWORD_RECOVERY") toggleAuthView('reset'); });
     function updateMotivation() { const now = new Date(), hour = now.getHours(); let msg = " HS-KPT ស៊ូស៊ូ!"; if (hour >= 11 && hour <= 13) msg = "ដល់ម៉ោងញ៉ាំបាយហើយ ពិសាបាយសិនទៅ!"; else if (hour >= 22 || hour <= 4) msg = "យប់ជ្រៅហើយ ឆាប់សម្រាកគេងទៅ!"; document.getElementById('motivationMsg').innerText = "ស្វាគមន៍លោកគ្រូអ្នកគ្រូ! " + msg; }
-    async function handleForgot() { await _sb.auth.resetPasswordForEmail(document.getElementById('forgotEmail').value, { redirectTo: window.location.href }); Swal.fire('ជោគជ័យ', 'ឆែក Email'); }
-    async function handleUpdatePassword() { await _sb.auth.updateUser({ password: document.getElementById('newPass').value }); Swal.fire('ជោគជ័យ', 'ប្តូររួច'); toggleAuthView('login'); }
+    async function handleForgot() {
+        const email = document.getElementById('forgotEmail').value.trim();
+        if(!email) return Swal.fire('សូមបញ្ចូល Email', '', 'warning');
+        const { error } = await _sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+        if(error) return Swal.fire('បរាជ័យ', error.message, 'error');
+        Swal.fire('ជោគជ័យ', 'សូមឆែក Email ដើម្បីកំណត់លេខសម្ងាត់ឡើងវិញ', 'success');
+    }
+    async function handleUpdatePassword() {
+        const password = document.getElementById('newPass').value;
+        if(password.length < 6) return Swal.fire('លេខសម្ងាត់ខ្លីពេក', 'សូមប្រើយ៉ាងតិច 6 តួអក្សរ', 'warning');
+        const { error } = await _sb.auth.updateUser({ password });
+        if(error) return Swal.fire('បរាជ័យ', error.message, 'error');
+        Swal.fire('ជោគជ័យ', 'ប្តូរលេខសម្ងាត់រួចរាល់', 'success'); toggleAuthView('login');
+    }
+
+    window.addEventListener('online', () => showToast('Internet ត្រឡប់មកវិញហើយ', 'success'));
+    window.addEventListener('offline', () => showToast('គ្មាន Internet — មិនអាចរក្សាទុក Cloud បានទេ', 'warning'));
+
   </script>
 </body>
 </html>
