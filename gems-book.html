@@ -228,6 +228,9 @@
         .badge-locked   { background: #fce8e6; color: #c5221f; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .btn-reset-device { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 5px 10px; border-radius: 7px; font-size: 12px; cursor: pointer; font-weight: bold; }
         .btn-reset-device:hover { background: #ffe0b2; }
+        .badge-reset-count { background:#e8f0fe; color:#1a73e8; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; }
+        .badge-reset-request { background:#fff3e0; color:#e65100; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; }
+        .reset-help-box { background:#e8f0fe; border-left:5px solid #1a73e8; border-radius:0 10px 10px 0; padding:14px 16px; margin:0 0 18px 0; color:#174ea6; font-size:14px; line-height:1.7; }
 
         @media (max-width: 768px) {
             #main-app { flex-direction: column; overflow-y: auto; }
@@ -658,7 +661,7 @@
                 <div class="admin-toolbar">
                     <div class="toolbar-left">
                         <h2><i class="fas fa-users-cog"></i> គ្រប់គ្រងអ្នករៀន & Reset ឧបករណ៍</h2>
-                        <p>អនុម័ត | បដិសេធ | Reset Device Lock</p>
+                        <p>អនុម័ត | បដិសេធ | សំណើ Reset | កំណត់ Reset ខ្លួនឯង 12 ដង</p>
                     </div>
                     <button class="btn-add-video" onclick="renderAdminUsers()">
                         <i class="fas fa-sync-alt"></i> ផ្ទុកឡើងវិញ
@@ -674,6 +677,10 @@
                     <button id="tab-active-btn" onclick="showUsersTab('active')"
                         style="padding:9px 18px;border-radius:9px;border:2px solid #dadce0;background:white;color:#5f6368;font-weight:bold;cursor:pointer;font-size:14px;">
                         <i class="fas fa-users"></i> អ្នករៀនទាំងអស់
+                    </button>
+                    <button id="tab-reset-btn" onclick="showUsersTab('reset')"
+                        style="padding:9px 18px;border-radius:9px;border:2px solid #dadce0;background:white;color:#5f6368;font-weight:bold;cursor:pointer;font-size:14px;">
+                        <i class="fas fa-unlock-alt"></i> សំណើ Reset <span id="reset-request-count" style="background:#fff3e0;color:#e65100;border-radius:10px;padding:1px 7px;margin-left:5px;font-size:12px;"></span>
                     </button>
                 </div>
 
@@ -837,7 +844,7 @@
                 } else if (traineeRec[dbColumn] === localDeviceId) {
                     grantAccess(recPhone);
                 } else {
-                    showDeviceLockAlert(alertBox, recPhone, deviceNameKh);
+                    showDeviceLockAlert(alertBox, recPhone, deviceNameKh, dbColumn, localDeviceId);
                 }
 
             } catch (err) {
@@ -1087,6 +1094,7 @@
         let isAdmin = false;
         let editingVideoId = null;
         let currentUsersTab = 'pending'; // tab ដែលកំពុងបើក
+        const RESET_LIMIT = 12; // ចំនួនដងអតិបរមាដែល User អាច Reset ឧបករណ៍ដោយខ្លួនឯង
 
         // ── ពេលបើក app ដំបូង ──────────────────────────────────────
         // extend DOMContentLoaded ដែលមានស្រាប់ ដើម្បី init video state
@@ -1316,33 +1324,110 @@
         function escAttr(str) {
             return String(str).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
         }
-        // ── Device Lock: បង្ហាញ message + ប៊ូតុងស្នើ Reset ──────────
-        function showDeviceLockAlert(alertBox, phone, deviceNameKh) {
+        // ── Device Lock: User អាច Reset ខ្លួនឯងបាន 12 ដង បន្ទាប់មកចូល Admin Dashboard ──────────
+        async function showDeviceLockAlert(alertBox, phone, deviceNameKh, dbColumn, localDeviceId) {
             alertBox.style.display = 'block';
             alertBox.className = 'alert-msg alert-error';
-            alertBox.innerHTML = `
-                <strong>⛔ ${deviceNameKh}នេះមិនត្រូវគ្នា!</strong><br>
-                គណនីនេះបានភ្ជាប់ជាមួយ${deviceNameKh}ផ្សេងរួចហើយ។<br>
-                <span style="font-size:13px;">ប្រសិនបើអ្នកប្តូរ${deviceNameKh}ថ្មី ឬ Clear Browser សូមទំនាក់ទំនងលោកគ្រូ ហុន ម៉ុម: <strong>017 47 66 64</strong></span><br>
-                <button onclick="requestDeviceReset('${phone}','${deviceNameKh}')"
-                    style="margin-top:8px;background:#1a73e8;color:white;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:bold;">
-                    <i class="fas fa-paper-plane"></i> ស្នើ Reset ឧបករណ៍
-                </button>`;
-            setTimeout(() => { alertBox.style.display = 'none'; }, 15000);
+            alertBox.innerHTML = `<strong>កំពុងពិនិត្យសិទ្ធិ Reset...</strong>`;
+
+            try {
+                const { data: rec, error } = await db.from('trainees')
+                    .select('reset_count, reset_requested')
+                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`)
+                    .maybeSingle();
+                if (error) throw error;
+
+                const used = Number(rec?.reset_count || 0);
+                const remaining = Math.max(RESET_LIMIT - used, 0);
+                const canSelfReset = remaining > 0;
+
+                alertBox.innerHTML = `
+                    <strong>⛔ ${deviceNameKh}នេះមិនត្រូវគ្នា!</strong><br>
+                    គណនីនេះបានភ្ជាប់ជាមួយ${deviceNameKh}ផ្សេងរួចហើយ។<br>
+                    <span style="font-size:13px;display:block;margin-top:4px;">
+                        អ្នកបានប្រើ Reset ខ្លួនឯង <strong>${used}/${RESET_LIMIT}</strong> ដង។
+                        ${canSelfReset ? `នៅសល់ <strong>${remaining}</strong> ដងទៀត។` : `អស់ចំនួន Reset ខ្លួនឯងហើយ។`}
+                    </span>
+                    ${canSelfReset ? `
+                        <button onclick="selfResetDevice('${escAttr(phone)}','${escAttr(deviceNameKh)}','${escAttr(dbColumn)}','${escAttr(localDeviceId)}')"
+                            style="margin-top:10px;background:#1a73e8;color:white;border:none;padding:9px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:bold;">
+                            <i class="fas fa-undo"></i> Reset ឧបករណ៍ដោយខ្លួនឯង
+                        </button>` : `
+                        <button onclick="submitResetRequest('${escAttr(phone)}','${escAttr(deviceNameKh)}')"
+                            style="margin-top:10px;background:#e65100;color:white;border:none;padding:9px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:bold;">
+                            <i class="fas fa-paper-plane"></i> ស្នើ Admin Reset ជូន
+                        </button>`}
+                    <div style="font-size:12px;margin-top:8px;color:#5f6368;">
+                        ប្រសិនបើមានបញ្ហា សូមទំនាក់ទំនងលោកគ្រូ ហុន ម៉ុម: <strong>017 47 66 64</strong>
+                    </div>`;
+            } catch (e) {
+                alertBox.innerHTML = `Error: ${escHtml(e.message)}<br><span style="font-size:12px;">សូមប្រាកដថា Database មាន columns reset_count / reset_requested / reset_requested_at / reset_device_type។</span>`;
+            }
         }
 
-        function requestDeviceReset(phone, deviceNameKh) {
-            if (TELEGRAM_BOT_TOKEN === 'ដាក់_TOKEN_របស់_BOT_នៅទីនេះ') {
-                alert('សូមទំនាក់ទំនងលោកគ្រូ ហុន ម៉ុម: 017 47 66 64 ដើម្បី Reset ឧបករណ៍!');
-                return;
-            }
-            const msg = `🔔 <b>ស្នើ Reset ឧបករណ៍!</b>\n\n📱 លេខ: <b>${phone}</b>\n🖥 ប្រភេទ: <b>${deviceNameKh}</b>\n\n👉 ចូលទៅ Admin Panel ➜ "Reset ឧបករណ៍អ្នករៀន" រួចចុច Reset ឲ្យ User នេះ។`;
-            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'HTML' })
-            }).then(() => alert('✅ បានផ្ញើសារទៅលោកគ្រូរួចហើយ! សូមរង់ចាំការអនុម័ត។'))
-              .catch(() => alert('សូមទំនាក់ទំនងលោកគ្រូ ហុន ម៉ុម: 017 47 66 64'));
+        async function selfResetDevice(phone, deviceNameKh, dbColumn, localDeviceId) {
+            if (!confirm(`Reset ${deviceNameKh} ដោយខ្លួនឯងឥឡូវនេះ?
+ចំនួន Reset នឹងត្រូវបានរាប់បន្ថែម 1 ដង។`)) return;
+            try {
+                const localPhone = normalizePhone(phone);
+                const intlPhone  = toIntlPhone(localPhone);
+                const { data: rec, error: getErr } = await db.from('trainees')
+                    .select('reset_count')
+                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
+                    .maybeSingle();
+                if (getErr) throw getErr;
+
+                const used = Number(rec?.reset_count || 0);
+                if (used >= RESET_LIMIT) {
+                    await submitResetRequest(phone, deviceNameKh);
+                    return;
+                }
+
+                const updatePayload = {
+                    [dbColumn]: localDeviceId,
+                    reset_count: used + 1,
+                    reset_requested: false,
+                    reset_requested_at: null,
+                    reset_device_type: null
+                };
+
+                const { error } = await db.from('trainees')
+                    .update(updatePayload)
+                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`);
+                if (error) throw error;
+
+                alert(`✅ Reset ជោគជ័យ! អ្នកបានប្រើ ${used + 1}/${RESET_LIMIT} ដង។`);
+                grantAccess(localPhone);
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        async function submitResetRequest(phone, deviceNameKh) {
+            try {
+                const localPhone = normalizePhone(phone);
+                const intlPhone  = toIntlPhone(localPhone);
+                const { error } = await db.from('trainees')
+                    .update({
+                        reset_requested: true,
+                        reset_requested_at: new Date().toISOString(),
+                        reset_device_type: deviceNameKh
+                    })
+                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`);
+                if (error) throw error;
+
+                if (TELEGRAM_BOT_TOKEN !== 'ដាក់_TOKEN_របស់_BOT_នៅទីនេះ') {
+                    const msg = `🔔 <b>សំណើ Reset ឧបករណ៍ពី User</b>
+
+📱 លេខ: <b>${localPhone}</b>
+🖥 ប្រភេទ: <b>${deviceNameKh}</b>
+
+👉 ចូល Admin Panel ➜ សំណើ Reset ដើម្បីអនុម័ត។`;
+                    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'HTML' })
+                    }).catch(()=>{});
+                }
+                alert('✅ បានផ្ញើសំណើ Reset ទៅ Dashboard Admin រួចហើយ។ សូមរង់ចាំការអនុម័ត។');
+            } catch (e) { alert('Error: ' + e.message); }
         }
 
         // ── Admin Users Panel ────────────────────────────────────────
@@ -1354,18 +1439,17 @@
 
         function showUsersTab(tab) {
             currentUsersTab = tab;
-            const pendBtn = document.getElementById('tab-pending-btn');
-            const actBtn  = document.getElementById('tab-active-btn');
-            if (pendBtn) {
-                pendBtn.style.background = tab === 'pending' ? '#1a73e8' : 'white';
-                pendBtn.style.color      = tab === 'pending' ? 'white'   : '#5f6368';
-                pendBtn.style.border     = tab === 'pending' ? '2px solid #1a73e8' : '2px solid #dadce0';
-            }
-            if (actBtn) {
-                actBtn.style.background = tab === 'active' ? '#1a73e8' : 'white';
-                actBtn.style.color      = tab === 'active' ? 'white'   : '#5f6368';
-                actBtn.style.border     = tab === 'active' ? '2px solid #1a73e8' : '2px solid #dadce0';
-            }
+            const buttons = {
+                pending: document.getElementById('tab-pending-btn'),
+                active: document.getElementById('tab-active-btn'),
+                reset: document.getElementById('tab-reset-btn')
+            };
+            Object.entries(buttons).forEach(([key, btn]) => {
+                if (!btn) return;
+                btn.style.background = tab === key ? '#1a73e8' : 'white';
+                btn.style.color      = tab === key ? 'white'   : '#5f6368';
+                btn.style.border     = tab === key ? '2px solid #1a73e8' : '2px solid #dadce0';
+            });
             renderAdminUsers();
         }
 
@@ -1374,9 +1458,9 @@
             if (!container) return;
             container.innerHTML = `<div class="empty-video-state"><i class="fas fa-spinner fa-spin" style="font-size:36px;color:#1a73e8;"></i><p style="margin-top:12px;">កំពុងទាញទិន្នន័យ...</p></div>`;
             try {
-                // ── ទាញ trainees ──
+                // ── ទាញ trainees រួមទាំងព័ត៌មាន reset ──
                 const { data: trainees, error } = await db.from('trainees')
-                    .select('phone, full_name, is_approved, phone_device_id, pc_device_id, created_at')
+                    .select('phone, full_name, is_approved, phone_device_id, pc_device_id, reset_count, reset_requested, reset_requested_at, reset_device_type, created_at')
                     .order('created_at', { ascending: false });
                 if (error) throw error;
 
@@ -1390,18 +1474,25 @@
                 (mainUsers || []).forEach(u => { mainMap[normalizePhone(u.phone)] = u; });
 
                 const isPending = t => t.is_approved === false;
+                const isResetRequest = t => t.reset_requested === true;
                 const list = currentUsersTab === 'pending'
                     ? (trainees || []).filter(isPending)
-                    : (trainees || []).filter(t => !isPending(t));
+                    : currentUsersTab === 'reset'
+                        ? (trainees || []).filter(isResetRequest)
+                        : (trainees || []).filter(t => !isPending(t));
 
-                // Update pending badge count
+                // Update badge counts
                 const pendCount = document.getElementById('pending-count');
                 if (pendCount) pendCount.textContent = (trainees||[]).filter(isPending).length || '';
+                const resetCount = document.getElementById('reset-request-count');
+                if (resetCount) resetCount.textContent = (trainees||[]).filter(isResetRequest).length || '';
 
                 if (!list.length) {
                     const msg = currentUsersTab === 'pending'
-                        ? 'មិនមានការស្នើសុំថ្មីទេ 🎉'
-                        : 'មិនទាន់មានអ្នករៀនណាទេ។';
+                        ? 'មិនមានការស្នើសុំចុះឈ្មោះថ្មីទេ 🎉'
+                        : currentUsersTab === 'reset'
+                            ? 'មិនមានសំណើ Reset ឧបករណ៍ទេ 🎉'
+                            : 'មិនទាន់មានអ្នករៀនណាទេ។';
                     container.innerHTML = `<div class="empty-video-state"><i class="fas fa-check-circle" style="color:#34a853;"></i><p>${msg}</p></div>`;
                     return;
                 }
@@ -1409,8 +1500,10 @@
                 const rows = list.map(u => {
                     const nPhone   = normalizePhone(u.phone);
                     const inMain   = mainMap[nPhone];
+                    const usedReset = Number(u.reset_count || 0);
+                    const remaining = Math.max(RESET_LIMIT - usedReset, 0);
                     const mainBadge = inMain
-                        ? `<span class="badge-approved" title="status: ${inMain.status}"><i class="fas fa-link"></i> ចុះឈ្មោះដោយ Bot</span>`
+                        ? `<span class="badge-approved" title="status: ${escAttr(inMain.status)}"><i class="fas fa-link"></i> ចុះឈ្មោះដោយ Bot</span>`
                         : `<span style="color:#9aa0a6;font-size:12px;">ដោយដៃ</span>`;
 
                     const phoneLock = u.phone_device_id
@@ -1419,13 +1512,23 @@
                     const pcLock = u.pc_device_id
                         ? `<span class="badge-locked"><i class="fas fa-desktop"></i> Lock</span>`
                         : `<span style="color:#9aa0a6;font-size:12px;">—</span>`;
+                    const resetBadge = u.reset_requested
+                        ? `<span class="badge-reset-request"><i class="fas fa-bell"></i> ស្នើ ${escHtml(u.reset_device_type || 'Reset')}</span>`
+                        : `<span class="badge-reset-count">${usedReset}/${RESET_LIMIT} នៅសល់ ${remaining}</span>`;
+
+                    const requestedAt = u.reset_requested_at
+                        ? `<div style="font-size:11px;color:#5f6368;margin-top:4px;">${new Date(u.reset_requested_at).toLocaleString('km-KH')}</div>`
+                        : '';
 
                     const actionBtns = currentUsersTab === 'pending'
                         ? `<button class="btn-reset-device" style="background:#e6f4ea;color:#1e8e3e;border-color:#ceead6;" onclick="approveTrainee('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-check"></i> អនុម័ត</button>
                            <button class="btn-reset-device" style="margin-left:5px;" onclick="rejectTrainee('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-times"></i> បដិសេធ</button>`
-                        : (u.phone_device_id || u.pc_device_id)
-                            ? `<button class="btn-reset-device" onclick="resetUserDevice('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-undo"></i> Reset Device</button>`
-                            : `<span style="color:#9aa0a6;font-size:12px;">គ្មាន Lock</span>`;
+                        : currentUsersTab === 'reset'
+                            ? `<button class="btn-reset-device" style="background:#e6f4ea;color:#1e8e3e;border-color:#ceead6;" onclick="approveResetRequest('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-check"></i> អនុម័ត Reset</button>
+                               <button class="btn-reset-device" style="margin-left:5px;background:#fce8e6;color:#c5221f;border-color:#fad2cf;" onclick="denyResetRequest('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-times"></i> បដិសេធ</button>`
+                            : (u.phone_device_id || u.pc_device_id)
+                                ? `<button class="btn-reset-device" onclick="resetUserDevice('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-undo"></i> Admin Reset</button>`
+                                : `<span style="color:#9aa0a6;font-size:12px;">គ្មាន Lock</span>`;
 
                     return `<tr>
                         <td style="font-weight:bold;">${escHtml(u.full_name || '—')}</td>
@@ -1433,17 +1536,23 @@
                         <td>${mainBadge}</td>
                         <td>${phoneLock}</td>
                         <td>${pcLock}</td>
+                        <td>${resetBadge}${requestedAt}</td>
                         <td style="white-space:nowrap;">${actionBtns}</td>
                     </tr>`;
                 }).join('');
 
                 container.innerHTML = `
+                    <div class="reset-help-box">
+                        <i class="fas fa-info-circle"></i>
+                        User អាច Reset ឧបករណ៍ខ្លួនឯងបានត្រឹម <strong>${RESET_LIMIT}</strong> ដង។ បើអស់ចំនួន នឹងត្រូវចុច “ស្នើ Admin Reset ជូន” ហើយសំណើនោះនឹងបង្ហាញក្នុង Tab “សំណើ Reset”។
+                    </div>
                     <div style="overflow-x:auto;">
                     <table class="user-table">
                         <thead><tr>
                             <th>ឈ្មោះ</th><th>លេខទូរសព្ទ</th><th>ប្រភព</th>
                             <th><i class="fas fa-mobile-alt"></i></th>
                             <th><i class="fas fa-desktop"></i></th>
+                            <th>ចំនួន Reset</th>
                             <th>សកម្មភាព</th>
                         </tr></thead>
                         <tbody>${rows}</tbody>
@@ -1453,7 +1562,7 @@
                         <i class="fas fa-users"></i> បង្ហាញ <strong>${list.length}</strong> នាក់
                     </p>`;
             } catch (e) {
-                container.innerHTML = `<div class="empty-video-state"><i class="fas fa-exclamation-circle" style="color:#ea4335;"></i><p>Error: ${escHtml(e.message)}</p></div>`;
+                container.innerHTML = `<div class="empty-video-state"><i class="fas fa-exclamation-circle" style="color:#ea4335;"></i><p>Error: ${escHtml(e.message)}</p><p style="font-size:12px;color:#5f6368;">បើ error ជា column មិនមាន សូម run SQL migration ខាងក្រោមក្នុង Supabase មុនពេលប្រើ។</p></div>`;
             }
         }
 
@@ -1488,13 +1597,50 @@
         }
 
         async function resetUserDevice(phone, name) {
-            if (!confirm(`Reset Device Lock ឲ្យ "${name}" (${phone}) ?\nពួកគេនឹងអាច Login ពីឧបករណ៍ថ្មីបាន។`)) return;
+            if (!confirm(`Admin Reset Device Lock ឲ្យ "${name}" (${phone}) ?\nវានឹងលុប Lock ទូរសព្ទ/កុំព្យូទ័រ និងបើកឲ្យ User ចាប់ឧបករណ៍ថ្មី។`)) return;
             try {
                 const { error } = await db.from('trainees')
-                    .update({ phone_device_id: null, pc_device_id: null })
+                    .update({
+                        phone_device_id: null,
+                        pc_device_id: null,
+                        reset_count: 0,
+                        reset_requested: false,
+                        reset_requested_at: null,
+                        reset_device_type: null
+                    })
                     .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`);
                 if (error) throw error;
-                alert(`✅ Reset Device Lock ឲ្យ ${name} ជោគជ័យ!`);
+                alert(`✅ Admin Reset ឲ្យ ${name} ជោគជ័យ!`);
+                await renderAdminUsers();
+            } catch (e) { alert(`Error: ${e.message}`); }
+        }
+
+        async function approveResetRequest(phone, name) {
+            if (!confirm(`អនុម័តសំណើ Reset ឲ្យ "${name}" (${phone}) ?\nចំនួន Reset ខ្លួនឯងនឹងត្រូវបានកំណត់ឡើងវិញទៅ 0/12។`)) return;
+            try {
+                const { error } = await db.from('trainees')
+                    .update({
+                        phone_device_id: null,
+                        pc_device_id: null,
+                        reset_count: 0,
+                        reset_requested: false,
+                        reset_requested_at: null,
+                        reset_device_type: null
+                    })
+                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`);
+                if (error) throw error;
+                alert(`✅ បានអនុម័ត Reset ឲ្យ ${name} រួចហើយ!`);
+                await renderAdminUsers();
+            } catch (e) { alert(`Error: ${e.message}`); }
+        }
+
+        async function denyResetRequest(phone, name) {
+            if (!confirm(`បដិសេធសំណើ Reset របស់ "${name}" (${phone}) ?`)) return;
+            try {
+                const { error } = await db.from('trainees')
+                    .update({ reset_requested: false, reset_requested_at: null, reset_device_type: null })
+                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`);
+                if (error) throw error;
                 await renderAdminUsers();
             } catch (e) { alert(`Error: ${e.message}`); }
         }
