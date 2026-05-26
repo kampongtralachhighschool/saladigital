@@ -232,6 +232,53 @@
         .badge-reset-request { background:#fff3e0; color:#e65100; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; }
         .reset-help-box { background:#e8f0fe; border-left:5px solid #1a73e8; border-radius:0 10px 10px 0; padding:14px 16px; margin:0 0 18px 0; color:#174ea6; font-size:14px; line-height:1.7; }
 
+        .btn-trial { background: #34A853; margin-top: -5px; }
+        .btn-trial:hover { background: #1e8e3e; box-shadow: 0 4px 10px rgba(52,168,83,0.2); }
+        .trial-note { background:#e6f4ea; color:#137333; border:1px solid #ceead6; padding:10px 12px; border-radius:10px; font-size:13px; line-height:1.6; margin:10px 0 15px 0; }
+        .trial-banner { position: fixed; right: 18px; bottom: 18px; z-index: 500; background:#202124; color:white; padding:10px 14px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.18); font-size:13px; display:none; }
+        .badge-trial { background:#e6f4ea; color:#137333; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; margin-top:4px; }
+
+        /* ================= Trial Expired Contact Modal ================= */
+        .trial-expired-overlay {
+            position: fixed; inset: 0; z-index: 10050; background: rgba(32,33,36,0.72);
+            display: none; align-items: center; justify-content: center; padding: 18px; backdrop-filter: blur(4px);
+        }
+        .trial-expired-overlay.active { display: flex; }
+        .trial-expired-card {
+            width: 100%; max-width: 460px; background: #fff; border-radius: 22px;
+            box-shadow: 0 22px 70px rgba(0,0,0,0.28); padding: 28px 24px; text-align: center;
+            animation: fadeIn 0.28s ease-out; border: 1px solid #eef2f7;
+        }
+        .trial-expired-icon {
+            width: 68px; height: 68px; border-radius: 50%; background: #fce8e6; color: #c5221f;
+            display: inline-flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 14px;
+        }
+        .trial-expired-card h2 {
+            font-family: 'Moul', serif; color: var(--primary); font-size: 20px; line-height: 1.6; margin-bottom: 8px;
+        }
+        .trial-expired-card p { color: var(--text-gray); font-size: 14px; line-height: 1.8; margin-bottom: 14px; }
+        .trial-telegram-link {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 13px 16px; border-radius: 12px; background: #229ED9; color: white;
+            text-decoration: none; font-weight: bold; margin: 10px 0 16px 0; transition: 0.25s;
+        }
+        .trial-telegram-link:hover { background: #1689bf; transform: translateY(-1px); }
+        .trial-qr-wrap {
+            background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 14px; margin-top: 4px;
+        }
+        .trial-qr-wrap img { width: 178px; height: 178px; border-radius: 10px; background: white; padding: 8px; }
+        .trial-qr-caption { font-size: 12px !important; color: #64748b !important; margin: 8px 0 0 0 !important; }
+        .trial-expired-actions { display: flex; gap: 10px; margin-top: 16px; }
+        .btn-trial-close, .btn-trial-register {
+            flex: 1; border: none; border-radius: 11px; padding: 11px 12px; font-weight: bold; cursor: pointer; font-size: 13px;
+        }
+        .btn-trial-close { background: #f1f3f4; color: #5f6368; }
+        .btn-trial-register { background: var(--primary); color: #fff; }
+        @media (max-width: 480px) {
+            .trial-expired-card { padding: 24px 18px; }
+            .trial-expired-actions { flex-direction: column; }
+        }
+
         @media (max-width: 768px) {
             #main-app { flex-direction: column; overflow-y: auto; }
             #mobile-topbar { display: flex; }
@@ -263,6 +310,10 @@
                 <input type="tel" id="login-phone" class="form-input" placeholder="ឧ. 012345678" autocomplete="off">
                 <div id="login-alert" class="alert-msg"></div>
                 <button class="btn-auth" id="btn-login" onclick="login()">ចូលមើលឯកសារ</button>
+                <div class="trial-note">
+                    <i class="fas fa-clock"></i> ចង់សាកមុនទិញ/ចុះឈ្មោះ? បញ្ចូលលេខទូរសព្ទខាងលើ រួចចុច “សាកល្បង ៥ម៉ោង”។ ឧបករណ៍មួយអាចសាកបានតែម្ដងប៉ុណ្ណោះ។
+                </div>
+                <button class="btn-auth btn-trial" id="btn-trial" onclick="startTrial()"><i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង</button>
                 <p class="auth-switch">មិនទាន់មានឈ្មោះ? <span onclick="showRegister()">ស្នើសុំចុះឈ្មោះ</span></p>
             </div>
 
@@ -280,6 +331,28 @@
             <div class="instructor-badge">
                 <div class="name"><i class="fas fa-chalkboard-teacher"></i> ដឹកនាំដោយ៖ លោកគ្រូ ហុន ម៉ុម</div>
                 <div class="phone"><i class="fas fa-phone-alt"></i> 017 47 66 64</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="trial-banner" class="trial-banner"></div>
+
+    <!-- ================= Trial Expired Modal ================= -->
+    <div id="trial-expired-modal" class="trial-expired-overlay" role="dialog" aria-modal="true" aria-labelledby="trial-expired-title">
+        <div class="trial-expired-card">
+            <div class="trial-expired-icon"><i class="fas fa-hourglass-end"></i></div>
+            <h2 id="trial-expired-title">Trial ៥ម៉ោងបានផុតកំណត់</h2>
+            <p>សូមឆាតទៅ Admin ដើម្បីបន្តការប្រើប្រាស់ ឬស្នើសុំចុះឈ្មោះពេញ។ ចុចប៊ូតុងខាងក្រោម ឬ Scan QR Code ដើម្បីចូល Telegram ផ្ទាល់។</p>
+            <a id="trial-telegram-link" class="trial-telegram-link" href="https://t.me/mrhonmom" target="_blank" rel="noopener">
+                <i class="fab fa-telegram-plane"></i> ឆាតទៅ Admin: @mrhonmom
+            </a>
+            <div class="trial-qr-wrap">
+                <img id="trial-telegram-qr" src="" alt="Telegram QR Code @mrhonmom">
+                <p class="trial-qr-caption">Scan QR Code ដើម្បីបើក Telegram @mrhonmom</p>
+            </div>
+            <div class="trial-expired-actions">
+                <button class="btn-trial-close" onclick="closeTrialExpiredModal()">បិទ</button>
+                <button class="btn-trial-register" onclick="closeTrialExpiredModal(); showRegister();">ស្នើសុំចុះឈ្មោះ</button>
             </div>
         </div>
     </div>
@@ -723,6 +796,10 @@
         const TELEGRAM_BOT_TOKEN = 'ដាក់_TOKEN_របស់_BOT_នៅទីនេះ'; // ឧ. 7123456789:AAH...
         const TELEGRAM_CHAT_ID = 'ដាក់_ID_របស់លោកគ្រូនៅទីនេះ'; // ឧ. 123456789
 
+        const ADMIN_TELEGRAM_USERNAME = 'mrhonmom';
+        const ADMIN_TELEGRAM_LINK = `https://t.me/${ADMIN_TELEGRAM_USERNAME}`;
+        const ADMIN_TELEGRAM_QR = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(ADMIN_TELEGRAM_LINK)}`;
+
         // ================= មុខងារសុវត្ថិភាព (Device ID) =================
         function getDeviceType() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'mobile' : 'pc';
@@ -737,6 +814,28 @@
             return deviceId;
         }
 
+        async function getBrowserFingerprint() {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.textBaseline = 'top';
+                ctx.font = '14px Battambang, Arial';
+                ctx.fillText('Rean.org trial device check', 2, 2);
+                const raw = [
+                    navigator.userAgent, navigator.language, navigator.platform,
+                    screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
+                    Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    navigator.hardwareConcurrency || '', navigator.deviceMemory || '',
+                    canvas.toDataURL()
+                ].join('|');
+                const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
+                return 'fp_' + Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+            } catch (e) {
+                // fallback នៅពេល browser មិនគាំទ្រ crypto/canvas
+                return 'fp_fallback_' + btoa(navigator.userAgent + '|' + screen.width + 'x' + screen.height).replace(/[^a-zA-Z0-9]/g,'').slice(0,48);
+            }
+        }
+
         // ── Normalize phone: "0123456789" ↔ "+855123456789" ──────────
         function normalizePhone(raw) {
             let p = String(raw).replace(/[\s\-\(\)\.]/g, '');
@@ -749,12 +848,29 @@
         // ឆែកមើលពេលបើកវេបសាយ 
         document.addEventListener("DOMContentLoaded", () => {
             const session = localStorage.getItem("trainee_phone");
-            if (session) {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('main-app').style.display = 'flex';
-            }
+            if (session) validateStoredSession(session);
             renderBook2Examples(); // បង្ហាញឧទាហរណ៍សៀវភៅទី២ទាំង១០
         });
+
+        async function validateStoredSession(phone) {
+            try {
+                const localPhone = normalizePhone(phone);
+                const intlPhone  = toIntlPhone(localPhone);
+                const { data: rec } = await db.from('trainees')
+                    .select('phone, is_trial, trial_expires_at, is_approved')
+                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
+                    .maybeSingle();
+                if (!rec || rec.is_approved === false) { logout(); return; }
+                if (rec.is_trial && rec.trial_expires_at && new Date(rec.trial_expires_at).getTime() <= Date.now()) {
+                    showTrialExpiredModal();
+                    showAlert(document.getElementById('login-alert'), '⏰ Trial ៥ម៉ោងរបស់អ្នកបានផុតកំណត់ហើយ។ សូមឆាតទៅ Admin Telegram @mrhonmom ដើម្បីបន្ត។', false);
+                    return;
+                }
+                grantAccess(rec.phone, { trialExpiresAt: rec.trial_expires_at, isTrial: rec.is_trial });
+            } catch (e) {
+                console.warn('Session validation skipped:', e.message);
+            }
+        }
 
         function showRegister() {
             document.getElementById('login-container').style.display = 'none';
@@ -831,6 +947,20 @@
                     traineeRec = existing;
                 }
 
+                // ── Step 2.5: Trial ៥ម៉ោង Check ─────────────────────────
+                if (traineeRec.is_trial) {
+                    if (traineeRec.trial_expires_at && new Date(traineeRec.trial_expires_at).getTime() <= Date.now()) {
+                        showTrialExpiredModal();
+                        showAlert(alertBox, '⏰ Trial ៥ម៉ោងរបស់អ្នកបានផុតកំណត់ហើយ។ សូមឆាតទៅ Admin Telegram @mrhonmom ដើម្បីបន្ត។', false);
+                        btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ"; return;
+                    }
+                    const fp = await getBrowserFingerprint();
+                    if (traineeRec.trial_device_key && traineeRec.trial_device_key !== fp) {
+                        showAlert(alertBox, '⛔ Trial នេះភ្ជាប់ជាមួយឧបករណ៍/Browser ដើមប៉ុណ្ណោះ។ មិនអាចប្តូរឧបករណ៍សាកម្ដងទៀតបានទេ។', false);
+                        btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ"; return;
+                    }
+                }
+
                 // ── Step 3: Device Check ──────────────────────────────────
                 const deviceType    = getDeviceType();
                 const localDeviceId = getLocalDeviceId();
@@ -854,14 +984,166 @@
             btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ";
         }
         
-           function grantAccess(phone) {
+           function grantAccess(phone, meta = {}) {
             localStorage.setItem("trainee_phone", phone);
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'flex';
+            if (meta.isTrial && meta.trialExpiresAt) showTrialBanner(meta.trialExpiresAt);
+            else hideTrialBanner();
             
             // បន្ថែមកូដ ២ បន្ទាត់នេះដើម្បីឲ្យវាស្គាល់ Admin និង Video
             currentUserPhone = phone;
             updateVideoMenuVisibility();
+        }
+
+        let trialTimer = null;
+        function showTrialBanner(expiresAt) {
+            const banner = document.getElementById('trial-banner');
+            if (!banner) return;
+            banner.style.display = 'block';
+            if (trialTimer) clearInterval(trialTimer);
+            const tick = () => {
+                const leftMs = new Date(expiresAt).getTime() - Date.now();
+                if (leftMs <= 0) {
+                    banner.innerHTML = '<i class="fas fa-clock"></i> Trial បានផុតកំណត់';
+                    clearInterval(trialTimer);
+                    setTimeout(() => showTrialExpiredModal(), 600);
+                    return;
+                }
+                const h = Math.floor(leftMs / 3600000);
+                const m = Math.floor((leftMs % 3600000) / 60000);
+                banner.innerHTML = `<i class="fas fa-hourglass-half"></i> Trial នៅសល់ ${h}ម៉ោង ${m}នាទី`;
+            };
+            tick();
+            trialTimer = setInterval(tick, 30000);
+        }
+        function hideTrialBanner() {
+            const banner = document.getElementById('trial-banner');
+            if (banner) banner.style.display = 'none';
+            if (trialTimer) clearInterval(trialTimer);
+        }
+
+
+        function showTrialExpiredModal() {
+            localStorage.removeItem("trainee_phone");
+            hideTrialBanner();
+            const auth = document.getElementById('auth-screen');
+            const app = document.getElementById('main-app');
+            if (auth) auth.style.display = 'flex';
+            if (app) app.style.display = 'none';
+            const link = document.getElementById('trial-telegram-link');
+            const qr = document.getElementById('trial-telegram-qr');
+            if (link) link.href = ADMIN_TELEGRAM_LINK;
+            if (qr && !qr.src) qr.src = ADMIN_TELEGRAM_QR;
+            const modal = document.getElementById('trial-expired-modal');
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeTrialExpiredModal() {
+            const modal = document.getElementById('trial-expired-modal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        // ================= Trial ៥ម៉ោង =================
+        async function startTrial() {
+            const rawPhone = document.getElementById('login-phone').value.trim();
+            const alertBox = document.getElementById('login-alert');
+            const btn = document.getElementById('btn-trial');
+            if (!rawPhone) { showAlert(alertBox, 'សូមបញ្ចូលលេខទូរសព្ទមុនចុចសាកល្បង ៥ម៉ោង!', false); return; }
+
+            const localPhone = normalizePhone(rawPhone);
+            const intlPhone  = toIntlPhone(localPhone);
+            const startedAt  = new Date();
+            const expiresAt  = new Date(startedAt.getTime() + TRIAL_HOURS * 60 * 60 * 1000);
+            const deviceType = getDeviceType();
+            const dbColumn   = deviceType === 'mobile' ? 'phone_device_id' : 'pc_device_id';
+            const localDeviceId = getLocalDeviceId();
+
+            btn.disabled = true; btn.innerText = 'កំពុងបង្កើត Trial...';
+            try {
+                const fp = await getBrowserFingerprint();
+
+                // ១) ឧបករណ៍/Browser មួយសាកបានតែម្ដង — ទោះប្តូរលេខទូរសព្ទក៏ដោយ
+                const { data: usedDevice, error: devCheckErr } = await db.from('trial_devices')
+                    .select('phone, trial_started_at, trial_expires_at')
+                    .eq('device_key', fp)
+                    .maybeSingle();
+                if (devCheckErr) throw devCheckErr;
+                if (usedDevice && normalizePhone(usedDevice.phone) !== localPhone) {
+                    showAlert(alertBox, '⛔ ឧបករណ៍/Browser នេះធ្លាប់ប្រើ Trial រួចហើយ។ មិនអាចប្តូរអាខោនសាកម្ដងទៀតបានទេ។', false);
+                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
+                }
+
+                // ២) លេខទូរសព្ទដែលមានគណនីពេញហើយ មិនចាំបាច់ Trial
+                const { data: mainUser } = await db.from('users')
+                    .select('phone, status')
+                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
+                    .maybeSingle();
+                if (mainUser && mainUser.status === 'approved') {
+                    showAlert(alertBox, '✅ លេខនេះមានសិទ្ធិចូលរៀនរួចហើយ។ សូមចុច “ចូលមើលឯកសារ”។', true);
+                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
+                }
+
+                // ៣) ពិនិត្យថាលេខនេះធ្លាប់មាន Trial ឬស្នើចុះឈ្មោះរួចឬនៅ
+                const { data: existing } = await db.from('trainees')
+                    .select('*')
+                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
+                    .maybeSingle();
+
+                if (existing) {
+                    if (existing.is_trial) {
+                        if (existing.trial_expires_at && new Date(existing.trial_expires_at).getTime() > Date.now()) {
+                            if (existing.trial_device_key && existing.trial_device_key !== fp) {
+                                showAlert(alertBox, '⛔ Trial លេខនេះភ្ជាប់ជាមួយឧបករណ៍/Browser ដើមប៉ុណ្ណោះ។', false);
+                                btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
+                            }
+                            grantAccess(existing.phone, { isTrial: true, trialExpiresAt: existing.trial_expires_at });
+                            btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
+                        }
+                        showTrialExpiredModal();
+                        showAlert(alertBox, '⏰ Trial ៥ម៉ោងរបស់លេខនេះបានផុតកំណត់រួចហើយ។ សូមឆាតទៅ Admin Telegram @mrhonmom ដើម្បីបន្ត។', false);
+                        btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
+                    }
+                    showAlert(alertBox, existing.is_approved ? '✅ លេខនេះមានគណនីរួចហើយ។ សូមចុច “ចូលមើលឯកសារ”។' : 'លេខនេះបានស្នើសុំចុះឈ្មោះរួចហើយ។ សូមរង់ចាំ Admin អនុម័ត។', existing.is_approved);
+                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
+                }
+
+                // ៤) Lock device ក្នុង table trial_devices មុន ដើម្បីទប់ការប្តូរអាខោន
+                const { error: lockErr } = await db.from('trial_devices').insert([{
+                    device_key: fp,
+                    phone: localPhone,
+                    trial_started_at: startedAt.toISOString(),
+                    trial_expires_at: expiresAt.toISOString(),
+                    user_agent: navigator.userAgent
+                }]);
+                if (lockErr) {
+                    showAlert(alertBox, '⛔ ឧបករណ៍/Browser នេះធ្លាប់ប្រើ Trial រួចហើយ។ មិនអាចសាកម្ដងទៀតបានទេ។', false);
+                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
+                }
+
+                const payload = {
+                    phone: localPhone,
+                    full_name: 'Trial User ' + localPhone,
+                    is_approved: true,
+                    course_id: COURSE_ID,
+                    is_trial: true,
+                    trial_started_at: startedAt.toISOString(),
+                    trial_expires_at: expiresAt.toISOString(),
+                    trial_device_key: fp,
+                    [dbColumn]: localDeviceId
+                };
+                const { error: insertErr } = await db.from('trainees').insert([payload]);
+                if (insertErr) {
+                    await db.from('trial_devices').delete().eq('device_key', fp);
+                    throw insertErr;
+                }
+
+                showAlert(alertBox, '✅ Trial ៥ម៉ោងបានបើករួចរាល់!', true);
+                grantAccess(localPhone, { isTrial: true, trialExpiresAt: expiresAt.toISOString() });
+            } catch (e) {
+                showAlert(alertBox, 'Error Trial: ' + e.message + ' — សូម run SQL migration trial_5h មុនប្រើ។', false);
+            }
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង';
         }
 
         // ================= មុខងារ Register & Telegram Notification =================
@@ -916,6 +1198,7 @@
         }
 
         function logout() {
+            hideTrialBanner();
             localStorage.removeItem("trainee_phone");
             document.getElementById('auth-screen').style.display = 'flex';
             document.getElementById('main-app').style.display = 'none';
@@ -1095,6 +1378,7 @@
         let editingVideoId = null;
         let currentUsersTab = 'pending'; // tab ដែលកំពុងបើក
         const RESET_LIMIT = 12; // ចំនួនដងអតិបរមាដែល User អាច Reset ឧបករណ៍ដោយខ្លួនឯង
+        const TRIAL_HOURS = 5;  // រយៈពេលសាកល្បង
 
         // ── ពេលបើក app ដំបូង ──────────────────────────────────────
         // extend DOMContentLoaded ដែលមានស្រាប់ ដើម្បី init video state
@@ -1460,7 +1744,7 @@
             try {
                 // ── ទាញ trainees រួមទាំងព័ត៌មាន reset ──
                 const { data: trainees, error } = await db.from('trainees')
-                    .select('phone, full_name, is_approved, phone_device_id, pc_device_id, reset_count, reset_requested, reset_requested_at, reset_device_type, created_at')
+                    .select('phone, full_name, is_approved, phone_device_id, pc_device_id, reset_count, reset_requested, reset_requested_at, reset_device_type, is_trial, trial_started_at, trial_expires_at, created_at')
                     .order('created_at', { ascending: false });
                 if (error) throw error;
 
@@ -1502,9 +1786,12 @@
                     const inMain   = mainMap[nPhone];
                     const usedReset = Number(u.reset_count || 0);
                     const remaining = Math.max(RESET_LIMIT - usedReset, 0);
+                    const trialInfo = u.is_trial
+                        ? `<div class="badge-trial"><i class="fas fa-clock"></i> Trial ដល់ ${u.trial_expires_at ? new Date(u.trial_expires_at).toLocaleString('km-KH') : '—'}</div>`
+                        : '';
                     const mainBadge = inMain
-                        ? `<span class="badge-approved" title="status: ${escAttr(inMain.status)}"><i class="fas fa-link"></i> ចុះឈ្មោះដោយ Bot</span>`
-                        : `<span style="color:#9aa0a6;font-size:12px;">ដោយដៃ</span>`;
+                        ? `<span class="badge-approved" title="status: ${escAttr(inMain.status)}"><i class="fas fa-link"></i> ចុះឈ្មោះដោយ Bot</span>${trialInfo}`
+                        : (u.is_trial ? trialInfo : `<span style="color:#9aa0a6;font-size:12px;">ដោយដៃ</span>`);
 
                     const phoneLock = u.phone_device_id
                         ? `<span class="badge-locked"><i class="fas fa-mobile-alt"></i> Lock</span>`
