@@ -99,7 +99,48 @@
         .mobile-title img { height: 30px; }
         .menu-toggle-btn { font-size: 22px; color: var(--text-gray); cursor: pointer; padding: 5px;}
 
-        .sidebar { width: 340px; background: #ffffff; display: flex; flex-direction: column; box-shadow: 4px 0 20px rgba(0,0,0,0.04); z-index: 100;}
+
+
+        /* ================= Quick Video Buttons ================= */
+        .topbar-actions { display: flex; align-items: center; gap: 10px; }
+        .topbar-video-btn {
+            display: none; align-items: center; gap: 6px; border: none; cursor: pointer;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20); color: #fff;
+            padding: 8px 12px; border-radius: 999px; font-size: 13px; font-weight: 800;
+            box-shadow: 0 6px 16px rgba(46,125,50,0.25);
+        }
+        .video-quick-card {
+            display: none; align-items: center; justify-content: space-between; gap: 16px;
+            background: linear-gradient(135deg, #e8f5e9, #ffffff); border: 1.5px solid #c8e6c9;
+            border-radius: 16px; padding: 16px 18px; margin: 0 0 24px 0;
+            box-shadow: 0 8px 24px rgba(46,125,50,0.10);
+        }
+        .video-quick-card .video-quick-left { display: flex; align-items: center; gap: 14px; }
+        .video-quick-icon {
+            width: 46px; height: 46px; border-radius: 14px; display: inline-flex;
+            align-items: center; justify-content: center; color: white; font-size: 20px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            box-shadow: 0 6px 16px rgba(46,125,50,0.22);
+            flex: 0 0 auto;
+        }
+        .video-quick-title { font-weight: 900; color: #1b5e20; font-size: 16px; margin-bottom: 3px; }
+        .video-quick-desc { color: var(--text-gray); font-size: 13px; line-height: 1.5; margin: 0 !important; }
+        .video-quick-open {
+            border: none; cursor: pointer; white-space: nowrap; border-radius: 12px;
+            background: #2e7d32; color: white; padding: 10px 16px; font-weight: 900;
+            display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 6px 16px rgba(46,125,50,0.22);
+        }
+        .video-quick-open:hover, .topbar-video-btn:hover { filter: brightness(0.96); transform: translateY(-1px); }
+        .video-float-btn {
+            display: none; position: fixed; right: 22px; bottom: 22px; z-index: 500;
+            border: none; cursor: pointer; border-radius: 999px; padding: 14px 18px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20); color: #fff;
+            font-weight: 900; font-size: 15px; align-items: center; gap: 10px;
+            box-shadow: 0 12px 30px rgba(46,125,50,0.35);
+        }
+        .video-float-btn i { font-size: 18px; }
+
+                .sidebar { width: 340px; background: #ffffff; display: flex; flex-direction: column; box-shadow: 4px 0 20px rgba(0,0,0,0.04); z-index: 100;}
         .sidebar-header { padding: 30px 20px 20px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
         
         /* Menu Categories */
@@ -294,6 +335,11 @@
             .menu { padding: 15px; overflow-y: auto;}
             .content-area { overflow-y: visible; padding: 15px;}
             .section { padding: 25px 20px; }
+
+            .topbar-video-btn { display: none; }
+            .video-quick-card { flex-direction: column; align-items: stretch; text-align: left; }
+            .video-quick-open { justify-content: center; width: 100%; }
+            .video-float-btn { right: 14px; bottom: 14px; padding: 12px 14px; font-size: 13px; }
         }
     </style>
 </head>
@@ -364,8 +410,13 @@
             <div class="mobile-title">
                 <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Logo"> Rean.org
             </div>
-            <div class="menu-toggle-btn" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
+            <div class="topbar-actions">
+                <button id="topbar-video-btn" class="topbar-video-btn" onclick="openUserVideoPanel()">
+                    <i class="fas fa-play-circle"></i> VDO
+                </button>
+                <div class="menu-toggle-btn" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </div>
             </div>
         </div>
 
@@ -409,10 +460,21 @@
         </aside>
 
         <main class="content-area">
+            <button id="floating-video-btn" class="video-float-btn" onclick="openUserVideoPanel()"><i class="fas fa-play-circle"></i> Video មេរៀន</button>
             
             <!-- ================= សៀវភៅទី១ (Sections 1 to 7) ពេញលេញ ================= -->
             <div id="s1" class="section active">
                 <h1>១. ក្បួនសរសេរ Prompt បញ្ជា AI ឲ្យបានត្រឹមត្រូវ</h1>
+                <div id="home-video-card" class="video-quick-card">
+                    <div class="video-quick-left">
+                        <div class="video-quick-icon"><i class="fas fa-play-circle"></i></div>
+                        <div>
+                            <div class="video-quick-title">មើល Video មេរៀន</div>
+                            <p class="video-quick-desc">ចុចទីនេះដើម្បីមើលវីដេអូណែនាំភ្លាមៗ មិនបាច់រកក្នុង Menu ទៀតទេ។</p>
+                        </div>
+                    </div>
+                    <button class="video-quick-open" onclick="openUserVideoPanel()"><i class="fas fa-video"></i> បើក Video</button>
+                </div>
                 <p>សូមស្វាគមន៍លោកគ្រូអ្នកគ្រូនៃ <strong>Rean.org</strong> ទាំងអស់គ្នា! បច្ចុប្បន្ននេះ ការចេះប្រើប្រាស់ AI (ដូចជា Google Gemini ឬ ChatGPT) គឺជាជំនាញដ៏ចាំបាច់បំផុត។ AI ប្រៀបបាននឹងសិស្សដ៏មហាឆ្លាតម្នាក់ ដែលបានអានសៀវភៅអស់រាប់លានក្បាលជុំវិញពិភពលោក ប៉ុន្តែបញ្ហារបស់វាគឺ <strong>"វាមិនដឹងថាចៅហ្វាយនាយ (គឺរូបយើង) ចង់បានអ្វីឲ្យប្រាកដនោះទេ"</strong>។</p>
                 <p>ប្រសិនបើយើងសួរវាដោយប្រើពាក្យខ្លីៗ ទូទៅពេក វានឹងឆ្លើយមកវិញបែបខ្លីៗ ទូទៅ និងជួនកាលខុសពីអ្វីដែលយើងចង់បាន។ ដូច្នេះហើយ ទើបយើងត្រូវរៀនពីសិល្បៈនៃការបញ្ជា ដែលគេហៅថា <strong>"Prompt Engineering"</strong>។</p>
                 
@@ -1409,9 +1471,16 @@
                 const adminMenu      = document.getElementById('admin-video-menu-item');
                 const adminUsersMenu = document.getElementById('admin-users-menu-item');
                 const userVideoMenu  = document.getElementById('user-video-menu-item');
+                const topbarVideoBtn = document.getElementById('topbar-video-btn');
+                const floatingVideoBtn = document.getElementById('floating-video-btn');
+                const homeVideoCard = document.getElementById('home-video-card');
+                const showUserVideo = !admin;
                 if (adminMenu)      adminMenu.style.display      = admin ? 'flex' : 'none';
                 if (adminUsersMenu) adminUsersMenu.style.display  = admin ? 'flex' : 'none';
-                if (userVideoMenu)  userVideoMenu.style.display   = admin ? 'none' : 'flex';
+                if (userVideoMenu)  userVideoMenu.style.display   = showUserVideo ? 'flex' : 'none';
+                if (topbarVideoBtn) topbarVideoBtn.style.display  = showUserVideo ? 'inline-flex' : 'none';
+                if (floatingVideoBtn) floatingVideoBtn.style.display = showUserVideo ? 'inline-flex' : 'none';
+                if (homeVideoCard) homeVideoCard.style.display = showUserVideo ? 'flex' : 'none';
             });
         }
 
@@ -1431,6 +1500,8 @@
         // ================================================================
         async function openUserVideoPanel() {
             switchTab(null, 's-user-video');
+            const sidebar = document.getElementById('sidebar-menu');
+            if (sidebar) sidebar.classList.remove('mobile-open');
             await renderUserVideos();
         }
 
