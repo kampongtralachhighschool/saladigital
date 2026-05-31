@@ -337,6 +337,63 @@
     const safeNumber = (v, fallback = 0) => Number.isFinite(parseFloat(v)) ? parseFloat(v) : fallback;
     const sortKh = (arr) => arr.sort((a,b) => String(a).localeCompare(String(b), 'km', { numeric: true }));
 
+
+    // Room + level grouping helpers
+    // បន្ទប់ប្រឡងមួយអាចមានកម្រិតថ្នាក់ច្រើន ដូច្នេះត្រូវចែកជា បន្ទប់ + កម្រិតថ្នាក់
+    const LEVEL_ORDER = ['7', '8', '9', '10', '11SC', '12SC', '11SS', '12SS', '11', '12'];
+
+    function getLevelGroup(className) {
+      const raw = String(className ?? '').trim().toUpperCase();
+      const compact = raw.replace(/\s+/g, '');
+      if(!compact) return 'ផ្សេងៗ';
+      if(compact.startsWith('11SC')) return '11SC';
+      if(compact.startsWith('12SC')) return '12SC';
+      if(compact.startsWith('11SS')) return '11SS';
+      if(compact.startsWith('12SS')) return '12SS';
+      const n = compact.match(/^(7|8|9|10|11|12)/)?.[1];
+      return n || compact;
+    }
+
+    function levelLabel(level) {
+      return level === 'ផ្សេងៗ' ? 'ផ្សេងៗ' : `ថ្នាក់ទី ${level}`;
+    }
+
+    function roomLevelKey(room, level) {
+      return `${String(room ?? '').trim()}||${String(level ?? '').trim()}`;
+    }
+
+    function parseRoomLevelKey(value) {
+      const [room, level] = String(value ?? '').split('||');
+      return { room: room || '', level: level || '' };
+    }
+
+    function levelOrder(level) {
+      const idx = LEVEL_ORDER.indexOf(String(level));
+      return idx === -1 ? 999 : idx;
+    }
+
+    function buildRoomLevelOptions(includeAll = false) {
+      const map = new Map();
+      allStudentsCache.forEach(st => {
+        const room = String(st.room_number ?? '').trim();
+        const level = getLevelGroup(st.class_name);
+        if(!room) return;
+        const key = roomLevelKey(room, level);
+        if(!map.has(key)) map.set(key, { room, level, count: 0 });
+        map.get(key).count++;
+      });
+      const groups = Array.from(map.values()).sort((a,b) =>
+        safeNumber(a.room, 999999) - safeNumber(b.room, 999999) ||
+        levelOrder(a.level) - levelOrder(b.level) ||
+        String(a.level).localeCompare(String(b.level), 'km', { numeric: true })
+      );
+      let html = includeAll ? '<option value="ALL">-- បង្ហាញទាំងអស់ --</option>' : '';
+      html += groups.length
+        ? groups.map(g => `<option value="${esc(roomLevelKey(g.room, g.level))}">បន្ទប់ ${esc(g.room)} (${esc(levelLabel(g.level))}) — ${g.count} នាក់</option>`).join('')
+        : '<option value="">--គ្មានបន្ទប់--</option>';
+      return html;
+    }
+
     function showToast(message, type = 'primary') {
       const area = $('toastArea');
       if(!area) return;
@@ -452,10 +509,9 @@
         setLoading(document.getElementById('inputListBody'), 'កំពុងទាញបញ្ជីសិស្ស...');
         allStudentsCache = await fetchAllData('students', { academic_year: y, month_name: m, semester: s });
         
-        const rooms = sortKh([...new Set(allStudentsCache.map(r => r.room_number).filter(v => v !== null && v !== undefined && v !== ''))]);
-        const roomOpts = rooms.length ? rooms.map(r => `<option value="${esc(r)}">${esc(r)}</option>`).join('') : '<option value="">--គ្មានបន្ទប់--</option>';
-        document.getElementById('roomSelect').innerHTML = roomOpts;
-        document.getElementById('absRoomSelect').innerHTML = `<option value="ALL">-- បង្ហាញទាំងអស់ --</option>` + roomOpts;
+        const roomLevelOpts = buildRoomLevelOptions(false);
+        document.getElementById('roomSelect').innerHTML = roomLevelOpts;
+        document.getElementById('absRoomSelect').innerHTML = buildRoomLevelOptions(true);
         
         const { data: subs, error: subErr } = await _sb.from('subject_configs').select('subject_name');
         if(subErr) showToast('មិនអាចទាញមុខវិជ្ជាបាន', 'danger');
@@ -472,7 +528,7 @@
 
     async function updateQuickStats() {
         document.getElementById('statStudents').innerText = allStudentsCache.length;
-        document.getElementById('statRooms').innerText = new Set(allStudentsCache.map(s => s.room_number)).size;
+        document.getElementById('statRooms').innerText = new Set(allStudentsCache.map(s => roomLevelKey(s.room_number, getLevelGroup(s.class_name)))).size;
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value;
         const abs = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem }, { col: 'score_value', vals: ['A','P'] });
         document.getElementById('statAbsents').innerText = new Set(abs.map(x => String(x.student_id).trim())).size;
@@ -487,44 +543,46 @@
 
     async function loadInputList() {
         hasUnsavedChanges = false;
-        const r = document.getElementById('roomSelect').value, sub = document.getElementById('subjectSelect').value;
+        const selectedKey = document.getElementById('roomSelect').value;
+        const { room: r, level } = parseRoomLevelKey(selectedKey);
+        const sub = document.getElementById('subjectSelect').value;
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value;
         
         const tbody = document.getElementById('inputListBody'); 
         const titleDiv = document.getElementById('currentInputTitle');
 
-        if(!r || !sub) { titleDiv.classList.add('hidden'); return; }
+        if(!r || !level || !sub) { titleDiv.classList.add('hidden'); return; }
         
-        titleDiv.innerHTML = `កំពុងបញ្ចូលពិន្ទុ៖ បន្ទប់ <span class="text-danger mx-1">${r}</span> | មុខវិជ្ជា <span class="text-primary mx-1">${sub}</span>`;
+        titleDiv.innerHTML = `កំពុងបញ្ចូលពិន្ទុ៖ បន្ទប់ <span class="text-danger mx-1">${esc(r)}</span> (<span class="text-danger mx-1">${esc(levelLabel(level))}</span>) | មុខវិជ្ជា <span class="text-primary mx-1">${esc(sub)}</span>`;
         if (isSystemLocked) titleDiv.innerHTML += ` <span class="badge bg-danger ms-2"><i class="fa-solid fa-lock"></i> ប្រព័ន្ធត្រូវបានចាក់សោរ</span>`;
         titleDiv.classList.remove('hidden');
 
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> ទាញទិន្នន័យ...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> ទាញទិន្នន័យ...</td></tr>';
         
-        const stds = allStudentsCache.filter(s => String(s.room_number) === String(r)).sort((a,b) => a.desk_number - b.desk_number);
+        const stds = allStudentsCache
+          .filter(s => String(s.room_number) === String(r) && getLevelGroup(s.class_name) === level)
+          .sort((a,b) => safeNumber(a.desk_number, 999999) - safeNumber(b.desk_number, 999999));
         const scores = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
         const cfgs = await fetchAllData('subject_configs', { subject_name: sub });
         
-        if(stds.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">មិនមានសិស្សក្នុងបន្ទប់នេះទេ</td></tr>'; return; }
+        if(stds.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">មិនមានសិស្សក្នុងបន្ទប់ និងកម្រិតថ្នាក់នេះទេ</td></tr>'; return; }
         tbody.innerHTML = stds.map((s, i) => {
             const classStr = s.class_name ? String(s.class_name).trim() : '';
             const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
             let rowBgClass = (gradeNum >= 7 && gradeNum <= 12) ? `bg-grade-${gradeNum}` : '';
 
             const max = cfgs.find(c => String(c.class_name).trim() === classStr)?.max_score || 100;
-            let mySc = scores.find(x => String(x.student_id).trim() === String(s.student_id).trim() && String(x.subject_name).trim() === String(sub).trim())?.score_value || '';
-            const absRecord = scores.find(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value === 'A' || x.score_value === 'P'));
-            const isAbs = !!absRecord;
-            
-            if (isAbs) { mySc = absRecord.score_value; }
+            const scoreObj = scores.find(x => String(x.student_id).trim() === String(s.student_id).trim() && String(x.subject_name).trim() === String(sub).trim());
+            let mySc = scoreObj?.score_value || '';
+            const isAbs = (mySc === 'A' || mySc === 'P');
             let disabledClass = isAbs ? 'absent-disabled' : '';
             let inputDisabled = (isAbs || isSystemLocked) ? 'disabled' : '';
             
-            return `<tr class="stu-row border-bottom ${rowBgClass}" data-id="${esc(s.student_id)}" data-room="${esc(s.room_number)}" data-name="${esc(s.full_name)}" data-class="${esc(s.class_name)}">
+            return `<tr class="stu-row border-bottom ${rowBgClass}" data-id="${esc(s.student_id)}" data-room="${esc(s.room_number)}" data-level="${esc(level)}" data-name="${esc(s.full_name)}" data-class="${esc(s.class_name)}">
                 <td class="text-center border-end-0">${i+1}</td>
                 <td class="fw-bold border-end-0">${esc(s.desk_number)}</td>
                 <td class="small border-end-0">${esc(s.student_id)}</td>
-                <td class="text-start fw-bold text-primary border-end-0">
+                <td class="text-start fw-bold border-end-0" style="color:#24507a;">
                     ${esc(s.full_name)} <span class="badge bg-secondary ms-1" style="font-size: 10px;">${esc(classStr)}</span>
                     <div class="small text-muted fw-normal mt-1">Max: <span class="max-label">${max}</span></div>
                 </td>
@@ -851,32 +909,36 @@
     }
 
     async function loadAbsenceList() { 
-        const r = document.getElementById('absRoomSelect').value; 
+        const selectedKey = document.getElementById('absRoomSelect').value; 
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value;
         const tbody = document.getElementById('absListBody'); 
-        if(!r) return; 
+        if(!selectedKey) return; 
         
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> ទាញទិន្នន័យ...</td></tr>'; 
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> ទាញទិន្នន័យ...</td></tr>'; 
         
         let stds = allStudentsCache;
-        if(r !== "ALL") { stds = stds.filter(s => String(s.room_number) === String(r)); }
-        stds.sort((a,b) => a.room_number - b.room_number || a.desk_number - b.desk_number);
+        if(selectedKey !== "ALL") {
+          const { room: r, level } = parseRoomLevelKey(selectedKey);
+          stds = stds.filter(s => String(s.room_number) === String(r) && getLevelGroup(s.class_name) === level);
+        }
+        stds.sort((a,b) => safeNumber(a.room_number, 999999) - safeNumber(b.room_number, 999999) || levelOrder(getLevelGroup(a.class_name)) - levelOrder(getLevelGroup(b.class_name)) || safeNumber(a.desk_number, 999999) - safeNumber(b.desk_number, 999999));
 
         const sc = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
         
         tbody.innerHTML = stds.map((s,i) => { 
             const classStr = s.class_name ? String(s.class_name).trim() : '';
+            const level = getLevelGroup(classStr);
             const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
             let rowBgClass = (gradeNum >= 7 && gradeNum <= 12) ? `bg-grade-${gradeNum}` : '';
 
             const v = sc.find(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value==='A'||x.score_value==='P'))?.score_value || ''; 
             
-            return `<tr class="abs-row border-bottom ${rowBgClass}" data-id="${esc(s.student_id)}" data-name="${esc(s.full_name)}" data-class="${esc(classStr)}" data-room="${esc(s.room_number)}">
+            return `<tr class="abs-row border-bottom ${rowBgClass}" data-id="${esc(s.student_id)}" data-name="${esc(s.full_name)}" data-class="${esc(classStr)}" data-room="${esc(s.room_number)}" data-level="${esc(level)}">
                 <td class="border-end-0"><input type="checkbox" class="abs-select-box abs-input-check" value="${esc(s.student_id)}" ${v ? '' : 'disabled'} title="ជ្រើសសម្រាប់លុបអវត្តមាន"></td>
                 <td class="border-end-0">${i+1}</td>
-                <td class="fw-bold border-end-0">${s.room_number} / ${esc(s.desk_number)}</td>
+                <td class="fw-bold border-end-0">${esc(s.room_number)} / ${esc(levelLabel(level))} / តុ ${esc(s.desk_number)}</td>
                 <td class="small border-end-0">${esc(s.student_id)}</td>
-                <td class="text-start ps-4 fw-bold border-end-0 text-primary">${esc(s.full_name)} <span class="badge bg-secondary ms-1" style="font-size:10px;">${esc(classStr)}</span></td>
+                <td class="text-start ps-4 fw-bold border-end-0" style="color:#24507a;">${esc(s.full_name)} <span class="badge bg-secondary ms-1" style="font-size:10px;">${esc(classStr)}</span></td>
                 <td class="border-end-0">
                     <div class="btn-group btn-group-abs shadow-sm" role="group">
                         <input type="radio" class="btn-check" name="abs_${s.student_id}" id="none_${s.student_id}" value="" autocomplete="off" ${v===''?'checked':''} onchange="saveSingleAbsence('${s.student_id}', '${s.full_name}', '${classStr}', '${s.room_number}', '')">
@@ -1027,11 +1089,13 @@
         
         tbody.innerHTML = res.map(s => { 
             const abs = sc.find(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value==='A'||x.score_value==='P')); 
-            return `<tr><td>${s.room_number}/${esc(s.desk_number)}</td><td>${esc(s.student_id)}</td><td class="text-primary fw-bold">${s.full_name}</td><td>${s.class_name}</td><td>${abs?`<span class="badge bg-danger">អវត្តមាន</span>`:'-'}</td><td class="text-center">${abs?`<button class="btn btn-sm btn-warning" onclick="revertAbs('${s.student_id}')">ដោះវត្តមាន</button>`:`<button class="btn btn-sm btn-primary" onclick="jumpToInput('${s.room_number}')">ទៅបញ្ចូល</button>`}</td></tr>`; 
+            const level = getLevelGroup(s.class_name);
+            const key = roomLevelKey(s.room_number, level);
+            return `<tr><td>${esc(s.room_number)}/${esc(levelLabel(level))}/${esc(s.desk_number)}</td><td>${esc(s.student_id)}</td><td class="fw-bold" style="color:#24507a;">${esc(s.full_name)}</td><td>${esc(s.class_name)}</td><td>${abs?`<span class="badge bg-danger">អវត្តមាន</span>`:'-'}</td><td class="text-center">${abs?`<button class="btn btn-sm btn-warning" onclick="revertAbs('${s.student_id}')">ដោះវត្តមាន</button>`:`<button class="btn btn-sm btn-primary" onclick="jumpToInput('${esc(key)}')">ទៅបញ្ចូល</button>`}</td></tr>`; 
         }).join(''); 
     }
 
-    function jumpToInput(r) { document.getElementById('roomSelect').value = r; switchTab('input'); loadInputList(); }
+    function jumpToInput(roomLevelValue) { document.getElementById('roomSelect').value = roomLevelValue; switchTab('input'); loadInputList(); }
 
     async function switchTab(t) { 
         if (t !== 'input' && document.querySelectorAll('.stu-row').length > 0 && !isSystemLocked) { triggerAutoSave(); }
