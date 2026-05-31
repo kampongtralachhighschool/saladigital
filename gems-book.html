@@ -1,2039 +1,305 @@
 <!DOCTYPE html>
 <html lang="km">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>សៀវភៅណែនាំ Google AI - Rean.org</title>
-    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- បញ្ចូល Supabase SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- បញ្ចូល Tailwind CSS សម្រាប់សៀវភៅទី២ -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        // បិទ Preflight ដើម្បីកុំឲ្យ Tailwind ទៅលុបចោលទម្រង់ CSS ដើមរបស់សៀវភៅទី១
-        tailwind.config = {
-            corePlugins: { preflight: false }
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Website ថ្មី — Reankh AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --brand: #4f46e5;
+      --brand-2: #7c3aed;
+      --accent: #06b6d4;
+      --ink: #1e293b;
+      --muted: #64748b;
+      --bg-card: rgba(255, 255, 255, 0.85);
+    }
 
-    <style>
-        /* ================= ការពារសុវត្ថិភាព (Anti-Copy) ================= */
-        body { -webkit-user-select: none; -ms-user-select: none; user-select: none; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        :root {
-            --primary: #1a73e8; --primary-light: #e8f0fe; --secondary: #34A853; 
-            --accent1: #FBBC05; --accent2: #EA4335; --bg-color: #f0f4f8;
-            --text-dark: #202124; --text-gray: #5f6368; --border-color: #dadce0;
-        }
+    body {
+      font-family: 'Noto Sans Khmer', 'Poppins', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: var(--ink);
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 45%, #06b6d4 100%);
+      position: relative;
+      overflow: hidden;
+    }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Battambang', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-dark); overflow: hidden; height: 100vh; }
+    /* ផ្ទៃខាងក្រោយ blob ចលនា */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: 0.45;
+      animation: float 14s ease-in-out infinite;
+    }
+    .blob.b1 { width: 340px; height: 340px; background: #f0abfc; top: -80px; left: -60px; }
+    .blob.b2 { width: 300px; height: 300px; background: #67e8f9; bottom: -90px; right: -50px; animation-delay: -5s; }
+    .blob.b3 { width: 240px; height: 240px; background: #fde68a; top: 40%; right: 20%; animation-delay: -9s; }
 
-        /* ================= ផ្ទាំង Auth Screen (Login/Register) ================= */
-        #auth-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #e8f0fe, #ffffff);
-            display: flex; justify-content: center; align-items: center; z-index: 1000;
-            padding: 20px;
-        }
-        .auth-card {
-            background: white; padding: 45px 40px; border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(26,115,232,0.08); width: 100%; max-width: 420px;
-            text-align: center; animation: fadeIn 0.4s ease-out; position: relative;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .auth-logo { max-width: 180px; margin-bottom: 25px; }
-        .auth-title { font-family: 'Moul', serif; color: var(--primary); font-size: 22px; margin-bottom: 8px;}
-        .auth-subtitle { color: var(--text-gray); font-size: 14px; margin-bottom: 25px;}
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -30px) scale(1.12); }
+    }
 
-        .form-input {
-            width: 100%; padding: 14px 15px; margin-bottom: 15px; border: 1.5px solid var(--border-color);
-            border-radius: 10px; font-size: 15px; outline: none; transition: 0.3s;
-            text-align: center; letter-spacing: 1px;
-        }
-        .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,115,232,0.1);}
-        
-        .btn-auth {
-            width: 100%; padding: 14px; background: var(--primary); color: white;
-            border: none; border-radius: 10px; font-size: 16px; font-weight: bold;
-            cursor: pointer; transition: 0.3s; margin-bottom: 15px;
-        }
-        .btn-auth:hover { background: #1557b0; box-shadow: 0 4px 10px rgba(26,115,232,0.2);}
-        .btn-auth:disabled { background: #a8c7fa; cursor: not-allowed; }
+    .card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 28px;
+      padding: 40px 32px 32px;
+      box-shadow: 0 30px 60px -15px rgba(30, 27, 75, 0.4);
+      text-align: center;
+      animation: rise 0.7s cubic-bezier(.2,.8,.2,1) both;
+    }
 
-        .auth-switch { font-size: 14px; color: var(--text-gray); margin-bottom: 25px;}
-        .auth-switch span { 
-            color: var(--primary); font-weight: bold; cursor: pointer; 
-            text-decoration: underline transparent; transition: 0.3s; padding: 5px;
-        }
-        .auth-switch span:hover { color: #1557b0; text-decoration-color: #1557b0; }
-        
-        .alert-msg { margin-bottom: 15px; padding: 10px; border-radius: 8px; font-size: 14px; display: none; }
-        .alert-error { background: #fce8e6; color: var(--accent2); border: 1px solid #fad2cf; }
-        .alert-success { background: #e6f4ea; color: var(--secondary); border: 1px solid #ceead6; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        .divider { height: 1px; background: var(--border-color); width: 100%; margin: 25px 0; }
+    .icon {
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 22px;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 12px 28px -6px rgba(79, 70, 229, 0.6);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    .icon svg { width: 44px; height: 44px; stroke: #fff; }
 
-        .instructor-badge {
-            display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
-            background: var(--primary-light); color: var(--primary); 
-            padding: 12px 20px; border-radius: 12px; font-size: 14px;
-            width: 100%; border: 1px solid #d2e3fc;
-        }
-        .instructor-badge .name { font-weight: bold; font-size: 15px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;}
-        .instructor-badge .phone { color: #1557b0; font-weight: 900; display: flex; align-items: center; gap: 8px;}
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
 
-        /* ================= ផ្ទាំង Main App (មេរៀន) ================= */
-        #main-app { display: none; height: 100vh; flex-direction: row; position: relative; }
-        
-        #mobile-topbar {
-            display: none; justify-content: space-between; align-items: center;
-            padding: 12px 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky; top: 0; z-index: 200; width: 100%;
-        }
-        .mobile-title { font-family: 'Battambang', sans-serif; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px;}
-        .mobile-title img { height: 30px; }
-        .menu-toggle-btn { font-size: 22px; color: var(--text-gray); cursor: pointer; padding: 5px;}
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.5;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
+    p.msg {
+      font-size: 1.02rem;
+      line-height: 1.95;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
+    p.msg b { color: var(--brand-2); }
 
+    .link-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 10px 10px 10px 16px;
+      margin-bottom: 18px;
+    }
+    .link-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 0.95rem;
+      color: var(--brand);
+      font-weight: 600;
+      background: transparent;
+      font-family: 'Poppins', sans-serif;
+      min-width: 0;
+    }
+    .copy-btn {
+      flex-shrink: 0;
+      border: none;
+      cursor: pointer;
+      background: #eef2ff;
+      color: var(--brand);
+      font-weight: 600;
+      font-family: 'Noto Sans Khmer', sans-serif;
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .copy-btn:hover { background: var(--brand); color: #fff; }
+    .copy-btn.done { background: #10b981; color: #fff; }
 
-        /* ================= Quick Video Buttons ================= */
-        .topbar-actions { display: flex; align-items: center; gap: 10px; }
-        .topbar-video-btn {
-            display: none; align-items: center; gap: 6px; border: none; cursor: pointer;
-            background: linear-gradient(135deg, #2e7d32, #1b5e20); color: #fff;
-            padding: 8px 12px; border-radius: 999px; font-size: 13px; font-weight: 800;
-            box-shadow: 0 6px 16px rgba(46,125,50,0.25);
-        }
-        .video-quick-card {
-            display: none; align-items: center; justify-content: space-between; gap: 16px;
-            background: linear-gradient(135deg, #e8f5e9, #ffffff); border: 1.5px solid #c8e6c9;
-            border-radius: 16px; padding: 16px 18px; margin: 0 0 24px 0;
-            box-shadow: 0 8px 24px rgba(46,125,50,0.10);
-        }
-        .video-quick-card .video-quick-left { display: flex; align-items: center; gap: 14px; }
-        .video-quick-icon {
-            width: 46px; height: 46px; border-radius: 14px; display: inline-flex;
-            align-items: center; justify-content: center; color: white; font-size: 20px;
-            background: linear-gradient(135deg, #2e7d32, #1b5e20);
-            box-shadow: 0 6px 16px rgba(46,125,50,0.22);
-            flex: 0 0 auto;
-        }
-        .video-quick-title { font-weight: 900; color: #1b5e20; font-size: 16px; margin-bottom: 3px; }
-        .video-quick-desc { color: var(--text-gray); font-size: 13px; line-height: 1.5; margin: 0 !important; }
-        .video-quick-open {
-            border: none; cursor: pointer; white-space: nowrap; border-radius: 12px;
-            background: #2e7d32; color: white; padding: 10px 16px; font-weight: 900;
-            display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 6px 16px rgba(46,125,50,0.22);
-        }
-        .video-quick-open:hover, .topbar-video-btn:hover { filter: brightness(0.96); transform: translateY(-1px); }
-        .video-float-btn {
-            display: none; position: fixed; right: 22px; bottom: 22px; z-index: 500;
-            border: none; cursor: pointer; border-radius: 999px; padding: 14px 18px;
-            background: linear-gradient(135deg, #2e7d32, #1b5e20); color: #fff;
-            font-weight: 900; font-size: 15px; align-items: center; gap: 10px;
-            box-shadow: 0 12px 30px rgba(46,125,50,0.35);
-        }
-        .video-float-btn i { font-size: 18px; }
+    .go-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      text-decoration: none;
+      color: #fff;
+      font-size: 1.12rem;
+      font-weight: 700;
+      font-family: 'Noto Sans Khmer', sans-serif;
+      padding: 17px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 14px 30px -8px rgba(79, 70, 229, 0.65);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .go-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 38px -8px rgba(79, 70, 229, 0.75); }
+    .go-btn:active { transform: translateY(-1px); }
+    .go-btn svg { width: 22px; height: 22px; stroke: #fff; }
 
-                .sidebar { width: 340px; background: #ffffff; display: flex; flex-direction: column; box-shadow: 4px 0 20px rgba(0,0,0,0.04); z-index: 100;}
-        .sidebar-header { padding: 30px 20px 20px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        
-        /* Menu Categories */
-        .menu-category {
-            padding: 10px 15px; font-size: 13px; font-weight: bold; color: var(--primary);
-            background: var(--primary-light); margin: 15px 15px 5px 15px; border-radius: 8px;
-            font-family: 'Moul', serif;
-        }
+    .divider {
+      margin: 26px 0 18px;
+      border: none;
+      border-top: 1px dashed #cbd5e1;
+    }
 
-        .menu { list-style: none; overflow-y: auto; flex: 1; padding: 10px 15px; }
-        .menu::-webkit-scrollbar { width: 6px; }
-        .menu::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
-        .menu li { padding: 12px 18px; margin-bottom: 5px; cursor: pointer; border-radius: 10px; color: var(--text-gray); font-weight: 700; display: flex; align-items: center; gap: 15px; transition: 0.2s;}
-        .menu li i { font-size: 18px; width: 25px; text-align: center; color: #9aa0a6; }
-        .menu li:hover { background: #f8f9fa; color: var(--primary); }
-        .menu li.active { background: var(--primary-light); color: var(--primary); border-left: 5px solid var(--primary); border-radius: 0 10px 10px 0; }
-        .menu li.active i { color: var(--primary); }
-        
-        .btn-logout { 
-            background: #fff; color: var(--accent2); padding: 10px 20px; 
-            margin: 15px auto 25px auto; text-align: center; border-radius: 8px; 
-            font-weight: bold; cursor: pointer; transition: 0.3s; 
-            border: 1px solid #fce8e6; display: inline-flex; align-items: center; gap: 8px; font-size: 14px;
-        }
-        .btn-logout:hover { background: #fce8e6; }
-        
-        .content-area { flex: 1; padding: 40px; overflow-y: auto; background: var(--bg-color); scroll-behavior: smooth; user-select: text; }
-        .section { background: white; border-radius: 15px; padding: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); max-width: 900px; margin: 0 auto; display: none; animation: slideUp 0.4s ease-out; }
-        .section.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .contact {
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+    .tg-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 10px;
+      text-decoration: none;
+      color: #fff;
+      background: #229ED9;
+      padding: 9px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      font-family: 'Poppins', sans-serif;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 20px -6px rgba(34, 158, 217, 0.6);
+    }
+    .tg-link:hover { transform: translateY(-2px); }
+    .tg-link svg { width: 18px; height: 18px; fill: #fff; }
 
-        /* Typography មេរៀនទី១ */
-        .section h1 { font-family: 'Moul', serif; color: var(--primary); font-size: 26px; border-bottom: 2px solid var(--primary-light); padding-bottom: 15px; margin-bottom: 25px; line-height: 1.6;}
-        .section h3 { color: var(--primary); margin: 35px 0 15px 0; font-size: 20px; display: flex; align-items: center; gap: 10px; font-weight: bold;}
-        .section p { margin-bottom: 15px; text-align: justify; line-height: 1.8;}
-        .section ul, .section ol { margin-left: 30px; margin-bottom: 20px; line-height: 1.8; }
-        .section li { margin-bottom: 10px; }
-        
-        .concept-box { background: var(--primary-light); border-left: 5px solid var(--primary); padding: 25px; border-radius: 0 10px 10px 0; margin: 25px 0; }
-        .concept-box strong { color: var(--primary); font-size: 18px; display: block; margin-bottom: 10px;}
-        .prompt-box { background: #fff; border: 2px dashed #f28b82; padding: 25px; border-radius: 10px; margin: 25px 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
-        .prompt-box::before { content: 'ឧទាហរណ៍នៃការបញ្ជា (Copy យកទៅសាកល្បងបាន)'; position: absolute; top: -14px; left: 20px; background: var(--accent2); color: white; padding: 4px 15px; font-size: 13px; border-radius: 15px; font-weight: bold; }
-        .prompt-box p { font-family: monospace; font-size: 16px; color: #b31412; margin: 0; }
-        .step-box { background: #e6f4ea; border-radius: 10px; padding: 25px; margin: 25px 0; border: 1px solid #ceead6; }
-        .step-title { font-weight: bold; color: var(--secondary); margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid #ceead6; padding-bottom: 10px;}
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1e293b;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(.2,.8,.2,1);
+      z-index: 50;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* Generator Styles */
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: var(--primary); font-size: 15px;}
-        .form-group textarea { width: 100%; padding: 15px; border: 2px solid #dadce0; border-radius: 10px; font-size: 15px; resize: vertical; transition: 0.3s; background: #fafafa;}
-        .form-group textarea:focus { border-color: var(--primary); background: #fff; outline: none;}
-        .btn-generate { background: var(--primary); color: white; border: none; padding: 14px 25px; font-size: 16px; font-weight: bold; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; width: 100%; justify-content: center;}
-        .result-container { margin-top: 35px; background: #202124; border-radius: 12px; padding: 25px;}
-        .result-title { color: #8ab4f8; font-family: 'Moul', serif; margin-bottom: 15px; border-bottom: 1px solid #3c4043; padding-bottom: 10px; }
-        .result-text { color: #e8eaed; font-family: monospace; font-size: 16px; white-space: pre-wrap; margin-bottom: 20px; min-height: 60px; line-height: 1.8;}
-        .btn-copy { background: var(--secondary); color: white; border: none; padding: 12px 20px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;}
-
-        /* ================= Admin Video Panel Styles ================= */
-        /* Video Grid & Cards */
-        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
-        .video-card {
-            background: #fff; border-radius: 14px; overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #e8ecef; transition: 0.3s;
-        }
-        .video-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        .video-card .video-thumb-wrap { position: relative; padding-top: 56.25%; background: #000; }
-        .video-card iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .video-card .video-info { padding: 14px 16px; }
-        .video-card .video-title { font-weight: bold; font-size: 14px; color: var(--text-dark); margin-bottom: 6px; }
-        .video-card .video-desc { font-size: 12px; color: var(--text-gray); line-height: 1.6; }
-        .video-card .video-actions { display: flex; gap: 8px; margin-top: 10px; }
-        .btn-edit-video { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 6px 12px; border-radius: 7px; font-size: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-edit-video:hover { background: #ffe0b2; }
-        .btn-delete-video { background: #fce8e6; color: var(--accent2); border: 1px solid #fad2cf; padding: 6px 12px; border-radius: 7px; font-size: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-delete-video:hover { background: #fad2cf; }
-
-        .admin-toolbar {
-            background: linear-gradient(135deg, #1a73e8, #1557b0); color: white;
-            padding: 16px 20px; border-radius: 12px; margin-bottom: 25px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
-        }
-        .admin-toolbar .toolbar-left h2 { font-family: 'Moul', serif; font-size: 16px; margin-bottom: 3px; }
-        .admin-toolbar .toolbar-left p { font-size: 12px; opacity: 0.85; }
-        .btn-add-video {
-            background: white; color: var(--primary); border: none; padding: 10px 18px;
-            border-radius: 9px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .btn-add-video:hover { background: var(--primary-light); }
-        .btn-admin-logout { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: 0.2s; }
-        .btn-admin-logout:hover { background: rgba(255,255,255,0.25); }
-
-        /* Modal Add/Edit Video */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 9998;
-            display: none; justify-content: center; align-items: center; padding: 20px;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-card {
-            background: white; padding: 30px; border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.25); width: 100%; max-width: 500px;
-            animation: fadeIn 0.3s ease-out;
-        }
-        .modal-card h3 { font-family: 'Moul', serif; color: var(--primary); font-size: 17px; margin-bottom: 20px; }
-        .modal-card .form-input { text-align: left; letter-spacing: 0; margin-bottom: 14px; }
-        .modal-card textarea { width: 100%; padding: 12px 15px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 14px; font-family: 'Battambang', sans-serif; resize: vertical; outline: none; transition: 0.3s; }
-        .modal-card textarea:focus { border-color: var(--primary); }
-        .modal-footer { display: flex; gap: 10px; margin-top: 18px; }
-        .btn-save-video { flex: 1; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-save-video:hover { background: #1557b0; }
-        .btn-cancel-modal { flex: 0 0 auto; padding: 12px 20px; background: #f1f3f4; color: var(--text-gray); border: none; border-radius: 10px; font-size: 14px; cursor: pointer; }
-        .empty-video-state { text-align: center; padding: 60px 20px; color: var(--text-gray); }
-        .empty-video-state i { font-size: 50px; color: #dadce0; margin-bottom: 15px; display: block; }
-        .empty-video-state p { font-size: 15px; }
-
-        /* shield លុបចោល — video ដើរតាមធម្មជាតិ */
-
-        /* ================= Admin Users Panel ================= */
-        .user-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 15px; }
-        .user-table th { background: #1a73e8; color: white; padding: 10px 12px; text-align: left; font-weight: bold; }
-        .user-table td { padding: 10px 12px; border-bottom: 1px solid #dadce0; vertical-align: middle; }
-        .user-table tr:hover td { background: #f0f4f8; }
-        .badge-approved { background: #e6f4ea; color: #1e8e3e; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
-        .badge-pending  { background: #fff8e1; color: #e37400; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
-        .badge-locked   { background: #fce8e6; color: #c5221f; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
-        .btn-reset-device { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 5px 10px; border-radius: 7px; font-size: 12px; cursor: pointer; font-weight: bold; }
-        .btn-reset-device:hover { background: #ffe0b2; }
-        .badge-reset-count { background:#e8f0fe; color:#1a73e8; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; }
-        .badge-reset-request { background:#fff3e0; color:#e65100; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; }
-        .reset-help-box { background:#e8f0fe; border-left:5px solid #1a73e8; border-radius:0 10px 10px 0; padding:14px 16px; margin:0 0 18px 0; color:#174ea6; font-size:14px; line-height:1.7; }
-
-        .btn-trial { background: #34A853; margin-top: -5px; }
-        .btn-trial:hover { background: #1e8e3e; box-shadow: 0 4px 10px rgba(52,168,83,0.2); }
-        .trial-note { background:#e6f4ea; color:#137333; border:1px solid #ceead6; padding:10px 12px; border-radius:10px; font-size:13px; line-height:1.6; margin:10px 0 15px 0; }
-        .trial-banner { position: fixed; right: 18px; bottom: 18px; z-index: 500; background:#202124; color:white; padding:10px 14px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.18); font-size:13px; display:none; }
-        .badge-trial { background:#e6f4ea; color:#137333; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; margin-top:4px; }
-
-        /* ================= Trial Expired Contact Modal ================= */
-        .trial-expired-overlay {
-            position: fixed; inset: 0; z-index: 10050; background: rgba(32,33,36,0.72);
-            display: none; align-items: center; justify-content: center; padding: 18px; backdrop-filter: blur(4px);
-        }
-        .trial-expired-overlay.active { display: flex; }
-        .trial-expired-card {
-            width: 100%; max-width: 460px; background: #fff; border-radius: 22px;
-            box-shadow: 0 22px 70px rgba(0,0,0,0.28); padding: 28px 24px; text-align: center;
-            animation: fadeIn 0.28s ease-out; border: 1px solid #eef2f7;
-        }
-        .trial-expired-icon {
-            width: 68px; height: 68px; border-radius: 50%; background: #fce8e6; color: #c5221f;
-            display: inline-flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 14px;
-        }
-        .trial-expired-card h2 {
-            font-family: 'Moul', serif; color: var(--primary); font-size: 20px; line-height: 1.6; margin-bottom: 8px;
-        }
-        .trial-expired-card p { color: var(--text-gray); font-size: 14px; line-height: 1.8; margin-bottom: 14px; }
-        .trial-telegram-link {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%; padding: 13px 16px; border-radius: 12px; background: #229ED9; color: white;
-            text-decoration: none; font-weight: bold; margin: 10px 0 16px 0; transition: 0.25s;
-        }
-        .trial-telegram-link:hover { background: #1689bf; transform: translateY(-1px); }
-        .trial-qr-wrap {
-            background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 14px; margin-top: 4px;
-        }
-        .trial-qr-wrap img { width: 178px; height: 178px; border-radius: 10px; background: white; padding: 8px; }
-        .trial-qr-caption { font-size: 12px !important; color: #64748b !important; margin: 8px 0 0 0 !important; }
-        .trial-expired-actions { display: flex; gap: 10px; margin-top: 16px; }
-        .btn-trial-close, .btn-trial-register {
-            flex: 1; border: none; border-radius: 11px; padding: 11px 12px; font-weight: bold; cursor: pointer; font-size: 13px;
-        }
-        .btn-trial-close { background: #f1f3f4; color: #5f6368; }
-        .btn-trial-register { background: var(--primary); color: #fff; }
-        @media (max-width: 480px) {
-            .trial-expired-card { padding: 24px 18px; }
-            .trial-expired-actions { flex-direction: column; }
-        }
-
-        @media (max-width: 768px) {
-            #main-app { flex-direction: column; overflow-y: auto; }
-            #mobile-topbar { display: flex; }
-            .sidebar-header { display: none; }
-            .sidebar { 
-                position: absolute; top: 55px; left: 0; width: 100%; height: auto;
-                max-height: calc(100vh - 55px); background: white; z-index: 150; 
-                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-                transform: translateY(-150%); transition: transform 0.3s ease-in-out;
-                border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; overflow: hidden;
-            }
-            .sidebar.mobile-open { transform: translateY(0); }
-            .menu { padding: 15px; overflow-y: auto;}
-            .content-area { overflow-y: visible; padding: 15px;}
-            .section { padding: 25px 20px; }
-
-            .topbar-video-btn { display: none; }
-            .video-quick-card { flex-direction: column; align-items: stretch; text-align: left; }
-            .video-quick-open { justify-content: center; width: 100%; }
-            .video-float-btn { right: 14px; bottom: 14px; padding: 12px 14px; font-size: 13px; }
-        }
-    </style>
+    @media (max-width: 480px) {
+      .card { padding: 32px 22px 26px; border-radius: 24px; }
+      h1 { font-size: 1.3rem; }
+      p.msg { font-size: 0.97rem; }
+      .icon { width: 72px; height: 72px; }
+    }
+  </style>
 </head>
 <body>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
 
-    <!-- ================= ផ្ទាំង Login / Register ================= -->
-    <div id="auth-screen">
-        <div class="auth-card">
-            <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Rean.org Logo" class="auth-logo">
-            
-            <div id="login-container">
-                <h2 class="auth-title">ចូលរៀន</h2>
-                <p class="auth-subtitle">សូមបញ្ចូលលេខទូរសព្ទរបស់អ្នក</p>
-                <input type="tel" id="login-phone" class="form-input" placeholder="ឧ. 012345678" autocomplete="off">
-                <div id="login-alert" class="alert-msg"></div>
-                <button class="btn-auth" id="btn-login" onclick="login()">ចូលមើលឯកសារ</button>
-                <div class="trial-note">
-                    <i class="fas fa-clock"></i> ចង់សាកមុនទិញ/ចុះឈ្មោះ? បញ្ចូលលេខទូរសព្ទខាងលើ រួចចុច “សាកល្បង ៥ម៉ោង”។ ឧបករណ៍មួយអាចសាកបានតែម្ដងប៉ុណ្ណោះ។
-                </div>
-                <button class="btn-auth btn-trial" id="btn-trial" onclick="startTrial()"><i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង</button>
-                <p class="auth-switch">មិនទាន់មានឈ្មោះ? <span onclick="showRegister()">ស្នើសុំចុះឈ្មោះ</span></p>
-            </div>
-
-            <div id="register-container" style="display: none;">
-                <h2 class="auth-title">ស្នើសុំចុះឈ្មោះ</h2>
-                <p class="auth-subtitle">សូមបំពេញព័ត៌មានពិតប្រាកដ</p>
-                <input type="text" id="reg-name" class="form-input" placeholder="ឈ្មោះពេញ (ឧ. សុខ សាន្ត)" autocomplete="off">
-                <input type="tel" id="reg-phone" class="form-input" placeholder="លេខទូរសព្ទ (ឧ. 012345678)" autocomplete="off">
-                <div id="reg-alert" class="alert-msg"></div>
-                <button class="btn-auth" id="btn-register" onclick="register()">បញ្ជូនការស្នើសុំ</button>
-                <p class="auth-switch">មានឈ្មោះហើយ? <span onclick="showLogin()">ត្រឡប់ទៅចូលរៀនវិញ</span></p>
-            </div>
-
-            <div class="divider"></div>
-            <div class="instructor-badge">
-                <div class="name"><i class="fas fa-chalkboard-teacher"></i> ដឹកនាំដោយ៖ លោកគ្រូ ហុន ម៉ុម</div>
-                <div class="phone"><i class="fas fa-phone-alt"></i> 017 47 66 64</div>
-            </div>
-        </div>
+  <main class="card">
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
     </div>
 
-    <div id="trial-banner" class="trial-banner"></div>
+    <h1>សូមស្វាគមន៍មកកាន់ Website ថ្មី</h1>
 
-    <!-- ================= Trial Expired Modal ================= -->
-    <div id="trial-expired-modal" class="trial-expired-overlay" role="dialog" aria-modal="true" aria-labelledby="trial-expired-title">
-        <div class="trial-expired-card">
-            <div class="trial-expired-icon"><i class="fas fa-hourglass-end"></i></div>
-            <h2 id="trial-expired-title">Trial ៥ម៉ោងបានផុតកំណត់</h2>
-            <p>សូមឆាតទៅ Admin ដើម្បីបន្តការប្រើប្រាស់ ឬស្នើសុំចុះឈ្មោះពេញ។ ចុចប៊ូតុងខាងក្រោម ឬ Scan QR Code ដើម្បីចូល Telegram ផ្ទាល់។</p>
-            <a id="trial-telegram-link" class="trial-telegram-link" href="https://t.me/mrhonmom" target="_blank" rel="noopener">
-                <i class="fab fa-telegram-plane"></i> ឆាតទៅ Admin: @mrhonmom
-            </a>
-            <div class="trial-qr-wrap">
-                <img id="trial-telegram-qr" src="" alt="Telegram QR Code @mrhonmom">
-                <p class="trial-qr-caption">Scan QR Code ដើម្បីបើក Telegram @mrhonmom</p>
-            </div>
-            <div class="trial-expired-actions">
-                <button class="btn-trial-close" onclick="closeTrialExpiredModal()">បិទ</button>
-                <button class="btn-trial-register" onclick="closeTrialExpiredModal(); showRegister();">ស្នើសុំចុះឈ្មោះ</button>
-            </div>
-        </div>
+    <p class="msg">
+      សូមអភ័យទោស! ដើម្បីឲ្យមាន<b>ភាពងាយស្រួល</b> និង<b>សុវត្ថិភាព</b>ជាងមុន
+      សូមចូលប្រើប្រាស់លើ Website ថ្មីនេះវិញ។<br />
+      សូម Copy ឬ ចុចប៊ូតុងខាងក្រោម។
+    </p>
+
+    <div class="link-box">
+      <input id="siteUrl" type="text" value="https://ai.reankh.org/" readonly />
+      <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy</button>
     </div>
 
-    <!-- ================= ផ្ទាំងមេរៀន (Main App) ================= -->
-    <div id="main-app">
-        
-        <div id="mobile-topbar">
-            <div class="mobile-title">
-                <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Logo"> Rean.org
-            </div>
-            <div class="topbar-actions">
-                <button id="topbar-video-btn" class="topbar-video-btn" onclick="openUserVideoPanel()">
-                    <i class="fas fa-play-circle"></i> VDO
-                </button>
-                <div class="menu-toggle-btn" onclick="toggleMobileMenu()">
-                    <i class="fas fa-bars"></i>
-                </div>
-            </div>
-        </div>
+    <a class="go-btn" href="https://ai.reankh.org/">
+      ចូលប្រើ Website ថ្មី
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </a>
 
-        <aside class="sidebar" id="sidebar-menu">
-            <div class="sidebar-header">
-                <img src="https://i.ibb.co/Z6rz5L8F/rean-org.png" alt="Logo" style="max-width: 60%; margin-bottom: 10px;">
-                <div style="color: var(--primary); font-weight: bold; font-size: 14px;">បណ្ណាល័យ AI សម្រាប់គ្រូ</div>
-            </div>
-            
-            <ul class="menu">
-                <!-- សៀវភៅទី១ -->
-                <div class="menu-category">សៀវភៅទី១៖ ក្បួនបញ្ជា AI</div>
-                <li class="active" onclick="switchTab(event, 's1')"><i class="fas fa-magic"></i> ១. ក្បួនសរសេរ Prompt</li>
-                <li onclick="switchTab(event, 's2')"><i class="fas fa-file-alt"></i> ២. ការងាររដ្ឋបាល & បង្រៀន</li>
-                <li onclick="switchTab(event, 's3')"><i class="fas fa-chart-bar"></i> ៣. ការវិភាគទិន្នន័យសិស្ស</li>
-                <li onclick="switchTab(event, 's4')"><i class="fas fa-laptop-code"></i> ៤. ការបង្កើត Web App</li>
-                <li onclick="switchTab(event, 's5')"><i class="fas fa-robot"></i> ៥. ការបង្កើត Gems</li>
-                <li onclick="switchTab(event, 's6')"><i class="fas fa-sliders-h"></i> ៦. បង្វឹកក្នុង AI Studio</li>
-                <li onclick="switchTab(event, 's7')" style="color: var(--accent2);"><i class="fas fa-tools"></i> ៧. ឧបករណ៍បង្កើត Prompt</li>
+    <hr class="divider" />
 
-                <!-- សៀវភៅទី២ -->
-                <div class="menu-category" style="background: #d1fae5; color: #059669;">សៀវភៅទី២៖ AI រដ្ឋបាលសាលា</div>
-                <li onclick="switchTab(event, 'book2')" style="color: #059669;"><i class="fas fa-book-reader"></i> ចូលអានសៀវភៅទី២</li>
-
-                <!-- Admin Panel (បង្ហាញតែ Admin ប៉ុណ្ណោះ) -->
-                <div class="menu-category" style="background: #fce8e6; color: #c5221f;">🔐 Admin Panel</div>
-                <li id="admin-video-menu-item" onclick="openAdminVideoPanel()" style="color: #c5221f; display: none;"><i class="fas fa-video"></i> គ្រប់គ្រង Video មេរៀន</li>
-                <li id="admin-users-menu-item" onclick="openAdminUsersPanel()" style="color: #c5221f; display: none;"><i class="fas fa-users-cog"></i> Reset ឧបករណ៍អ្នករៀន</li>
-                
-                <!-- User Video (បង្ហាញតែ User ធម្មតា) -->
-                <div class="menu-category" style="background: #e8f5e9; color: #2e7d32;">📹 Video មេរៀន</div>
-                <li id="user-video-menu-item" onclick="openUserVideoPanel()" style="color: #2e7d32; display: none;"><i class="fas fa-play-circle"></i> មើល Video មេរៀន</li>
-                
-                <!-- របៀបបន្ថែមសៀវភៅទី៣ (គ្រាន់តែ Copy កូដខាងក្រោមនេះ ហើយដក Comment ចេញ) -->
-                <!-- 
-                <div class="menu-category" style="background: #fef3c7; color: #d97706;">សៀវភៅទី៣៖ ចំណងជើងថ្មី</div>
-                <li onclick="switchTab(event, 'book3')" style="color: #d97706;"><i class="fas fa-book"></i> ចូលអានសៀវភៅទី៣</li> 
-                -->
-            </ul>
-            <div class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ចាកចេញ</div>
-        </aside>
-
-        <main class="content-area">
-            <button id="floating-video-btn" class="video-float-btn" onclick="openUserVideoPanel()"><i class="fas fa-play-circle"></i> Video មេរៀន</button>
-            
-            <!-- ================= សៀវភៅទី១ (Sections 1 to 7) ពេញលេញ ================= -->
-            <div id="s1" class="section active">
-                <h1>១. ក្បួនសរសេរ Prompt បញ្ជា AI ឲ្យបានត្រឹមត្រូវ</h1>
-                <div id="home-video-card" class="video-quick-card">
-                    <div class="video-quick-left">
-                        <div class="video-quick-icon"><i class="fas fa-play-circle"></i></div>
-                        <div>
-                            <div class="video-quick-title">មើល Video មេរៀន</div>
-                            <p class="video-quick-desc">ចុចទីនេះដើម្បីមើលវីដេអូណែនាំភ្លាមៗ មិនបាច់រកក្នុង Menu ទៀតទេ។</p>
-                        </div>
-                    </div>
-                    <button class="video-quick-open" onclick="openUserVideoPanel()"><i class="fas fa-video"></i> បើក Video</button>
-                </div>
-                <p>សូមស្វាគមន៍លោកគ្រូអ្នកគ្រូនៃ <strong>Rean.org</strong> ទាំងអស់គ្នា! បច្ចុប្បន្ននេះ ការចេះប្រើប្រាស់ AI (ដូចជា Google Gemini ឬ ChatGPT) គឺជាជំនាញដ៏ចាំបាច់បំផុត។ AI ប្រៀបបាននឹងសិស្សដ៏មហាឆ្លាតម្នាក់ ដែលបានអានសៀវភៅអស់រាប់លានក្បាលជុំវិញពិភពលោក ប៉ុន្តែបញ្ហារបស់វាគឺ <strong>"វាមិនដឹងថាចៅហ្វាយនាយ (គឺរូបយើង) ចង់បានអ្វីឲ្យប្រាកដនោះទេ"</strong>។</p>
-                <p>ប្រសិនបើយើងសួរវាដោយប្រើពាក្យខ្លីៗ ទូទៅពេក វានឹងឆ្លើយមកវិញបែបខ្លីៗ ទូទៅ និងជួនកាលខុសពីអ្វីដែលយើងចង់បាន។ ដូច្នេះហើយ ទើបយើងត្រូវរៀនពីសិល្បៈនៃការបញ្ជា ដែលគេហៅថា <strong>"Prompt Engineering"</strong>។</p>
-                
-                <div class="concept-box">
-                    <strong>រូបមន្តបញ្ជា "៥ ចំណុច" សម្រាប់គ្រូបង្រៀន (The 5 Pillars)៖</strong>
-                    ដើម្បីឲ្យ AI ឆ្លើយតបបានចំគោលដៅ ១០០% លោកគ្រូអ្នកគ្រូត្រូវសរសេរប្រយោគបញ្ជាដោយរួមបញ្ចូលធាតុទាំង ៥ នេះ៖
-                    <ol>
-                        <li><strong>តួនាទី (Role)៖</strong> ត្រូវប្រាប់ AI ឲ្យដើរតួជាអ្នកជំនាញអ្វីមួយ ដើម្បីឲ្យវាប្តូរវាក្យសព្ទ និងកម្រិតចំណេះដឹង។ <em>(ឧទាហរណ៍៖ "ចូរអ្នកដើរតួជាគ្រូបង្រៀនគណិតវិទ្យា...")</em></li>
-                        <li><strong>កិច្ចការ (Task)៖</strong> តើចង់ឲ្យវាធ្វើអ្វីពិតប្រាកដ? <em>(ឧទាហរណ៍៖ "សូមបង្កើតលំហាត់ប្រឡងប្រចាំខែចំនួន ១០...")</em></li>
-                        <li><strong>បរិបទ (Context)៖</strong> តើអ្នកយកលទ្ធផលនេះទៅប្រើជាមួយនរណា? កម្រិតណា? <em>(ឧទាហរណ៍៖ "សម្រាប់សិស្សថ្នាក់ទី១០ ដែលមានកម្រិតមធ្យម...")</em></li>
-                        <li><strong>ទម្រង់ (Format)៖</strong> ចង់បានលទ្ធផលចេញមកជារាងអ្វី? <em>(ឧទាហរណ៍៖ "សូមសរសេរជាទម្រង់តារាង និងមានចម្លើយនៅខាងក្រោម...")</em></li>
-                        <li><strong>ដែនកំណត់ (Constraint)៖</strong> ប្រាប់ពីអ្វីដែលវា <strong>ហាមធ្វើ</strong> ដាច់ខាត។ <em>(ឧទាហរណ៍៖ "ហាមប្រើពាក្យបច្ចេកទេសកម្រិតសាកលវិទ្យាល័យដែលពិបាកយល់...")</em></li>
-                    </ol>
-                </div>
-
-                <h3><i class="fas fa-balance-scale"></i> ការប្រៀបធៀបដើម្បីឲ្យងាយយល់៖</h3>
-                <p>❌ <strong>បញ្ជាមិនល្អ (ខ្វះទិន្នន័យ)៖</strong> <em>"រកលំហាត់គណិតឲ្យមួយមក។"</em><br>
-                (លទ្ធផល៖ AI អាចនឹងឲ្យលំហាត់ថ្នាក់មហាវិទ្យាល័យ ដែលសិស្សយើងរៀនមិនទាន់ដល់ ឬឲ្យលំហាត់បូកដកលេខក្មេងថ្នាក់ទី១ ព្រោះយើងអត់បានប្រាប់កម្រិតវា។)</p>
-                
-                <div class="prompt-box">
-                    <p>✅ <strong>បញ្ជាល្អឥតខ្ចោះ (មានរូបមន្តទាំង៥)៖</strong><br><br>
-                    "[១. តួនាទី] ចូរអ្នកដើរតួជាគ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាដ៏ពូកែម្នាក់ប្រចាំវិទ្យាល័យ។ <br><br>
-                    [២. កិច្ចការ] សូមជួយបង្កើតលំហាត់អនុវត្តន៍ចំនួន ៥ ទាក់ទងនឹងមេរៀនសមីការដឺក្រេទី២។ <br><br>
-                    [៣. បរិបទ] លំហាត់ទាំងនេះគឺរៀបចំឡើងសម្រាប់សិស្សថ្នាក់ទី១០ ដែលទើបតែរៀនមេរៀននេះដំបូង។ ដូច្នេះពួកគេត្រូវការលំហាត់ដែលមានការពន្យល់ច្បាស់លាស់។ <br><br>
-                    [៤. ទម្រង់] សូមរៀបចំលំហាត់ពីងាយទៅពិបាក ហើយសូមផ្តល់នូវរបៀបដោះស្រាយមួយជំហានម្តងៗ (Step-by-step) នៅផ្នែកខាងក្រោមនៃលំហាត់នីមួយៗ។ <br><br>
-                    [៥. ដែនកំណត់] សូមកុំដាក់លំហាត់ណាដែលមានចម្លើយជាឫសសាំញ៉ាំពេក ព្រោះចង់ឲ្យសិស្សងាយយល់ពីគោលការណ៍គ្រឹះសិន។"</p>
-                </div>
-            </div>
-
-            <div id="s2" class="section">
-                <h1>២. ការងាររដ្ឋបាល ការបង្រៀន និងបង្កើតគម្រោង</h1>
-                <p>ក្នុងនាមជាគ្រូបង្រៀន យើងមិនត្រឹមតែបង្រៀនក្នុងថ្នាក់ទេ តែយើងត្រូវចំណាយពេលរាប់ម៉ោងលើការងាររដ្ឋបាល សរសេរលិខិតផ្សេងៗ រៀបចំកិច្ចតែងការ និងរកនឹកវិធីសាស្ត្របង្រៀនថ្មីៗ។ ឥឡូវនេះ លោកគ្រូអ្នកគ្រូអាចប្រគល់ការងារទាំងនេះឲ្យ AI ធ្វើជំនួសបាន ដោយចំណាយពេលមិនដល់ ២នាទីឡើយ។</p>
-
-                <h3><i class="fas fa-envelope-open-text"></i> ក. ការព្រាងលិខិតផ្លូវការ ឬលិខិតរដ្ឋបាល</h3>
-                <div class="prompt-box">
-                    <p>"ចូរអ្នកដើរតួជាលេខាធិការសាលាដ៏មានបទពិសោធន៍។ សូមជួយព្រាងលិខិតអញ្ជើញអាណាព្យាបាលសិស្សមកប្រជុំ។ <br>
-                    - គោលបំណង៖ ដើម្បីពិភាក្សាអំពីលទ្ធផលសិក្សាប្រចាំឆមាសទី១ និងបញ្ហាវិន័យសិស្ស (ការគេចសាលា) របស់សិស្សមួយចំនួន។<br>
-                    - ទម្រង់៖ សូមសរសេរជាទម្រង់ផ្លូវការ មានការគោរពខ្ពស់ និងប្រើប្រាស់ពាក្យពេចន៍ទន់ភ្លន់តែម៉ឺងម៉ាត់។ <br>
-                    - សូមបញ្ជាក់ប្រាប់ពួកគាត់ថា ការចូលរួមរបស់មាតាបិតាមានសារៈសំខាន់ខ្លាំងណាស់ក្នុងការកែប្រែអនាគតកូនៗ។ <br>
-                    - នៅខាងចុង សូមទុកចន្លោះទំនេរសម្រាប់បំពេញ កាលបរិច្ឆេទ ម៉ោង ទីកន្លែង និងកន្លែងសម្រាប់ខ្ញុំ (គ្រូបន្ទុកថ្នាក់) ចុះហត្ថលេខា។"</p>
-                </div>
-
-                <h3><i class="fas fa-book-reader"></i> ខ. ការរៀបចំកិច្ចតែងការបង្រៀន (Detailed Lesson Plan)</h3>
-                <div class="prompt-box">
-                    <p>"ខ្ញុំជាគ្រូបង្រៀនមុខវិជ្ជារូបវិទ្យាថ្នាក់ទី១១។ សូមជួយព្រាងកិច្ចតែងការបង្រៀនរយៈពេល ១ម៉ោង (៦០នាទី) សម្រាប់មេរៀន 'ថាមពលស៊ីនេទិច'។ សូមបែងចែកកិច្ចតែងការនេះជា ៥ ដំណាក់កាល៖<br>
-                    ១. រំលឹកមេរៀនចាស់ (៥នាទី)<br>
-                    ២. ការទាក់ទាញចំណាប់អារម្មណ៍/Hook (៥នាទី) - សូមរកវិធីចាប់ផ្តើមមេរៀនឲ្យភ្ញាក់ផ្អើល<br>
-                    ៣. ការពន្យល់មេរៀនថ្មី (៣០នាទី) - ពន្យល់ទ្រឹស្តី និងរូបមន្ត<br>
-                    ៤. ការអនុវត្តន៍ជាក្រុម (១៥នាទី) - សូមបង្កើតសកម្មភាពមួយឲ្យសិស្សពិភាក្សាគ្នា<br>
-                    ៥. សំណួរពង្រឹងចំណេះ (៥នាទី)<br>
-                    ចំណាំ៖ សូមណែនាំការពិសោធន៍ងាយៗដែលគ្រូអាចធ្វើបានក្នុងថ្នាក់ ដោយប្រើតែសម្ភារៈប្រចាំថ្ងៃ។"</p>
-                </div>
-
-                <h3><i class="fas fa-users"></i> គ. ការរកដំណោះស្រាយបញ្ហាវិន័យ និងចិត្តវិទ្យាសិស្ស</h3>
-                <div class="prompt-box">
-                    <p>"ចូរអ្នកដើរតួជាអ្នកជំនាញចិត្តវិទ្យាអប់រំកុមារនិងយុវជន។ ខ្ញុំមានសិស្សប្រុសម្នាក់រៀនថ្នាក់ទី១០។ គាត់ជាក្មេងឆ្លាត ប៉ុន្តែថ្មីៗនេះគាត់តែងតែឡូឡាក្នុងថ្នាក់ ចូលចិត្តរំខានអ្នកដទៃពេលកំពុងរៀន និងហាក់ដូចជាចង់ទាមទារចំណាប់អារម្មណ៍។ <br>
-                    តើខ្ញុំជាគ្រូបង្រៀន គួរប្រើវិធីសាស្ត្រនិយាយទល់មុខជាមួយគាត់បែបណា ដើម្បីកុំឲ្យគាត់មានអារម្មណ៍ថាត្រូវគេស្តីបន្ទោសរើសអើង តែអាចធ្វើឲ្យគាត់យល់ពីកំហុស និងកែប្រែឥរិយាបថគាត់បាន? សូមប្រាប់ខ្ញុំពីជំហាននៃការនិយាយស្តីជាចំណុចៗមក។"</p>
-                </div>
-            </div>
-
-            <div id="s3" class="section">
-                <h1>៣. ការវិភាគពិន្ទុ និងទិន្នន័យសិស្សយ៉ាងរហ័ស</h1>
-                <p>ការអង្គុយបូកសរុបពិន្ទុ រកមើលសិស្សដែលខ្សោយ ឬរៀបចំចំណាត់ថ្នាក់ គឺជាការងារដែលហត់នឿយ និងចំណាយពេលរាប់ម៉ោងនៅចុងខែនីមួយៗ។ ជាមួយ Google AI (ជាពិសេសបើលោកគ្រូអ្នកគ្រូប្រើ Gemini Advanced) លោកគ្រូអ្នកគ្រូគ្រាន់តែ <strong>Copy ទិន្នន័យចេញពី Excel ហើយ Paste បញ្ចូលទៅក្នុង AI</strong> នោះវានឹងក្លាយជាអ្នកវិភាគទិន្នន័យប្រចាំខ្លួនយើងតែម្តង។</p>
-
-                <div class="step-box">
-                    <div class="step-title">របៀបអនុវត្តជាក់ស្តែង (Step-by-Step)៖</div>
-                    ១. បើកឯកសារ Excel ដែលមានបញ្ជីឈ្មោះ និងពិន្ទុសិស្សរបស់លោកគ្រូអ្នកគ្រូ។<br>
-                    ២. Highlight តារាងនោះទាំងមូល (រួមទាំងក្បាលតារាងដូចជា ឈ្មោះ, ភេទ, ពិន្ទុគណិត, ពិន្ទុខ្មែរ...) រួចចុច <strong>Ctrl + C (Copy)</strong>។<br>
-                    ៣. បើកកម្មវិធី Google Gemini រួច Paste <strong>(Ctrl + V)</strong> ទិន្នន័យនោះចូលក្នុងប្រអប់វាយអត្ថបទ។<br>
-                    ៤. កុំទាន់អាលចុចបញ្ជូន! សូមវាយថែមប្រយោគបញ្ជា (Prompt) ដ៏លម្អិតដូចខាងក្រោម រួចសឹមចុច Enter។
-                </div>
-
-                <div class="prompt-box">
-                    <p>"ចូរអ្នកដើរតួជាអ្នកវិភាគទិន្នន័យអប់រំដ៏ជំនាញ។ ខាងក្រោមនេះគឺជាទិន្នន័យពិន្ទុប្រឡងប្រចាំខែរបស់សិស្សក្នុងបន្ទប់ដែលខ្ញុំគ្រប់គ្រង។ ដោយផ្អែកលើទិន្នន័យនេះ សូមអ្នកជួយធ្វើការវិភាគ និងផ្តល់ចម្លើយតាមសំណូមពរខាងក្រោម៖<br><br>
-                    ១. <strong>ស្វែងរកសិស្សខ្សោយ៖</strong> សូមទាញយកឈ្មោះសិស្ស ៥នាក់ ដែលមានពិន្ទុសរុបទាបជាងគេបំផុត និងបញ្ជាក់ថាពួកគេខ្សោយមុខវិជ្ជាអ្វីខ្លាំងជាងគេ។<br>
-                    ២. <strong>ស្វែងរកសិស្សរីកចម្រើន៖</strong> សូមរកមើលសិស្សណាខ្លះ ដែលខែមុនមានពិន្ទុទាប ប៉ុន្តែខែនេះមានពិន្ទុកើនឡើងខ្ពស់គួរឲ្យកត់សម្គាល់ ដើម្បីខ្ញុំអាចរៀបចំរង្វាន់លើកទឹកចិត្តពួកគាត់។<br>
-                    ៣. <strong>បង្កើតតារាងបំប៉ន៖</strong> សូមទាញយកឈ្មោះសិស្សទាំងអស់ដែលធ្លាក់ (ពិន្ទុក្រោមមធ្យមភាគ) លើមុខវិជ្ជា 'គណិតវិទ្យា' មកបង្កើតជាតារាងថ្មីមួយ ដើម្បីខ្ញុំងាយស្រួលកោះហៅពួកគាត់មករៀនបំប៉នបន្ថែម។<br>
-                    ៤. <strong>សេចក្តីសន្និដ្ឋានទូទៅ៖</strong> តើជារួម សិស្សក្នុងថ្នាក់នេះរៀនខ្សោយមុខវិជ្ជាអ្វីជាងគេ? តើខ្ញុំគួរមានវិធានការបែបណា?<br><br>
-                    [ចុច Paste ទិន្នន័យ Excel របស់អ្នកនៅទីនេះ]"</p>
-                </div>
-            </div>
-
-            <div id="s4" class="section">
-                <h1>៤. ការបង្កើត Web App ដោយមិនចាំបាច់សរសេរកូដ</h1>
-                <p>នេះជាជំនាញកម្រិតខ្ពស់ដ៏គួរឲ្យភ្ញាក់ផ្អើលមួយ! លោកគ្រូអ្នកគ្រូអាចបញ្ជាឲ្យ AI សរសេរកូដបង្កើតជាកម្មវិធីខ្នាតតូច (Web App) សម្រាប់ប្រើប្រាស់ក្នុងថ្នាក់រៀនដោយឥតគិតថ្លៃ ទោះបីជាលោកគ្រូអ្នកគ្រូមិនចេះមុខវិជ្ជាកុំព្យូទ័រទាល់តែសោះក៏ដោយ។</p>
-
-                <div class="concept-box">
-                    <strong>ក្បួនវេទមន្ត៖</strong> ដើម្បីឲ្យកម្មវិធីនេះដើរបានដោយមិនបាច់ប្រើ Server ឬ Internet លោកគ្រូអ្នកគ្រូត្រូវបញ្ជាដាច់ខាតទៅ AI ថា <em>"សូមសរសេរកូដ HTML, CSS និង JavaScript ទាំងអស់បញ្ចូលគ្នានៅក្នុង File តែមួយ (Single HTML File)"</em>។
-                </div>
-
-                <div class="step-box">
-                    <div class="step-title">ជំហាននៃការធ្វើ (ឧទាហរណ៍៖ កម្មវិធីចាប់ឆ្នោតហៅឈ្មោះសិស្ស)</div>
-                    ១. ចូលទៅកាន់ Google Gemini ។<br>
-                    ២. <strong>Copy ល្បះនេះយកទៅបញ្ជាវា៖</strong><br>
-                        <div class="prompt-box" style="margin: 10px 0;">
-                            <p>"សូមអ្នកដើរតួជាអ្នកសរសេរកូដកម្មវិធីដ៏ពូកែម្នាក់។ សូមជួយបង្កើតកម្មវិធី Web App សម្រាប់គ្រូបង្រៀនហៅឈ្មោះសិស្សចាប់ឆ្នោត (Random Name Picker)។<br>
-                            លក្ខខណ្ឌដែលត្រូវគោរព៖<br>
-                            - ត្រូវសរសេរកូដ HTML, CSS និង JS ទាំងអស់បញ្ចូលគ្នាតែមួយ (Single File)។<br>
-                            - ត្រូវមានប្រអប់ Textbox ធំមួយសម្រាប់ឲ្យគ្រូ Paste បញ្ជីឈ្មោះសិស្សចូល (មួយឈ្មោះមួយបន្ទាត់)។<br>
-                            - ត្រូវមានប៊ូតុងធំមួយពណ៌ខៀវដាក់ពាក្យថា 'ចាប់ឆ្នោតឥឡូវនេះ'។<br>
-                            - ពេលចុចប៊ូតុង ត្រូវមានចលនា (Animation) ឈ្មោះរត់ញាប់ៗរយៈពេល ៣វិនាទី រួចទើបលោតបញ្ចេញឈ្មោះសិស្សដែលកោះហៅចំកណ្តាលអេក្រង់ដោយមានអក្សរធំៗ និងមាន Effect ក្រដាសពណ៌ធ្លាក់ចុះមក (Confetti Effect) អបអរសាទរ។<br>
-                            - សូមរចនា UI ឲ្យមានភាពទាន់សម័យ មានស្រមោល (Shadow) និងមាន Background ពណ៌ Gradient ស្រស់ស្អាត។"</p>
-                        </div>
-                    ៣. ពេល AI សរសេរកូដចេញមកចប់ វាមានកូដអក្សរអង់គ្លេសញឹកៗ។ សូមកុំខ្វល់! គ្រាន់តែចុចប៊ូតុង <strong>Copy code</strong> នៅជ្រុងខាងស្តាំខាងលើនៃប្រអប់កូដនោះ។<br>
-                    ៤. បើកកម្មវិធី <strong>Notepad</strong> នៅក្នុងកុំព្យូទ័ររបស់អ្នក (ចុច Start រួចវាយពាក្យ Notepad)។<br>
-                    ៥. ចុច Paste (Ctrl+V) កូដដែលទើប Copy នោះចូលក្នុង Notepad។<br>
-                    ៦. ចុច File > Save As... ដាក់ឈ្មោះថា <strong>Random.html</strong> (ចាំបាច់ត្រូវមានពាក្យ .html នៅចុងបញ្ចប់) ហើយត្រង់ Save as type: ជ្រើសរើសយក <strong>All Files (*.*)</strong><br>
-                    ៧. ចុច Save។ ឥឡូវនេះសូមទៅចុចបើក File ដែលអ្នកទើបតែ Save នោះ វានឹងលោតចេញជាកម្មវិធីកោះហៅឈ្មោះសិស្សយ៉ាងឡូយ ដែលជាស្នាដៃរបស់អ្នកផ្ទាល់!
-                </div>
-            </div>
-
-            <div id="s5" class="section">
-                <h1>៥. ការបង្កើត Gems (ជំនួយការផ្ទាល់ខ្លួន)</h1>
-                <p>តើលោកគ្រូអ្នកគ្រូហត់នឿយនឹងការវាយ Prompt ប្រាប់តួនាទី និងក្បួនខ្នាតទៅកាន់ AI ដដែលៗរាល់ថ្ងៃមែនទេ? <strong>Gems នៅក្នុង Google Gemini</strong> (សម្រាប់គណនី Advanced) គឺជាមុខងារដែលអនុញ្ញាតឲ្យលោកគ្រូអ្នកគ្រូបង្កើត AI ផ្ទាល់ខ្លួនមួយ ដែលយើងបាន "បញ្ចូលខួរក្បាល និងចរិតលក្ខណៈ" ទុកជាមុន។</p>
-
-                <h3><i class="fas fa-user-friends"></i> គំនិតបង្កើត Gems សម្រាប់គ្រូបង្រៀនមានដូចជា៖</h3>
-                <ul>
-                    <li><strong>Gem គ្រូចេញវិញ្ញាសា៖</strong> យើងប្រាប់វាទុកជាមុនថាត្រូវចេញសំនួររបៀបម៉េច។ ពេលយើងប្រើ យើងគ្រាន់តែវាយពាក្យ "មេរៀនរស្មីសំយោគ" វានឹងរៀបចំវិញ្ញាសាចេញមកមួយសន្លឹកពេញភ្លាម ដោយមិនបាច់យើងបញ្ជាអីច្រើនទៀតទេ។</li>
-                    <li><strong>Gem អ្នកកែវេយ្យាករណ៍ និងរចនាបថ៖</strong> គ្រាន់តែទម្លាក់អត្ថបទចូល វានឹងកែពាក្យខុសអក្ខរាវិរុទ្ធខ្មែរ ឬកែប្រយោគឲ្យទៅជាទម្រង់រដ្ឋបាល ដោយស្វ័យប្រវត្តិ។</li>
-                </ul>
-
-                <div class="step-box">
-                    <div class="step-title">របៀបបង្កើត Gem ដ៏មានប្រសិទ្ធភាព៖</div>
-                    <p>នៅពេលលោកគ្រូអ្នកគ្រូចុចបង្កើត Gem វានឹងមានប្រអប់ធំមួយឈ្មោះថា <strong>Instructions</strong>។ ទីនេះមិនមែនជាកន្លែងសួរសំណួរទេ តែវាជាកន្លែងសរសេរ "ច្បាប់វិន័យ" ដែល Gem នោះត្រូវអនុវត្តតាមមួយជីវិត។ ឧទាហរណ៍ ការបង្កើត Gem ចេញវិញ្ញាសា៖</p>
-                    <div class="prompt-box" style="margin-top: 10px;">
-                        <p>"អ្នកគឺជាជំនួយការដ៏តឹងរ៉ឹងផ្នែកចេញវិញ្ញាសាគណិតវិទ្យាសម្រាប់វិទ្យាល័យ។ កាតព្វកិច្ចតែមួយគត់របស់អ្នកគឺ៖ រាល់ពេលដែលខ្ញុំប្រាប់ពីចំណងជើងមេរៀន អ្នកត្រូវបង្កើតលំហាត់ប្រឡងចំនួន ១០ ដែលបែងចែកជា ៣កម្រិតជានិច្ច (ងាយ ៣, មធ្យម ៤, ពិបាក ៣)។ <br><br>
-                        វិន័យដែលត្រូវអនុវត្តដាច់ខាត៖<br>
-                        ១. អ្នកមិនត្រូវនិយាយពាក្យសួស្តី ឬពន្យល់អ្វីវែងឆ្ងាយនៅដើមទីឡើយ គឺត្រូវចេញវិញ្ញាសាមកតែម្តង។<br>
-                        ២. រាល់លំហាត់ទាំងអស់ត្រូវតែមានចម្លើយ និងរបៀបដោះស្រាយយ៉ាងលម្អិត ប៉ុន្តែត្រូវដាក់វានៅទំព័របន្ទាប់ (ខាងក្រោមគេបង្អស់) ដើម្បីកុំឲ្យសិស្សឃើញចម្លើយមុនធ្វើលំហាត់។<br>
-                        ៣. ប្រើប្រាស់ភាសាខ្មែរឲ្យបានត្រឹមត្រូវបំផុតតាមវចនានុក្រមសម្តេចជួនណាត។"</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="s6" class="section">
-                <h1>៦. ការបង្វឹកស៊ីជម្រៅក្នុង Google AI Studio</h1>
-                <p>ប្រសិនបើលោកគ្រូអ្នកគ្រូចង់ក្លាយជាអ្នកជំនាញ AI ពេញតួ <strong>Google AI Studio (aistudio.google.com)</strong> គឺជាកន្លែងដែលត្រូវទៅ។ វាប្រៀបដូចជា "ផ្ទះបាយផ្នែកខាងក្រោយ" ដែលអនុញ្ញាតឲ្យយើងចូលទៅកាច់ចង្កូត ឬកំណត់គ្រឿងផ្សំរបស់ AI ដល់ឫសគល់តែម្តង មិនមែនគ្រាន់តែជាអ្នកប្រើប្រាស់ពីខាងក្រៅទៀតទេ។</p>
-
-                <h3>១. System Instructions (ការណែនាំប្រព័ន្ធកម្រិតខ្ពស់)</h3>
-                <p>វាមិនមែនជា Prompt ធម្មតាទេ តែវាជា <strong>វិន័យដែក (Core Behavior)</strong> ដែល AI ត្រូវតែគោរព ទោះបីជាអ្នកប្រើប្រាស់ព្យាយាមវាយសួរ ឬបោកបញ្ឆោតវាយ៉ាងណាក៏ដោយ។</p>
-                <div class="concept-box">
-                    <strong>ឧទាហរណ៍ System Instruction សម្រាប់ភ្ជាប់ក្នុងសាលា Rean.org៖</strong><br>
-                    "អ្នកគឺជា AI តំណាងឲ្យសាលា Rean.org។ តួនាទីរបស់អ្នកគឺឆ្លើយតបតែរឿងទាក់ទងនឹងការសិក្សា គរុកោសល្យ និងវិន័យសាលាប៉ុណ្ណោះ។ ប្រសិនបើសិស្សសួររឿងនយោបាយ សាសនា រឿងហ្គេម ឬរឿងកម្សាន្តដែលមិនទាក់ទងនឹងការរៀនសូត្រ អ្នកត្រូវតែបដិសេធដោយគួរសមបំផុត ហើយទាញពួកគេឲ្យត្រឡប់មកពិភាក្សាពីរឿងរៀនសូត្រវិញជានិច្ច។ អ្នកមិនត្រូវនិយាយភាសាផ្សេងក្រៅពីភាសាខ្មែរឡើយ។"
-                </div>
-
-                <h3>២. ការប្រើប្រាស់មុខងារ Temperature (សីតុណ្ហភាពនៃការគិត)</h3>
-                <p>នៅក្នុង AI Studio មានប្រអប់មួយនៅខាងស្តាំឲ្យយើងទាញសារ៉េលេខ <strong>Temperature ចាប់ពី 0.0 ដល់ 2.0</strong>។ តើវាមានន័យដូចម្តេច? វាគឺជាការកំណត់កម្រិតនៃការ "ស្រមើស្រមៃ ឬការប្រថុយប្រថាន" របស់ AI។</p>
-                <ul>
-                    <li><strong>Temperature ចន្លោះ 0.0 ដល់ 0.3៖</strong> AI នឹងឆ្លើយតបបែបត្រង់ៗ ម៉ឺងម៉ាត់ មានរបៀបរៀបរយ ដូចម៉ាស៊ីនគិតលេខ។ វាជាការកំណត់ដ៏ល្អបំផុតសម្រាប់៖ <strong>មុខវិជ្ជាគណិតវិទ្យា រូបវិទ្យា ការសរសេរកូដ និងការបូកសរុបទិន្នន័យពិន្ទុ</strong> ព្រោះយើងមិនចង់ឲ្យ AI ស្រមើស្រមៃបង្កើតចម្លើយខុសពីការពិតនោះទេ។</li>
-                    <li><strong>Temperature ចន្លោះ 0.7 ដល់ 1.0 ឡើងទៅ៖</strong> AI នឹងចាប់ផ្តើមប្រើការស្រមើស្រមៃខ្ពស់ សរសេរមានទឹកដម ប្រើពាក្យប្លែកៗ និងមានគំនិតច្នៃប្រឌិត។ វាជាការកំណត់ដ៏ល្អបំផុតសម្រាប់៖ <strong>មុខវិជ្ជាអក្សរសាស្ត្រ ការតែងសេចក្តី រកគំនិតធ្វើគម្រោងថ្មីៗ ឬសរសេរកំណាព្យ</strong> ជាដើម។</li>
-                </ul>
-            </div>
-
-            <div id="s7" class="section">
-                <h1><i class="fas fa-tools" style="color: var(--accent2);"></i> ៧. ឧបករណ៍បង្កើត Prompt ដោយស្វ័យប្រវត្តិ</h1>
-                <p>ដើម្បីសម្រួលដល់ការងារ កុំបារម្ភប្រសិនបើលោកគ្រូអ្នកគ្រូទន្ទេញរូបមន្ត "៥ចំណុច" មិនចាំ! លោកគ្រូអ្នកគ្រូគ្រាន់តែបំពេញចន្លោះនីមួយៗខាងក្រោមឲ្យបានខ្លីៗ រួចប្រព័ន្ធរបស់យើងនឹងចងក្រងវាទៅជា <strong>Prompt ដ៏មានអានុភាព និងត្រូវតាមស្តង់ដារមួយ</strong> ដើម្បីឲ្យលោកគ្រូអ្នកគ្រូ Copy យកទៅប្រើប្រាស់ក្នុង AI ភ្លាមៗ។</p>
-
-                <div class="form-group">
-                    <label>១. 🎭 តួនាទី (Role)៖ តើចង់ឲ្យ AI ដើរតួជាអ្វី?</label>
-                    <textarea id="inp-role" rows="2" placeholder="ឧ. ចូរអ្នកដើរតួជាគ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាថ្នាក់ទី១២ដ៏ពូកែម្នាក់ប្រចាំវិទ្យាល័យ។"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>២. 🎯 កិច្ចការដែលត្រូវធ្វើ (Task)៖ ចង់បញ្ជាឲ្យធ្វើអីពិតប្រាកដ?</label>
-                    <textarea id="inp-task" rows="2" placeholder="ឧ. សូមជួយបង្កើតលំហាត់អនុវត្តន៍ចំនួន ៥ ទាក់ទងនឹងមេរៀនលីមីតនៃអនុគមន៍។"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>៣. 🌍 បរិបទ (Context)៖ សម្រាប់សិស្សបែបណា? ស្ថានភាពបែបណា?</label>
-                    <textarea id="inp-context" rows="2" placeholder="ឧ. លំហាត់នេះគឺសម្រាប់សិស្សដែលរៀនរាងយឺត ទើបរៀនមេរៀននេះដំបូង ដូច្នេះពួកគេត្រូវការការពន្យល់មួយជំហានម្តងៗឲ្យច្បាស់លាស់។"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>៤. 📊 ទម្រង់លទ្ធផល (Format)៖ ចង់ឲ្យចេញមកជារាងអី?</label>
-                    <textarea id="inp-format" rows="2" placeholder="ឧ. សូមរៀបចំវាជាទម្រង់តារាង និងមានផ្តល់ចម្លើយលម្អិតនៅខាងក្រោមនៃលំហាត់នីមួយៗជានិច្ច។"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>៥. 🚫 បម្រាម ឬ ដែនកំណត់ (Constraints)៖ អ្វីដែលហាមដាច់ខាត!</label>
-                    <textarea id="inp-constraint" rows="2" placeholder="ឧ. សូមកុំប្រើពាក្យបច្ចេកទេសសាកលវិទ្យាល័យដែលពិបាកយល់ពេក និងហាមដាក់លំហាត់ដែលមានចម្លើយវែងជាងមួយទំព័រ។"></textarea>
-                </div>
-
-                <button class="btn-generate" onclick="generatePrompt()">
-                    <i class="fas fa-magic"></i> ចុចបង្កើត Prompt របស់អ្នកនៅទីនេះ
-                </button>
-
-                <div class="result-container">
-                    <div class="result-title">លទ្ធផល Prompt របស់អ្នក (ត្រៀមយកទៅប្រើ)៖</div>
-                    <div id="final-prompt-text" class="result-text">សូមបំពេញព័ត៌មាននៅក្នុងប្រអប់ខាងលើ រួចចុចប៊ូតុង "ចុចបង្កើត Prompt របស់អ្នកនៅទីនេះ"...</div>
-                    
-                    <button id="copy-btn" class="btn-copy" onclick="copyToClipboardText()">
-                        <i class="fas fa-copy"></i> Copy យកទៅ Paste ក្នុង Google AI / Gemini
-                    </button>
-                </div>
-            </div>
-
-            <!-- ================= សៀវភៅទី២ (Book 2 Content) ពេញលេញ ================= -->
-            <div id="book2" class="section" style="max-width: 1000px; padding: 0; background: transparent; box-shadow: none;">
-                
-                <!-- Hero / Cover -->
-                <section class="bg-gradient-to-br from-emerald-600 to-teal-800 rounded-3xl p-8 md:p-12 text-white shadow-xl relative overflow-hidden mb-12">
-                    <div class="absolute -right-10 -top-10 opacity-10">
-                        <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path></svg>
-                    </div>
-                    <div class="relative z-10 text-center">
-                        <span class="bg-emerald-500/30 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wider uppercase backdrop-blur-sm border border-emerald-400/50">សៀវភៅទី២</span>
-                        <h2 style="font-family: 'Moul', serif;" class="text-3xl md:text-5xl mt-6 mb-6 leading-tight">វិធីសាស្ត្រប្រើប្រាស់ Google AI Studio <br> <span class="text-emerald-200">សម្រាប់ការងាររដ្ឋបាលសាលា</span></h2>
-                        <p class="text-emerald-50 text-lg md:text-xl max-w-2xl mx-auto font-light">ជួយសន្សំសំចៃពេលវេលា ធានាភាពត្រឹមត្រូវ និងពង្រឹងគុណភាពឯកសារផ្លូវការក្នុងស្ថាប័នអប់រំរបស់អ្នក។</p>
-                    </div>
-                </section>
-
-                <!-- Section: Formula -->
-                <section class="mb-12">
-                    <h2 style="font-family: 'Moul', serif;" class="text-2xl text-slate-800 border-l-4 border-emerald-500 pl-4 mb-6">រូបមន្ត ៥ ចំណុច & System Prompt</h2>
-                    <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
-                        <p class="mb-6 text-lg text-slate-600 leading-relaxed">ដើម្បីឱ្យ AI យល់ពីការងាររដ្ឋបាល សូមប្រើរូបមន្ត <strong>R-C-T-F-T</strong>៖ <br>
-                        <span class="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded mt-2 font-bold text-sm">Role (តួនាទី)</span>
-                        <span class="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded mt-2 font-bold text-sm">Context (បរិបទ)</span>
-                        <span class="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded mt-2 font-bold text-sm">Task (ភារកិច្ច)</span>
-                        <span class="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded mt-2 font-bold text-sm">Format (ទម្រង់)</span>
-                        <span class="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded mt-2 font-bold text-sm">Tone (សម្លេង)</span>
-                        </p>
-                        
-                        <div class="bg-amber-50/50 rounded-2xl p-6 border border-amber-200 mt-4 relative group shadow-inner">
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
-                                <h4 class="font-bold text-amber-900 flex items-center text-lg">
-                                    <i class="fas fa-robot mr-2 text-amber-600"></i> System Instructions
-                                </h4>
-                                <button onclick="copyElementText(this, 'sys-prompt')" class="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md">
-                                    <i class="fas fa-copy mr-2"></i> Copy Prompt
-                                </button>
-                            </div>
-                            <div id="sys-prompt" class="font-mono text-sm sm:text-base text-slate-700 leading-relaxed bg-white p-5 rounded-xl border border-amber-100 shadow-sm whitespace-pre-wrap">អ្នកគឺជាប្រធានរដ្ឋបាលសាលារៀនដ៏ឆ្នើមម្នាក់ និងមានបទពិសោធន៍ខ្ពស់។ ភារកិច្ចចម្បងរបស់អ្នកគឺជួយរៀបចំលិខិតបទដ្ឋានគតិយុត្ត សេចក្តីជូនដំណឹង របាយការណ៍ និងឆ្លើយតបទៅកាន់មាតាបិតាសិស្ស ឬបុគ្គលិក ប្រកបដោយវិជ្ជាជីវៈ។
-
-គោលការណ៍ត្រូវអនុវត្ត៖
-1. រាល់ការសរសេរលិខិត ត្រូវមានទម្រង់ផ្លូវការ (មានកាលបរិច្ឆេទ, កម្មវត្ថុ, សេចក្តីផ្តើម, ខ្លឹមសារ, និងបញ្ចប់)។
-2. រាល់ការឆ្លើយតបសំណួរមាតាបិតា ត្រូវទន់ភ្លន់ មានសុជីវធម៌ និងផ្តល់ដំណោះស្រាយច្បាស់លាស់។
-3. ការតាក់តែងលិខិតរដ្ឋបាលទាក់ទងនឹងបុគ្គលិក ត្រូវរក្សាការសម្ងាត់ និងមានភាពម៉ឺងម៉ាត់។
-4. រាល់ពេលស្នើសុំបង្កើតរបាយការណ៍ទិន្នន័យ ត្រូវរៀបចំជាទម្រង់ 'តារាង (Table)'។
-5. ប្រសិនបើព័ត៌មានមិនច្បាស់លាស់ ត្រូវសួរដេញដោលបញ្ជាក់សិន ហាមទាយស្មាន។
-6. ប្រើប្រាស់ភាសាខ្មែរផ្លូវការ ត្រឹមត្រូវតាមអក្ខរាវិរុទ្ធជានិច្ច។</div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Section: Settings -->
-                <section class="flex flex-col md:flex-row gap-6 mb-12">
-                    <div class="bg-slate-800 text-white rounded-3xl p-8 w-full md:w-1/2 relative overflow-hidden shadow-lg">
-                        <h3 style="font-family: 'Moul', serif;" class="text-2xl mb-4 relative z-10 text-emerald-300">ការកំណត់ Model</h3>
-                        <p class="text-slate-300 text-base relative z-10 leading-relaxed mb-6">ដើម្បីឱ្យឯកសាររដ្ឋបាលត្រឹមត្រូវ កុំឱ្យ AI ចេះតែប្រឌិត ឬប្រើពាក្យសិល្បៈពេក៖</p>
-                        <div class="relative z-10 bg-slate-900/50 p-4 rounded-xl border border-slate-700 text-center">
-                            <span class="block text-sm text-slate-400 mb-1">សូមកំណត់ Temperature ត្រឹម៖</span>
-                            <span class="text-4xl font-bold text-emerald-400 font-mono">0.1 - 0.3</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 text-emerald-900 rounded-3xl p-8 w-full md:w-1/2 border border-emerald-100 shadow-sm relative">
-                        <h3 style="font-family: 'Moul', serif;" class="text-2xl mb-4 relative z-10 text-emerald-800">អាថ៌កំបាំងទិន្នន័យចាស់</h3>
-                        <p class="text-slate-700 text-base leading-relaxed relative z-10 mb-4">កុំឱ្យ AI គិតទម្រង់ថ្មីខ្លួនឯង បើអ្នកមានទម្រង់ Word/Excel ចាស់ គ្រាន់តែ <strong>Copy ក្បាលតារាង</strong> បញ្ចូលទៅវា រួចប្រាប់វាថា៖</p>
-                        <div class="bg-white p-4 rounded-xl border border-emerald-200 text-slate-600 font-mono text-sm shadow-sm relative z-10">
-                            "ខាងក្រោមជាទម្រង់របាយការណ៍សាលាខ្ញុំ៖[Paste ចូល]។ សូមយកទិន្នន័យថ្មីនេះ បញ្ចូលក្នុងទម្រង់នោះឱ្យដូចដើមបេះបិទ!"
-                        </div>
-                    </div>
-                </section>
-
-                <!-- 10 Examples Header -->
-                <div class="flex items-center gap-6 py-8">
-                    <hr class="flex-grow border-emerald-200">
-                    <div class="flex flex-col items-center">
-                        <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full mb-2 tracking-widest uppercase">Copy & Paste</span>
-                        <h2 style="font-family: 'Moul', serif;" class="text-2xl md:text-3xl text-emerald-800 text-center">ឧទាហរណ៍ជាក់ស្តែងទាំង ១០</h2>
-                    </div>
-                    <hr class="flex-grow border-emerald-200">
-                </div>
-
-                <!-- Container សម្រាប់ឧទាហរណ៍ទាំង១០ -->
-                <div id="examples-container" class="space-y-10"></div>
-
-            </div>
-
-            <!-- របៀបបន្ថែមសៀវភៅទី៣ (បង្កើត div ថ្មីនៅទីនេះ) -->
-            <!-- 
-            <div id="book3" class="section">
-                <h1>ចំណងជើងសៀវភៅទី៣</h1>
-                <p>ខ្លឹមសារសៀវភៅទី៣ ដាក់នៅទីនេះ...</p>
-            </div> 
-            -->
-
-            <!-- ================= User Video Panel (អានតែ) ================= -->
-            <div id="s-user-video" class="section">
-                <div style="background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white; padding: 16px 20px; border-radius: 12px; margin-bottom: 25px;">
-                    <h2 style="font-family: 'Moul', serif; font-size: 16px; margin-bottom: 3px;"><i class="fas fa-play-circle"></i> Video មេរៀន</h2>
-                    <p style="font-size: 12px; opacity: 0.85; margin:0;">មើល Video ណែនាំពី Google Gemini AI</p>
-                </div>
-                <div id="user-video-grid" class="video-grid">
-                    <!-- Videos rendered by JS -->
-                </div>
-            </div>
-
-            <!-- ================= Admin Video Panel (គ្រប់គ្រង) ================= -->
-            <div id="s-admin-video" class="section">
-                <div class="admin-toolbar">
-                    <div class="toolbar-left">
-                        <h2><i class="fas fa-video"></i> គ្រប់គ្រង Video YouTube</h2>
-                        <p>បន្ថែម កែ ឬលុប Video មេរៀន (Admin Only)</p>
-                    </div>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <button class="btn-add-video" onclick="openAddVideoModal()">
-                            <i class="fas fa-plus-circle"></i> បន្ថែម Video ថ្មី
-                        </button>
-                        <button class="btn-admin-logout" onclick="adminLogout()">
-                            <i class="fas fa-lock"></i> ចាកចេញ Admin
-                        </button>
-                    </div>
-                </div>
-                <div id="video-grid-container" class="video-grid">
-                    <!-- Videos rendered here by JS -->
-                </div>
-            </div>
-
-            <!-- ================= Admin Users Panel ================= -->
-            <div id="s-admin-users" class="section">
-                <div class="admin-toolbar">
-                    <div class="toolbar-left">
-                        <h2><i class="fas fa-users-cog"></i> គ្រប់គ្រងអ្នករៀន & Reset ឧបករណ៍</h2>
-                        <p>អនុម័ត | បដិសេធ | សំណើ Reset | កំណត់ Reset ខ្លួនឯង 12 ដង</p>
-                    </div>
-                    <button class="btn-add-video" onclick="renderAdminUsers()">
-                        <i class="fas fa-sync-alt"></i> ផ្ទុកឡើងវិញ
-                    </button>
-                </div>
-
-                <!-- ── Tab Buttons ── -->
-                <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
-                    <button id="tab-pending-btn" onclick="showUsersTab('pending')"
-                        style="padding:9px 18px;border-radius:9px;border:2px solid #1a73e8;background:#1a73e8;color:white;font-weight:bold;cursor:pointer;font-size:14px;">
-                        <i class="fas fa-clock"></i> រង់ចាំអនុម័ត <span id="pending-count" style="background:white;color:#1a73e8;border-radius:10px;padding:1px 7px;margin-left:5px;font-size:12px;"></span>
-                    </button>
-                    <button id="tab-active-btn" onclick="showUsersTab('active')"
-                        style="padding:9px 18px;border-radius:9px;border:2px solid #dadce0;background:white;color:#5f6368;font-weight:bold;cursor:pointer;font-size:14px;">
-                        <i class="fas fa-users"></i> អ្នករៀនទាំងអស់
-                    </button>
-                    <button id="tab-reset-btn" onclick="showUsersTab('reset')"
-                        style="padding:9px 18px;border-radius:9px;border:2px solid #dadce0;background:white;color:#5f6368;font-weight:bold;cursor:pointer;font-size:14px;">
-                        <i class="fas fa-unlock-alt"></i> សំណើ Reset <span id="reset-request-count" style="background:#fff3e0;color:#e65100;border-radius:10px;padding:1px 7px;margin-left:5px;font-size:12px;"></span>
-                    </button>
-                </div>
-
-                <div id="admin-users-container">
-                    <div class="empty-video-state"><i class="fas fa-spinner fa-spin"></i><p>សូមរង់ចាំ...</p></div>
-                </div>
-            </div>
-
-        </main>
+    <div class="contact">
+      រាល់បញ្ហាសូមទាក់ទងមក Telegram
+      <br />
+      <a class="tg-link" href="https://t.me/mrhonmom" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+        017476664 · @mrhonmom
+      </a>
     </div>
-
-    <!-- ================= Add/Edit Video Modal ================= -->
-    <div id="video-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h3 id="modal-title"><i class="fas fa-plus-circle"></i> បន្ថែម Video ថ្មី</h3>
-            <input type="hidden" id="editing-video-id">
-            <label style="font-weight:bold; color:var(--primary); font-size:14px; display:block; margin-bottom:6px;">ចំណងជើង Video *</label>
-            <input type="text" id="video-title-input" class="form-input" placeholder="ឧ. មេរៀន AI ស្វ័យប្រវត្តិ ភាគ ១">
-            <label style="font-weight:bold; color:var(--primary); font-size:14px; display:block; margin-bottom:6px;">YouTube Link *</label>
-            <input type="text" id="video-url-input" class="form-input" placeholder="ឧ. https://www.youtube.com/watch?v=xxxxx">
-            <label style="font-weight:bold; color:var(--primary); font-size:14px; display:block; margin-bottom:6px;">ការពណ៌នា (ស្រេចចិត្ត)</label>
-            <textarea id="video-desc-input" rows="3" placeholder="ពណ៌នាខ្លីអំពី Video នេះ..."></textarea>
-            <label style="font-weight:bold; color:var(--primary); font-size:14px; display:block; margin-bottom:6px;">លំដាប់បង្ហាញ (តូចបង្ហាញមុន)</label>
-            <input type="number" id="video-order-input" class="form-input" placeholder="0" value="0" min="0">
-            <div id="video-modal-alert" class="alert-msg alert-error" style="display:none;"></div>
-            <div class="modal-footer">
-                <button class="btn-cancel-modal" onclick="closeVideoModal()"><i class="fas fa-times"></i> បោះបង់</button>
-                <button id="btn-save-video" class="btn-save-video" onclick="saveVideo()"><i class="fas fa-save"></i> រក្សាទុក Video</button>
-            </div>
-        </div>
-    </div>
-<!-- ================= កូដ JavaScript / Supabase / Telegram ================= -->
-    <script>
-        // ១. បញ្ចូល URL និង KEY របស់ Supabase
-        const SUPABASE_URL = 'https://jmyfcgtvwlbtzfxgmyai.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpteWZjZ3R2d2xidHpmeGdteWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NzEzODcsImV4cCI6MjA5MTE0NzM4N30.9CD_yAFGBTylqPjivqSHoyTYvL_b1PP27WUi2yL9CbQ';
-        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // ២. កំណត់ Telegram Bot នៅទីនេះ
-        const TELEGRAM_BOT_TOKEN = 'ដាក់_TOKEN_របស់_BOT_នៅទីនេះ'; // ឧ. 7123456789:AAH...
-        const TELEGRAM_CHAT_ID = 'ដាក់_ID_របស់លោកគ្រូនៅទីនេះ'; // ឧ. 123456789
-
-        const ADMIN_TELEGRAM_USERNAME = 'mrhonmom';
-        const ADMIN_TELEGRAM_LINK = `https://t.me/${ADMIN_TELEGRAM_USERNAME}`;
-        const ADMIN_TELEGRAM_QR = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(ADMIN_TELEGRAM_LINK)}`;
-
-        // ================= មុខងារសុវត្ថិភាព (Device ID) =================
-        function getDeviceType() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'mobile' : 'pc';
-        }
-
-        function getLocalDeviceId() {
-            let deviceId = localStorage.getItem('rean_device_id');
-            if (!deviceId) {
-                deviceId = 'dev_' + Math.random().toString(36).substr(2, 12);
-                localStorage.setItem('rean_device_id', deviceId);
-            }
-            return deviceId;
-        }
-
-        async function getBrowserFingerprint() {
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                ctx.textBaseline = 'top';
-                ctx.font = '14px Battambang, Arial';
-                ctx.fillText('Rean.org trial device check', 2, 2);
-                const raw = [
-                    navigator.userAgent, navigator.language, navigator.platform,
-                    screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
-                    Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    navigator.hardwareConcurrency || '', navigator.deviceMemory || '',
-                    canvas.toDataURL()
-                ].join('|');
-                const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
-                return 'fp_' + Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-            } catch (e) {
-                // fallback នៅពេល browser មិនគាំទ្រ crypto/canvas
-                return 'fp_fallback_' + btoa(navigator.userAgent + '|' + screen.width + 'x' + screen.height).replace(/[^a-zA-Z0-9]/g,'').slice(0,48);
-            }
-        }
-
-        // ── Normalize phone: "0123456789" ↔ "+855123456789" ──────────
-        function normalizePhone(raw) {
-            let p = String(raw).replace(/[\s\-\(\)\.]/g, '');
-            if (p.startsWith('+855')) p = '0' + p.slice(4);
-            else if (/^855\d{8,9}$/.test(p)) p = '0' + p.slice(3);
-            return p;
-        }
-        function toIntlPhone(local) { return '+855' + local.slice(1); }
-
-        // ឆែកមើលពេលបើកវេបសាយ 
-        document.addEventListener("DOMContentLoaded", () => {
-            const session = localStorage.getItem("trainee_phone");
-            if (session) validateStoredSession(session);
-            renderBook2Examples(); // បង្ហាញឧទាហរណ៍សៀវភៅទី២ទាំង១០
-        });
-
-        async function validateStoredSession(phone) {
-            try {
-                const localPhone = normalizePhone(phone);
-                const intlPhone  = toIntlPhone(localPhone);
-                const { data: rec } = await db.from('trainees')
-                    .select('phone, is_trial, trial_expires_at, is_approved')
-                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
-                    .maybeSingle();
-                if (!rec || rec.is_approved === false) { logout(); return; }
-                if (rec.is_trial && rec.trial_expires_at && new Date(rec.trial_expires_at).getTime() <= Date.now()) {
-                    showTrialExpiredModal();
-                    showAlert(document.getElementById('login-alert'), '⏰ Trial ៥ម៉ោងរបស់អ្នកបានផុតកំណត់ហើយ។ សូមឆាតទៅ Admin Telegram @mrhonmom ដើម្បីបន្ត។', false);
-                    return;
-                }
-                grantAccess(rec.phone, { trialExpiresAt: rec.trial_expires_at, isTrial: rec.is_trial });
-            } catch (e) {
-                console.warn('Session validation skipped:', e.message);
-            }
-        }
-
-        function showRegister() {
-            document.getElementById('login-container').style.display = 'none';
-            document.getElementById('register-container').style.display = 'block';
-            document.getElementById('reg-alert').style.display = 'none';
-        }
-
-        function showLogin() {
-            document.getElementById('register-container').style.display = 'none';
-            document.getElementById('login-container').style.display = 'block';
-            document.getElementById('login-alert').style.display = 'none';
-        }
-
-        // ================= មុខងារ Login & Device Check =================
-        async function login() {
-            const rawPhone = document.getElementById('login-phone').value.trim();
-            const alertBox = document.getElementById('login-alert');
-            const btn = document.getElementById('btn-login');
-
-            if (!rawPhone) { showAlert(alertBox, 'សូមបញ្ចូលលេខទូរសព្ទរបស់អ្នក!', false); return; }
-
-            btn.disabled = true; btn.innerText = "កំពុងពិនិត្យ...";
-
-            // Normalize: handle both "0123..." and "+85523..." formats
-            const localPhone = normalizePhone(rawPhone);
-            const intlPhone  = toIntlPhone(localPhone);
-
-            try {
-                // ── Step 1: ពិនិត្យ users table (ប្រព័ន្ធចុះឈ្មោះចម្បង) ──
-                const { data: userRec } = await db.from('users')
-                    .select('id, name, phone, status')
-                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
-                    .maybeSingle();
-
-                let traineeRec = null;
-
-                if (userRec && userRec.status === 'approved') {
-                    // ── User approved ក្នុង main system → auto-sync ចូល trainees ──
-                    const { data: existing } = await db.from('trainees')
-                        .select('*')
-                        .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
-                        .maybeSingle();
-
-                    if (!existing) {
-                        // បង្កើត trainees record ថ្មី
-                        await db.from('trainees').insert([{
-                            phone: localPhone, full_name: userRec.name,
-                            is_approved: true, course_id: COURSE_ID
-                        }]);
-                        traineeRec = { phone: localPhone, phone_device_id: null, pc_device_id: null };
-                    } else {
-                        // Sync: ធ្វើ approve បើមិនទាន់ approved
-                        if (!existing.is_approved) {
-                            await db.from('trainees').update({ is_approved: true }).eq('phone', existing.phone);
-                        }
-                        traineeRec = existing;
-                    }
-
-                } else {
-                    // ── Step 2: ពិនិត្យ trainees table (ចុះឈ្មោះដោយដៃ) ──
-                    const { data: existing } = await db.from('trainees')
-                        .select('*')
-                        .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
-                        .maybeSingle();
-
-                    if (!existing) {
-                        showAlert(alertBox, 'រកមិនឃើញលេខនេះទេ។ សូមស្នើសុំចុះឈ្មោះ!', false);
-                        btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ"; return;
-                    }
-                    if (!existing.is_approved) {
-                        showAlert(alertBox, 'គណនីរបស់អ្នកកំពុងរង់ចាំការអនុម័តពីលោកគ្រូ។', false);
-                        btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ"; return;
-                    }
-                    traineeRec = existing;
-                }
-
-                // ── Step 2.5: Trial ៥ម៉ោង Check ─────────────────────────
-                if (traineeRec.is_trial) {
-                    if (traineeRec.trial_expires_at && new Date(traineeRec.trial_expires_at).getTime() <= Date.now()) {
-                        showTrialExpiredModal();
-                        showAlert(alertBox, '⏰ Trial ៥ម៉ោងរបស់អ្នកបានផុតកំណត់ហើយ។ សូមឆាតទៅ Admin Telegram @mrhonmom ដើម្បីបន្ត។', false);
-                        btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ"; return;
-                    }
-                    const fp = await getBrowserFingerprint();
-                    if (traineeRec.trial_device_key && traineeRec.trial_device_key !== fp) {
-                        showAlert(alertBox, '⛔ Trial នេះភ្ជាប់ជាមួយឧបករណ៍/Browser ដើមប៉ុណ្ណោះ។ មិនអាចប្តូរឧបករណ៍សាកម្ដងទៀតបានទេ។', false);
-                        btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ"; return;
-                    }
-                }
-
-                // ── Step 3: Device Check ──────────────────────────────────
-                const deviceType    = getDeviceType();
-                const localDeviceId = getLocalDeviceId();
-                const dbColumn      = deviceType === 'mobile' ? 'phone_device_id' : 'pc_device_id';
-                const deviceNameKh  = deviceType === 'mobile' ? 'ទូរសព្ទ' : 'កុំព្យូទ័រ';
-                const recPhone      = traineeRec.phone;
-
-                if (!traineeRec[dbColumn]) {
-                    await db.from('trainees').update({ [dbColumn]: localDeviceId }).eq('phone', recPhone);
-                    grantAccess(recPhone);
-                } else if (traineeRec[dbColumn] === localDeviceId) {
-                    grantAccess(recPhone);
-                } else {
-                    showDeviceLockAlert(alertBox, recPhone, deviceNameKh, dbColumn, localDeviceId);
-                }
-
-            } catch (err) {
-                showAlert(alertBox, 'Error: ' + err.message, false);
-                console.error(err);
-            }
-            btn.disabled = false; btn.innerText = "ចូលមើលឯកសារ";
-        }
-        
-           function grantAccess(phone, meta = {}) {
-            localStorage.setItem("trainee_phone", phone);
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('main-app').style.display = 'flex';
-            if (meta.isTrial && meta.trialExpiresAt) showTrialBanner(meta.trialExpiresAt);
-            else hideTrialBanner();
-            
-            // បន្ថែមកូដ ២ បន្ទាត់នេះដើម្បីឲ្យវាស្គាល់ Admin និង Video
-            currentUserPhone = phone;
-            updateVideoMenuVisibility();
-        }
-
-        let trialTimer = null;
-        function showTrialBanner(expiresAt) {
-            const banner = document.getElementById('trial-banner');
-            if (!banner) return;
-            banner.style.display = 'block';
-            if (trialTimer) clearInterval(trialTimer);
-            const tick = () => {
-                const leftMs = new Date(expiresAt).getTime() - Date.now();
-                if (leftMs <= 0) {
-                    banner.innerHTML = '<i class="fas fa-clock"></i> Trial បានផុតកំណត់';
-                    clearInterval(trialTimer);
-                    setTimeout(() => showTrialExpiredModal(), 600);
-                    return;
-                }
-                const h = Math.floor(leftMs / 3600000);
-                const m = Math.floor((leftMs % 3600000) / 60000);
-                banner.innerHTML = `<i class="fas fa-hourglass-half"></i> Trial នៅសល់ ${h}ម៉ោង ${m}នាទី`;
-            };
-            tick();
-            trialTimer = setInterval(tick, 30000);
-        }
-        function hideTrialBanner() {
-            const banner = document.getElementById('trial-banner');
-            if (banner) banner.style.display = 'none';
-            if (trialTimer) clearInterval(trialTimer);
-        }
-
-
-        function showTrialExpiredModal() {
-            localStorage.removeItem("trainee_phone");
-            hideTrialBanner();
-            const auth = document.getElementById('auth-screen');
-            const app = document.getElementById('main-app');
-            if (auth) auth.style.display = 'flex';
-            if (app) app.style.display = 'none';
-            const link = document.getElementById('trial-telegram-link');
-            const qr = document.getElementById('trial-telegram-qr');
-            if (link) link.href = ADMIN_TELEGRAM_LINK;
-            if (qr && !qr.src) qr.src = ADMIN_TELEGRAM_QR;
-            const modal = document.getElementById('trial-expired-modal');
-            if (modal) modal.classList.add('active');
-        }
-
-        function closeTrialExpiredModal() {
-            const modal = document.getElementById('trial-expired-modal');
-            if (modal) modal.classList.remove('active');
-        }
-
-        // ================= Trial ៥ម៉ោង =================
-        async function startTrial() {
-            const rawPhone = document.getElementById('login-phone').value.trim();
-            const alertBox = document.getElementById('login-alert');
-            const btn = document.getElementById('btn-trial');
-            if (!rawPhone) { showAlert(alertBox, 'សូមបញ្ចូលលេខទូរសព្ទមុនចុចសាកល្បង ៥ម៉ោង!', false); return; }
-
-            const localPhone = normalizePhone(rawPhone);
-            const intlPhone  = toIntlPhone(localPhone);
-            const startedAt  = new Date();
-            const expiresAt  = new Date(startedAt.getTime() + TRIAL_HOURS * 60 * 60 * 1000);
-            const deviceType = getDeviceType();
-            const dbColumn   = deviceType === 'mobile' ? 'phone_device_id' : 'pc_device_id';
-            const localDeviceId = getLocalDeviceId();
-
-            btn.disabled = true; btn.innerText = 'កំពុងបង្កើត Trial...';
-            try {
-                const fp = await getBrowserFingerprint();
-
-                // ១) ឧបករណ៍/Browser មួយសាកបានតែម្ដង — ទោះប្តូរលេខទូរសព្ទក៏ដោយ
-                const { data: usedDevice, error: devCheckErr } = await db.from('trial_devices')
-                    .select('phone, trial_started_at, trial_expires_at')
-                    .eq('device_key', fp)
-                    .maybeSingle();
-                if (devCheckErr) throw devCheckErr;
-                if (usedDevice && normalizePhone(usedDevice.phone) !== localPhone) {
-                    showAlert(alertBox, '⛔ ឧបករណ៍/Browser នេះធ្លាប់ប្រើ Trial រួចហើយ។ មិនអាចប្តូរអាខោនសាកម្ដងទៀតបានទេ។', false);
-                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
-                }
-
-                // ២) លេខទូរសព្ទដែលមានគណនីពេញហើយ មិនចាំបាច់ Trial
-                const { data: mainUser } = await db.from('users')
-                    .select('phone, status')
-                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
-                    .maybeSingle();
-                if (mainUser && mainUser.status === 'approved') {
-                    showAlert(alertBox, '✅ លេខនេះមានសិទ្ធិចូលរៀនរួចហើយ។ សូមចុច “ចូលមើលឯកសារ”។', true);
-                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
-                }
-
-                // ៣) ពិនិត្យថាលេខនេះធ្លាប់មាន Trial ឬស្នើចុះឈ្មោះរួចឬនៅ
-                const { data: existing } = await db.from('trainees')
-                    .select('*')
-                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
-                    .maybeSingle();
-
-                if (existing) {
-                    if (existing.is_trial) {
-                        if (existing.trial_expires_at && new Date(existing.trial_expires_at).getTime() > Date.now()) {
-                            if (existing.trial_device_key && existing.trial_device_key !== fp) {
-                                showAlert(alertBox, '⛔ Trial លេខនេះភ្ជាប់ជាមួយឧបករណ៍/Browser ដើមប៉ុណ្ណោះ។', false);
-                                btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
-                            }
-                            grantAccess(existing.phone, { isTrial: true, trialExpiresAt: existing.trial_expires_at });
-                            btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
-                        }
-                        showTrialExpiredModal();
-                        showAlert(alertBox, '⏰ Trial ៥ម៉ោងរបស់លេខនេះបានផុតកំណត់រួចហើយ។ សូមឆាតទៅ Admin Telegram @mrhonmom ដើម្បីបន្ត។', false);
-                        btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
-                    }
-                    showAlert(alertBox, existing.is_approved ? '✅ លេខនេះមានគណនីរួចហើយ។ សូមចុច “ចូលមើលឯកសារ”។' : 'លេខនេះបានស្នើសុំចុះឈ្មោះរួចហើយ។ សូមរង់ចាំ Admin អនុម័ត។', existing.is_approved);
-                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
-                }
-
-                // ៤) Lock device ក្នុង table trial_devices មុន ដើម្បីទប់ការប្តូរអាខោន
-                const { error: lockErr } = await db.from('trial_devices').insert([{
-                    device_key: fp,
-                    phone: localPhone,
-                    trial_started_at: startedAt.toISOString(),
-                    trial_expires_at: expiresAt.toISOString(),
-                    user_agent: navigator.userAgent
-                }]);
-                if (lockErr) {
-                    showAlert(alertBox, '⛔ ឧបករណ៍/Browser នេះធ្លាប់ប្រើ Trial រួចហើយ។ មិនអាចសាកម្ដងទៀតបានទេ។', false);
-                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង'; return;
-                }
-
-                const payload = {
-                    phone: localPhone,
-                    full_name: 'Trial User ' + localPhone,
-                    is_approved: true,
-                    course_id: COURSE_ID,
-                    is_trial: true,
-                    trial_started_at: startedAt.toISOString(),
-                    trial_expires_at: expiresAt.toISOString(),
-                    trial_device_key: fp,
-                    [dbColumn]: localDeviceId
-                };
-                const { error: insertErr } = await db.from('trainees').insert([payload]);
-                if (insertErr) {
-                    await db.from('trial_devices').delete().eq('device_key', fp);
-                    throw insertErr;
-                }
-
-                showAlert(alertBox, '✅ Trial ៥ម៉ោងបានបើករួចរាល់!', true);
-                grantAccess(localPhone, { isTrial: true, trialExpiresAt: expiresAt.toISOString() });
-            } catch (e) {
-                showAlert(alertBox, 'Error Trial: ' + e.message + ' — សូម run SQL migration trial_5h មុនប្រើ។', false);
-            }
-            btn.disabled = false; btn.innerHTML = '<i class="fas fa-hourglass-half"></i> សាកល្បង ៥ម៉ោង';
-        }
-
-        // ================= មុខងារ Register & Telegram Notification =================
-        async function register() {
-            const name = document.getElementById('reg-name').value.trim();
-            const phone = document.getElementById('reg-phone').value.trim();
-            const alertBox = document.getElementById('reg-alert');
-            const btn = document.getElementById('btn-register');
-
-            if (!name || !phone) { showAlert(alertBox, 'សូមបំពេញឈ្មោះ និងលេខទូរសព្ទ!', false); return; }
-
-            btn.disabled = true; btn.innerText = "កំពុងបញ្ជូន...";
-
-            try {
-                const { error } = await db
-                    .from('trainees')
-                    .insert([{ phone: phone, full_name: name, is_approved: false }]);
-
-                if (error) {
-                    if(error.code === '23505') { 
-                        showAlert(alertBox, 'លេខទូរសព្ទនេះបានស្នើសុំរួចហើយ។', false);
-                    } else {
-                        showAlert(alertBox, 'មានបញ្ហាទិន្នន័យ សូមសាកល្បងម្តងទៀត។', false);
-                    }
-                } else {
-                    showAlert(alertBox, 'ការស្នើសុំជោគជ័យ! សូមរង់ចាំការអនុម័ត។', true);
-                    
-                    // ផ្ញើសារទៅកាន់ Telegram Bot
-                    sendTelegramNotification(name, phone);
-
-                    document.getElementById('reg-name').value = '';
-                    document.getElementById('reg-phone').value = '';
-                    setTimeout(showLogin, 3000);
-                }
-            } catch (err) {
-                showAlert(alertBox, 'មានបញ្ហាភ្ជាប់អ៊ីនធឺណិត។', false);
-            }
-            btn.disabled = false; btn.innerText = "បញ្ជូនការស្នើសុំ";
-        }
-
-        function sendTelegramNotification(name, phone) {
-            if(TELEGRAM_BOT_TOKEN === 'ដាក់_TOKEN_របស់_BOT_នៅទីនេះ') return; // បើមិនទាន់ដាក់ Token មិនបាច់ផ្ញើទេ
-            
-            const message = `🔔 <b>មានការស្នើសុំចូលរៀនថ្មី!</b>\n\n👤 ឈ្មោះ៖ <b>${name}</b>\n📱 លេខទូរសព្ទ៖ <b>${phone}</b>\n\n👉 សូមលោកគ្រូចូលទៅកាន់ Supabase ដើម្បីចុច Approve (Tick យក True ត្រង់ is_approved)។`;
-            const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-            
-            fetch(telegramUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'HTML' })
-            }).catch(err => console.error("Telegram Error:", err));
-        }
-
-        function logout() {
-            hideTrialBanner();
-            localStorage.removeItem("trainee_phone");
-            document.getElementById('auth-screen').style.display = 'flex';
-            document.getElementById('main-app').style.display = 'none';
-            document.getElementById('login-phone').value = '';
-        }
-
-        function showAlert(element, message, isSuccess) {
-            element.innerText = message;
-            element.style.display = 'block';
-            element.className = isSuccess ? 'alert-msg alert-success' : 'alert-msg alert-error';
-            setTimeout(() => { element.style.display = 'none'; }, 5000);
-        }
-
-        // ================= មុខងារ Mobile Menu & Tabs =================
-        function toggleMobileMenu() {
-            const sidebar = document.getElementById('sidebar-menu');
-            sidebar.classList.toggle('mobile-open');
-        }
-
-        function switchTab(event, sectionId) {
-            document.querySelectorAll('.menu li').forEach(li => li.classList.remove('active'));
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            if (event && event.currentTarget) event.currentTarget.classList.add('active');
-            document.getElementById(sectionId).classList.add('active');
-            
-            if(window.innerWidth <= 768) { 
-                document.querySelector('.content-area').scrollTop = 0; 
-                document.getElementById('sidebar-menu').classList.remove('mobile-open'); 
-            }
-        }
-
-        // ================= មុខងារ Prompt Generator (សៀវភៅទី១) =================
-        function generatePrompt() {
-            const role = document.getElementById('inp-role').value.trim();
-            const task = document.getElementById('inp-task').value.trim();
-            const context = document.getElementById('inp-context').value.trim();
-            const format = document.getElementById('inp-format').value.trim(); 
-            const constraint = document.getElementById('inp-constraint').value.trim();
-
-            let finalPrompt = "";
-            if(role) finalPrompt += role + "\n\n";
-            if(task) finalPrompt += "📌 កិច្ចការដែលត្រូវធ្វើ៖ \n" + task + "\n\n";
-            if(context) finalPrompt += "🎯 បរិបទ៖ \n" + context + "\n\n";
-            if(format) finalPrompt += "📊 ទម្រង់លទ្ធផលដែលចង់បាន៖ \n" + format + "\n\n";
-            if(constraint) finalPrompt += "🚫 លក្ខខណ្ឌ និងបម្រាម៖ \n" + constraint + "\n";
-
-            const resultBox = document.getElementById('final-prompt-text');
-            resultBox.innerText = finalPrompt === "" ? "សូមបំពេញព័ត៌មានក្នុងប្រអប់ណាមួយខាងលើសិន..." : finalPrompt;
-        }
-
-        function copyToClipboardText() {
-            const textToCopy = document.getElementById('final-prompt-text').innerText;
-            if(textToCopy === "" || textToCopy.includes("សូមបំពេញព័ត៌មាន")) {
-                alert("មិនមានអ្វីសម្រាប់ Copy ទេ!"); return;
-            }
-            navigator.clipboard.writeText(textToCopy).then(() => { alert("បាន Copy ជោគជ័យ!"); });
-        }
-
-        // ================= មុខងារ Render ឧទាហរណ៍ទាំង១០ (សៀវភៅទី២) =================
-        function renderBook2Examples() {
-            const examples =[
-                {
-                    id: "ex1", title: "១៖ លិខិតអនុញ្ញាតច្បាប់ឈប់សម្រាក (គ្រូ)",
-                    prompt: "ជួយធ្វើលិខិតអនុញ្ញាតច្បាប់ឈប់សម្រាករដ្ឋបាល សម្រាប់លោកគ្រូ សុខ សាន្ត បង្រៀនគណិតវិទ្យាថ្នាក់ទី១០។ គាត់សុំឈប់ ២ថ្ងៃ (ថ្ងៃទី០៤-០៥ ឧសភា ២០២៦) ដោយសារបញ្ហាសុខភាព។",
-                    output: "<strong>កម្មវត្ថុ៖</strong> ការអនុញ្ញាតច្បាប់ឈប់សម្រាកដោយមូលហេតុសុខភាព។<br><strong>យោង៖</strong> ការស្នើសុំរបស់លោកគ្រូ សុខ សាន្ត ចុះថ្ងៃទី ០២ ខែឧសភា ឆ្នាំ២០២៦។<br><br>សេចក្តីដូចមានចែងក្នុងកម្មវត្ថុ និងយោងខាងលើ រដ្ឋបាលសាលា សូមជម្រាបជូន លោកគ្រូ សុខ សាន្ត គ្រូបង្រៀនមុខវិជ្ជាគណិតវិទ្យាថ្នាក់ទី១០ ជ្រាបថា សាលាឯកភាពអនុញ្ញាតឱ្យលោកគ្រូឈប់សម្រាកចំនួន ០២ ថ្ងៃ គឺចាប់ពីថ្ងៃទី០៤ ដល់ថ្ងៃទី០៥ ខែឧសភា ឆ្នាំ២០២៦។<br><br>សូមលោកគ្រូ ថែរក្សាសុខភាព និងត្រឡប់មកបំពេញការងារវិញតាមកាលកំណត់。"
-                },
-                {
-                    id: "ex2", title: "២៖ សេចក្តីជូនដំណឹងដល់មាតាបិតា (ថ្ងៃឈប់សម្រាក)",
-                    prompt: "សរសេរសេចក្តីជូនដំណឹងខ្លី ផ្លូវការ ទៅកាន់អាណាព្យាបាល ថា សាលានឹងឈប់សម្រាកបុណ្យចម្រើនព្រះជន្មព្រះមហាក្សត្រ នៅថ្ងៃទី១៤ ឧសភា ហើយចូលរៀនវិញថ្ងៃទី១៥ ឧសភា។",
-                    output: "<strong>សេចក្តីជូនដំណឹង!</strong><br><br>សូមគោរពជម្រាបជូន មាតាបិតា និងអ្នកអាណាព្យាបាលសិស្សានុសិស្សទាំងអស់ឱ្យបានជ្រាបថា៖<br>សាលារៀននឹងអនុញ្ញាតឱ្យសិស្សានុសិស្សឈប់សម្រាកការសិក្សារយៈពេល ០១ ថ្ងៃ ក្នុងឱកាស \"ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម ព្រះករុណាព្រះបាទសម្តេចព្រះបរមនាថ នរោត្តម សីហមុនី ព្រះមហាក្សត្រនៃព្រះរាជាណាចក្រកម្ពុជា\" ដែលនឹងប្រព្រឹត្តទៅនៅថ្ងៃព្រហស្បតិ៍ ទី១៤ ខែឧសភា ឆ្នាំ២០២៦។<br><br>សិស្សានុសិស្សទាំងអស់នឹងត្រូវចូលរៀនជាធម្មតាវិញ នៅថ្ងៃសុក្រ ទី១៥ ខែឧសភា ឆ្នាំ២០២៦។ សូមអរគុណ!"
-                },
-                {
-                    id: "ex3", title: "៣៖ លិខិតអញ្ជើញប្រជុំមាតាបិតាសិស្ស",
-                    prompt: "រៀបចំលិខិតអញ្ជើញប្រជុំមាតាបិតាសិស្សថ្នាក់ទី១២ ប្រចាំឆមាសទី១។ ពេលវេលា៖ ថ្ងៃសៅរ៍ ទី១៦ ឧសភា ម៉ោង ៨:០០ ព្រឹក។ ទីកន្លែង៖ បណ្ណាល័យសាលា។ គោលបំណង៖ ពិភាក្សាពីលទ្ធផលសិក្សា និងការត្រៀមប្រឡងបាក់ឌុប។",
-                    output: "<strong>កម្មវត្ថុ៖</strong> ការអញ្ជើញចូលរួមប្រជុំមាតាបិតា និងអាណាព្យាបាលសិស្សថ្នាក់ទី១២។<br><br>តបតាមកម្មវត្ថុខាងលើ រដ្ឋបាលសាលា សូមគោរពអញ្ជើញ មាតាបិតា និងអ្នកអាណាព្យាបាលសិស្សថ្នាក់ទី១២ ទាំងអស់ ចូលរួមក្នុងកិច្ចប្រជុំប្រចាំឆមាសទី១ ដើម្បីពិភាក្សាអំពីលទ្ធផលសិក្សារបស់សិស្សានុសិស្ស និងការត្រៀមលក្ខណៈសម្រាប់ការប្រឡងសញ្ញាបត្រមធ្យមសិក្សាទុតិយភូមិខាងមុខនេះ។<br><br>កិច្ចប្រជុំនេះនឹងប្រព្រឹត្តទៅតាមកម្មវិធីដូចខាងក្រោម៖<br>&#x2022; កាលបរិច្ឆេទ៖ ថ្ងៃសៅរ៍ ទី១៦ ខែឧសភា ឆ្នាំ២០២៦<br>&#x2022; ពេលវេលា៖ ម៉ោង ០៨:០០ នាទីព្រឹក<br>&#x2022; ទីកន្លែង៖ បណ្ណាល័យសាលា<br><br>អាស្រ័យហេតុនេះ សូម មាតាបិតា និងអ្នកអាណាព្យាបាល មេត្តាអញ្ជើញចូលរួមឱ្យបានទាន់ពេលវេលា និងគ្រប់ៗគ្នា។ សូមគោរពអរគុណ。"
-                },
-                {
-                    id: "ex4", title: "៤៖ របាយការណ៍សង្ខេបអំពីអវត្តមានគ្រូប្រចាំខែ",
-                    prompt: "រៀបចំរបាយការណ៍ជាតារាងស្តីពីអវត្តមានគ្រូខែមេសា។ មានគ្រូ ៣នាក់៖ ១. ចាន់ រិទ្ធី (គណិត) ឈប់ ២ថ្ងៃ សុំច្បាប់។ ២. កែវ ស៊ីណាត (អក្សរសាស្ត្រខ្មែរ) ឈប់ ១ថ្ងៃ ឥតច្បាប់។ ៣. លី វណ្ណៈ (រូបវិទ្យា) ឈប់ ៣ថ្ងៃ ឈឺមានសំបុត្រពេទ្យ។",
-                    output: "<strong>របាយការណ៍សង្ខេបស្តីពីអវត្តមានគ្រូបង្រៀន ប្រចាំខែមេសា ឆ្នាំ២០២៦</strong><br><br><div class='overflow-x-auto mt-4'><table class='w-full text-left text-sm border-collapse border border-emerald-200 min-w-max'><thead class='bg-emerald-50 text-emerald-800'><tr><th class='border border-emerald-200 p-3'>ល.រ</th><th class='border border-emerald-200 p-3'>ឈ្មោះ</th><th class='border border-emerald-200 p-3'>មុខវិជ្ជា</th><th class='border border-emerald-200 p-3'>ថ្ងៃឈប់</th><th class='border border-emerald-200 p-3'>ប្រភេទច្បាប់</th></tr></thead><tbody><tr class='bg-white'><td class='border border-emerald-200 p-3 text-center'>១</td><td class='border border-emerald-200 p-3'>ចាន់ រិទ្ធី</td><td class='border border-emerald-200 p-3'>គណិត</td><td class='border border-emerald-200 p-3 text-center'>០២</td><td class='border border-emerald-200 p-3'>សុំច្បាប់</td></tr><tr class='bg-slate-50'><td class='border border-emerald-200 p-3 text-center'>២</td><td class='border border-emerald-200 p-3'>កែវ ស៊ីណាត</td><td class='border border-emerald-200 p-3'>ខ្មែរ</td><td class='border border-emerald-200 p-3 text-center'>០១</td><td class='border border-emerald-200 p-3 text-red-600 font-bold'>ឥតច្បាប់</td></tr><tr class='bg-white'><td class='border border-emerald-200 p-3 text-center'>៣</td><td class='border border-emerald-200 p-3'>លី វណ្ណៈ</td><td class='border border-emerald-200 p-3'>រូបវិទ្យា</td><td class='border border-emerald-200 p-3 text-center'>០៣</td><td class='border border-emerald-200 p-3'>ឈឺ (ពេទ្យ)</td></tr></tbody></table></div>"
-                },
-                {
-                    id: "ex5", title: "៥៖ លិខិតព្រមាន ឬណែនាំវិន័យ (ផ្ទៃក្នុង)",
-                    prompt: "សរសេរលិខិតណែនាំវិន័យផ្លូវការ និងតឹងរ៉ឹង ដល់បុគ្គលិកឈ្មោះ ម៉ៅ សុវណ្ណ ផ្នែកសន្តិសុខ ដែលបានមកធ្វើការយឺតម៉ោង ៣ដងក្នុងខែនេះ ដោយគ្មានហេតុផលសមរម្យ។ នេះជាការព្រមានលើកទី១។",
-                    output: "<strong>កម្មវត្ថុ៖</strong> ការណែនាំស្តីពីវិន័យការងារ (ការព្រមានជាលាយលក្ខណ៍អក្សរលើកទី១)។<br><br>សេចក្តីដូចមានចែងក្នុងកម្មវត្ថុខាងលើ រដ្ឋបាលសាលា សូមជម្រាបជូន លោក ម៉ៅ សុវណ្ណ បុគ្គលិកផ្នែកសន្តិសុខ ជ្រាបថា យោងតាមកំណត់ត្រាវត្តមាន លោកបានមកបំពេញការងារយឺតយ៉ាវខុសម៉ោងកំណត់ចំនួន ០៣ ដង ក្នុងអំឡុងខែនេះ ដោយពុំមានការអនុញ្ញាត ឬផ្តល់ហេតុផលសមស្រប។<br><br>ទង្វើនេះផ្ទុយទៅនឹងបទបញ្ជាផ្ទៃក្នុងរបស់សាលារៀន។ អាស្រ័យហេតុនេះ រដ្ឋបាលសាលាសូមធ្វើការណែនាំ និងព្រមានជាលាយលក្ខណ៍អក្សរជាលើកទី១។ សូមលោកកែលម្អភាពខ្វះចន្លោះនេះជាបន្ទាន់។ បើមានបន្តទៀត នឹងចាត់វិធានការតាមលក្ខន្តិកៈការងារ។"
-                },
-                {
-                    id: "ex6", title: "៦៖ ការឆ្លើយតបសារតវ៉ាពីអាណាព្យាបាល",
-                    prompt: "អាណាព្យាបាលម្នាក់ផ្ញើសារមកខឹងសម្បារថា ហេតុអ្វីកូនគាត់ធ្លាក់ចំណាត់ថ្នាក់ខែនេះ។ សូមសរសេរសារតបវិញឱ្យបានទន់ភ្លន់ បង្ហាញការយកចិត្តទុកដាក់ និងអញ្ជើញគាត់មកជួបគ្រូបន្ទុកថ្នាក់ដើម្បីពិភាក្សាលម្អិត។",
-                    output: "សូមគោរពជម្រាបសួរលោក/លោកស្រី ជាមាតាបិតាសិស្ស,<br><br>ជាបឋម សាលារៀនសូមអរគុណចំពោះការយកចិត្តទុកដាក់ និងទំនាក់ទំនងមកកាន់សាលា។ យើងខ្ញុំពិតជាយល់ពីក្តីបារម្ភរបស់លោក/លោកស្រីទាក់ទងនឹងលទ្ធផលសិក្សារបស់ប្អូនក្នុងខែនេះ។<br><br>លទ្ធផលចំណាត់ថ្នាក់ប្រែប្រួលអាចបណ្តាលមកពីកត្តាជាច្រើននៃការវាយតម្លៃ។ ដើម្បីឱ្យលោក/លោកស្រីទទួលបានព័ត៌មានលម្អិតពីការសិក្សាជាក់ស្តែងរបស់គាត់ សាលាសូមគោរពអញ្ជើញលោក/លោកស្រី មកជួបពិភាក្សាផ្ទាល់ជាមួយលោកគ្រូ/អ្នកគ្រូបន្ទុកថ្នាក់ នៅរៀងរាល់ម៉ោងធ្វើការ។<br><br>យើងខ្ញុំរង់ចាំសហការជានិច្ច។ សូមគោរពអរគុណ។"
-                },
-                {
-                    id: "ex7", title: "៧៖ សេចក្តីប្រកាសជ្រើសរើសបុគ្គលិក/គ្រូបង្រៀន",
-                    prompt: "រៀបចំសេចក្តីប្រកាសជ្រើសរើសគ្រូបង្រៀនមុខវិជ្ជាភាសាអង់គ្លេស ២នាក់។ លក្ខខណ្ឌ៖ បរិញ្ញាបត្រភាសាអង់គ្លេស ឬសញ្ញាបត្រគរុកោសល្យ មានបទពិសោធន៍ ១ឆ្នាំ។ ផុតកំណត់ទទួលពាក្យ៖ ៣១ ឧសភា ២០២៦។",
-                    output: "<strong>សេចក្តីប្រកាសជ្រើសរើសបុគ្គលិក</strong><br><br>សាលារៀនយើងត្រូវការជ្រើសរើសបុគ្គលិក សម្រាប់មុខតំណែង៖<br><strong>គ្រូបង្រៀនមុខវិជ្ជាភាសាអង់គ្លេស (ចំនួន ០២ នាក់)</strong><br><br><strong>លក្ខខណ្ឌជ្រើសរើស៖</strong><br>&#x2022; មានបរិញ្ញាបត្រឯកទេសភាសាអង់គ្លេស ឬមានសញ្ញាបត្រគរុកោសល្យ។<br>&#x2022; មានបទពិសោធន៍បង្រៀនយ៉ាងតិច ០១ ឆ្នាំ។<br>&#x2022; មានគរុកោសល្យល្អ និងការទទួលខុសត្រូវខ្ពស់។<br><br>បេក្ខជនដែលមានចំណាប់អារម្មណ៍ សូមផ្ញើ CV មកកាន់ការិយាល័យរដ្ឋបាលសាលា។<br>&#x2022; កាលបរិច្ឆេទឈប់ទទួលពាក្យ៖ ថ្ងៃទី៣១ ខែឧសភា ឆ្នាំ២០២៦"
-                },
-                {
-                    id: "ex8", title: "៨៖ លិខិតបញ្ជាក់ការសិក្សា (សម្រាប់សិស្ស)",
-                    prompt: "ធ្វើទម្រង់លិខិតបញ្ជាក់ការសិក្សា សម្រាប់សិស្សឈ្មោះ ហេង មករា ភេទប្រុស កើតថ្ងៃទី ១០ មករា ២០១០ កំពុងសិក្សាថ្នាក់ទី១០ 'ក' ក្នុងឆ្នាំសិក្សា ២០២៥-២០២៦។",
-                    output: "<div class='text-center mb-6'><h4 class=\"text-lg font-bold\">លិខិតបញ្ជាក់ការសិក្សា</h4></div>នាយកសាលា សូមបញ្ជាក់ថា៖<br><br>សិស្សឈ្មោះ៖ <strong>ហេង មករា</strong> ភេទ៖ ប្រុស<br>ថ្ងៃខែឆ្នាំកំណើត៖ ១០ មករា ២០១០<br><br>ពិតជាសិស្សកំពុងសិក្សានៅថ្នាក់ទី ១០ \"ក\" នៃសាលារៀនយើង ក្នុងឆ្នាំសិក្សា ២០២៥-២០២៦ ប្រាកដមែន។ លិខិតបញ្ជាក់នេះ ចេញជូនសាមីជនដើម្បីយកទៅប្រើប្រាស់តាមការចាំបាច់ និងស្របច្បាប់។<br><br><div class='text-right mt-6'>ធ្វើនៅ................., ថ្ងៃទី.....ខែ.....ឆ្នាំ......<br><strong>នាយកសាលា</strong></div>"
-                },
-                {
-                    id: "ex9", title: "៩៖ កម្មវិធីប្រជុំ (Agenda) ក្រុមប្រឹក្សាគ្រូ",
-                    prompt: "រៀបចំរបៀបវារៈប្រជុំ (Agenda) ក្រុមប្រឹក្សាគ្រូប្រចាំខែ។ ម៉ោង ៩:០០ ដល់ ១១:០០។ មាន ៣ចំណុច៖ ១. វាយតម្លៃវិន័យសិស្ស ២. ការត្រៀមចេញវិញ្ញាសាប្រឡង ៣. បញ្ហាផ្សេងៗ។",
-                    output: "<strong>របៀបវារៈកិច្ចប្រជុំក្រុមប្រឹក្សាគ្រូបង្រៀនប្រចាំខែ</strong><br><br>&#x2022; ពេលវេលា៖ ម៉ោង ០៩:០០ ព្រឹក ដល់ ១១:០០ ព្រឹក<br>&#x2022; ទីកន្លែង៖ បន្ទប់ប្រជុំសាលា<br><br><strong>កម្មវិធីលម្អិត៖</strong><br><ul class='space-y-2 mt-2'><li><span class='font-bold w-32 inline-block'>០៩:០០ - ០៩:១៥:</span> មតិស្វាគមន៍ និងបើកកិច្ចប្រជុំ</li><li><span class='font-bold w-32 inline-block'>០៩:១៥ - ០៩:៤៥:</span> របៀបវារៈទី១៖ វាយតម្លៃលើការអនុវត្តវិន័យសិស្ស</li><li><span class='font-bold w-32 inline-block'>០៩:៤៥ - ១០:៣០:</span> របៀបវារៈទី២៖ ត្រៀមចេញវិញ្ញាសាប្រឡង</li><li><span class='font-bold w-32 inline-block'>០៩:۳០ - ១០:៥០:</span> របៀបវារៈទី៣៖ បញ្ហាផ្សេងៗ (សំណូមពរ)</li><li><span class='font-bold w-32 inline-block'>១០:៥០ - ១១:០០:</span> ការសន្និដ្ឋាន និងបិទបញ្ចប់កិច្ចប្រជុំ។</li></ul>"
-                },
-                {
-                    id: "ex10", title: "១០៖ សេចក្តីជូនដំណឹងស្តីពីការបង់ថ្លៃសិក្សា",
-                    prompt: "សរសេរលិខិតរំលឹកការបង់ប្រាក់ថ្លៃសិក្សាឆមាសទី២ ឱ្យបានទន់ភ្លន់ និងប្រកបដោយវិជ្ជាជីវៈ។ កាលបរិច្ឆេទផុតកំណត់៖ ថ្ងៃទី ២៥ ឧសភា។",
-                    output: "<strong>សេចក្តីជូនដំណឹងស្តីពីការបង់ថ្លៃសិក្សា ឆមាសទី២</strong><br><br>រដ្ឋបាលសាលា សូមថ្លែងអំណរគុណយ៉ាងជ្រាលជ្រៅចំពោះការជឿទុកចិត្ត និងការសហការយ៉ាងល្អប្រសើរកន្លងមក។ យើងខ្ញុំសូមគោរពរំលឹកជូន លោក/លោកស្រី មេត្តាអញ្ជើញមកបង់ប្រាក់ថ្លៃសិក្សាសម្រាប់ឆមាសទី២ ឆ្នាំសិក្សា ២០២៥-២០២៦ ឱ្យបានរួសរាន់ ដែលកាលបរិច្ឆេទចុងក្រោយនឹងត្រូវផុតកំណត់ត្រឹម <strong>ថ្ងៃទី២៥ ខែឧសភា ឆ្នាំ២០២៦</strong>។<br><br>លោក/លោកស្រី អាចធ្វើការបង់ប្រាក់ផ្ទាល់នៅការិយាល័យ ឬផ្ទេរប្រាក់តាមគណនីធនាគារ។ ករណីបានបង់រួច សូមអធ្យាស្រ័យចំពោះការជូនដំណឹងនេះ។ សូមគោរពអរគុណ។"
-                }
-            ];
-
-            const container = document.getElementById('examples-container');
-            if(!container) return;
-
-            examples.forEach((ex) => {
-                const html = `
-                <div class="bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden">
-                    <div class="bg-slate-50 px-6 sm:px-8 py-5 border-b border-slate-100 flex items-center">
-                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold mr-4 flex-shrink-0">
-                            ${ex.id.replace('ex', '')}
-                        </div>
-                        <h3 style="font-family: 'Moul', serif;" class="text-lg md:text-xl text-slate-800 m-0">${ex.title.substring(ex.title.indexOf('៖') + 1).trim()}</h3>
-                    </div>
-                    
-                    <div class="p-6 sm:p-8">
-                        <div class="mb-8">
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
-                                <span class="font-bold text-slate-700 flex items-center text-sm sm:text-base">
-                                    <span class="bg-indigo-100 text-indigo-700 w-8 h-8 flex items-center justify-center rounded-full mr-3 shadow-sm">✍️</span> 
-                                    អត្ថបទសម្រាប់ Copy បញ្ចូលប្រអប់ Chat៖
-                                </span>
-                                <button onclick="copyElementText(this, 'prompt-${ex.id}')" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-xl flex justify-center items-center font-bold shadow-md">
-                                    <i class="fas fa-copy mr-2"></i> Copy យកទៅប្រើ
-                                </button>
-                            </div>
-                            <div id="prompt-${ex.id}" class="bg-indigo-50/30 p-5 rounded-2xl border border-indigo-100 text-indigo-900 font-mono text-sm sm:text-base leading-relaxed">${ex.prompt}</div>
-                        </div>
-
-                        <div class="relative bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100 mt-6">
-                            <span class="absolute -top-4 left-6 bg-emerald-100 border border-emerald-200 text-emerald-800 px-4 py-1 rounded-full text-xs font-bold shadow-sm flex items-center">
-                                ✅ លទ្ធផលរំពឹងទុក
-                            </span>
-                            <div class="text-slate-700 text-sm sm:text-base leading-relaxed mt-2 font-serif">
-                                ${ex.output}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                `;
-                container.insertAdjacentHTML('beforeend', html);
-            });
-        }
-
-        function copyElementText(buttonElement, targetId) {
-            const targetEl = document.getElementById(targetId);
-            const textToCopy = targetEl.innerText || targetEl.textContent;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalHTML = buttonElement.innerHTML;
-                buttonElement.innerHTML = `<i class="fas fa-check mr-2"></i> បានចម្លង`;
-                buttonElement.classList.replace('bg-slate-800', 'bg-emerald-600');
-                setTimeout(() => {
-                    buttonElement.innerHTML = originalHTML;
-                    buttonElement.classList.replace('bg-emerald-600', 'bg-slate-800');
-                }, 2000);
-            });
-        }
-
-        // ================================================================
-        // Admin & Video Management — Supabase Integration
-        // ================================================================
-        const ADMIN_EMAIL = 'hon.mom.is@gmail.com';
-        const COURSE_ID   = 1002; // course_id របស់វគ្គនេះក្នុង users table
-        let currentUserPhone = null;
-        let isAdmin = false;
-        let editingVideoId = null;
-        let currentUsersTab = 'pending'; // tab ដែលកំពុងបើក
-        const RESET_LIMIT = 12; // ចំនួនដងអតិបរមាដែល User អាច Reset ឧបករណ៍ដោយខ្លួនឯង
-        const TRIAL_HOURS = 5;  // រយៈពេលសាកល្បង
-
-        // ── ពេលបើក app ដំបូង ──────────────────────────────────────
-        // extend DOMContentLoaded ដែលមានស្រាប់ ដើម្បី init video state
-        document.addEventListener("DOMContentLoaded", () => {
-            // ចំណាំ: session check ស្រាប់នៅ DOMContentLoaded ដែលមានរួចហើយ
-            // នៅទីនេះ setup sidebar video menu visibility
-            updateVideoMenuVisibility();
-        });
-
-        // ── Helper: ពិនិត្យ admin ──────────────────────────────────
-        async function checkIsAdmin(phone) {
-            try {
-                const { data } = await db.from('trainees')
-                    .select('email')
-                    .eq('phone', phone)
-                    .single();
-                return data && data.email && data.email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase();
-            } catch { return false; }
-        }
-
-        // ── Update sidebar: បង្ហាញ/លាក់ menu Video ──────────────────
-        function updateVideoMenuVisibility() {
-            const phone = localStorage.getItem('trainee_phone');
-            if (!phone) return;
-            currentUserPhone = phone;
-            checkIsAdmin(phone).then(admin => {
-                isAdmin = admin;
-                const adminMenu      = document.getElementById('admin-video-menu-item');
-                const adminUsersMenu = document.getElementById('admin-users-menu-item');
-                const userVideoMenu  = document.getElementById('user-video-menu-item');
-                const topbarVideoBtn = document.getElementById('topbar-video-btn');
-                const floatingVideoBtn = document.getElementById('floating-video-btn');
-                const homeVideoCard = document.getElementById('home-video-card');
-                const showUserVideo = !admin;
-                if (adminMenu)      adminMenu.style.display      = admin ? 'flex' : 'none';
-                if (adminUsersMenu) adminUsersMenu.style.display  = admin ? 'flex' : 'none';
-                if (userVideoMenu)  userVideoMenu.style.display   = showUserVideo ? 'flex' : 'none';
-                if (topbarVideoBtn) topbarVideoBtn.style.display  = showUserVideo ? 'inline-flex' : 'none';
-                if (floatingVideoBtn) floatingVideoBtn.style.display = showUserVideo ? 'inline-flex' : 'none';
-                if (homeVideoCard) homeVideoCard.style.display = showUserVideo ? 'flex' : 'none';
-            });
-        }
-
-
-        // ── Extract YouTube ID ───────────────────────────────────────
-        function extractYouTubeId(url) {
-            const patterns = [
-                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-                /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
-            ];
-            for (const p of patterns) { const m = url.match(p); if (m) return m[1]; }
-            return null;
-        }
-
-        // ================================================================
-        // VIDEO RENDER — User View (អាន​តែ)
-        // ================================================================
-        async function openUserVideoPanel() {
-            switchTab(null, 's-user-video');
-            const sidebar = document.getElementById('sidebar-menu');
-            if (sidebar) sidebar.classList.remove('mobile-open');
-            await renderUserVideos();
-        }
-
-        async function renderUserVideos() {
-            const container = document.getElementById('user-video-grid');
-            if (!container) return;
-            container.innerHTML = `<div class="empty-video-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin" style="font-size:40px;color:#1a73e8;"></i><p style="margin-top:15px;">កំពុងទាញ Video...</p></div>`;
-            try {
-                const { data, error } = await db.from('videos').select('*').order('sort_order', { ascending: true });
-                if (error) throw error;
-                if (!data || data.length === 0) {
-                    container.innerHTML = `<div class="empty-video-state" style="grid-column:1/-1;"><i class="fas fa-film"></i><p>មិនទាន់មាន Video ណាមួយទេ។</p></div>`;
-                    return;
-                }
-                container.innerHTML = data.map(v => `
-                    <div class="video-card">
-                        <div class="video-thumb-wrap">
-                            <iframe src="https://www.youtube-nocookie.com/embed/${v.yt_id}?rel=0&modestbranding=1&enablejsapi=1"
-                                title="${escHtml(v.title)}" allowfullscreen loading="lazy"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen">
-                            </iframe>
-                        </div>
-                        <div class="video-info">
-                            <div class="video-title">${escHtml(v.title)}</div>
-                            ${v.description ? `<div class="video-desc">${escHtml(v.description)}</div>` : ''}
-                        </div>
-                    </div>`).join('');
-            } catch (e) {
-                container.innerHTML = `<div class="empty-video-state" style="grid-column:1/-1;"><i class="fas fa-exclamation-circle" style="color:#ea4335;"></i><p>មានបញ្ហាទាញ Video: ${e.message}</p></div>`;
-            }
-        }
-
-        // ================================================================
-        // ADMIN VIDEO PANEL
-        // ================================================================
-        async function openAdminVideoPanel() {
-            if (!isAdmin) {
-                alert('⛔ អ្នកមិនមែនជា Admin ទេ!');
-                return;
-            }
-            switchTab(null, 's-admin-video');
-            await renderAdminVideos();
-        }
-
-        async function renderAdminVideos() {
-            const container = document.getElementById('video-grid-container');
-            if (!container) return;
-            container.innerHTML = `<div class="empty-video-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin" style="font-size:40px;color:#1a73e8;"></i><p style="margin-top:15px;">កំពុងទាញ Video...</p></div>`;
-            try {
-                const { data, error } = await db.from('videos').select('*').order('sort_order', { ascending: true });
-                if (error) throw error;
-                if (!data || data.length === 0) {
-                    container.innerHTML = `<div class="empty-video-state" style="grid-column:1/-1;"><i class="fas fa-film"></i><p>មិនទាន់មាន Video ណាមួយទេ។ ចុច <strong>"បន្ថែម Video ថ្មី"</strong> ខាងលើ!</p></div>`;
-                    return;
-                }
-                container.innerHTML = data.map(v => `
-                    <div class="video-card" id="vcard-${v.id}">
-                        <div class="video-thumb-wrap">
-                            <iframe src="https://www.youtube-nocookie.com/embed/${v.yt_id}?rel=0&modestbranding=1&enablejsapi=1"
-                                title="${escHtml(v.title)}" allowfullscreen loading="lazy"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen">
-                            </iframe>
-                        </div>
-                        <div class="video-info">
-                            <div class="video-title">${escHtml(v.title)}</div>
-                            ${v.description ? `<div class="video-desc">${escHtml(v.description)}</div>` : ''}
-                            <div class="video-actions">
-                                <button class="btn-edit-video" onclick="openEditVideoModal('${v.id}','${escAttr(v.title)}','${v.yt_id}','${escAttr(v.description||'')}',${v.sort_order||0})">
-                                    <i class="fas fa-edit"></i> កែ
-                                </button>
-                                <button class="btn-delete-video" onclick="deleteVideo('${v.id}')">
-                                    <i class="fas fa-trash"></i> លុប
-                                </button>
-                            </div>
-                        </div>
-                    </div>`).join('');
-            } catch (e) {
-                container.innerHTML = `<div class="empty-video-state" style="grid-column:1/-1;"><i class="fas fa-exclamation-circle" style="color:#ea4335;"></i><p>មានបញ្ហា: ${e.message}</p></div>`;
-            }
-        }
-
-        // ── Add Video Modal ──────────────────────────────────────────
-        function openAddVideoModal() {
-            editingVideoId = null;
-            document.getElementById('modal-title').innerHTML = '<i class="fas fa-plus-circle"></i> បន្ថែម Video ថ្មី';
-            document.getElementById('video-title-input').value = '';
-            document.getElementById('video-url-input').value = '';
-            document.getElementById('video-desc-input').value = '';
-            document.getElementById('video-order-input').value = '0';
-            document.getElementById('video-modal-alert').style.display = 'none';
-            document.getElementById('video-modal').classList.add('active');
-            setTimeout(() => document.getElementById('video-title-input').focus(), 100);
-        }
-
-        function openEditVideoModal(id, title, ytId, desc, order) {
-            editingVideoId = id;
-            document.getElementById('modal-title').innerHTML = '<i class="fas fa-edit"></i> កែ Video';
-            document.getElementById('video-title-input').value = title;
-            document.getElementById('video-url-input').value = `https://www.youtube.com/watch?v=${ytId}`;
-            document.getElementById('video-desc-input').value = desc;
-            document.getElementById('video-order-input').value = order;
-            document.getElementById('video-modal-alert').style.display = 'none';
-            document.getElementById('video-modal').classList.add('active');
-        }
-
-        function closeVideoModal() {
-            document.getElementById('video-modal').classList.remove('active');
-        }
-
-        // ── Save (Insert / Update) via Supabase RPC ──────────────────
-        async function saveVideo() {
-            const title  = document.getElementById('video-title-input').value.trim();
-            const url    = document.getElementById('video-url-input').value.trim();
-            const desc   = document.getElementById('video-desc-input').value.trim();
-            const order  = parseInt(document.getElementById('video-order-input').value) || 0;
-            const alertEl = document.getElementById('video-modal-alert');
-            const saveBtn = document.getElementById('btn-save-video');
-
-            if (!title) { showModalAlert('សូមបញ្ចូលចំណងជើង Video!'); return; }
-            if (!url)   { showModalAlert('សូមបញ្ចូល YouTube Link!'); return; }
-            const ytId = extractYouTubeId(url);
-            if (!ytId)  { showModalAlert('YouTube Link មិនត្រឹមត្រូវ! (ឧ. https://youtube.com/watch?v=xxxxx)'); return; }
-
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> កំពុងរក្សាទុក...';
-
-            try {
-                const { error } = await db.rpc('upsert_video', {
-                    p_id:          editingVideoId || null,
-                    p_title:       title,
-                    p_yt_id:       ytId,
-                    p_description: desc,
-                    p_sort_order:  order,
-                    p_created_by:  ADMIN_EMAIL
-                });
-                if (error) throw error;
-                closeVideoModal();
-                await renderAdminVideos();
-            } catch (e) {
-                showModalAlert('បានError: ' + e.message);
-            }
-            saveBtn.disabled = false;
-            saveBtn.innerHTML = '<i class="fas fa-save"></i> រក្សាទុក Video';
-        }
-
-        // ── Delete via Supabase RPC ──────────────────────────────────
-        async function deleteVideo(id) {
-            if (!confirm('តើអ្នកពិតជាចង់លុប Video នេះមែនទេ?')) return;
-            try {
-                const { error } = await db.rpc('delete_video', {
-                    p_id:          id,
-                    p_admin_email: ADMIN_EMAIL
-                });
-                if (error) throw error;
-                document.getElementById('vcard-' + id)?.remove();
-                await renderAdminVideos();
-            } catch (e) {
-                alert('Error លុប: ' + e.message);
-            }
-        }
-
-        // ── Admin Logout (ត្រឡប់ទៅ s1) ─────────────────────────────
-        function adminLogout() {
-            switchTab(null, 's1');
-        }
-
-        // ── Helpers ──────────────────────────────────────────────────
-        function showModalAlert(msg) {
-            const el = document.getElementById('video-modal-alert');
-            el.textContent = msg; el.style.display = 'block';
-        }
-        function escHtml(str) {
-            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        }
-        function escAttr(str) {
-            return String(str).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
-        }
-        // ── Device Lock: User អាច Reset ខ្លួនឯងបាន 12 ដង បន្ទាប់មកចូល Admin Dashboard ──────────
-        async function showDeviceLockAlert(alertBox, phone, deviceNameKh, dbColumn, localDeviceId) {
-            alertBox.style.display = 'block';
-            alertBox.className = 'alert-msg alert-error';
-            alertBox.innerHTML = `<strong>កំពុងពិនិត្យសិទ្ធិ Reset...</strong>`;
-
-            try {
-                const { data: rec, error } = await db.from('trainees')
-                    .select('reset_count, reset_requested')
-                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`)
-                    .maybeSingle();
-                if (error) throw error;
-
-                const used = Number(rec?.reset_count || 0);
-                const remaining = Math.max(RESET_LIMIT - used, 0);
-                const canSelfReset = remaining > 0;
-
-                alertBox.innerHTML = `
-                    <strong>⛔ ${deviceNameKh}នេះមិនត្រូវគ្នា!</strong><br>
-                    គណនីនេះបានភ្ជាប់ជាមួយ${deviceNameKh}ផ្សេងរួចហើយ។<br>
-                    <span style="font-size:13px;display:block;margin-top:4px;">
-                        អ្នកបានប្រើ Reset ខ្លួនឯង <strong>${used}/${RESET_LIMIT}</strong> ដង។
-                        ${canSelfReset ? `នៅសល់ <strong>${remaining}</strong> ដងទៀត។` : `អស់ចំនួន Reset ខ្លួនឯងហើយ។`}
-                    </span>
-                    ${canSelfReset ? `
-                        <button onclick="selfResetDevice('${escAttr(phone)}','${escAttr(deviceNameKh)}','${escAttr(dbColumn)}','${escAttr(localDeviceId)}')"
-                            style="margin-top:10px;background:#1a73e8;color:white;border:none;padding:9px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:bold;">
-                            <i class="fas fa-undo"></i> Reset ឧបករណ៍ដោយខ្លួនឯង
-                        </button>` : `
-                        <button onclick="submitResetRequest('${escAttr(phone)}','${escAttr(deviceNameKh)}')"
-                            style="margin-top:10px;background:#e65100;color:white;border:none;padding:9px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:bold;">
-                            <i class="fas fa-paper-plane"></i> ស្នើ Admin Reset ជូន
-                        </button>`}
-                    <div style="font-size:12px;margin-top:8px;color:#5f6368;">
-                        ប្រសិនបើមានបញ្ហា សូមទំនាក់ទំនងលោកគ្រូ ហុន ម៉ុម: <strong>017 47 66 64</strong>
-                    </div>`;
-            } catch (e) {
-                alertBox.innerHTML = `Error: ${escHtml(e.message)}<br><span style="font-size:12px;">សូមប្រាកដថា Database មាន columns reset_count / reset_requested / reset_requested_at / reset_device_type។</span>`;
-            }
-        }
-
-        async function selfResetDevice(phone, deviceNameKh, dbColumn, localDeviceId) {
-            if (!confirm(`Reset ${deviceNameKh} ដោយខ្លួនឯងឥឡូវនេះ?
-ចំនួន Reset នឹងត្រូវបានរាប់បន្ថែម 1 ដង។`)) return;
-            try {
-                const localPhone = normalizePhone(phone);
-                const intlPhone  = toIntlPhone(localPhone);
-                const { data: rec, error: getErr } = await db.from('trainees')
-                    .select('reset_count')
-                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`)
-                    .maybeSingle();
-                if (getErr) throw getErr;
-
-                const used = Number(rec?.reset_count || 0);
-                if (used >= RESET_LIMIT) {
-                    await submitResetRequest(phone, deviceNameKh);
-                    return;
-                }
-
-                const updatePayload = {
-                    [dbColumn]: localDeviceId,
-                    reset_count: used + 1,
-                    reset_requested: false,
-                    reset_requested_at: null,
-                    reset_device_type: null
-                };
-
-                const { error } = await db.from('trainees')
-                    .update(updatePayload)
-                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`);
-                if (error) throw error;
-
-                alert(`✅ Reset ជោគជ័យ! អ្នកបានប្រើ ${used + 1}/${RESET_LIMIT} ដង។`);
-                grantAccess(localPhone);
-            } catch (e) { alert('Error: ' + e.message); }
-        }
-
-        async function submitResetRequest(phone, deviceNameKh) {
-            try {
-                const localPhone = normalizePhone(phone);
-                const intlPhone  = toIntlPhone(localPhone);
-                const { error } = await db.from('trainees')
-                    .update({
-                        reset_requested: true,
-                        reset_requested_at: new Date().toISOString(),
-                        reset_device_type: deviceNameKh
-                    })
-                    .or(`phone.eq.${localPhone},phone.eq.${intlPhone}`);
-                if (error) throw error;
-
-                if (TELEGRAM_BOT_TOKEN !== 'ដាក់_TOKEN_របស់_BOT_នៅទីនេះ') {
-                    const msg = `🔔 <b>សំណើ Reset ឧបករណ៍ពី User</b>
-
-📱 លេខ: <b>${localPhone}</b>
-🖥 ប្រភេទ: <b>${deviceNameKh}</b>
-
-👉 ចូល Admin Panel ➜ សំណើ Reset ដើម្បីអនុម័ត។`;
-                    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'HTML' })
-                    }).catch(()=>{});
-                }
-                alert('✅ បានផ្ញើសំណើ Reset ទៅ Dashboard Admin រួចហើយ។ សូមរង់ចាំការអនុម័ត។');
-            } catch (e) { alert('Error: ' + e.message); }
-        }
-
-        // ── Admin Users Panel ────────────────────────────────────────
-        async function openAdminUsersPanel() {
-            if (!isAdmin) { alert('⛔ អ្នកមិនមែនជា Admin ទេ!'); return; }
-            switchTab(null, 's-admin-users');
-            await renderAdminUsers();
-        }
-
-        function showUsersTab(tab) {
-            currentUsersTab = tab;
-            const buttons = {
-                pending: document.getElementById('tab-pending-btn'),
-                active: document.getElementById('tab-active-btn'),
-                reset: document.getElementById('tab-reset-btn')
-            };
-            Object.entries(buttons).forEach(([key, btn]) => {
-                if (!btn) return;
-                btn.style.background = tab === key ? '#1a73e8' : 'white';
-                btn.style.color      = tab === key ? 'white'   : '#5f6368';
-                btn.style.border     = tab === key ? '2px solid #1a73e8' : '2px solid #dadce0';
-            });
-            renderAdminUsers();
-        }
-
-        async function renderAdminUsers() {
-            const container = document.getElementById('admin-users-container');
-            if (!container) return;
-            container.innerHTML = `<div class="empty-video-state"><i class="fas fa-spinner fa-spin" style="font-size:36px;color:#1a73e8;"></i><p style="margin-top:12px;">កំពុងទាញទិន្នន័យ...</p></div>`;
-            try {
-                // ── ទាញ trainees រួមទាំងព័ត៌មាន reset ──
-                const { data: trainees, error } = await db.from('trainees')
-                    .select('phone, full_name, is_approved, phone_device_id, pc_device_id, reset_count, reset_requested, reset_requested_at, reset_device_type, is_trial, trial_started_at, trial_expires_at, created_at')
-                    .order('created_at', { ascending: false });
-                if (error) throw error;
-
-                // ── ទាញ users (main system) ──
-                const { data: mainUsers } = await db.from('users')
-                    .select('name, phone, status')
-                    .eq('course_id', COURSE_ID);
-
-                // Build phone→mainUser map (normalized)
-                const mainMap = {};
-                (mainUsers || []).forEach(u => { mainMap[normalizePhone(u.phone)] = u; });
-
-                const isPending = t => t.is_approved === false;
-                const isResetRequest = t => t.reset_requested === true;
-                const list = currentUsersTab === 'pending'
-                    ? (trainees || []).filter(isPending)
-                    : currentUsersTab === 'reset'
-                        ? (trainees || []).filter(isResetRequest)
-                        : (trainees || []).filter(t => !isPending(t));
-
-                // Update badge counts
-                const pendCount = document.getElementById('pending-count');
-                if (pendCount) pendCount.textContent = (trainees||[]).filter(isPending).length || '';
-                const resetCount = document.getElementById('reset-request-count');
-                if (resetCount) resetCount.textContent = (trainees||[]).filter(isResetRequest).length || '';
-
-                if (!list.length) {
-                    const msg = currentUsersTab === 'pending'
-                        ? 'មិនមានការស្នើសុំចុះឈ្មោះថ្មីទេ 🎉'
-                        : currentUsersTab === 'reset'
-                            ? 'មិនមានសំណើ Reset ឧបករណ៍ទេ 🎉'
-                            : 'មិនទាន់មានអ្នករៀនណាទេ។';
-                    container.innerHTML = `<div class="empty-video-state"><i class="fas fa-check-circle" style="color:#34a853;"></i><p>${msg}</p></div>`;
-                    return;
-                }
-
-                const rows = list.map(u => {
-                    const nPhone   = normalizePhone(u.phone);
-                    const inMain   = mainMap[nPhone];
-                    const usedReset = Number(u.reset_count || 0);
-                    const remaining = Math.max(RESET_LIMIT - usedReset, 0);
-                    const trialInfo = u.is_trial
-                        ? `<div class="badge-trial"><i class="fas fa-clock"></i> Trial ដល់ ${u.trial_expires_at ? new Date(u.trial_expires_at).toLocaleString('km-KH') : '—'}</div>`
-                        : '';
-                    const mainBadge = inMain
-                        ? `<span class="badge-approved" title="status: ${escAttr(inMain.status)}"><i class="fas fa-link"></i> ចុះឈ្មោះដោយ Bot</span>${trialInfo}`
-                        : (u.is_trial ? trialInfo : `<span style="color:#9aa0a6;font-size:12px;">ដោយដៃ</span>`);
-
-                    const phoneLock = u.phone_device_id
-                        ? `<span class="badge-locked"><i class="fas fa-mobile-alt"></i> Lock</span>`
-                        : `<span style="color:#9aa0a6;font-size:12px;">—</span>`;
-                    const pcLock = u.pc_device_id
-                        ? `<span class="badge-locked"><i class="fas fa-desktop"></i> Lock</span>`
-                        : `<span style="color:#9aa0a6;font-size:12px;">—</span>`;
-                    const resetBadge = u.reset_requested
-                        ? `<span class="badge-reset-request"><i class="fas fa-bell"></i> ស្នើ ${escHtml(u.reset_device_type || 'Reset')}</span>`
-                        : `<span class="badge-reset-count">${usedReset}/${RESET_LIMIT} នៅសល់ ${remaining}</span>`;
-
-                    const requestedAt = u.reset_requested_at
-                        ? `<div style="font-size:11px;color:#5f6368;margin-top:4px;">${new Date(u.reset_requested_at).toLocaleString('km-KH')}</div>`
-                        : '';
-
-                    const actionBtns = currentUsersTab === 'pending'
-                        ? `<button class="btn-reset-device" style="background:#e6f4ea;color:#1e8e3e;border-color:#ceead6;" onclick="approveTrainee('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-check"></i> អនុម័ត</button>
-                           <button class="btn-reset-device" style="margin-left:5px;" onclick="rejectTrainee('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-times"></i> បដិសេធ</button>`
-                        : currentUsersTab === 'reset'
-                            ? `<button class="btn-reset-device" style="background:#e6f4ea;color:#1e8e3e;border-color:#ceead6;" onclick="approveResetRequest('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-check"></i> អនុម័ត Reset</button>
-                               <button class="btn-reset-device" style="margin-left:5px;background:#fce8e6;color:#c5221f;border-color:#fad2cf;" onclick="denyResetRequest('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-times"></i> បដិសេធ</button>`
-                            : (u.phone_device_id || u.pc_device_id)
-                                ? `<button class="btn-reset-device" onclick="resetUserDevice('${escAttr(u.phone)}','${escAttr(u.full_name||u.phone)}')"><i class="fas fa-undo"></i> Admin Reset</button>`
-                                : `<span style="color:#9aa0a6;font-size:12px;">គ្មាន Lock</span>`;
-
-                    return `<tr>
-                        <td style="font-weight:bold;">${escHtml(u.full_name || '—')}</td>
-                        <td>${escHtml(u.phone)}</td>
-                        <td>${mainBadge}</td>
-                        <td>${phoneLock}</td>
-                        <td>${pcLock}</td>
-                        <td>${resetBadge}${requestedAt}</td>
-                        <td style="white-space:nowrap;">${actionBtns}</td>
-                    </tr>`;
-                }).join('');
-
-                container.innerHTML = `
-                    <div class="reset-help-box">
-                        <i class="fas fa-info-circle"></i>
-                        User អាច Reset ឧបករណ៍ខ្លួនឯងបានត្រឹម <strong>${RESET_LIMIT}</strong> ដង។ បើអស់ចំនួន នឹងត្រូវចុច “ស្នើ Admin Reset ជូន” ហើយសំណើនោះនឹងបង្ហាញក្នុង Tab “សំណើ Reset”។
-                    </div>
-                    <div style="overflow-x:auto;">
-                    <table class="user-table">
-                        <thead><tr>
-                            <th>ឈ្មោះ</th><th>លេខទូរសព្ទ</th><th>ប្រភព</th>
-                            <th><i class="fas fa-mobile-alt"></i></th>
-                            <th><i class="fas fa-desktop"></i></th>
-                            <th>ចំនួន Reset</th>
-                            <th>សកម្មភាព</th>
-                        </tr></thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                    </div>
-                    <p style="margin-top:12px;font-size:13px;color:#5f6368;">
-                        <i class="fas fa-users"></i> បង្ហាញ <strong>${list.length}</strong> នាក់
-                    </p>`;
-            } catch (e) {
-                container.innerHTML = `<div class="empty-video-state"><i class="fas fa-exclamation-circle" style="color:#ea4335;"></i><p>Error: ${escHtml(e.message)}</p><p style="font-size:12px;color:#5f6368;">បើ error ជា column មិនមាន សូម run SQL migration ខាងក្រោមក្នុង Supabase មុនពេលប្រើ។</p></div>`;
-            }
-        }
-
-        async function approveTrainee(phone, name) {
-            if (!confirm(`អនុម័តឲ្យ "${name}" (${phone}) ?\nពួកគេនឹងអាចចូលរៀនបានភ្លាម។`)) return;
-            try {
-                const { error } = await db.from('trainees')
-                    .update({ is_approved: true })
-                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`);
-                if (error) throw error;
-                // ផ្ញើ Telegram
-                if (TELEGRAM_BOT_TOKEN !== 'ដាក់_TOKEN_របស់_BOT_នៅទីនេះ') {
-                    const msg = `✅ <b>បានអនុម័ត!</b>\n👤 ${name}\n📱 ${phone}`;
-                    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
-                        method:'POST', headers:{'Content-Type':'application/json'},
-                        body: JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:msg,parse_mode:'HTML'})
-                    });
-                }
-                await renderAdminUsers();
-            } catch (e) { alert('Error: ' + e.message); }
-        }
-
-        async function rejectTrainee(phone, name) {
-            if (!confirm(`បដិសេធ + លុប "${name}" (${phone}) ?\nសកម្មភាពនេះមិនអាចត្រឡប់វិញ!`)) return;
-            try {
-                const { error } = await db.from('trainees')
-                    .delete()
-                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`);
-                if (error) throw error;
-                await renderAdminUsers();
-            } catch (e) { alert('Error: ' + e.message); }
-        }
-
-        async function resetUserDevice(phone, name) {
-            if (!confirm(`Admin Reset Device Lock ឲ្យ "${name}" (${phone}) ?\nវានឹងលុប Lock ទូរសព្ទ/កុំព្យូទ័រ និងបើកឲ្យ User ចាប់ឧបករណ៍ថ្មី។`)) return;
-            try {
-                const { error } = await db.from('trainees')
-                    .update({
-                        phone_device_id: null,
-                        pc_device_id: null,
-                        reset_count: 0,
-                        reset_requested: false,
-                        reset_requested_at: null,
-                        reset_device_type: null
-                    })
-                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`);
-                if (error) throw error;
-                alert(`✅ Admin Reset ឲ្យ ${name} ជោគជ័យ!`);
-                await renderAdminUsers();
-            } catch (e) { alert(`Error: ${e.message}`); }
-        }
-
-        async function approveResetRequest(phone, name) {
-            if (!confirm(`អនុម័តសំណើ Reset ឲ្យ "${name}" (${phone}) ?\nចំនួន Reset ខ្លួនឯងនឹងត្រូវបានកំណត់ឡើងវិញទៅ 0/12។`)) return;
-            try {
-                const { error } = await db.from('trainees')
-                    .update({
-                        phone_device_id: null,
-                        pc_device_id: null,
-                        reset_count: 0,
-                        reset_requested: false,
-                        reset_requested_at: null,
-                        reset_device_type: null
-                    })
-                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`);
-                if (error) throw error;
-                alert(`✅ បានអនុម័ត Reset ឲ្យ ${name} រួចហើយ!`);
-                await renderAdminUsers();
-            } catch (e) { alert(`Error: ${e.message}`); }
-        }
-
-        async function denyResetRequest(phone, name) {
-            if (!confirm(`បដិសេធសំណើ Reset របស់ "${name}" (${phone}) ?`)) return;
-            try {
-                const { error } = await db.from('trainees')
-                    .update({ reset_requested: false, reset_requested_at: null, reset_device_type: null })
-                    .or(`phone.eq.${normalizePhone(phone)},phone.eq.${toIntlPhone(normalizePhone(phone))}`);
-                if (error) throw error;
-                await renderAdminUsers();
-            } catch (e) { alert(`Error: ${e.message}`); }
-        }
-
-        // ===== END Admin & Video Logic =====
-
-        // ── Auto-pause videos ពេល video មួយ Play ──────────────────────
-        window.addEventListener('message', function(e) {
-            if (!String(e.origin).includes('youtube')) return;
-            try {
-                const d = JSON.parse(e.data);
-                // playerState === 1 មានន័យថាកំពុង Play
-                if (d.event === 'infoDelivery' && d.info && d.info.playerState === 1) {
-                    document.querySelectorAll('.video-thumb-wrap iframe').forEach(function(iframe) {
-                        try {
-                            if (iframe.contentWindow !== e.source) {
-                                iframe.contentWindow.postMessage(
-                                    '{"event":"command","func":"pauseVideo","args":""}', '*'
-                                );
-                            }
-                        } catch(ex) {}
-                    });
-                }
-            } catch(ex) {}
-        });
-
-        // មុខងារការពារសុវត្ថិភាព (Anti-Inspect & Anti-Copy)
-        document.addEventListener('contextmenu', event => event.preventDefault()); 
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) { return false; }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
-        }
-    </script>
+  </main>
+
+  <div class="toast" id="toast">✓ បានចម្លង Link រួចរាល់!</div>
+
+  <script>
+    function copyLink() {
+      var url = document.getElementById('siteUrl').value;
+      var btn = document.getElementById('copyBtn');
+      var done = function () {
+        btn.textContent = '✓ Copied';
+        btn.classList.add('done');
+        showToast();
+        setTimeout(function () {
+          btn.textContent = 'Copy';
+          btn.classList.remove('done');
+        }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done).catch(fallback);
+      } else {
+        fallback();
+      }
+      function fallback() {
+        var input = document.getElementById('siteUrl');
+        input.select();
+        input.setSelectionRange(0, 99999);
+        try { document.execCommand('copy'); } catch (e) {}
+        done();
+      }
+    }
+
+    function showToast() {
+      var t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(function () { t.classList.remove('show'); }, 2200);
+    }
+  </script>
 </body>
 </html>
