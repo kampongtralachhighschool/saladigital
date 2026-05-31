@@ -62,6 +62,8 @@
     .btn-check:checked + .btn-outline-secondary { background-color: #6c757d; color: white; }
     .btn-check:checked + .btn-outline-danger { background-color: #dc3545; color: white; }
     .btn-check:checked + .btn-outline-warning { background-color: #ffc107; color: #000; }
+    .abs-select-box { width: 18px; height: 18px; cursor: pointer; }
+    .abs-bulk-bar { background: #fff5f5; border: 1px solid #ffc9c9; border-radius: 10px; padding: 8px; }
 
 
     /* ===== Modern UX Upgrade ===== */
@@ -250,13 +252,19 @@
           <!-- TAB: ABSENCE HISTORY -->
           <div id="tab-abs-report" class="tab-pane-custom hidden">
               <div class="card p-2 shadow-sm border-0">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
                       <h6 class="fw-bold text-danger small mb-0"><i class="fa-solid fa-user-xmark me-1"></i> របាយការណ៍តាមដានអវត្តមាន</h6>
-                      <button class="btn btn-outline-danger btn-sm fw-bold shadow-sm" onclick="exportExcel('absHistoryTable')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+                      <div class="d-flex flex-wrap gap-1 justify-content-end">
+                          <button class="btn btn-outline-secondary btn-sm fw-bold shadow-sm" onclick="toggleAllAbsHistoryChecks(true)"><i class="fa-solid fa-check-double me-1"></i> ជ្រើស All</button>
+                          <button class="btn btn-outline-secondary btn-sm fw-bold shadow-sm" onclick="toggleAllAbsHistoryChecks(false)"><i class="fa-solid fa-xmark me-1"></i> ដោះជ្រើស</button>
+                          <button class="btn btn-danger btn-sm fw-bold shadow-sm" onclick="deleteSelectedAbsences()"><i class="fa-solid fa-trash me-1"></i> លុបដែលបានជ្រើស</button>
+                          <button class="btn btn-outline-danger btn-sm fw-bold shadow-sm" onclick="deleteAllCurrentAbsences()"><i class="fa-solid fa-trash-can me-1"></i> លុប All ខែនេះ</button>
+                          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('absHistoryTable')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+                      </div>
                   </div>
                   <div class="table-responsive table-container border shadow-sm">
                       <table class="table excel-mode mb-0" id="absHistoryTable">
-                          <thead><tr class="table-dark"><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th><th class="bg-danger">ខែនេះ</th><th class="bg-warning text-dark">ប្រវត្តិឆ្នាំនេះ</th><th>សកម្មភាព</th></tr></thead>
+                          <thead><tr class="table-dark"><th class="no-export"><input type="checkbox" class="abs-select-box" id="absHistoryCheckAll" onchange="toggleAllAbsHistoryChecks(this.checked)"></th><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th><th class="bg-danger">ខែនេះ</th><th class="bg-warning text-dark">ប្រវត្តិឆ្នាំនេះ</th><th class="no-export">សកម្មភាព</th></tr></thead>
                           <tbody id="absHistoryTableBody"></tbody>
                       </table>
                   </div>
@@ -285,15 +293,18 @@
                           <select id="absRoomSelect" class="form-select fw-bold border-danger" onchange="loadAbsenceList()"></select>
                       </div>
                       <div class="col-12 col-md-9 text-start text-md-end mt-2 mt-md-0 d-flex flex-column align-items-end justify-content-end">
-                          <button class="btn btn-warning fw-bold shadow-sm mb-1" onclick="syncAbsencesToAllSubjects()">
-                              <i class="fa-solid fa-rotate"></i> បញ្ជូនអវត្តមានទៅគ្រប់មុខវិជ្ជា
-                          </button>
-                          <span class="small text-muted"><i class="fa-solid fa-circle-info text-primary"></i> ប្រើប៊ូតុងនេះដើម្បីធានាថាឈ្មោះអវត្តមាន ត្រូវសរសេរជាន់ពីលើគ្រប់មុខវិជ្ជាទាំងអស់ ទោះជាសិស្សមានពិន្ទុខ្លះហើយក៏ដោយ។</span>
+                          <div class="d-flex flex-wrap gap-1 justify-content-end mb-1">
+                              <button class="btn btn-outline-secondary fw-bold shadow-sm btn-sm" onclick="toggleAllAbsInputChecks(true)"><i class="fa-solid fa-check-double"></i> ជ្រើស All</button>
+                              <button class="btn btn-outline-secondary fw-bold shadow-sm btn-sm" onclick="toggleAllAbsInputChecks(false)"><i class="fa-solid fa-xmark"></i> ដោះជ្រើស</button>
+                              <button class="btn btn-danger fw-bold shadow-sm btn-sm" onclick="deleteSelectedAbsencesFromInput()"><i class="fa-solid fa-trash"></i> លុបអវត្តមានដែលបានជ្រើស</button>
+                              <button class="btn btn-warning fw-bold shadow-sm btn-sm" onclick="syncAbsencesToAllSubjects()"><i class="fa-solid fa-rotate"></i> បញ្ជូនអវត្តមានទៅគ្រប់មុខវិជ្ជា</button>
+                          </div>
+                          <span class="small text-muted"><i class="fa-solid fa-circle-info text-primary"></i> ជ្រើសសិស្សដែលមាន A/P រួចចុចលុបបាន។ ប៊ូតុងបញ្ជូនអវត្តមាននឹងសរសេរ A/P ទៅគ្រប់មុខវិជ្ជា។</span>
                       </div>
                   </div>
                   <div class="table-responsive table-container border shadow-sm mt-2">
                       <table class="table align-middle mb-0 text-center border-0">
-                          <thead class="table-danger text-white"><tr><th>ល.រ</th><th>បន្ទប់/តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th>សកម្មភាព (អវត្តមាន)</th></tr></thead>
+                          <thead class="table-danger text-white"><tr><th><input type="checkbox" class="abs-select-box" id="absInputCheckAll" onchange="toggleAllAbsInputChecks(this.checked)"></th><th>ល.រ</th><th>បន្ទប់/តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th>សកម្មភាព (អវត្តមាន)</th></tr></thead>
                           <tbody id="absListBody"></tbody>
                       </table>
                   </div>
@@ -488,7 +499,7 @@
         if (isSystemLocked) titleDiv.innerHTML += ` <span class="badge bg-danger ms-2"><i class="fa-solid fa-lock"></i> ប្រព័ន្ធត្រូវបានចាក់សោរ</span>`;
         titleDiv.classList.remove('hidden');
 
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> ទាញទិន្នន័យ...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> ទាញទិន្នន័យ...</td></tr>';
         
         const stds = allStudentsCache.filter(s => String(s.room_number) === String(r)).sort((a,b) => a.desk_number - b.desk_number);
         const scores = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
@@ -860,7 +871,8 @@
 
             const v = sc.find(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value==='A'||x.score_value==='P'))?.score_value || ''; 
             
-            return `<tr class="abs-row border-bottom ${rowBgClass}" data-id="${s.student_id}" data-name="${s.full_name}" data-class="${classStr}" data-room="${s.room_number}">
+            return `<tr class="abs-row border-bottom ${rowBgClass}" data-id="${esc(s.student_id)}" data-name="${esc(s.full_name)}" data-class="${esc(classStr)}" data-room="${esc(s.room_number)}">
+                <td class="border-end-0"><input type="checkbox" class="abs-select-box abs-input-check" value="${esc(s.student_id)}" ${v ? '' : 'disabled'} title="ជ្រើសសម្រាប់លុបអវត្តមាន"></td>
                 <td class="border-end-0">${i+1}</td>
                 <td class="fw-bold border-end-0">${s.room_number} / ${esc(s.desk_number)}</td>
                 <td class="small border-end-0">${esc(s.student_id)}</td>
@@ -989,19 +1001,19 @@
     async function loadAbsenceHistoryReport() { 
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value; 
         const tbody = document.getElementById('absHistoryTableBody'); 
-        tbody.innerHTML = '<tr><td colspan="10" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> កំពុងទាញប្រវត្តិអវត្តមាន...</td></tr>'; 
+        tbody.innerHTML = '<tr><td colspan="11" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> កំពុងទាញប្រវត្តិអវត្តមាន...</td></tr>'; 
         
         const absData = await fetchAllData('scores', { academic_year: y }, { col: 'score_value', vals: ['A', 'P'] });
         const curAbsIds = [...new Set(absData.filter(x => x.month_name === m && x.semester === sem).map(x => String(x.student_id).trim()))]; 
         const filteredStds = allStudentsCache.filter(s => curAbsIds.includes(String(s.student_id).trim()));
 
-        if(filteredStds.length === 0) { tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-muted">គ្មានទិន្នន័យអវត្តមានក្នុងខែនេះទេ</td></tr>'; return; }
+        if(filteredStds.length === 0) { tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted">គ្មានទិន្នន័យអវត្តមានក្នុងខែនេះទេ</td></tr>'; return; }
 
         tbody.innerHTML = filteredStds.map(s => { 
             const myAbs = absData.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
             const curSt = [...new Set(myAbs.filter(x => x.month_name === m && x.semester === sem).map(x=>x.score_value))].join('/'); 
             const hist = [...new Set(myAbs.filter(x => x.month_name !== m).map(x=>`${x.month_name}(${x.score_value})`))].join(', '); 
-            return `<tr><td>${s.room_number}</td><td>${esc(s.desk_number)}</td><td style="mso-number-format:'\@';">${esc(s.student_id)}</td><td class="text-start fw-bold">${s.full_name}</td><td>${s.gender||''}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${s.class_name}</td><td class="bg-danger text-white">${curSt}</td><td>${hist||'-'}</td><td><button class="btn btn-sm btn-danger shadow-sm" onclick="revertAbs('${s.student_id}')">លុប</button></td></tr>`; 
+            return `<tr><td class="no-export"><input type="checkbox" class="abs-select-box abs-history-check" value="${esc(s.student_id)}"></td><td>${s.room_number}</td><td>${esc(s.desk_number)}</td><td style="mso-number-format:'\@';">${esc(s.student_id)}</td><td class="text-start fw-bold">${esc(s.full_name)}</td><td>${esc(s.gender||'')}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${esc(s.class_name)}</td><td class="bg-danger text-white">${curSt}</td><td>${hist||'-'}</td><td class="no-export"><button class="btn btn-sm btn-danger shadow-sm" onclick="revertAbs('${String(s.student_id).replace(/'/g, '&amp;#39;')}')">លុប</button></td></tr>`; 
         }).join(''); 
     }
 
@@ -1042,6 +1054,89 @@
         if(isConfirmed) { await _sb.from('scores').delete().match({ student_id: sid, subject_name: sub, academic_year: document.getElementById('gYear').value, month_name: document.getElementById('gMonth').value, semester: document.getElementById('gSemester').value }); loadInputList(); } 
     }
     
+
+    function getCheckedValues(selector) {
+        return Array.from(document.querySelectorAll(selector + ':checked')).map(x => x.value).filter(Boolean);
+    }
+
+    function toggleAllAbsHistoryChecks(checked) {
+        document.querySelectorAll('.abs-history-check').forEach(cb => cb.checked = checked);
+        const all = document.getElementById('absHistoryCheckAll');
+        if(all) all.checked = checked;
+    }
+
+    function toggleAllAbsInputChecks(checked) {
+        document.querySelectorAll('.abs-input-check:not(:disabled)').forEach(cb => cb.checked = checked);
+        const all = document.getElementById('absInputCheckAll');
+        if(all) all.checked = checked;
+    }
+
+    async function deleteAbsencesByStudentIds(studentIds, label = 'សិស្សដែលបានជ្រើស') {
+        if (!isAdmin()) {
+            Swal.fire('គ្មានសិទ្ធិ', 'មានតែ Admin ប៉ុណ្ណោះអាចលុបអវត្តមានបាន។', 'error');
+            return;
+        }
+        const ids = [...new Set(studentIds.map(x => String(x).trim()).filter(Boolean))];
+        if(ids.length === 0) {
+            Swal.fire('មិនទាន់បានជ្រើស', 'សូមចុចគ្រីស/Checkbox ជ្រើសសិស្សសិន។', 'warning');
+            return;
+        }
+        const y = document.getElementById('gYear').value;
+        const m = document.getElementById('gMonth').value;
+        const sem = document.getElementById('gSemester').value;
+        const { isConfirmed } = await Swal.fire({
+            title: 'បញ្ជាក់លុបអវត្តមាន?',
+            html: `ត្រូវលុប A/P របស់ <b>${ids.length}</b> នាក់ (${label}) ក្នុង <b>${m}</b> មែនទេ?<br><span class="text-danger small">វានឹងលុបតែពិន្ទុដែលជា A ឬ P ប៉ុណ្ណោះ មិនប៉ះពិន្ទុលេខទេ។</span>`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            confirmButtonText: '<i class="fa-solid fa-trash"></i> លុបឥឡូវនេះ',
+            cancelButtonText: 'បិទ'
+        });
+        if(!isConfirmed) return;
+        Swal.fire({ title: 'កំពុងលុប...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        try {
+            const { error } = await _sb.from('scores')
+                .delete()
+                .in('student_id', ids)
+                .eq('academic_year', y)
+                .eq('month_name', m)
+                .eq('semester', sem)
+                .in('score_value', ['A','P']);
+            if(error) throw error;
+            Swal.fire('ជោគជ័យ', `បានលុបអវត្តមាន ${ids.length} នាក់រួចរាល់។`, 'success');
+            await updateQuickStats();
+            if(document.getElementById('tab-abs-report').classList.contains('hidden') === false) loadAbsenceHistoryReport();
+            if(document.getElementById('tab-absence').classList.contains('hidden') === false) loadAbsenceList();
+            if(document.getElementById('tab-input').classList.contains('hidden') === false) loadInputList();
+            if(document.getElementById('globalSearchInput') && document.getElementById('globalSearchInput').value !== '') handleGlobalSearch();
+        } catch (error) {
+            console.error(error);
+            Swal.fire('បរាជ័យ', 'លុបអវត្តមានមិនបាន សូមពិនិត្យ Supabase Policy ឬ Internet។', 'error');
+        }
+    }
+
+    function deleteSelectedAbsences() {
+        deleteAbsencesByStudentIds(getCheckedValues('.abs-history-check'), 'របាយការណ៍អវត្តមាន');
+    }
+
+    function deleteSelectedAbsencesFromInput() {
+        deleteAbsencesByStudentIds(getCheckedValues('.abs-input-check'), 'ផ្ទាំងដាក់អវត្តមាន');
+    }
+
+    async function deleteAllCurrentAbsences() {
+        if (!isAdmin()) {
+            Swal.fire('គ្មានសិទ្ធិ', 'មានតែ Admin ប៉ុណ្ណោះអាចលុបអវត្តមានបាន។', 'error');
+            return;
+        }
+        const y = document.getElementById('gYear').value;
+        const m = document.getElementById('gMonth').value;
+        const sem = document.getElementById('gSemester').value;
+        const absData = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem }, { col: 'score_value', vals: ['A','P'] });
+        const ids = [...new Set(absData.map(x => String(x.student_id).trim()).filter(Boolean))];
+        deleteAbsencesByStudentIds(ids, 'All ខែនេះ');
+    }
+
     async function revertAbs(sid) { 
         if (!isAdmin()) {
             Swal.fire({ title: 'គ្មានសិទ្ធិអនុញ្ញាត', text: 'អ្នកមិនមានសិទ្ធិលុបអវត្តមានសិស្សទេ។ សូមទាក់ទង Admin ដើម្បីដោះស្រាយ!', icon: 'error', showCancelButton: true, confirmButtonColor: '#0088cc', cancelButtonColor: '#d33', confirmButtonText: '<i class="fa-brands fa-telegram me-1"></i> រាយការណ៍ទៅ Admin', cancelButtonText: 'បិទ' }).then((result) => { if (result.isConfirmed) { window.open('https://t.me/Mrmomhon', '_blank'); } });
@@ -1101,7 +1196,7 @@
     function exportExcel(id) { 
         let tableClone = document.getElementById(id).cloneNode(true);
         if(id === 'reportTable') { tableClone.querySelectorAll('.report-row').forEach(row => row.classList.remove('hidden')); }
-        if(id === 'absHistoryTable') { const rows = tableClone.querySelectorAll('tr'); rows.forEach(row => { if(row.children.length > 0) row.removeChild(row.lastElementChild); }); }
+        if(id === 'absHistoryTable') { tableClone.querySelectorAll('.no-export').forEach(el => el.remove()); }
         
         const a = document.createElement("a"); 
         a.href = URL.createObjectURL(new Blob(['\ufeff', tableClone.outerHTML], { type: 'application/vnd.ms-excel' })); 
