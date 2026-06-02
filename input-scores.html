@@ -111,6 +111,12 @@
     .report-score-edit.missing-input { border-color: #dc3545 !important; background: #fff1f2 !important; }
     body.dark-mode .report-not-required { background: #111827 !important; color: #64748b !important; }
     body.dark-mode .report-missing-score { background: #451a22 !important; color: #fecdd3 !important; }
+
+    .report-autosave-status { font-size: 10px; color: #64748b; margin-top: 2px; min-height: 14px; }
+    .report-autosave-status.saving { color: #b45309; }
+    .report-autosave-status.saved { color: #15803d; }
+    .report-autosave-status.error { color: #dc2626; }
+
     @media print {
       #authSection, .filter-card, .nav, #motivationArea, .btn, .toolbar-print-hide { display: none !important; }
       #appSection, .tab-pane-custom:not(.hidden) { display: block !important; }
@@ -135,21 +141,21 @@
         <label class="small fw-bold">លេខសម្ងាត់</label>
         <input type="password" id="loginPass" class="form-control mb-4" placeholder="******">
       </div>
-      <button class="btn btn-primary w-100 fw-bold py-2 shadow" onclick="handleLogin()">ចូលប្រព័ន្ធ</button>
+      <button type="button" class="btn btn-primary w-100 fw-bold py-2 shadow" onclick="handleLogin()">ចូលប្រព័ន្ធ</button>
       <div class="mt-3 small"><span class="text-primary cursor-pointer fw-bold" onclick="toggleAuthView('forgot')">ភ្លេចលេខសម្ងាត់?</span></div>
     </div>
     
     <div id="forgotForm" class="card auth-card p-4 shadow-lg text-center hidden">
       <h5 class="fw-bold text-danger mb-3">ភ្លេចលេខសម្ងាត់</h5>
       <input type="email" id="forgotEmail" class="form-control mb-3" placeholder="បញ្ចូល Email...">
-      <button class="btn btn-danger w-100 fw-bold py-2 mb-2" onclick="handleForgot()">ផ្ញើតំណភ្ជាប់</button>
+      <button type="button" class="btn btn-danger w-100 fw-bold py-2 mb-2" onclick="handleForgot()">ផ្ញើតំណភ្ជាប់</button>
       <div class="small"><span class="text-primary cursor-pointer" onclick="toggleAuthView('login')">ត្រឡប់ក្រោយ</span></div>
     </div>
 
     <div id="resetForm" class="card auth-card p-4 shadow-lg text-center hidden">
       <h5 class="fw-bold text-success mb-3">កំណត់លេខសម្ងាត់ថ្មី</h5>
       <input type="password" id="newPass" class="form-control mb-3" placeholder="លេខសម្ងាត់ថ្មី">
-      <button class="btn btn-success w-100 fw-bold py-2" onclick="handleUpdatePassword()">ប្តូរលេខសម្ងាត់</button>
+      <button type="button" class="btn btn-success w-100 fw-bold py-2" onclick="handleUpdatePassword()">ប្តូរលេខសម្ងាត់</button>
     </div>
   </div>
 
@@ -168,10 +174,10 @@
           <div class="col-6 col-md-3"><div class="quick-stat shadow-sm"><div class="num text-danger" id="statAbsents">0</div><div class="lbl">អវត្តមានខែនេះ</div></div></div>
         </div>
         <div class="d-flex flex-wrap justify-content-end gap-2 mb-3 toolbar-print-hide">
-          <button class="btn btn-light border toolbar-btn shadow-sm" onclick="refreshData()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
-          <button class="btn btn-light border toolbar-btn shadow-sm" onclick="toggleDarkMode()"><i class="fa-solid fa-moon me-1"></i> Dark</button>
-          <button class="btn btn-light border toolbar-btn shadow-sm admin-report-tool d-none" onclick="openOldVersionMenu()"><i class="fa-solid fa-clock-rotate-left me-1"></i> Version ចាស់</button>
-          <button class="btn btn-light border toolbar-btn shadow-sm" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Print</button>
+          <button type="button" class="btn btn-light border toolbar-btn shadow-sm" onclick="refreshData()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+          <button type="button" class="btn btn-light border toolbar-btn shadow-sm" onclick="toggleDarkMode()"><i class="fa-solid fa-moon me-1"></i> Dark</button>
+          <button type="button" class="btn btn-light border toolbar-btn shadow-sm admin-report-tool d-none" onclick="openOldVersionMenu()"><i class="fa-solid fa-clock-rotate-left me-1"></i> Version ចាស់</button>
+          <button type="button" class="btn btn-light border toolbar-btn shadow-sm" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Print</button>
         </div>
         <!-- GLOBAL FILTERS -->
         <div class="card filter-card shadow-sm mb-4 border-0">
@@ -186,8 +192,8 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-4 text-end d-flex justify-content-end align-items-center gap-2">
-                    <button id="lockSystemBtn" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm d-none" onclick="toggleSystemLock()"><i class="fa-solid fa-unlock"></i> ចាក់សោរប្រព័ន្ធ</button>
-                    <button class="btn btn-secondary btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="handleLogout()">ចាកចេញ</button>
+                    <button type="button" id="lockSystemBtn" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm d-none" onclick="toggleSystemLock()"><i class="fa-solid fa-unlock"></i> ចាក់សោរប្រព័ន្ធ</button>
+                    <button type="button" class="btn btn-secondary btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="handleLogout()">ចាកចេញ</button>
                 </div>
             </div>
         </div>
@@ -213,7 +219,7 @@
               <div class="row g-2 mb-3 align-items-end border-bottom pb-3">
                 <div class="col-6 col-md-4"><label class="small fw-bold">បន្ទប់</label><select id="roomSelect" class="form-select fw-bold border-primary" onchange="onFilterChange()"></select></div>
                 <div class="col-6 col-md-5"><label class="small fw-bold text-primary">មុខវិជ្ជា</label><select id="subjectSelect" class="form-select fw-bold border-primary" onchange="onFilterChange()"></select></div>
-                <div class="col-12 col-md-3"><button id="saveScoreBtn" class="btn btn-success w-100 fw-bold shadow mt-2 mt-md-0" onclick="manualSaveScores()"><i class="fa-solid fa-save"></i> រក្សាទុកពិន្ទុ</button></div>
+                <div class="col-12 col-md-3"><button type="button" id="saveScoreBtn" class="btn btn-success w-100 fw-bold shadow mt-2 mt-md-0" onclick="manualSaveScores()"><i class="fa-solid fa-save"></i> រក្សាទុកពិន្ទុ</button></div>
               </div>
 
               <div id="currentInputTitle" class="alert alert-primary py-2 mb-2 text-center fw-bold hidden shadow-sm" style="border-left: 5px solid #0d6efd; background-color: #eef6ff;"></div>
@@ -246,11 +252,11 @@
                               <option value="11">ថ្នាក់ទី 11</option>
                               <option value="12">ថ្នាក់ទី 12</option>
                           </select>
-                          <button class="btn btn-outline-primary btn-sm fw-bold shadow-sm me-1" onclick="showDetailedProgress()" title="លម្អិតវឌ្ឍនភាពតាមមុខវិជ្ជា"><i class="fa-solid fa-list-check d-none d-md-inline me-1"></i> លម្អិត</button>
-                          <button id="reportAdminEditBtn" class="btn btn-outline-warning btn-sm fw-bold shadow-sm me-1 admin-report-tool d-none" onclick="toggleReportEditMode()" title="Admin កែ/លុបពិន្ទុនៅតារាងនេះ"><i class="fa-solid fa-pen-to-square"></i> កែ/លុប</button>
-                          <button class="btn btn-outline-dark btn-sm fw-bold shadow-sm me-1 admin-report-tool d-none" onclick="openOldVersionMenu()" title="ស្ដារ/ទាញយក Version មុន"><i class="fa-solid fa-clock-rotate-left"></i> Version ចាស់</button>
-                          <button class="btn btn-outline-secondary btn-sm fw-bold shadow-sm me-1" onclick="openSubjectOrderModal()" title="កំណត់លំដាប់មុខវិជ្ជា"><i class="fa-solid fa-gear"></i></button>
-                          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('reportTable')"><i class="fa-solid fa-file-excel d-none d-md-inline me-1"></i> Excel</button>
+                          <button type="button" class="btn btn-outline-primary btn-sm fw-bold shadow-sm me-1" onclick="showDetailedProgress()" title="លម្អិតវឌ្ឍនភាពតាមមុខវិជ្ជា"><i class="fa-solid fa-list-check d-none d-md-inline me-1"></i> លម្អិត</button>
+                          <button type="button" id="reportAdminEditBtn" class="btn btn-outline-warning btn-sm fw-bold shadow-sm me-1 admin-report-tool d-none" onclick="toggleReportEditMode()" title="Admin កែ/លុបពិន្ទុនៅតារាងនេះ"><i class="fa-solid fa-pen-to-square"></i> កែ/លុប</button>
+                          <button type="button" class="btn btn-outline-dark btn-sm fw-bold shadow-sm me-1 admin-report-tool d-none" onclick="openOldVersionMenu()" title="ស្ដារ/ទាញយក Version មុន"><i class="fa-solid fa-clock-rotate-left"></i> Version ចាស់</button>
+                          <button type="button" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm me-1" onclick="openSubjectOrderModal()" title="កំណត់លំដាប់មុខវិជ្ជា"><i class="fa-solid fa-gear"></i></button>
+                          <button type="button" class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('reportTable')"><i class="fa-solid fa-file-excel d-none d-md-inline me-1"></i> Excel</button>
                       </div>
                   </div>
                   
@@ -270,8 +276,8 @@
                   <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                       <h6 class="fw-bold text-warning small mb-0"><i class="fa-solid fa-magnifying-glass-chart me-1"></i> ឆែកសិស្សដែលបញ្ចូលពិន្ទុខ្វះ</h6>
                       <div class="d-flex flex-wrap gap-1 justify-content-end">
-                          <button class="btn btn-outline-primary btn-sm fw-bold shadow-sm" onclick="loadMissingScoresReport()"><i class="fa-solid fa-rotate me-1"></i> ឆែកឡើងវិញ</button>
-                          <button class="btn btn-success btn-sm fw-bold shadow-sm" onclick="saveAllFilledMissingScores()"><i class="fa-solid fa-floppy-disk me-1"></i> រក្សាទុកដែលបានបំពេញ</button>
+                          <button type="button" class="btn btn-outline-primary btn-sm fw-bold shadow-sm" onclick="loadMissingScoresReport()"><i class="fa-solid fa-rotate me-1"></i> ឆែកឡើងវិញ</button>
+                          <button type="button" class="btn btn-success btn-sm fw-bold shadow-sm" onclick="saveAllFilledMissingScores()"><i class="fa-solid fa-floppy-disk me-1"></i> រក្សាទុកដែលបានបំពេញ</button>
                       </div>
                   </div>
 
@@ -289,8 +295,8 @@
 
                   <div class="row g-2 mb-3 align-items-end bg-light rounded p-2 border">
                       <div class="col-12 col-md-4"><label class="small fw-bold text-success">បំពេញលឿនតម្លៃដូចគ្នា</label><input type="number" id="missingBulkFixedScore" class="form-control form-control-sm border-success" placeholder="ឧ. 15 ឬ 20"></div>
-                      <div class="col-6 col-md-3"><button class="btn btn-outline-success btn-sm fw-bold w-100" onclick="fillVisibleMissingScoresFixed()"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> បំពេញជួរដែលមើលឃើញ</button></div>
-                      <div class="col-6 col-md-2"><button class="btn btn-outline-secondary btn-sm fw-bold w-100" onclick="clearVisibleMissingInputs()"><i class="fa-solid fa-eraser me-1"></i> សម្អាត</button></div>
+                      <div class="col-6 col-md-3"><button type="button" class="btn btn-outline-success btn-sm fw-bold w-100" onclick="fillVisibleMissingScoresFixed()"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> បំពេញជួរដែលមើលឃើញ</button></div>
+                      <div class="col-6 col-md-2"><button type="button" class="btn btn-outline-secondary btn-sm fw-bold w-100" onclick="clearVisibleMissingInputs()"><i class="fa-solid fa-eraser me-1"></i> សម្អាត</button></div>
                       <div class="col-12 col-md-3 small text-muted">មុខងារនេះគ្រាន់តែបំពេញក្នុងប្រអប់។ ត្រូវពិនិត្យមុនចុចរក្សាទុក។</div>
                   </div>
 
@@ -315,11 +321,11 @@
                   <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
                       <h6 class="fw-bold text-danger small mb-0"><i class="fa-solid fa-user-xmark me-1"></i> របាយការណ៍តាមដានអវត្តមាន</h6>
                       <div class="d-flex flex-wrap gap-1 justify-content-end">
-                          <button class="btn btn-outline-secondary btn-sm fw-bold shadow-sm" onclick="toggleAllAbsHistoryChecks(true)"><i class="fa-solid fa-check-double me-1"></i> ជ្រើស All</button>
-                          <button class="btn btn-outline-secondary btn-sm fw-bold shadow-sm" onclick="toggleAllAbsHistoryChecks(false)"><i class="fa-solid fa-xmark me-1"></i> ដោះជ្រើស</button>
-                          <button class="btn btn-danger btn-sm fw-bold shadow-sm" onclick="deleteSelectedAbsences()"><i class="fa-solid fa-trash me-1"></i> លុបដែលបានជ្រើស</button>
-                          <button class="btn btn-outline-danger btn-sm fw-bold shadow-sm" onclick="deleteAllCurrentAbsences()"><i class="fa-solid fa-trash-can me-1"></i> លុប All ខែនេះ</button>
-                          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('absHistoryTable')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+                          <button type="button" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm" onclick="toggleAllAbsHistoryChecks(true)"><i class="fa-solid fa-check-double me-1"></i> ជ្រើស All</button>
+                          <button type="button" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm" onclick="toggleAllAbsHistoryChecks(false)"><i class="fa-solid fa-xmark me-1"></i> ដោះជ្រើស</button>
+                          <button type="button" class="btn btn-danger btn-sm fw-bold shadow-sm" onclick="deleteSelectedAbsences()"><i class="fa-solid fa-trash me-1"></i> លុបដែលបានជ្រើស</button>
+                          <button type="button" class="btn btn-outline-danger btn-sm fw-bold shadow-sm" onclick="deleteAllCurrentAbsences()"><i class="fa-solid fa-trash-can me-1"></i> លុប All ខែនេះ</button>
+                          <button type="button" class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('absHistoryTable')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
                       </div>
                   </div>
                   <div class="table-responsive table-container border shadow-sm">
@@ -354,10 +360,10 @@
                       </div>
                       <div class="col-12 col-md-9 text-start text-md-end mt-2 mt-md-0 d-flex flex-column align-items-end justify-content-end">
                           <div class="d-flex flex-wrap gap-1 justify-content-end mb-1">
-                              <button class="btn btn-outline-secondary fw-bold shadow-sm btn-sm" onclick="toggleAllAbsInputChecks(true)"><i class="fa-solid fa-check-double"></i> ជ្រើស All</button>
-                              <button class="btn btn-outline-secondary fw-bold shadow-sm btn-sm" onclick="toggleAllAbsInputChecks(false)"><i class="fa-solid fa-xmark"></i> ដោះជ្រើស</button>
-                              <button class="btn btn-danger fw-bold shadow-sm btn-sm" onclick="deleteSelectedAbsencesFromInput()"><i class="fa-solid fa-trash"></i> លុបអវត្តមានដែលបានជ្រើស</button>
-                              <button class="btn btn-warning fw-bold shadow-sm btn-sm" onclick="syncAbsencesToAllSubjects()"><i class="fa-solid fa-rotate"></i> បញ្ជូនអវត្តមានទៅគ្រប់មុខវិជ្ជា</button>
+                              <button type="button" class="btn btn-outline-secondary fw-bold shadow-sm btn-sm" onclick="toggleAllAbsInputChecks(true)"><i class="fa-solid fa-check-double"></i> ជ្រើស All</button>
+                              <button type="button" class="btn btn-outline-secondary fw-bold shadow-sm btn-sm" onclick="toggleAllAbsInputChecks(false)"><i class="fa-solid fa-xmark"></i> ដោះជ្រើស</button>
+                              <button type="button" class="btn btn-danger fw-bold shadow-sm btn-sm" onclick="deleteSelectedAbsencesFromInput()"><i class="fa-solid fa-trash"></i> លុបអវត្តមានដែលបានជ្រើស</button>
+                              <button type="button" class="btn btn-warning fw-bold shadow-sm btn-sm" onclick="syncAbsencesToAllSubjects()"><i class="fa-solid fa-rotate"></i> បញ្ជូនអវត្តមានទៅគ្រប់មុខវិជ្ជា</button>
                           </div>
                           <span class="small text-muted"><i class="fa-solid fa-circle-info text-primary"></i> ជ្រើសសិស្សដែលមាន A/P រួចចុចលុបបាន។ ប៊ូតុងបញ្ជូនអវត្តមាននឹងសរសេរ A/P ទៅគ្រប់មុខវិជ្ជា។</span>
                       </div>
@@ -384,6 +390,18 @@
     let hasUnsavedChanges = false; 
     let isSystemLocked = false; 
     let reportEditMode = false; 
+    let reportAutoSaveTimers = {};
+    let isReportSaving = false;
+
+    // កុំឲ្យ button/form ធ្វើឲ្យ Page Reload ពេល Save
+    document.addEventListener('submit', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('button');
+        if(btn && !btn.getAttribute('type')) btn.setAttribute('type', 'button');
+    }, true);
 
     const defaultSubjectOrder = [
         "ភាសាខ្មែរ", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", 
@@ -842,11 +860,11 @@
                         const max = safeNumber(cfg.max_score, 100);
                         const cellData = `data-student-id="${esc(s.student_id)}" data-room="${esc(s.room_number)}" data-level="${esc(level)}" data-name="${esc(s.full_name)}" data-class="${esc(classStr)}" data-subject="${esc(subName)}" data-max="${esc(max)}"`;
                         if(v === 'A' || v === 'P') {
-                            h += `<td ${cellData}><span class="badge bg-danger">${esc(v)}</span><div class="report-cell-actions"><button class="btn btn-outline-danger btn-sm" onclick="deleteReportScore(this)"><i class="fa-solid fa-trash"></i></button></div></td>`;
+                            h += `<td ${cellData}><span class="badge bg-danger">${esc(v)}</span><div class="report-cell-actions"><button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteReportScore(this)"><i class="fa-solid fa-trash"></i></button></div></td>`;
                         } else {
                             const missingCls = !v ? ' class="report-missing-score"' : '';
                             const missingInputCls = !v ? ' missing-input' : '';
-                            h += `<td${missingCls} ${cellData} title="${inputBy ? 'បញ្ចូលដោយ៖ ' + esc(inputBy) : (!v ? 'មិនទាន់មានពិន្ទុ' : '')}"><input class="form-control report-score-edit mx-auto${missingInputCls}" type="text" value="${esc(v)}" data-max="${esc(max)}" oninput="validateReportScoreInput(this)" onkeydown="if(event.key==='Enter'){saveReportScore(this.closest('td').querySelector('.report-save-btn'))}"><div class="report-cell-actions"><button class="btn btn-success btn-sm report-save-btn" onclick="saveReportScore(this)"><i class="fa-solid fa-check"></i></button><button class="btn btn-outline-danger btn-sm" onclick="deleteReportScore(this)"><i class="fa-solid fa-trash"></i></button></div></td>`;
+                            h += `<td${missingCls} ${cellData} title="${inputBy ? 'បញ្ចូលដោយ៖ ' + esc(inputBy) : (!v ? 'មិនទាន់មានពិន្ទុ' : '')}"><input class="form-control report-score-edit mx-auto${missingInputCls}" type="text" value="${esc(v)}" data-max="${esc(max)}" oninput="triggerReportAutoSave(this)" onkeydown="if(event.key==='Enter'){event.preventDefault(); saveReportScore(this.closest('td').querySelector('.report-save-btn'), false); return false;}"><div class="report-cell-actions"><button type="button" class="btn btn-success btn-sm report-save-btn" onclick="saveReportScore(this, false)" title="រក្សាទុកឥឡូវ"><i class="fa-solid fa-check"></i></button><button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteReportScore(this)" title="លុបពិន្ទុ"><i class="fa-solid fa-trash"></i></button></div><div class="report-autosave-status"></div></td>`;
                         }
                     }
                 } else {
@@ -1178,7 +1196,7 @@
             const myAbs = absData.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
             const curSt = [...new Set(myAbs.filter(x => x.month_name === m && x.semester === sem).map(x=>x.score_value))].join('/'); 
             const hist = [...new Set(myAbs.filter(x => x.month_name !== m).map(x=>`${x.month_name}(${x.score_value})`))].join(', '); 
-            return `<tr><td class="no-export"><input type="checkbox" class="abs-select-box abs-history-check" value="${esc(s.student_id)}"></td><td>${s.room_number}</td><td>${esc(s.desk_number)}</td><td style="mso-number-format:'\@';">${esc(s.student_id)}</td><td class="text-start fw-bold">${esc(s.full_name)}</td><td>${esc(s.gender||'')}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${esc(s.class_name)}</td><td class="bg-danger text-white">${curSt}</td><td>${hist||'-'}</td><td class="no-export"><button class="btn btn-sm btn-danger shadow-sm" onclick="revertAbs('${String(s.student_id).replace(/'/g, '&amp;#39;')}')">លុប</button></td></tr>`; 
+            return `<tr><td class="no-export"><input type="checkbox" class="abs-select-box abs-history-check" value="${esc(s.student_id)}"></td><td>${s.room_number}</td><td>${esc(s.desk_number)}</td><td style="mso-number-format:'\@';">${esc(s.student_id)}</td><td class="text-start fw-bold">${esc(s.full_name)}</td><td>${esc(s.gender||'')}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${esc(s.class_name)}</td><td class="bg-danger text-white">${curSt}</td><td>${hist||'-'}</td><td class="no-export"><button type="button" class="btn btn-sm btn-danger shadow-sm" onclick="revertAbs('${String(s.student_id).replace(/'/g, '&amp;#39;')}')">លុប</button></td></tr>`; 
         }).join(''); 
     }
 
@@ -1194,7 +1212,7 @@
             const abs = sc.find(x => String(x.student_id).trim() === String(s.student_id).trim() && (x.score_value==='A'||x.score_value==='P')); 
             const level = getLevelGroup(s.class_name);
             const key = roomLevelKey(s.room_number, level);
-            return `<tr><td>${esc(s.room_number)}/${esc(levelLabel(level))}/${esc(s.desk_number)}</td><td>${esc(s.student_id)}</td><td class="fw-bold" style="color:#24507a;">${esc(s.full_name)}</td><td>${esc(s.class_name)}</td><td>${abs?`<span class="badge bg-danger">អវត្តមាន</span>`:'-'}</td><td class="text-center">${abs?`<button class="btn btn-sm btn-warning" onclick="revertAbs('${s.student_id}')">ដោះវត្តមាន</button>`:`<button class="btn btn-sm btn-primary" onclick="jumpToInput('${esc(key)}')">ទៅបញ្ចូល</button>`}</td></tr>`; 
+            return `<tr><td>${esc(s.room_number)}/${esc(levelLabel(level))}/${esc(s.desk_number)}</td><td>${esc(s.student_id)}</td><td class="fw-bold" style="color:#24507a;">${esc(s.full_name)}</td><td>${esc(s.class_name)}</td><td>${abs?`<span class="badge bg-danger">អវត្តមាន</span>`:'-'}</td><td class="text-center">${abs?`<button type="button" class="btn btn-sm btn-warning" onclick="revertAbs('${s.student_id}')">ដោះវត្តមាន</button>`:`<button type="button" class="btn btn-sm btn-primary" onclick="jumpToInput('${esc(key)}')">ទៅបញ្ចូល</button>`}</td></tr>`; 
         }).join(''); 
     }
 
@@ -1349,7 +1367,7 @@
                 <td class="fw-bold text-danger">${esc(r.subject)}</td>
                 <td><span class="missing-max-label">${esc(r.max)}</span></td>
                 <td><input type="text" class="form-control score-input missing-score-input mx-auto" data-max="${esc(r.max)}" placeholder="0-${esc(r.max)}" oninput="validateMissingScoreInput(this)" onkeydown="if(event.key==='Enter'){saveMissingScore(this.closest('tr').querySelector('.missing-save-btn'))}"></td>
-                <td><button class="btn btn-sm btn-success fw-bold missing-save-btn" onclick="saveMissingScore(this)"><i class="fa-solid fa-save"></i> រក្សាទុក</button><button class="btn btn-sm btn-outline-primary fw-bold ms-1" onclick="jumpToInput('${esc(roomKey)}')">ទៅបន្ទប់</button></td>
+                <td><button type="button" class="btn btn-sm btn-success fw-bold missing-save-btn" onclick="saveMissingScore(this)"><i class="fa-solid fa-save"></i> រក្សាទុក</button><button type="button" class="btn btn-sm btn-outline-primary fw-bold ms-1" onclick="jumpToInput('${esc(roomKey)}')">ទៅបន្ទប់</button></td>
             </tr>`;
         }).join('');
         filterMissingRows();
