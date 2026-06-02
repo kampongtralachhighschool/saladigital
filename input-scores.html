@@ -106,7 +106,11 @@
     .report-cell-actions { display: flex; gap: 3px; justify-content: center; align-items: center; margin-top: 3px; }
     .report-cell-actions .btn { padding: 2px 6px; font-size: 10px; line-height: 1.2; }
     .report-not-required { background: #f8fafc !important; color: #94a3b8 !important; }
+    .report-missing-score { background: #ffe5e9 !important; color: #b91c1c !important; font-weight: 800; box-shadow: inset 0 0 0 1px #f5b8c1; }
+    .report-missing-score::after { content: 'ខ្វះ'; display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 999px; background: #dc3545; color: #fff; margin-left: 4px; }
+    .report-score-edit.missing-input { border-color: #dc3545 !important; background: #fff1f2 !important; }
     body.dark-mode .report-not-required { background: #111827 !important; color: #64748b !important; }
+    body.dark-mode .report-missing-score { background: #451a22 !important; color: #fecdd3 !important; }
     @media print {
       #authSection, .filter-card, .nav, #motivationArea, .btn, .toolbar-print-hide { display: none !important; }
       #appSection, .tab-pane-custom:not(.hidden) { display: block !important; }
@@ -840,7 +844,9 @@
                         if(v === 'A' || v === 'P') {
                             h += `<td ${cellData}><span class="badge bg-danger">${esc(v)}</span><div class="report-cell-actions"><button class="btn btn-outline-danger btn-sm" onclick="deleteReportScore(this)"><i class="fa-solid fa-trash"></i></button></div></td>`;
                         } else {
-                            h += `<td ${cellData} title="${inputBy ? 'បញ្ចូលដោយ៖ ' + esc(inputBy) : ''}"><input class="form-control report-score-edit mx-auto" type="text" value="${esc(v)}" data-max="${esc(max)}" oninput="validateReportScoreInput(this)" onkeydown="if(event.key==='Enter'){saveReportScore(this.closest('td').querySelector('.report-save-btn'))}"><div class="report-cell-actions"><button class="btn btn-success btn-sm report-save-btn" onclick="saveReportScore(this)"><i class="fa-solid fa-check"></i></button><button class="btn btn-outline-danger btn-sm" onclick="deleteReportScore(this)"><i class="fa-solid fa-trash"></i></button></div></td>`;
+                            const missingCls = !v ? ' class="report-missing-score"' : '';
+                            const missingInputCls = !v ? ' missing-input' : '';
+                            h += `<td${missingCls} ${cellData} title="${inputBy ? 'បញ្ចូលដោយ៖ ' + esc(inputBy) : (!v ? 'មិនទាន់មានពិន្ទុ' : '')}"><input class="form-control report-score-edit mx-auto${missingInputCls}" type="text" value="${esc(v)}" data-max="${esc(max)}" oninput="validateReportScoreInput(this)" onkeydown="if(event.key==='Enter'){saveReportScore(this.closest('td').querySelector('.report-save-btn'))}"><div class="report-cell-actions"><button class="btn btn-success btn-sm report-save-btn" onclick="saveReportScore(this)"><i class="fa-solid fa-check"></i></button><button class="btn btn-outline-danger btn-sm" onclick="deleteReportScore(this)"><i class="fa-solid fa-trash"></i></button></div></td>`;
                         }
                     }
                 } else {
@@ -853,7 +859,9 @@
                             }
                         }
                     }
-                    h += `<td ${inputBy ? `title="បញ្ចូលដោយ៖ ${esc(inputBy)}" style="cursor:help;"` : ''}>${v}</td>`; 
+                    const missingClass = (isRequired && !v) ? 'report-missing-score' : '';
+                    const titleAttr = inputBy ? `title="បញ្ចូលដោយ៖ ${esc(inputBy)}" style="cursor:help;"` : ((isRequired && !v) ? 'title="មិនទាន់មានពិន្ទុ"' : '');
+                    h += `<td class="${missingClass}" ${titleAttr}>${v}</td>`; 
                 }
             }); 
             tableRows += h + '</tr>'; 
@@ -1059,7 +1067,7 @@
                 if(del.error) throw del.error;
                 const payload = subs.map(sub => ({
                     student_id: stuId, subject_name: sub, score_value: val, academic_year: y, semester: sem, month_name: m, 
-                    room_number: stuRoom, full_name: stuName, class_name: stuClass, level_group: getLevelGroup(stuClass), input_by: currentUser.full_name
+                    room_number: stuRoom, full_name: stuName, class_name: stuClass, input_by: currentUser.full_name
                 }));
                 const { error } = await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
                 if(error) throw error;
@@ -1067,7 +1075,7 @@
             updateSaveStatus('saved'); updateQuickStats();
             if(document.getElementById('tab-report') && !document.getElementById('tab-report').classList.contains('hidden')) loadGlobalReport();
             if(document.getElementById('tab-missing') && !document.getElementById('tab-missing').classList.contains('hidden')) loadMissingScoresReport();
-        } catch (error) { console.error(error); updateSaveStatus('error'); Swal.fire('បរាជ័យ', 'រក្សាទុកអវត្តមានមិនបាន សូមពិនិត្យ Supabase policy។', 'error'); }
+        } catch (error) { console.error(error); updateSaveStatus('error'); Swal.fire('បរាជ័យ', 'រក្សាទុកអវត្តមានមិនបាន៖ ' + (error?.message || 'សូមពិនិត្យ Supabase policy / column table / internet'), 'error'); }
     }
 
     // មុខងារថ្មីសម្រាប់ប៊ូតុង "បញ្ជូនអវត្តមានទៅគ្រប់មុខវិជ្ជា"
@@ -1512,7 +1520,6 @@
                 room_number: cell.dataset.room,
                 full_name: cell.dataset.name,
                 class_name: cell.dataset.class,
-                level_group: cell.dataset.level,
                 score_percentage: $('mode70').checked ? 70 : 100,
                 input_by: currentUser?.full_name || ''
             };
@@ -1522,7 +1529,7 @@
             showToast('បានរក្សាទុកពិន្ទុក្នុងរបាយការណ៍', 'success');
             await loadGlobalReport();
         } catch(err) {
-            console.error(err); updateSaveStatus('error'); Swal.fire('បរាជ័យ', 'រក្សាទុកមិនបាន សូមពិនិត្យ Supabase policy។', 'error');
+            console.error(err); updateSaveStatus('error'); Swal.fire('បរាជ័យ', 'រក្សាទុកមិនបាន៖ ' + (err?.message || 'សូមពិនិត្យ Supabase policy / column table / internet'), 'error');
         } finally { btn.disabled = false; }
     }
 
