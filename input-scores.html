@@ -102,6 +102,11 @@
       .score-input { width: 68px; font-size: 14px; }
       .table thead th { padding: 9px 6px; }
     }
+    .report-score-edit { width: 64px; min-width: 64px; text-align: center; font-weight: 800; padding: 3px 4px; font-size: 12px; }
+    .report-cell-actions { display: flex; gap: 3px; justify-content: center; align-items: center; margin-top: 3px; }
+    .report-cell-actions .btn { padding: 2px 6px; font-size: 10px; line-height: 1.2; }
+    .report-not-required { background: #f8fafc !important; color: #94a3b8 !important; }
+    body.dark-mode .report-not-required { background: #111827 !important; color: #64748b !important; }
     @media print {
       #authSection, .filter-card, .nav, #motivationArea, .btn, .toolbar-print-hide { display: none !important; }
       #appSection, .tab-pane-custom:not(.hidden) { display: block !important; }
@@ -161,6 +166,7 @@
         <div class="d-flex flex-wrap justify-content-end gap-2 mb-3 toolbar-print-hide">
           <button class="btn btn-light border toolbar-btn shadow-sm" onclick="refreshData()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
           <button class="btn btn-light border toolbar-btn shadow-sm" onclick="toggleDarkMode()"><i class="fa-solid fa-moon me-1"></i> Dark</button>
+          <button class="btn btn-light border toolbar-btn shadow-sm admin-report-tool d-none" onclick="openOldVersionMenu()"><i class="fa-solid fa-clock-rotate-left me-1"></i> Version ចាស់</button>
           <button class="btn btn-light border toolbar-btn shadow-sm" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Print</button>
         </div>
         <!-- GLOBAL FILTERS -->
@@ -190,7 +196,7 @@
         <ul class="nav nav-pills mb-3 px-1 overflow-auto flex-nowrap" id="pills-tab">
           <li class="nav-item"><a class="nav-link active" onclick="switchTab('input')">បញ្ចូលពិន្ទុ</a></li>
           <li class="nav-item"><a class="nav-link" onclick="switchTab('report')">របាយការណ៍រួម</a></li>
-          <li class="nav-item"><a class="nav-link" onclick="switchTab('missing')">ឆែកពិន្ទុខ្វះ</a></li>
+          <li id="adminMissingOnly" class="nav-item d-none"><a class="nav-link" onclick="switchTab('missing')">ឆែកពិន្ទុខ្វះ</a></li>
           <li class="nav-item"><a class="nav-link" onclick="switchTab('abs-report')">តាមដានអវត្តមាន</a></li>
           <li class="nav-item"><a class="nav-link" onclick="switchTab('search')">ស្វែងរកសិស្ស</a></li>
           <li id="adminOnly" class="nav-item d-none"><a class="nav-link text-danger border border-danger ms-2" onclick="switchTab('absence')">ដាក់អវត្តមាន</a></li>
@@ -237,6 +243,8 @@
                               <option value="12">ថ្នាក់ទី 12</option>
                           </select>
                           <button class="btn btn-outline-primary btn-sm fw-bold shadow-sm me-1" onclick="showDetailedProgress()" title="លម្អិតវឌ្ឍនភាពតាមមុខវិជ្ជា"><i class="fa-solid fa-list-check d-none d-md-inline me-1"></i> លម្អិត</button>
+                          <button id="reportAdminEditBtn" class="btn btn-outline-warning btn-sm fw-bold shadow-sm me-1 admin-report-tool d-none" onclick="toggleReportEditMode()" title="Admin កែ/លុបពិន្ទុនៅតារាងនេះ"><i class="fa-solid fa-pen-to-square"></i> កែ/លុប</button>
+                          <button class="btn btn-outline-dark btn-sm fw-bold shadow-sm me-1 admin-report-tool d-none" onclick="openOldVersionMenu()" title="ស្ដារ/ទាញយក Version មុន"><i class="fa-solid fa-clock-rotate-left"></i> Version ចាស់</button>
                           <button class="btn btn-outline-secondary btn-sm fw-bold shadow-sm me-1" onclick="openSubjectOrderModal()" title="កំណត់លំដាប់មុខវិជ្ជា"><i class="fa-solid fa-gear"></i></button>
                           <button class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('reportTable')"><i class="fa-solid fa-file-excel d-none d-md-inline me-1"></i> Excel</button>
                       </div>
@@ -371,6 +379,7 @@
     let saveTimeout = null; 
     let hasUnsavedChanges = false; 
     let isSystemLocked = false; 
+    let reportEditMode = false; 
 
     const defaultSubjectOrder = [
         "ភាសាខ្មែរ", "គណិតវិទ្យា", "រូបវិទ្យា", "គីមីវិទ្យា", "ជីវវិទ្យា", 
@@ -541,7 +550,9 @@
         
         if(prof.role === 'Admin') {
             document.getElementById('adminOnly').classList.remove('d-none');
+            document.getElementById('adminMissingOnly')?.classList.remove('d-none');
             document.getElementById('lockSystemBtn').classList.remove('d-none');
+            document.querySelectorAll('.admin-report-tool').forEach(el => el.classList.remove('d-none'));
         }
         
         const { data: lastSt } = await _sb.from('students').select('academic_year, semester, month_name').order('created_at', {ascending: false}).limit(1).maybeSingle();
@@ -780,8 +791,9 @@
         let uniqueSubs = [...new Set(cf.map(c=>c.subject_name))].filter(s => s !== 'SYSTEM_SETTINGS'); 
         uniqueSubs.sort((a, b) => { let idxA = activeOrder.indexOf(a); let idxB = activeOrder.indexOf(b); if (idxA === -1) idxA = 999; if (idxB === -1) idxB = 999; return idxA - idxB; });
         
-        document.getElementById('reportHead').innerHTML = `<tr><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th>${uniqueSubs.map(s => `<th>${s}</th>`).join('')}</tr>`; 
-        const sortedStds = [...allStudentsCache].sort((a,b) => a.room_number - b.room_number || a.desk_number - b.desk_number);
+        const editHint = (isAdmin() && reportEditMode) ? '<tr class="table-warning"><th colspan="' + (7 + uniqueSubs.length) + '"><i class="fa-solid fa-triangle-exclamation me-1"></i> Admin Edit Mode៖ អាចបញ្ចូល ឬលុបពិន្ទុនៅតារាងនេះបាន។ A/P ត្រូវដាក់តាម Tab ដាក់អវត្តមាន ប៉ុណ្ណោះ។</th></tr>' : '';
+        document.getElementById('reportHead').innerHTML = editHint + `<tr><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th>${uniqueSubs.map(s => `<th>${esc(s)}</th>`).join('')}</tr>`; 
+        const sortedStds = [...allStudentsCache].sort((a,b) => safeNumber(a.room_number, 999999) - safeNumber(b.room_number, 999999) || levelOrder(getLevelGroup(a.class_name)) - levelOrder(getLevelGroup(b.class_name)) || safeNumber(a.desk_number, 999999) - safeNumber(b.desk_number, 999999));
         
         let gradeStats = {}; [7,8,9,10,11,12].forEach(g => { gradeStats[g] = { students: 0, expected: 0, actual: 0, inputters: new Set() }; });
 
@@ -797,7 +809,10 @@
         let tableRows = '';
         sortedStds.forEach(s => { 
             const classStr = String(s.class_name).trim(); const gradeNum = parseInt(classStr.match(/\d+/)?.[0] || 0);
-            let h = `<tr class="report-row" data-grade="${gradeNum}"><td>${s.room_number}</td><td>${esc(s.desk_number)}</td><td style="mso-number-format:'\@';">${esc(s.student_id)}</td><td class="text-start fw-bold text-primary">${s.full_name}</td><td>${s.gender||''}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${s.class_name}</td>`; 
+            const level = getLevelGroup(classStr);
+            const requiredCfgs = getRequiredSubjectConfigsForStudent(cf, s);
+            const requiredSubsForStudent = new Set(requiredCfgs.map(c => String(c.subject_name || '').trim()));
+            let h = `<tr class="report-row" data-grade="${gradeNum}" data-level="${esc(level)}"><td>${esc(s.room_number)}</td><td>${esc(s.desk_number)}</td><td style="mso-number-format:'\@';">${esc(s.student_id)}</td><td class="text-start fw-bold" style="color:#24507a;">${esc(s.full_name)}</td><td>${esc(s.gender||'')}</td><td style="mso-number-format:'\@';">${s.dob?s.dob.split('-').reverse().join('/'):''}</td><td style="mso-number-format:'\@';">${esc(s.class_name)}</td>`; 
             
             const myScores = sc.filter(x => String(x.student_id).trim() === String(s.student_id).trim());
             
@@ -809,20 +824,37 @@
             }
 
             uniqueSubs.forEach(sub => { 
-                let scoreObj = myScores.find(x => String(x.subject_name).trim() === String(sub).trim());
-                let v = scoreObj ? scoreObj.score_value : ''; let inputBy = scoreObj ? scoreObj.input_by : '';
+                const subName = String(sub).trim();
+                const isRequired = requiredSubsForStudent.has(subName);
+                let scoreObj = myScores.find(x => String(x.subject_name).trim() === subName);
+                let v = scoreObj ? String(scoreObj.score_value ?? '') : ''; let inputBy = scoreObj ? scoreObj.input_by : '';
                 if(inputBy) inputBy = profMap[inputBy] || inputBy; 
 
-                if (!v && sub === 'ភាសាខ្មែរ' && gradeNum >= 7 && gradeNum <= 9) {
-                    let dictObj = myScores.find(x => String(x.subject_name).trim() === 'សរសេរតាមអាន'); let essayObj = myScores.find(x => String(x.subject_name).trim() === 'តែងសេចក្ដី');
-                    if (dictObj || essayObj) {
-                        let dVal = parseFloat(dictObj?.score_value) || 0; let eVal = parseFloat(essayObj?.score_value) || 0;
-                        if (!isNaN(dVal) && !isNaN(eVal) && dictObj?.score_value !== 'A' && essayObj?.score_value !== 'A') {
-                            v = `<span class="text-primary fw-bold" title="គណនាអូតូ: អាន(${dVal}) + តែង(${eVal})">${dVal + eVal}</span>`; inputBy = "ប្រព័ន្ធអូតូ";
+                if(isAdmin() && reportEditMode) {
+                    if(!isRequired) {
+                        h += `<td class="report-not-required">—</td>`;
+                    } else {
+                        const cfg = requiredCfgs.find(c => String(c.subject_name || '').trim() === subName) || {};
+                        const max = safeNumber(cfg.max_score, 100);
+                        const cellData = `data-student-id="${esc(s.student_id)}" data-room="${esc(s.room_number)}" data-level="${esc(level)}" data-name="${esc(s.full_name)}" data-class="${esc(classStr)}" data-subject="${esc(subName)}" data-max="${esc(max)}"`;
+                        if(v === 'A' || v === 'P') {
+                            h += `<td ${cellData}><span class="badge bg-danger">${esc(v)}</span><div class="report-cell-actions"><button class="btn btn-outline-danger btn-sm" onclick="deleteReportScore(this)"><i class="fa-solid fa-trash"></i></button></div></td>`;
+                        } else {
+                            h += `<td ${cellData} title="${inputBy ? 'បញ្ចូលដោយ៖ ' + esc(inputBy) : ''}"><input class="form-control report-score-edit mx-auto" type="text" value="${esc(v)}" data-max="${esc(max)}" oninput="validateReportScoreInput(this)" onkeydown="if(event.key==='Enter'){saveReportScore(this.closest('td').querySelector('.report-save-btn'))}"><div class="report-cell-actions"><button class="btn btn-success btn-sm report-save-btn" onclick="saveReportScore(this)"><i class="fa-solid fa-check"></i></button><button class="btn btn-outline-danger btn-sm" onclick="deleteReportScore(this)"><i class="fa-solid fa-trash"></i></button></div></td>`;
                         }
                     }
+                } else {
+                    if (!v && subName === 'ភាសាខ្មែរ' && gradeNum >= 7 && gradeNum <= 9) {
+                        let dictObj = myScores.find(x => String(x.subject_name).trim() === 'សរសេរតាមអាន'); let essayObj = myScores.find(x => String(x.subject_name).trim() === 'តែងសេចក្ដី');
+                        if (dictObj || essayObj) {
+                            let dVal = parseFloat(dictObj?.score_value) || 0; let eVal = parseFloat(essayObj?.score_value) || 0;
+                            if (!isNaN(dVal) && !isNaN(eVal) && dictObj?.score_value !== 'A' && essayObj?.score_value !== 'A') {
+                                v = `<span class="text-primary fw-bold" title="គណនាអូតូ: អាន(${dVal}) + តែង(${eVal})">${dVal + eVal}</span>`; inputBy = "ប្រព័ន្ធអូតូ";
+                            }
+                        }
+                    }
+                    h += `<td ${inputBy ? `title="បញ្ចូលដោយ៖ ${esc(inputBy)}" style="cursor:help;"` : ''}>${v}</td>`; 
                 }
-                h += `<td ${inputBy ? `title="បញ្ចូលដោយ៖ ${inputBy}" style="cursor:help;"` : ''}>${v}</td>`; 
             }); 
             tableRows += h + '</tr>'; 
         }); 
@@ -1004,23 +1036,38 @@
     }
 
     async function saveSingleAbsence(stuId, stuName, stuClass, stuRoom, val) {
+        if(!isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'មុខងារអវត្តមានអាចប្រើបានតែ Admin ប៉ុណ្ណោះ។', 'warning');
         updateSaveStatus('saving');
         const y = document.getElementById('gYear').value, m = document.getElementById('gMonth').value, sem = document.getElementById('gSemester').value; 
         const cf = await fetchAllData('subject_configs'); 
-        const subs = [...new Set(cf.map(s => s.subject_name))].filter(s => s !== 'SYSTEM_SETTINGS'); 
+        const student = allStudentsCache.find(s => String(s.student_id).trim() === String(stuId).trim()) || { student_id: stuId, full_name: stuName, class_name: stuClass, room_number: stuRoom };
+        const requiredCfgs = getRequiredSubjectConfigsForStudent(cf, student);
+        const subs = [...new Set((requiredCfgs.length ? requiredCfgs : cf).map(s => s.subject_name))].filter(s => s && s !== 'SYSTEM_SETTINGS'); 
 
         try {
+            const oldRowsAll = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
+            const oldRows = oldRowsAll.filter(r => String(r.student_id).trim() === String(stuId).trim());
+            saveLocalVersionSnapshot(val === '' ? 'លុបអវត្តមានសិស្ស' : `ដាក់អវត្តមាន ${val} សិស្ស`, oldRows);
+
             if (val === "") {
-                await _sb.from('scores').delete().eq('student_id', stuId).eq('academic_year', y).eq('month_name', m).eq('semester', sem).in('score_value', ['A', 'P']);
+                // លុបតែ A/P មិនប៉ះពិន្ទុលេខ
+                const { error } = await _sb.from('scores').delete().eq('student_id', stuId).eq('academic_year', y).eq('month_name', m).eq('semester', sem).in('score_value', ['A', 'P']);
+                if(error) throw error;
             } else {
+                // IMPORTANT: Admin ដាក់អវត្តមាន ត្រូវលុបពិន្ទុចាស់គ្រប់មុខវិជ្ជារបស់សិស្សនោះសិន រួចជំនួសដោយ A/P តាមមុខវិជ្ជាដែលត្រូវប្រឡងក្នុងថ្នាក់នោះ។
+                const del = await _sb.from('scores').delete().eq('student_id', stuId).eq('academic_year', y).eq('month_name', m).eq('semester', sem);
+                if(del.error) throw del.error;
                 const payload = subs.map(sub => ({
                     student_id: stuId, subject_name: sub, score_value: val, academic_year: y, semester: sem, month_name: m, 
-                    room_number: stuRoom, full_name: stuName, class_name: stuClass, input_by: currentUser.full_name
+                    room_number: stuRoom, full_name: stuName, class_name: stuClass, level_group: getLevelGroup(stuClass), input_by: currentUser.full_name
                 }));
-                await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
+                const { error } = await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
+                if(error) throw error;
             }
             updateSaveStatus('saved'); updateQuickStats();
-        } catch (error) { console.error(error); updateSaveStatus('error'); }
+            if(document.getElementById('tab-report') && !document.getElementById('tab-report').classList.contains('hidden')) loadGlobalReport();
+            if(document.getElementById('tab-missing') && !document.getElementById('tab-missing').classList.contains('hidden')) loadMissingScoresReport();
+        } catch (error) { console.error(error); updateSaveStatus('error'); Swal.fire('បរាជ័យ', 'រក្សាទុកអវត្តមានមិនបាន សូមពិនិត្យ Supabase policy។', 'error'); }
     }
 
     // មុខងារថ្មីសម្រាប់ប៊ូតុង "បញ្ជូនអវត្តមានទៅគ្រប់មុខវិជ្ជា"
@@ -1352,6 +1399,7 @@
     }
 
     async function saveMissingScore(btn) {
+        if(!isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'មុខងារនេះប្រើបានតែ Admin។', 'warning');
         if(isSystemLocked) return Swal.fire('ប្រព័ន្ធត្រូវបានចាក់សោរ', 'សូម Admin បើកសោរមុនបញ្ចូលពិន្ទុ។', 'warning');
         const row = btn.closest('tr');
         const inp = row.querySelector('.missing-score-input');
@@ -1404,7 +1452,161 @@
         }
     }
 
+
+
+    function toggleReportEditMode() {
+        if(!isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'មុខងារកែ/លុបពិន្ទុក្នុងរបាយការណ៍ ប្រើបានតែ Admin។', 'warning');
+        reportEditMode = !reportEditMode;
+        const btn = $('reportAdminEditBtn');
+        if(btn) {
+            btn.classList.toggle('btn-warning', reportEditMode);
+            btn.classList.toggle('btn-outline-warning', !reportEditMode);
+            btn.innerHTML = reportEditMode ? '<i class="fa-solid fa-eye"></i> បិទកែ' : '<i class="fa-solid fa-pen-to-square"></i> កែ/លុប';
+        }
+        loadGlobalReport();
+    }
+
+    function validateReportScoreInput(inp) {
+        inp.classList.remove('input-error');
+        const raw = inp.value.trim().toUpperCase();
+        if(raw === '') { inp.value = ''; return true; }
+        if(raw === 'A' || raw === 'P') {
+            inp.value = '';
+            inp.classList.add('input-error');
+            Swal.fire('A/P ត្រូវដាក់តាម Tab ដាក់អវត្តមាន', 'ដើម្បីកុំឲ្យកើតបញ្ហា Auto A ម្តងទៀត សូមកុំវាយ A/P នៅតារាងរបាយការណ៍។', 'warning');
+            return false;
+        }
+        const cleaned = raw.replace(/[^0-9.]/g, '');
+        inp.value = cleaned;
+        const invalid = cleaned === '' || (cleaned.match(/\./g) || []).length > 1 || !/^\d+(\.\d{0,2})?$/.test(cleaned);
+        const maxScore = safeNumber(inp.dataset.max, 100);
+        const limit = $('mode70').checked ? Math.ceil(maxScore * 0.7) : maxScore;
+        const score = parseFloat(cleaned);
+        if(invalid || Number.isNaN(score) || score < 0 || score > limit) {
+            inp.classList.add('input-error');
+            inp.title = `ពិន្ទុត្រូវចន្លោះ 0 ដល់ ${limit}`;
+            return false;
+        }
+        inp.title = '';
+        return true;
+    }
+
+    async function saveReportScore(btn) {
+        if(!isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'អ្នកប្រើធម្មតាមិនអាចកែពិន្ទុពីរបាយការណ៍បានទេ។', 'warning');
+        if(isSystemLocked) return Swal.fire('ប្រព័ន្ធត្រូវបានចាក់សោរ', 'សូមបើកសោរប្រព័ន្ធសិន។', 'warning');
+        const cell = btn.closest('td');
+        const inp = cell.querySelector('.report-score-edit');
+        if(!inp || !validateReportScoreInput(inp) || inp.value.trim() === '') return Swal.fire('ពិន្ទុមិនត្រឹមត្រូវ', 'សូមបញ្ចូលពិន្ទុត្រឹមត្រូវមុនរក្សាទុក។', 'warning');
+        const y = $('gYear').value, m = $('gMonth').value, sem = $('gSemester').value;
+        try {
+            const old = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
+            saveLocalVersionSnapshot('កែ/បញ្ចូលពិន្ទុពីរបាយការណ៍', old.filter(r => String(r.student_id).trim() === String(cell.dataset.studentId).trim() && String(r.subject_name).trim() === String(cell.dataset.subject).trim()));
+            btn.disabled = true;
+            const payload = {
+                student_id: cell.dataset.studentId,
+                subject_name: cell.dataset.subject,
+                score_value: inp.value.trim(),
+                academic_year: y,
+                semester: sem,
+                month_name: m,
+                room_number: cell.dataset.room,
+                full_name: cell.dataset.name,
+                class_name: cell.dataset.class,
+                level_group: cell.dataset.level,
+                score_percentage: $('mode70').checked ? 70 : 100,
+                input_by: currentUser?.full_name || ''
+            };
+            const { error } = await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
+            if(error) throw error;
+            updateSaveStatus('saved');
+            showToast('បានរក្សាទុកពិន្ទុក្នុងរបាយការណ៍', 'success');
+            await loadGlobalReport();
+        } catch(err) {
+            console.error(err); updateSaveStatus('error'); Swal.fire('បរាជ័យ', 'រក្សាទុកមិនបាន សូមពិនិត្យ Supabase policy។', 'error');
+        } finally { btn.disabled = false; }
+    }
+
+    async function deleteReportScore(btn) {
+        if(!isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'អ្នកប្រើធម្មតាមិនអាចលុបពិន្ទុបានទេ។', 'warning');
+        if(isSystemLocked) return Swal.fire('ប្រព័ន្ធត្រូវបានចាក់សោរ', 'សូមបើកសោរប្រព័ន្ធសិន។', 'warning');
+        const cell = btn.closest('td');
+        const { isConfirmed } = await Swal.fire({ title:'លុបពិន្ទុនេះ?', text:`${cell.dataset.name || ''} | ${cell.dataset.subject || ''}`, icon:'warning', showCancelButton:true, confirmButtonText:'លុប', cancelButtonText:'បិទ' });
+        if(!isConfirmed) return;
+        const y = $('gYear').value, m = $('gMonth').value, sem = $('gSemester').value;
+        try {
+            const old = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
+            saveLocalVersionSnapshot('លុបពិន្ទុពីរបាយការណ៍', old.filter(r => String(r.student_id).trim() === String(cell.dataset.studentId).trim() && String(r.subject_name).trim() === String(cell.dataset.subject).trim()));
+            const { error } = await _sb.from('scores').delete()
+                .eq('student_id', cell.dataset.studentId)
+                .eq('subject_name', cell.dataset.subject)
+                .eq('academic_year', y).eq('semester', sem).eq('month_name', m);
+            if(error) throw error;
+            updateSaveStatus('saved');
+            showToast('បានលុបពិន្ទុរួចរាល់', 'success');
+            await loadGlobalReport();
+        } catch(err) {
+            console.error(err); updateSaveStatus('error'); Swal.fire('បរាជ័យ', 'លុបមិនបាន សូមពិនិត្យ Supabase policy។', 'error');
+        }
+    }
+
+    function saveLocalVersionSnapshot(action, rows) {
+        try {
+            const y = $('gYear')?.value || '', m = $('gMonth')?.value || '', sem = $('gSemester')?.value || '';
+            localStorage.setItem('hs_kpt_last_version_backup', JSON.stringify({ createdAt: new Date().toISOString(), action, academic_year: y, semester: sem, month_name: m, rows: rows || [] }));
+        } catch(e) { console.warn('Cannot save local backup', e); }
+    }
+
+    async function openOldVersionMenu() {
+        if(!isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'មុខងារ Version ចាស់ប្រើបានតែ Admin។', 'warning');
+        let backup = null;
+        try { backup = JSON.parse(localStorage.getItem('hs_kpt_last_version_backup') || 'null'); } catch(e) {}
+        const info = backup ? `មាន Backup ចុងក្រោយ៖ ${backup.action || ''}<br>${new Date(backup.createdAt).toLocaleString()}<br>ចំនួន record: ${(backup.rows||[]).length}` : 'មិនទាន់មាន Backup ក្នុង Browser នេះទេ។';
+        const result = await Swal.fire({
+            title: 'Version ចាស់ / ស្ដារទិន្នន័យ',
+            html: `<div class="text-start small">${info}<hr><b>ចំណាំ៖</b> Backup នេះរក្សាទុកក្នុង Browser បច្ចុប្បន្ន មុនពេល Admin កែ/លុបពិន្ទុ ឬដាក់អវត្តមាន។</div>`,
+            icon: 'info',
+            showCancelButton: true,
+            showDenyButton: !!backup,
+            confirmButtonText: 'បើក File Version ចាស់',
+            denyButtonText: 'ស្ដារ Backup ចុងក្រោយ',
+            cancelButtonText: 'បិទ'
+        });
+        if(result.isConfirmed) {
+            window.location.href = 'preview-19-add-delete-absence-checkbox.html';
+        } else if(result.isDenied && backup) {
+            await restoreLastVersionBackup(backup);
+        }
+    }
+
+    async function restoreLastVersionBackup(backup) {
+        if(!backup || !backup.rows || backup.rows.length === 0) return Swal.fire('គ្មានទិន្នន័យសម្រាប់ស្ដារ', 'Backup ចុងក្រោយគ្មាន record។', 'info');
+        const { isConfirmed } = await Swal.fire({ title:'ស្ដារ Backup ចុងក្រោយ?', text:`នឹងស្ដារ ${backup.rows.length} record ទៅខែ/ឆមាសដដែល។`, icon:'warning', showCancelButton:true, confirmButtonText:'ស្ដារ', cancelButtonText:'បិទ'});
+        if(!isConfirmed) return;
+        try {
+            const studentIds = [...new Set(backup.rows.map(r => r.student_id).filter(Boolean))];
+            const subjects = [...new Set(backup.rows.map(r => r.subject_name).filter(Boolean))];
+            if(studentIds.length && subjects.length) {
+                // លុបតែ record ដែលពាក់ព័ន្ធនឹង backup រួច upsert វិញ
+                const del = await _sb.from('scores').delete()
+                    .in('student_id', studentIds)
+                    .in('subject_name', subjects)
+                    .eq('academic_year', backup.academic_year).eq('semester', backup.semester).eq('month_name', backup.month_name);
+                if(del.error) throw del.error;
+            }
+            const cleaned = backup.rows.map(({id, created_at, updated_at, ...r}) => r);
+            const { error } = await _sb.from('scores').upsert(cleaned, {onConflict:'student_id,subject_name,academic_year,semester,month_name'});
+            if(error) throw error;
+            Swal.fire('ជោគជ័យ', 'បានស្ដារ Backup ចុងក្រោយរួចរាល់។', 'success');
+            updateQuickStats();
+            if(!document.getElementById('tab-report').classList.contains('hidden')) loadGlobalReport();
+            if(!document.getElementById('tab-missing').classList.contains('hidden')) loadMissingScoresReport();
+        } catch(err) {
+            console.error(err); Swal.fire('បរាជ័យ', 'ស្ដារ Backup មិនបាន សូមពិនិត្យ Supabase policy។', 'error');
+        }
+    }
+
     async function switchTab(t) { 
+        if((t === 'missing' || t === 'absence') && !isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'ផ្ទាំងនេះប្រើបានតែ Admin។', 'warning');
         if (t !== 'input' && document.querySelectorAll('.stu-row').length > 0 && !isSystemLocked) { triggerAutoSave(); }
         document.querySelectorAll('.tab-pane-custom').forEach(p => p.classList.add('hidden')); 
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
