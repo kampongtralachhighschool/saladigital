@@ -265,14 +265,21 @@
 
                   <div class="alert alert-info py-2 small fw-bold mb-3">
                       <i class="fa-solid fa-circle-info me-1"></i>
-                      ប្រព័ន្ធនឹងប្រៀបធៀបមុខវិជ្ជាតាមកម្រិតថ្នាក់/ថ្នាក់របស់សិស្សជាមុនសិន។ មុខវិជ្ជាដែលមិនមានក្នុង <b>subject_configs</b> សម្រាប់ថ្នាក់នោះ នឹងមិនរាប់ថាខ្វះទេ។ A/P ដែលបានដាក់ត្រឹមត្រូវត្រូវបានចាត់ទុកថា “មានទិន្នន័យ”។
+                      ប្រព័ន្ធនឹងប្រៀបធៀបមុខវិជ្ជាតាមកម្រិតថ្នាក់/ថ្នាក់របស់សិស្សជាមុនសិន។ មុខវិជ្ជាដែលមិនមានក្នុង <b>subject_configs</b> សម្រាប់ថ្នាក់នោះ នឹងមិនរាប់ថាខ្វះទេ។ A/P ដែលបានដាក់ត្រឹមត្រូវត្រូវបានចាត់ទុកថា “មានទិន្នន័យ”។ សិស្សដែលខ្វះចាប់ពី <b>១០ មុខវិជ្ជា</b> ឡើងទៅ នឹងមិនបង្ហាញ ដើម្បីកាត់បន្ថយករណីថ្នាក់ដែលមិនមានពិន្ទុប្រឡង។
                   </div>
 
-                  <div class="row g-2 mb-3 align-items-end">
+                  <div class="row g-2 mb-2 align-items-end">
                       <div class="col-6 col-md-2"><label class="small fw-bold">កម្រិតថ្នាក់</label><select id="missingLevelFilter" class="form-select form-select-sm border-warning fw-bold" onchange="loadMissingScoresReport()"></select></div>
                       <div class="col-6 col-md-3"><label class="small fw-bold">បន្ទប់/កម្រិត</label><select id="missingRoomFilter" class="form-select form-select-sm border-warning fw-bold" onchange="loadMissingScoresReport()"></select></div>
                       <div class="col-6 col-md-3"><label class="small fw-bold">មុខវិជ្ជា</label><select id="missingSubjectFilter" class="form-select form-select-sm border-warning fw-bold" onchange="loadMissingScoresReport()"><option value="ALL">-- គ្រប់មុខវិជ្ជាដែលខ្វះ --</option></select></div>
                       <div class="col-6 col-md-4"><label class="small fw-bold">ស្វែងរក</label><input type="text" id="missingSearchInput" class="form-control form-control-sm border-warning" placeholder="ឈ្មោះ / អត្តលេខ / តុ" oninput="filterMissingRows()"></div>
+                  </div>
+
+                  <div class="row g-2 mb-3 align-items-end bg-light rounded p-2 border">
+                      <div class="col-12 col-md-4"><label class="small fw-bold text-success">បំពេញលឿនតម្លៃដូចគ្នា</label><input type="number" id="missingBulkFixedScore" class="form-control form-control-sm border-success" placeholder="ឧ. 15 ឬ 20"></div>
+                      <div class="col-6 col-md-3"><button class="btn btn-outline-success btn-sm fw-bold w-100" onclick="fillVisibleMissingScoresFixed()"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> បំពេញជួរដែលមើលឃើញ</button></div>
+                      <div class="col-6 col-md-2"><button class="btn btn-outline-secondary btn-sm fw-bold w-100" onclick="clearVisibleMissingInputs()"><i class="fa-solid fa-eraser me-1"></i> សម្អាត</button></div>
+                      <div class="col-12 col-md-3 small text-muted">មុខងារនេះគ្រាន់តែបំពេញក្នុងប្រអប់។ ត្រូវពិនិត្យមុនចុចរក្សាទុក។</div>
                   </div>
 
                   <div id="missingStatsArea" class="row g-2 mb-3"></div>
@@ -1180,8 +1187,9 @@
 
         const levels = [...new Set(allStudentsCache.map(s => getLevelGroup(s.class_name)).filter(Boolean))]
             .sort((a,b) => levelOrder(a) - levelOrder(b) || String(a).localeCompare(String(b), 'km', {numeric:true}));
-        levelSel.innerHTML = '<option value="ALL">-- គ្រប់កម្រិតថ្នាក់ --</option>' + levels.map(l => `<option value="${esc(l)}">${esc(levelLabel(l))}</option>`).join('');
-        if([...levelSel.options].some(o => o.value === currentLevel)) levelSel.value = currentLevel;
+        levelSel.innerHTML = '<option value="">-- ជ្រើសកម្រិតថ្នាក់ជាមុន --</option>' + levels.map(l => `<option value="${esc(l)}">${esc(levelLabel(l))}</option>`).join('');
+        if([...levelSel.options].some(o => o.value === currentLevel) && currentLevel !== 'ALL') levelSel.value = currentLevel;
+        else levelSel.value = '';
 
         roomSel.innerHTML = buildRoomLevelOptions(true);
         if([...roomSel.options].some(o => o.value === currentRoom)) roomSel.value = currentRoom;
@@ -1205,13 +1213,19 @@
         const configs = await fetchAllData('subject_configs');
         populateMissingFilters(configs);
 
-        const levelFilter = $('missingLevelFilter')?.value || 'ALL';
+        const levelFilter = $('missingLevelFilter')?.value || '';
         const roomFilter = $('missingRoomFilter')?.value || 'ALL';
         const subFilter = $('missingSubjectFilter')?.value || 'ALL';
         const parsedRoom = parseRoomLevelKey(roomFilter);
 
+        if(!levelFilter) {
+            if(statsArea) statsArea.innerHTML = '';
+            tbody.innerHTML = '<tr><td colspan="10" class="empty-state"><i class="fa-solid fa-filter text-warning me-1"></i> សូមជ្រើសកម្រិតថ្នាក់ជាមុនសិន ដើម្បីឆែកពិន្ទុខ្វះឲ្យត្រឹមត្រូវ។</td></tr>';
+            return;
+        }
+
         let students = [...allStudentsCache];
-        if(levelFilter !== 'ALL') students = students.filter(s => getLevelGroup(s.class_name) === levelFilter);
+        students = students.filter(s => getLevelGroup(s.class_name) === levelFilter);
         if(roomFilter !== 'ALL') students = students.filter(s => String(s.room_number) === String(parsedRoom.room) && getLevelGroup(s.class_name) === parsedRoom.level);
         students.sort((a,b) => safeNumber(a.room_number, 999999) - safeNumber(b.room_number, 999999) || levelOrder(getLevelGroup(a.class_name)) - levelOrder(getLevelGroup(b.class_name)) || safeNumber(a.desk_number, 999999) - safeNumber(b.desk_number, 999999));
 
@@ -1220,27 +1234,39 @@
         students.forEach(st => {
             const required = getRequiredSubjectConfigsForStudent(configs, st);
             const level = getLevelGroup(st.class_name);
-            if(!levelStats[level]) levelStats[level] = { students: 0, missing: 0 };
+            if(!levelStats[level]) levelStats[level] = { students: 0, missing: 0, skipped: 0 };
             levelStats[level].students++;
 
+            const missingForStudent = [];
             required.forEach(cfg => {
                 const sub = String(cfg.subject_name ?? '').trim();
-                if(subFilter !== 'ALL' && sub !== subFilter) return;
                 const scoreObj = scores.find(x => String(x.student_id).trim() === String(st.student_id).trim() && String(x.subject_name).trim() === sub);
                 const val = String(scoreObj?.score_value ?? '').trim();
-                if(val === '') {
-                    levelStats[level].missing++;
-                    rows.push({ student: st, cfg, subject: sub, level, max: safeNumber(cfg.max_score, 100) });
-                }
+                if(val === '') missingForStudent.push({ cfg, subject: sub, level, max: safeNumber(cfg.max_score, 100) });
+            });
+
+            // បើសិស្សខ្វះ ១០ មុខវិជ្ជា ឬច្រើនជាងនេះ មិនបង្ហាញទេ
+            // ប្រើសម្រាប់ករណីថ្នាក់/កម្រិតខ្លះមិនមានពិន្ទុប្រឡង ឬមិនទាន់កំណត់ subject_configs ត្រឹមត្រូវ។
+            if(missingForStudent.length >= 10) {
+                levelStats[level].skipped++;
+                return;
+            }
+
+            missingForStudent.forEach(item => {
+                if(subFilter !== 'ALL' && item.subject !== subFilter) return;
+                levelStats[level].missing++;
+                rows.push({ student: st, ...item });
             });
         });
 
         if(statsArea) {
             const totalMissing = rows.length;
             const affectedStudents = new Set(rows.map(r => String(r.student.student_id).trim())).size;
+            const skippedStudents = Object.values(levelStats).reduce((sum, st) => sum + (st.skipped || 0), 0);
             const cards = [
                 `<div class="col-6 col-md-3"><div class="quick-stat shadow-sm"><div class="num text-danger">${totalMissing}</div><div class="lbl">ចំនួនពិន្ទុខ្វះសរុប</div></div></div>`,
-                `<div class="col-6 col-md-3"><div class="quick-stat shadow-sm"><div class="num text-warning">${affectedStudents}</div><div class="lbl">សិស្សដែលមានពិន្ទុខ្វះ</div></div></div>`
+                `<div class="col-6 col-md-3"><div class="quick-stat shadow-sm"><div class="num text-warning">${affectedStudents}</div><div class="lbl">សិស្សដែលមានពិន្ទុខ្វះ</div></div></div>`,
+                `<div class="col-6 col-md-3"><div class="quick-stat shadow-sm"><div class="num text-secondary">${skippedStudents}</div><div class="lbl">លាក់ ព្រោះខ្វះ ≥10 មុខវិជ្ជា</div></div></div>`
             ];
             Object.keys(levelStats).sort((a,b)=>levelOrder(a)-levelOrder(b)).forEach(l => {
                 if(levelStats[l].missing > 0) cards.push(`<div class="col-6 col-md-2"><div class="quick-stat shadow-sm"><div class="num text-primary">${levelStats[l].missing}</div><div class="lbl">${esc(levelLabel(l))}</div></div></div>`);
@@ -1272,6 +1298,24 @@
             </tr>`;
         }).join('');
         filterMissingRows();
+    }
+
+    function fillVisibleMissingScoresFixed() {
+        const scoreInput = $('missingBulkFixedScore');
+        const val = String(scoreInput?.value ?? '').trim();
+        if(val === '') return Swal.fire('សូមបញ្ចូលពិន្ទុ', 'សូមវាយពិន្ទុដែលចង់បំពេញសិន។', 'warning');
+        let count = 0, hasError = false;
+        document.querySelectorAll('.missing-score-row:not(.hidden) .missing-score-input').forEach(inp => {
+            inp.value = val;
+            if(validateMissingScoreInput(inp)) count++; else hasError = true;
+        });
+        if(hasError) return Swal.fire('ពិន្ទុខ្លះមិនត្រឹមត្រូវ', 'សូមពិនិត្យ Max score របស់មុខវិជ្ជាខ្លះៗ។', 'warning');
+        showToast(`បានបំពេញ ${count} ជួរ។ សូមពិនិត្យមុនចុចរក្សាទុក។`, 'success');
+    }
+
+    function clearVisibleMissingInputs() {
+        document.querySelectorAll('.missing-score-row:not(.hidden) .missing-score-input').forEach(inp => { inp.value = ''; inp.classList.remove('input-error'); });
+        showToast('បានសម្អាតប្រអប់ដែលមើលឃើញ', 'secondary');
     }
 
     function validateMissingScoreInput(inp) {
