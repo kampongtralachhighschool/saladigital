@@ -190,6 +190,7 @@
         <ul class="nav nav-pills mb-3 px-1 overflow-auto flex-nowrap" id="pills-tab">
           <li class="nav-item"><a class="nav-link active" onclick="switchTab('input')">បញ្ចូលពិន្ទុ</a></li>
           <li class="nav-item"><a class="nav-link" onclick="switchTab('report')">របាយការណ៍រួម</a></li>
+          <li class="nav-item"><a class="nav-link" onclick="switchTab('missing')">ឆែកពិន្ទុខ្វះ</a></li>
           <li class="nav-item"><a class="nav-link" onclick="switchTab('abs-report')">តាមដានអវត្តមាន</a></li>
           <li class="nav-item"><a class="nav-link" onclick="switchTab('search')">ស្វែងរកសិស្ស</a></li>
           <li id="adminOnly" class="nav-item d-none"><a class="nav-link text-danger border border-danger ms-2" onclick="switchTab('absence')">ដាក់អវត្តមាន</a></li>
@@ -245,6 +246,46 @@
 
                   <div class="table-responsive table-container border shadow-sm">
                       <table class="table excel-mode mb-0" id="reportTable"><thead id="reportHead"></thead><tbody id="reportTableBody"></tbody></table>
+                  </div>
+              </div>
+          </div>
+
+
+
+          <!-- TAB: MISSING SCORES CHECKER -->
+          <div id="tab-missing" class="tab-pane-custom hidden">
+              <div class="card p-2 shadow-sm border-0">
+                  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                      <h6 class="fw-bold text-warning small mb-0"><i class="fa-solid fa-magnifying-glass-chart me-1"></i> ឆែកសិស្សដែលបញ្ចូលពិន្ទុខ្វះ</h6>
+                      <div class="d-flex flex-wrap gap-1 justify-content-end">
+                          <button class="btn btn-outline-primary btn-sm fw-bold shadow-sm" onclick="loadMissingScoresReport()"><i class="fa-solid fa-rotate me-1"></i> ឆែកឡើងវិញ</button>
+                          <button class="btn btn-success btn-sm fw-bold shadow-sm" onclick="saveAllFilledMissingScores()"><i class="fa-solid fa-floppy-disk me-1"></i> រក្សាទុកដែលបានបំពេញ</button>
+                      </div>
+                  </div>
+
+                  <div class="alert alert-info py-2 small fw-bold mb-3">
+                      <i class="fa-solid fa-circle-info me-1"></i>
+                      ប្រព័ន្ធនឹងប្រៀបធៀបមុខវិជ្ជាតាមកម្រិតថ្នាក់/ថ្នាក់របស់សិស្សជាមុនសិន។ មុខវិជ្ជាដែលមិនមានក្នុង <b>subject_configs</b> សម្រាប់ថ្នាក់នោះ នឹងមិនរាប់ថាខ្វះទេ។ A/P ដែលបានដាក់ត្រឹមត្រូវត្រូវបានចាត់ទុកថា “មានទិន្នន័យ”។
+                  </div>
+
+                  <div class="row g-2 mb-3 align-items-end">
+                      <div class="col-6 col-md-2"><label class="small fw-bold">កម្រិតថ្នាក់</label><select id="missingLevelFilter" class="form-select form-select-sm border-warning fw-bold" onchange="loadMissingScoresReport()"></select></div>
+                      <div class="col-6 col-md-3"><label class="small fw-bold">បន្ទប់/កម្រិត</label><select id="missingRoomFilter" class="form-select form-select-sm border-warning fw-bold" onchange="loadMissingScoresReport()"></select></div>
+                      <div class="col-6 col-md-3"><label class="small fw-bold">មុខវិជ្ជា</label><select id="missingSubjectFilter" class="form-select form-select-sm border-warning fw-bold" onchange="loadMissingScoresReport()"><option value="ALL">-- គ្រប់មុខវិជ្ជាដែលខ្វះ --</option></select></div>
+                      <div class="col-6 col-md-4"><label class="small fw-bold">ស្វែងរក</label><input type="text" id="missingSearchInput" class="form-control form-control-sm border-warning" placeholder="ឈ្មោះ / អត្តលេខ / តុ" oninput="filterMissingRows()"></div>
+                  </div>
+
+                  <div id="missingStatsArea" class="row g-2 mb-3"></div>
+
+                  <div class="table-responsive table-container border shadow-sm">
+                      <table class="table align-middle mb-0 text-center border-0" id="missingScoresTable">
+                          <thead>
+                              <tr>
+                                  <th>ល.រ</th><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th>ថ្នាក់</th><th>មុខវិជ្ជាខ្វះ</th><th>Max</th><th width="130">បញ្ចូលពិន្ទុ</th><th>សកម្មភាព</th>
+                              </tr>
+                          </thead>
+                          <tbody id="missingScoresBody"></tbody>
+                      </table>
                   </div>
               </div>
           </div>
@@ -1097,6 +1138,228 @@
 
     function jumpToInput(roomLevelValue) { document.getElementById('roomSelect').value = roomLevelValue; switchTab('input'); loadInputList(); }
 
+
+
+    function uniqueConfigsBySubject(configs) {
+        const map = new Map();
+        configs.forEach(c => {
+            const sub = String(c.subject_name ?? '').trim();
+            if(!sub || sub === 'SYSTEM_SETTINGS') return;
+            if(!map.has(sub)) map.set(sub, c);
+        });
+        return Array.from(map.values());
+    }
+
+    function getRequiredSubjectConfigsForStudent(configs, student) {
+        const classStr = String(student.class_name ?? '').trim();
+        const level = getLevelGroup(classStr);
+        const usable = configs.filter(c => c.subject_name && c.subject_name !== 'SYSTEM_SETTINGS');
+
+        // 1) ប្រសិនបើ subject_configs មាន class_name ដូច class សិស្សពិតៗ ត្រូវយក exact ជាមុន
+        const exact = usable.filter(c => String(c.class_name ?? '').trim().toUpperCase() === classStr.toUpperCase());
+        if(exact.length) return uniqueConfigsBySubject(exact);
+
+        // 2) បើមិនមាន exact, fallback តាមកម្រិតថ្នាក់ 7/8/9/10/11SC/12SC/11SS/12SS
+        const byLevel = usable.filter(c => {
+            const cfgClass = String(c.class_name ?? '').trim();
+            const cfgLevel = String(c.level_group ?? '').trim().toUpperCase();
+            return cfgLevel === level.toUpperCase() || getLevelGroup(cfgClass).toUpperCase() === level.toUpperCase() || cfgClass.toUpperCase() === level.toUpperCase();
+        });
+        return uniqueConfigsBySubject(byLevel);
+    }
+
+    function populateMissingFilters(configs = []) {
+        const levelSel = $('missingLevelFilter');
+        const roomSel = $('missingRoomFilter');
+        const subSel = $('missingSubjectFilter');
+        if(!levelSel || !roomSel || !subSel) return;
+
+        const currentLevel = levelSel.value || 'ALL';
+        const currentRoom = roomSel.value || 'ALL';
+        const currentSub = subSel.value || 'ALL';
+
+        const levels = [...new Set(allStudentsCache.map(s => getLevelGroup(s.class_name)).filter(Boolean))]
+            .sort((a,b) => levelOrder(a) - levelOrder(b) || String(a).localeCompare(String(b), 'km', {numeric:true}));
+        levelSel.innerHTML = '<option value="ALL">-- គ្រប់កម្រិតថ្នាក់ --</option>' + levels.map(l => `<option value="${esc(l)}">${esc(levelLabel(l))}</option>`).join('');
+        if([...levelSel.options].some(o => o.value === currentLevel)) levelSel.value = currentLevel;
+
+        roomSel.innerHTML = buildRoomLevelOptions(true);
+        if([...roomSel.options].some(o => o.value === currentRoom)) roomSel.value = currentRoom;
+
+        let subjectList = [...new Set(configs.map(c => c.subject_name).filter(s => s && s !== 'SYSTEM_SETTINGS'))];
+        let activeOrder = JSON.parse(localStorage.getItem('customSubjectOrder') || 'null') || defaultSubjectOrder;
+        subjectList.sort((a,b) => { let ia = activeOrder.indexOf(a), ib = activeOrder.indexOf(b); if(ia < 0) ia = 999; if(ib < 0) ib = 999; return ia - ib || a.localeCompare(b, 'km'); });
+        subSel.innerHTML = '<option value="ALL">-- គ្រប់មុខវិជ្ជាដែលខ្វះ --</option>' + subjectList.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+        if([...subSel.options].some(o => o.value === currentSub)) subSel.value = currentSub;
+    }
+
+    async function loadMissingScoresReport() {
+        const tbody = $('missingScoresBody');
+        const statsArea = $('missingStatsArea');
+        if(!tbody) return;
+        setLoading(tbody, 'កំពុងឆែកពិន្ទុខ្វះ...');
+        if(statsArea) statsArea.innerHTML = '';
+
+        const y = $('gYear').value, m = $('gMonth').value, sem = $('gSemester').value;
+        const scores = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
+        const configs = await fetchAllData('subject_configs');
+        populateMissingFilters(configs);
+
+        const levelFilter = $('missingLevelFilter')?.value || 'ALL';
+        const roomFilter = $('missingRoomFilter')?.value || 'ALL';
+        const subFilter = $('missingSubjectFilter')?.value || 'ALL';
+        const parsedRoom = parseRoomLevelKey(roomFilter);
+
+        let students = [...allStudentsCache];
+        if(levelFilter !== 'ALL') students = students.filter(s => getLevelGroup(s.class_name) === levelFilter);
+        if(roomFilter !== 'ALL') students = students.filter(s => String(s.room_number) === String(parsedRoom.room) && getLevelGroup(s.class_name) === parsedRoom.level);
+        students.sort((a,b) => safeNumber(a.room_number, 999999) - safeNumber(b.room_number, 999999) || levelOrder(getLevelGroup(a.class_name)) - levelOrder(getLevelGroup(b.class_name)) || safeNumber(a.desk_number, 999999) - safeNumber(b.desk_number, 999999));
+
+        const rows = [];
+        const levelStats = {};
+        students.forEach(st => {
+            const required = getRequiredSubjectConfigsForStudent(configs, st);
+            const level = getLevelGroup(st.class_name);
+            if(!levelStats[level]) levelStats[level] = { students: 0, missing: 0 };
+            levelStats[level].students++;
+
+            required.forEach(cfg => {
+                const sub = String(cfg.subject_name ?? '').trim();
+                if(subFilter !== 'ALL' && sub !== subFilter) return;
+                const scoreObj = scores.find(x => String(x.student_id).trim() === String(st.student_id).trim() && String(x.subject_name).trim() === sub);
+                const val = String(scoreObj?.score_value ?? '').trim();
+                if(val === '') {
+                    levelStats[level].missing++;
+                    rows.push({ student: st, cfg, subject: sub, level, max: safeNumber(cfg.max_score, 100) });
+                }
+            });
+        });
+
+        if(statsArea) {
+            const totalMissing = rows.length;
+            const affectedStudents = new Set(rows.map(r => String(r.student.student_id).trim())).size;
+            const cards = [
+                `<div class="col-6 col-md-3"><div class="quick-stat shadow-sm"><div class="num text-danger">${totalMissing}</div><div class="lbl">ចំនួនពិន្ទុខ្វះសរុប</div></div></div>`,
+                `<div class="col-6 col-md-3"><div class="quick-stat shadow-sm"><div class="num text-warning">${affectedStudents}</div><div class="lbl">សិស្សដែលមានពិន្ទុខ្វះ</div></div></div>`
+            ];
+            Object.keys(levelStats).sort((a,b)=>levelOrder(a)-levelOrder(b)).forEach(l => {
+                if(levelStats[l].missing > 0) cards.push(`<div class="col-6 col-md-2"><div class="quick-stat shadow-sm"><div class="num text-primary">${levelStats[l].missing}</div><div class="lbl">${esc(levelLabel(l))}</div></div></div>`);
+            });
+            statsArea.innerHTML = cards.join('');
+        }
+
+        if(rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" class="empty-state"><i class="fa-solid fa-circle-check text-success me-1"></i> មិនមានពិន្ទុខ្វះតាមលក្ខខណ្ឌដែលបានជ្រើសទេ</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = rows.map((r, i) => {
+            const st = r.student;
+            const classStr = String(st.class_name ?? '').trim();
+            const roomKey = roomLevelKey(st.room_number, r.level);
+            const q = `${st.room_number} ${st.desk_number} ${st.student_id} ${st.full_name} ${classStr} ${r.subject}`.toLowerCase();
+            return `<tr class="missing-score-row" data-search="${esc(q)}" data-student-id="${esc(st.student_id)}" data-room="${esc(st.room_number)}" data-level="${esc(r.level)}" data-name="${esc(st.full_name)}" data-class="${esc(classStr)}" data-subject="${esc(r.subject)}" data-max="${esc(r.max)}">
+                <td>${i+1}</td>
+                <td>បន្ទប់ ${esc(st.room_number)}<div class="small text-muted">${esc(levelLabel(r.level))}</div></td>
+                <td class="fw-bold">${esc(st.desk_number)}</td>
+                <td class="small">${esc(st.student_id)}</td>
+                <td class="text-start fw-bold" style="color:#24507a;">${esc(st.full_name)}</td>
+                <td>${esc(classStr)}</td>
+                <td class="fw-bold text-danger">${esc(r.subject)}</td>
+                <td><span class="missing-max-label">${esc(r.max)}</span></td>
+                <td><input type="text" class="form-control score-input missing-score-input mx-auto" data-max="${esc(r.max)}" placeholder="0-${esc(r.max)}" oninput="validateMissingScoreInput(this)" onkeydown="if(event.key==='Enter'){saveMissingScore(this.closest('tr').querySelector('.missing-save-btn'))}"></td>
+                <td><button class="btn btn-sm btn-success fw-bold missing-save-btn" onclick="saveMissingScore(this)"><i class="fa-solid fa-save"></i> រក្សាទុក</button><button class="btn btn-sm btn-outline-primary fw-bold ms-1" onclick="jumpToInput('${esc(roomKey)}')">ទៅបន្ទប់</button></td>
+            </tr>`;
+        }).join('');
+        filterMissingRows();
+    }
+
+    function validateMissingScoreInput(inp) {
+        inp.classList.remove('input-error');
+        const raw = inp.value.trim().toUpperCase();
+        if(raw === '') { inp.value = ''; return true; }
+        if(raw === 'A' || raw === 'P') {
+            inp.value = '';
+            inp.classList.add('input-error');
+            Swal.fire('មិនអនុញ្ញាត A/P នៅទីនេះ', 'A/P ត្រូវដាក់តាម Tab “ដាក់អវត្តមាន” ដើម្បីកុំឲ្យកើត Auto A ម្តងទៀត។', 'warning');
+            return false;
+        }
+        const cleaned = raw.replace(/[^0-9.]/g, '');
+        inp.value = cleaned;
+        const invalid = cleaned === '' || (cleaned.match(/\./g) || []).length > 1 || !/^\d+(\.\d{0,2})?$/.test(cleaned);
+        const is70 = $('mode70').checked;
+        const maxScore = safeNumber(inp.dataset.max, 100);
+        const limit = is70 ? Math.ceil(maxScore * 0.7) : maxScore;
+        const score = parseFloat(cleaned);
+        if(invalid || Number.isNaN(score) || score < 0 || score > limit) {
+            inp.classList.add('input-error');
+            inp.title = `ពិន្ទុត្រូវចន្លោះ 0 ដល់ ${limit}`;
+            return false;
+        }
+        inp.title = '';
+        return true;
+    }
+
+    function filterMissingRows() {
+        const q = normalizeText($('missingSearchInput')?.value || '');
+        document.querySelectorAll('.missing-score-row').forEach(row => {
+            row.classList.toggle('hidden', q && !String(row.dataset.search || '').includes(q));
+        });
+    }
+
+    async function saveMissingScore(btn) {
+        if(isSystemLocked) return Swal.fire('ប្រព័ន្ធត្រូវបានចាក់សោរ', 'សូម Admin បើកសោរមុនបញ្ចូលពិន្ទុ។', 'warning');
+        const row = btn.closest('tr');
+        const inp = row.querySelector('.missing-score-input');
+        if(!validateMissingScoreInput(inp) || inp.value.trim() === '') return Swal.fire('ពិន្ទុមិនត្រឹមត្រូវ', 'សូមបញ្ចូលពិន្ទុត្រឹមត្រូវសិន។', 'warning');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        const y = $('gYear').value, m = $('gMonth').value, sem = $('gSemester').value;
+        const mode = $('mode70').checked ? 70 : 100;
+        const payload = {
+            student_id: row.dataset.studentId,
+            subject_name: row.dataset.subject,
+            score_value: inp.value.trim(),
+            academic_year: y,
+            semester: sem,
+            month_name: m,
+            room_number: row.dataset.room,
+            full_name: row.dataset.name,
+            class_name: row.dataset.class,
+            score_percentage: mode,
+            input_by: currentUser?.full_name || ''
+        };
+        try {
+            const { error } = await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
+            if(error) throw error;
+            row.remove();
+            updateSaveStatus('saved');
+            showToast('បានរក្សាទុកពិន្ទុដែលខ្វះរួចរាល់', 'success');
+            updateQuickStats();
+            if(!document.querySelector('.missing-score-row:not(.hidden)')) loadMissingScoresReport();
+        } catch(err) {
+            console.error(err);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-save"></i> រក្សាទុក';
+            updateSaveStatus('error');
+            Swal.fire('បរាជ័យ', 'រក្សាទុកមិនបាន សូមពិនិត្យ Supabase policy ឬ Internet។', 'error');
+        }
+    }
+
+    async function saveAllFilledMissingScores() {
+        const rows = Array.from(document.querySelectorAll('.missing-score-row')).filter(row => {
+            const inp = row.querySelector('.missing-score-input');
+            return inp && inp.value.trim() !== '' && !inp.classList.contains('input-error');
+        });
+        if(rows.length === 0) return Swal.fire('គ្មានពិន្ទុត្រូវរក្សាទុក', 'សូមបញ្ចូលពិន្ទុក្នុងជួរដែលខ្វះជាមុនសិន។', 'info');
+        const { isConfirmed } = await Swal.fire({title:'រក្សាទុកទាំងអស់?', text:`មាន ${rows.length} ពិន្ទុត្រូវរក្សាទុក។`, icon:'question', showCancelButton:true, confirmButtonText:'រក្សាទុក', cancelButtonText:'បិទ'});
+        if(!isConfirmed) return;
+        for(const row of rows) {
+            const btn = row.querySelector('.missing-save-btn');
+            if(btn) await saveMissingScore(btn);
+        }
+    }
+
     async function switchTab(t) { 
         if (t !== 'input' && document.querySelectorAll('.stu-row').length > 0 && !isSystemLocked) { triggerAutoSave(); }
         document.querySelectorAll('.tab-pane-custom').forEach(p => p.classList.add('hidden')); 
@@ -1105,6 +1368,7 @@
         const activeLink = Array.from(document.querySelectorAll('.nav-link')).find(el => el.getAttribute('onclick') === `switchTab('${t}')`);
         if(activeLink) activeLink.classList.add('active');
         if(t==='report') loadGlobalReport(); 
+        if(t==='missing') loadMissingScoresReport();
         if(t==='abs-report') loadAbsenceHistoryReport(); 
     }
     
