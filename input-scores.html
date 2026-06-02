@@ -1495,43 +1495,160 @@
     function validateReportScoreInput(inp) {
         inp.classList.remove('input-error');
         const raw = inp.value.trim().toUpperCase();
-        if(raw === '') { inp.value = ''; return true; }
+
+        if(raw === '') {
+            inp.value = '';
+            inp.title = 'ទទេ = លុបពិន្ទុ/មិនទាន់មានពិន្ទុ';
+            return true;
+        }
+
         if(raw === 'A' || raw === 'P') {
             inp.value = '';
             inp.classList.add('input-error');
-            Swal.fire('A/P ត្រូវដាក់តាម Tab ដាក់អវត្តមាន', 'ដើម្បីកុំឲ្យកើតបញ្ហា Auto A ម្តងទៀត សូមកុំវាយ A/P នៅតារាងរបាយការណ៍។', 'warning');
+            Swal.fire(
+                'A/P ត្រូវដាក់តាម Tab ដាក់អវត្តមាន',
+                'ដើម្បីកុំឲ្យកើតបញ្ហា Auto A សូមកុំវាយ A/P នៅតារាងរបាយការណ៍។',
+                'warning'
+            );
             return false;
         }
+
         const cleaned = raw.replace(/[^0-9.]/g, '');
         inp.value = cleaned;
-        const invalid = cleaned === '' || (cleaned.match(/\./g) || []).length > 1 || !/^\d+(\.\d{0,2})?$/.test(cleaned);
+
+        const invalid =
+            cleaned !== '' &&
+            ((cleaned.match(/\./g) || []).length > 1 || !/^\d+(\.\d{0,2})?$/.test(cleaned));
+
         const maxScore = safeNumber(inp.dataset.max, 100);
         const limit = $('mode70').checked ? Math.ceil(maxScore * 0.7) : maxScore;
         const score = parseFloat(cleaned);
+
         if(invalid || Number.isNaN(score) || score < 0 || score > limit) {
             inp.classList.add('input-error');
             inp.title = `ពិន្ទុត្រូវចន្លោះ 0 ដល់ ${limit}`;
             return false;
         }
+
         inp.title = '';
         return true;
     }
 
-    async function saveReportScore(btn) {
-        if(!isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'អ្នកប្រើធម្មតាមិនអាចកែពិន្ទុពីរបាយការណ៍បានទេ។', 'warning');
-        if(isSystemLocked) return Swal.fire('ប្រព័ន្ធត្រូវបានចាក់សោរ', 'សូមបើកសោរប្រព័ន្ធសិន។', 'warning');
-        const cell = btn.closest('td');
+    function setReportCellStatus(cell, text, state = '') {
+        let st = cell.querySelector('.report-autosave-status');
+        if(!st) {
+            st = document.createElement('div');
+            st.className = 'report-autosave-status';
+            cell.appendChild(st);
+        }
+
+        st.className = 'report-autosave-status ' + state;
+        st.textContent = text || '';
+
+        if(state === 'saved') {
+            setTimeout(() => {
+                const current = cell.querySelector('.report-autosave-status');
+                if(current && current.textContent === text) current.textContent = '';
+            }, 1600);
+        }
+    }
+
+    function updateReportCellUiAfterSave(cell, value) {
         const inp = cell.querySelector('.report-score-edit');
-        if(!inp || !validateReportScoreInput(inp) || inp.value.trim() === '') return Swal.fire('ពិន្ទុមិនត្រឹមត្រូវ', 'សូមបញ្ចូលពិន្ទុត្រឹមត្រូវមុនរក្សាទុក។', 'warning');
-        const y = $('gYear').value, m = $('gMonth').value, sem = $('gSemester').value;
+
+        if(value === '') {
+            cell.classList.add('report-missing-score');
+            if(inp) inp.classList.add('missing-input');
+        } else {
+            cell.classList.remove('report-missing-score');
+            if(inp) inp.classList.remove('missing-input');
+        }
+    }
+
+    function triggerReportAutoSave(inp) {
+        const cell = inp.closest('td');
+
+        if(!cell || !isAdmin() || !reportEditMode || isSystemLocked) return;
+
+        validateReportScoreInput(inp);
+
+        const key = [
+            cell.dataset.studentId || '',
+            cell.dataset.subject || '',
+            $('gYear')?.value || '',
+            $('gSemester')?.value || '',
+            $('gMonth')?.value || ''
+        ].join('|');
+
+        clearTimeout(reportAutoSaveTimers[key]);
+
+        if(inp.classList.contains('input-error')) {
+            setReportCellStatus(cell, 'ពិន្ទុខុស', 'error');
+            return;
+        }
+
+        setReportCellStatus(cell, 'រង់ចាំ Auto Save...', 'saving');
+
+        reportAutoSaveTimers[key] = setTimeout(() => {
+            const btn = cell.querySelector('.report-save-btn');
+            if(btn) saveReportScore(btn, true);
+        }, 800);
+    }
+
+    async function saveReportScore(btn, isAutoSave = false) {
+        if(!isAdmin()) {
+            if(!isAutoSave) Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'អ្នកប្រើធម្មតាមិនអាចកែពិន្ទុពីរបាយការណ៍បានទេ។', 'warning');
+            return;
+        }
+
+        if(isSystemLocked) {
+            if(!isAutoSave) Swal.fire('ប្រព័ន្ធត្រូវបានចាក់សោរ', 'សូមបើកសោរប្រព័ន្ធសិន។', 'warning');
+            return;
+        }
+
+        const cell = btn?.closest('td');
+        if(!cell) return;
+
+        const inp = cell.querySelector('.report-score-edit');
+        if(!inp || !validateReportScoreInput(inp)) {
+            if(!isAutoSave) Swal.fire('ពិន្ទុមិនត្រឹមត្រូវ', 'សូមបញ្ចូលពិន្ទុត្រឹមត្រូវមុនរក្សាទុក។', 'warning');
+            return;
+        }
+
+        const y = $('gYear').value;
+        const m = $('gMonth').value;
+        const sem = $('gSemester').value;
+        const value = inp.value.trim();
+
         try {
-            const old = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
-            saveLocalVersionSnapshot('កែ/បញ្ចូលពិន្ទុពីរបាយការណ៍', old.filter(r => String(r.student_id).trim() === String(cell.dataset.studentId).trim() && String(r.subject_name).trim() === String(cell.dataset.subject).trim()));
             btn.disabled = true;
+            updateSaveStatus('saving');
+            setReportCellStatus(cell, 'កំពុង Auto Save...', 'saving');
+
+            // ទទេ = លុបពិន្ទុ record នោះ ដោយមិន reload
+            if(value === '') {
+                const { error } = await _sb.from('scores').delete()
+                    .eq('student_id', cell.dataset.studentId)
+                    .eq('subject_name', cell.dataset.subject)
+                    .eq('academic_year', y)
+                    .eq('semester', sem)
+                    .eq('month_name', m);
+
+                if(error) throw error;
+
+                updateReportCellUiAfterSave(cell, '');
+                updateSaveStatus('saved');
+                setReportCellStatus(cell, 'បានលុប/រក្សាទុក', 'saved');
+
+                if(!isAutoSave) showToast('បានលុបពិន្ទុ ដោយមិន Reload', 'success');
+                updateQuickStats();
+                return;
+            }
+
             const payload = {
                 student_id: cell.dataset.studentId,
                 subject_name: cell.dataset.subject,
-                score_value: inp.value.trim(),
+                score_value: value,
                 academic_year: y,
                 semester: sem,
                 month_name: m,
@@ -1541,38 +1658,95 @@
                 score_percentage: $('mode70').checked ? 70 : 100,
                 input_by: currentUser?.full_name || ''
             };
-            const { error } = await _sb.from('scores').upsert(payload, {onConflict: 'student_id,subject_name,academic_year,semester,month_name'});
+
+            const { error } = await _sb
+                .from('scores')
+                .upsert(payload, { onConflict: 'student_id,subject_name,academic_year,semester,month_name' });
+
             if(error) throw error;
+
+            updateReportCellUiAfterSave(cell, value);
             updateSaveStatus('saved');
-            showToast('បានរក្សាទុកពិន្ទុក្នុងរបាយការណ៍', 'success');
-            await loadGlobalReport();
+            setReportCellStatus(cell, 'បាន Auto Save', 'saved');
+
+            if(!isAutoSave) showToast('បានរក្សាទុកពិន្ទុ ដោយមិន Reload', 'success');
+
+            // សំខាន់៖ មិនហៅ loadGlobalReport() ទេ ដើម្បីកុំឲ្យតារាង Reload/Scroll លោត
+            updateQuickStats();
+
         } catch(err) {
-            console.error(err); updateSaveStatus('error'); Swal.fire('បរាជ័យ', 'រក្សាទុកមិនបាន៖ ' + (err?.message || 'សូមពិនិត្យ Supabase policy / column table / internet'), 'error');
-        } finally { btn.disabled = false; }
+            console.error(err);
+            updateSaveStatus('error');
+            setReportCellStatus(cell, 'រក្សាទុកមិនបាន', 'error');
+
+            if(!isAutoSave) {
+                Swal.fire(
+                    'បរាជ័យ',
+                    'រក្សាទុកមិនបាន៖ ' + (err?.message || 'សូមពិនិត្យ Supabase policy / column table / internet'),
+                    'error'
+                );
+            }
+        } finally {
+            btn.disabled = false;
+        }
     }
 
     async function deleteReportScore(btn) {
         if(!isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'អ្នកប្រើធម្មតាមិនអាចលុបពិន្ទុបានទេ។', 'warning');
         if(isSystemLocked) return Swal.fire('ប្រព័ន្ធត្រូវបានចាក់សោរ', 'សូមបើកសោរប្រព័ន្ធសិន។', 'warning');
+
         const cell = btn.closest('td');
-        const { isConfirmed } = await Swal.fire({ title:'លុបពិន្ទុនេះ?', text:`${cell.dataset.name || ''} | ${cell.dataset.subject || ''}`, icon:'warning', showCancelButton:true, confirmButtonText:'លុប', cancelButtonText:'បិទ' });
+
+        const { isConfirmed } = await Swal.fire({
+            title: 'លុបពិន្ទុនេះ?',
+            text: `${cell.dataset.name || ''} | ${cell.dataset.subject || ''}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'លុប',
+            cancelButtonText: 'បិទ'
+        });
+
         if(!isConfirmed) return;
-        const y = $('gYear').value, m = $('gMonth').value, sem = $('gSemester').value;
+
+        const y = $('gYear').value;
+        const m = $('gMonth').value;
+        const sem = $('gSemester').value;
+
         try {
-            const old = await fetchAllData('scores', { academic_year: y, month_name: m, semester: sem });
-            saveLocalVersionSnapshot('លុបពិន្ទុពីរបាយការណ៍', old.filter(r => String(r.student_id).trim() === String(cell.dataset.studentId).trim() && String(r.subject_name).trim() === String(cell.dataset.subject).trim()));
+            btn.disabled = true;
+            updateSaveStatus('saving');
+            setReportCellStatus(cell, 'កំពុងលុប...', 'saving');
+
             const { error } = await _sb.from('scores').delete()
                 .eq('student_id', cell.dataset.studentId)
                 .eq('subject_name', cell.dataset.subject)
-                .eq('academic_year', y).eq('semester', sem).eq('month_name', m);
+                .eq('academic_year', y)
+                .eq('semester', sem)
+                .eq('month_name', m);
+
             if(error) throw error;
+
+            const inp = cell.querySelector('.report-score-edit');
+            if(inp) inp.value = '';
+
+            updateReportCellUiAfterSave(cell, '');
             updateSaveStatus('saved');
-            showToast('បានលុបពិន្ទុរួចរាល់', 'success');
-            await loadGlobalReport();
+            setReportCellStatus(cell, 'បានលុប', 'saved');
+            showToast('បានលុបពិន្ទុ ដោយមិន Reload', 'success');
+
+            // មិន Reload តារាងទៀត
+            updateQuickStats();
+
         } catch(err) {
-            console.error(err); updateSaveStatus('error'); Swal.fire('បរាជ័យ', 'លុបមិនបាន សូមពិនិត្យ Supabase policy។', 'error');
+            console.error(err);
+            updateSaveStatus('error');
+            setReportCellStatus(cell, 'លុបមិនបាន', 'error');
+            Swal.fire('បរាជ័យ', 'លុបមិនបាន៖ ' + (err?.message || 'សូមពិនិត្យ Supabase policy'), 'error');
+        } finally {
+            btn.disabled = false;
         }
     }
+
 
     function saveLocalVersionSnapshot(action, rows) {
         try {
