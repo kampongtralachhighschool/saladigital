@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>តារាងកិត្តិយស (A4 Format)</title>
     
-    <link href="dist/tailwind.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="env.js"></script>
-    <script src="admin-auth.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700;900&family=Moul&display=swap" rel="stylesheet">
     
@@ -356,10 +353,6 @@
                 <button onclick="window.print()" id="btnPrint" class="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow hover:bg-red-700 transition hidden">
                     📄 Save ជា PDF
                 </button>
-
-                <button onclick="AdminAuth.logout()" class="px-5 py-2.5 bg-gray-100 text-gray-600 font-bold rounded-xl border border-gray-300 shadow-sm hover:bg-gray-200 transition">
-                    ចាកចេញ
-                </button>
             </div>
         </div>
 
@@ -373,8 +366,8 @@
     </div>
 
     <script>
-        const SUPABASE_URL = (window.ENV && window.ENV.SUPABASE_URL) || "https://bcezphbxnimyhtylkvrx.supabase.co"; 
-        const SUPABASE_KEY = (window.ENV && window.ENV.SUPABASE_ANON_KEY) || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc";
+        const SUPABASE_URL = "https://bcezphbxnimyhtylkvrx.supabase.co"; 
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjZXpwaGJ4bmlteWh0eWxrdnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTA2ODYsImV4cCI6MjA4ODQ2NjY4Nn0.lFzwMvdmyRXfWq1ZbJVoM6EwkLeJXXuoVGoHGjukRQc";
         const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
 
         const PRINCIPAL_STAMP_URL = "1P24BE_WO6qM2wnaBvusbPF-NGhLk3yne";
@@ -387,11 +380,24 @@
             return idMatch ? `https://lh3.googleusercontent.com/d/${idMatch[1]}` : urlOrId;
         };
 
-        // 🔒 ចូលរដ្ឋបាលដោយ Supabase Auth (ជំនួសពាក្យសម្ងាត់ hardcode)
+        // 🌟 Security Prompt
         document.addEventListener("DOMContentLoaded", () => {
-            AdminAuth.protect({ roles: ['admin'], onReady: () => {
-                document.body.style.backgroundColor = "#e2e8f0";
-            }});
+            Swal.fire({
+                title: '🔒 ចូលផ្ទាំងរដ្ឋបាល',
+                input: 'password',
+                inputPlaceholder: 'បញ្ចូលពាក្យសម្ងាត់...',
+                allowOutsideClick: false, allowEscapeKey: false,
+                confirmButtonText: 'ចូលប្រើប្រាស់',
+                confirmButtonColor: '#2563eb',
+                preConfirm: (pwd) => {
+                    if (pwd !== 'H@nm@m64') { Swal.showValidationMessage('ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!'); }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('main-ui').style.display = 'block';
+                    document.body.style.backgroundColor = "#e2e8f0";
+                }
+            });
         });
 
         // 🌟 មុខងារ បិទ/បើក ត្រា និង ហត្ថលេខា
