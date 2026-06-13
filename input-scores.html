@@ -112,6 +112,14 @@
     body.dark-mode .report-not-required { background: #111827 !important; color: #64748b !important; }
     body.dark-mode .report-missing-score { background: #451a22 !important; color: #fecdd3 !important; }
 
+
+
+    /* Monthly student list input */
+    .student-list-help { background: #f8fbff; border: 1px dashed #8bbcff; border-radius: 12px; padding: 10px; }
+    .student-import-box { min-height: 180px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 12px; }
+    .student-form-card { background: linear-gradient(180deg, #ffffff, #f8fbff); border: 1px solid #e1efff; }
+    .student-month-badge { font-size: 11px; border-radius: 999px; padding: 4px 10px; background: #e7f1ff; color: #084298; font-weight: 800; }
+
     .report-autosave-status { font-size: 10px; color: #64748b; margin-top: 2px; min-height: 14px; }
     .report-autosave-status.saving { color: #b45309; }
     .report-autosave-status.saved { color: #15803d; }
@@ -205,6 +213,7 @@
 
         <ul class="nav nav-pills mb-3 px-1 overflow-auto flex-nowrap" id="pills-tab">
           <li class="nav-item"><a class="nav-link active" onclick="switchTab('input')">បញ្ចូលពិន្ទុ</a></li>
+          <li id="adminStudentListOnly" class="nav-item d-none"><a class="nav-link text-primary border border-primary ms-1" onclick="switchTab('students')">បញ្ជីសិស្សតាមខែ</a></li>
           <li class="nav-item"><a class="nav-link" onclick="switchTab('report')">របាយការណ៍រួម</a></li>
           <li id="adminMissingOnly" class="nav-item d-none"><a class="nav-link" onclick="switchTab('missing')">ឆែកពិន្ទុខ្វះ</a></li>
           <li class="nav-item"><a class="nav-link" onclick="switchTab('abs-report')">តាមដានអវត្តមាន</a></li>
@@ -233,6 +242,78 @@
                       <thead><tr><th>ល.រ</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះសិស្ស</th><th width="100">ពិន្ទុ</th></tr></thead>
                       <tbody id="inputListBody"></tbody>
                   </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: MONTHLY STUDENT LIST -->
+          <div id="tab-students" class="tab-pane-custom hidden">
+            <div class="card p-2 shadow-sm border-0">
+              <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                <div>
+                  <h6 class="fw-bold text-primary small mb-1"><i class="fa-solid fa-users-gear me-1"></i> បញ្ចូលបញ្ជីឈ្មោះសិស្សតាមខែ</h6>
+                  <div class="small text-muted">បញ្ជីនេះរក្សាទុកតាម <b>ឆ្នាំសិក្សា + ឆមាស + ខែប្រឡង</b> ដែលអ្នកបានជ្រើសខាងលើ។</div>
+                </div>
+                <div class="d-flex flex-wrap gap-1 justify-content-end">
+                  <span class="student-month-badge" id="studentListMonthBadge">ខែបច្ចុប្បន្ន</span>
+                  <button type="button" class="btn btn-outline-primary btn-sm fw-bold shadow-sm" onclick="loadMonthlyStudents()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+                  <button type="button" class="btn btn-outline-success btn-sm fw-bold shadow-sm" onclick="exportExcel('monthlyStudentsTable')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+                </div>
+              </div>
+
+              <div class="student-list-help small mb-3">
+                <i class="fa-solid fa-circle-info text-primary me-1"></i>
+                អាចបញ្ចូលម្នាក់ៗ ឬ Copy ពី Excel មកបិទភ្ជាប់។ លំដាប់ជួរដែលគាំទ្រ៖ <b>អត្តលេខ | ឈ្មោះ | ភេទ | ថ្ងៃកំណើត | ថ្នាក់ | បន្ទប់ | លេខតុ</b>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12 col-lg-5">
+                  <div class="card student-form-card p-3 shadow-sm h-100">
+                    <h6 class="fw-bold small text-success mb-3"><i class="fa-solid fa-user-plus me-1"></i> បញ្ចូលសិស្សម្នាក់</h6>
+                    <div class="row g-2">
+                      <div class="col-6"><label class="small fw-bold">អត្តលេខ</label><input id="stuManageId" class="form-control form-control-sm border-primary" placeholder="ឧ. 25001"></div>
+                      <div class="col-6"><label class="small fw-bold">លេខតុ</label><input id="stuManageDesk" class="form-control form-control-sm border-primary" placeholder="ឧ. 01"></div>
+                      <div class="col-12"><label class="small fw-bold">ឈ្មោះសិស្ស</label><input id="stuManageName" class="form-control form-control-sm border-primary" placeholder="ឈ្មោះពេញ"></div>
+                      <div class="col-6"><label class="small fw-bold">ភេទ</label><select id="stuManageGender" class="form-select form-select-sm border-primary"><option value="">-- ជ្រើស --</option><option value="ប្រុស">ប្រុស</option><option value="ស្រី">ស្រី</option></select></div>
+                      <div class="col-6"><label class="small fw-bold">ថ្ងៃកំណើត</label><input id="stuManageDob" type="date" class="form-control form-control-sm border-primary"></div>
+                      <div class="col-6"><label class="small fw-bold">ថ្នាក់</label><input id="stuManageClass" class="form-control form-control-sm border-primary" placeholder="ឧ. 11SC1"></div>
+                      <div class="col-6"><label class="small fw-bold">បន្ទប់</label><input id="stuManageRoom" class="form-control form-control-sm border-primary" placeholder="ឧ. 1"></div>
+                      <div class="col-12 d-flex gap-2 mt-3">
+                        <button type="button" class="btn btn-success btn-sm fw-bold flex-fill" onclick="saveSingleMonthlyStudent()"><i class="fa-solid fa-floppy-disk me-1"></i> រក្សាទុកសិស្ស</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm fw-bold" onclick="clearMonthlyStudentForm()">សម្អាត</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-lg-7">
+                  <div class="card p-3 shadow-sm h-100 border-0">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <h6 class="fw-bold small text-warning mb-0"><i class="fa-solid fa-file-import me-1"></i> បិទភ្ជាប់ពី Excel / CSV</h6>
+                      <button type="button" class="btn btn-outline-secondary btn-sm fw-bold" onclick="fillMonthlyStudentSample()">គំរូ</button>
+                    </div>
+                    <textarea id="studentBulkText" class="form-control student-import-box border-warning" placeholder="25001	គង់ សុភា	ប្រុស	2010-01-15	10A	1	01"></textarea>
+                    <div class="d-flex flex-wrap gap-2 mt-2 justify-content-end">
+                      <button type="button" class="btn btn-outline-primary btn-sm fw-bold" onclick="previewMonthlyStudentImport()"><i class="fa-solid fa-eye me-1"></i> មើលជាមុន</button>
+                      <button type="button" class="btn btn-warning btn-sm fw-bold" onclick="importMonthlyStudents()"><i class="fa-solid fa-upload me-1"></i> បញ្ចូលទាំងអស់</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="studentImportPreview" class="mt-3"></div>
+
+              <div class="card p-2 shadow-sm border-0 mt-3">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
+                  <h6 class="fw-bold small mb-0"><i class="fa-solid fa-table-list me-1"></i> បញ្ជីសិស្សក្នុងខែនេះ <span class="badge bg-primary" id="monthlyStudentCount">0</span></h6>
+                  <input type="text" id="monthlyStudentSearch" class="form-control form-control-sm border-primary" style="max-width: 320px;" placeholder="ស្វែងរក ឈ្មោះ/អត្តលេខ/ថ្នាក់/បន្ទប់" oninput="filterMonthlyStudentRows()">
+                </div>
+                <div class="table-responsive table-container border shadow-sm">
+                  <table class="table excel-mode mb-0" id="monthlyStudentsTable">
+                    <thead><tr class="table-dark"><th>ល.រ</th><th>បន្ទប់</th><th>តុ</th><th>អត្តលេខ</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th><th class="no-export">សកម្មភាព</th></tr></thead>
+                    <tbody id="monthlyStudentsBody"></tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -572,6 +653,7 @@
         
         if(prof.role === 'Admin') {
             document.getElementById('adminOnly').classList.remove('d-none');
+            document.getElementById('adminStudentListOnly')?.classList.remove('d-none');
             document.getElementById('adminMissingOnly')?.classList.remove('d-none');
             document.getElementById('lockSystemBtn').classList.remove('d-none');
             document.querySelectorAll('.admin-report-tool').forEach(el => el.classList.remove('d-none'));
@@ -605,6 +687,7 @@
         }
         await updateQuickStats();
         loadInputList();
+        if(document.getElementById('tab-students') && !document.getElementById('tab-students').classList.contains('hidden')) loadMonthlyStudents();
     }
 
     async function updateQuickStats() {
@@ -1804,8 +1887,200 @@
         }
     }
 
+
+    function getCurrentStudentPeriod() {
+        return {
+            academic_year: document.getElementById('gYear').value,
+            semester: document.getElementById('gSemester').value,
+            month_name: document.getElementById('gMonth').value
+        };
+    }
+
+    function updateStudentListBadge() {
+        const b = document.getElementById('studentListMonthBadge');
+        if(!b) return;
+        const p = getCurrentStudentPeriod();
+        b.textContent = `${p.academic_year} | ${p.semester} | ${p.month_name}`;
+    }
+
+    function normalizeDateForDb(value) {
+        const raw = String(value ?? '').trim();
+        if(!raw) return null;
+        if(/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+        const m = raw.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+        if(m) return `${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+        return raw;
+    }
+
+    function buildStudentPayload(row) {
+        const p = getCurrentStudentPeriod();
+        return {
+            student_id: String(row.student_id ?? '').trim(),
+            full_name: String(row.full_name ?? '').trim(),
+            gender: String(row.gender ?? '').trim(),
+            dob: normalizeDateForDb(row.dob),
+            class_name: String(row.class_name ?? '').trim(),
+            room_number: String(row.room_number ?? '').trim(),
+            desk_number: String(row.desk_number ?? '').trim(),
+            academic_year: p.academic_year,
+            semester: p.semester,
+            month_name: p.month_name
+        };
+    }
+
+    function clearMonthlyStudentForm() {
+        ['stuManageId','stuManageDesk','stuManageName','stuManageGender','stuManageDob','stuManageClass','stuManageRoom'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+        document.getElementById('stuManageId')?.focus();
+    }
+
+    async function saveSingleMonthlyStudent() {
+        if(!isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'ការបញ្ចូលបញ្ជីសិស្សប្រើបានតែ Admin។', 'warning');
+        const payload = buildStudentPayload({
+            student_id: document.getElementById('stuManageId').value,
+            full_name: document.getElementById('stuManageName').value,
+            gender: document.getElementById('stuManageGender').value,
+            dob: document.getElementById('stuManageDob').value,
+            class_name: document.getElementById('stuManageClass').value,
+            room_number: document.getElementById('stuManageRoom').value,
+            desk_number: document.getElementById('stuManageDesk').value
+        });
+        if(!payload.student_id || !payload.full_name || !payload.class_name || !payload.room_number) {
+            return Swal.fire('ខ្វះព័ត៌មាន', 'សូមបំពេញយ៉ាងតិច៖ អត្តលេខ, ឈ្មោះ, ថ្នាក់ និងបន្ទប់។', 'warning');
+        }
+        updateSaveStatus('saving');
+        try {
+            const { error } = await _sb.from('students').upsert(payload, { onConflict: 'student_id,academic_year,semester,month_name' });
+            if(error) throw error;
+            updateSaveStatus('saved');
+            clearMonthlyStudentForm();
+            await refreshData();
+            await loadMonthlyStudents();
+            Swal.fire({ toast:true, position:'top-end', icon:'success', title:'បានរក្សាទុកសិស្សរួចរាល់', showConfirmButton:false, timer:1800 });
+        } catch(err) {
+            console.error(err);
+            updateSaveStatus('error');
+            Swal.fire('បរាជ័យ', 'រក្សាទុកសិស្សមិនបាន។ សូមពិនិត្យ Unique key/RLS policy នៅតារាង students។', 'error');
+        }
+    }
+
+    function parseMonthlyStudentBulkText() {
+        const text = document.getElementById('studentBulkText')?.value || '';
+        return text.split(/\r?\n/).map(line => line.trim()).filter(Boolean).map((line, idx) => {
+            const parts = line.includes('\t') ? line.split('\t') : line.split(',');
+            return buildStudentPayload({
+                student_id: parts[0],
+                full_name: parts[1],
+                gender: parts[2],
+                dob: parts[3],
+                class_name: parts[4],
+                room_number: parts[5],
+                desk_number: parts[6]
+            });
+        }).filter(r => r.student_id || r.full_name);
+    }
+
+    function renderStudentImportPreview(rows) {
+        const box = document.getElementById('studentImportPreview');
+        if(!box) return;
+        if(!rows.length) { box.innerHTML = ''; return; }
+        const invalid = rows.filter(r => !r.student_id || !r.full_name || !r.class_name || !r.room_number).length;
+        box.innerHTML = `<div class="alert ${invalid ? 'alert-warning' : 'alert-success'} py-2 small fw-bold mb-2">រកឃើញ ${rows.length} ជួរ ${invalid ? `— មាន ${invalid} ជួរខ្វះព័ត៌មានចាំបាច់` : '— អាចបញ្ចូលបាន'}</div>
+        <div class="table-responsive border rounded"><table class="table table-sm mb-0 text-center"><thead class="table-light"><tr><th>អត្តលេខ</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្ងៃកំណើត</th><th>ថ្នាក់</th><th>បន្ទប់</th><th>តុ</th></tr></thead><tbody>${rows.slice(0,20).map(r => `<tr class="${(!r.student_id || !r.full_name || !r.class_name || !r.room_number) ? 'table-warning' : ''}"><td>${esc(r.student_id)}</td><td class="text-start fw-bold">${esc(r.full_name)}</td><td>${esc(r.gender)}</td><td>${esc(r.dob || '')}</td><td>${esc(r.class_name)}</td><td>${esc(r.room_number)}</td><td>${esc(r.desk_number)}</td></tr>`).join('')}</tbody></table></div>`;
+    }
+
+    function previewMonthlyStudentImport() {
+        renderStudentImportPreview(parseMonthlyStudentBulkText());
+    }
+
+    function fillMonthlyStudentSample() {
+        document.getElementById('studentBulkText').value = '25001\tគង់ សុភា\tប្រុស\t2010-01-15\t10A\t1\t01\n25002\tសុខ ចាន់ណា\tស្រី\t2010-03-20\t10A\t1\t02';
+        previewMonthlyStudentImport();
+    }
+
+    async function importMonthlyStudents() {
+        if(!isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'ការបញ្ចូលបញ្ជីសិស្សប្រើបានតែ Admin។', 'warning');
+        let rows = parseMonthlyStudentBulkText();
+        const invalid = rows.filter(r => !r.student_id || !r.full_name || !r.class_name || !r.room_number);
+        rows = rows.filter(r => r.student_id && r.full_name && r.class_name && r.room_number);
+        if(!rows.length) return Swal.fire('គ្មានទិន្នន័យ', 'សូមបិទភ្ជាប់បញ្ជីសិស្សជាមុនសិន។', 'warning');
+        if(invalid.length) {
+            const ok = await Swal.fire({ title:'មានជួរខ្វះព័ត៌មាន', text:`ប្រព័ន្ធនឹងរំលង ${invalid.length} ជួរ ហើយបញ្ចូល ${rows.length} ជួរ។`, icon:'warning', showCancelButton:true, confirmButtonText:'បន្ត', cancelButtonText:'បិទ' });
+            if(!ok.isConfirmed) return;
+        }
+        updateSaveStatus('saving');
+        try {
+            const { error } = await _sb.from('students').upsert(rows, { onConflict: 'student_id,academic_year,semester,month_name' });
+            if(error) throw error;
+            updateSaveStatus('saved');
+            document.getElementById('studentBulkText').value = '';
+            document.getElementById('studentImportPreview').innerHTML = '';
+            await refreshData();
+            await loadMonthlyStudents();
+            Swal.fire('ជោគជ័យ', `បានបញ្ចូល/កែបញ្ជីសិស្ស ${rows.length} នាក់ សម្រាប់ខែនេះ។`, 'success');
+        } catch(err) {
+            console.error(err);
+            updateSaveStatus('error');
+            Swal.fire('បរាជ័យ', 'Import មិនបាន។ សូមពិនិត្យ Unique key/RLS policy នៅតារាង students។', 'error');
+        }
+    }
+
+    async function loadMonthlyStudents() {
+        updateStudentListBadge();
+        const tbody = document.getElementById('monthlyStudentsBody');
+        if(!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fas fa-spinner fa-spin me-1"></i>កំពុងទាញបញ្ជីសិស្ស...</td></tr>';
+        const p = getCurrentStudentPeriod();
+        const rows = await fetchAllData('students', p);
+        rows.sort((a,b) => safeNumber(a.room_number,999999)-safeNumber(b.room_number,999999) || levelOrder(getLevelGroup(a.class_name))-levelOrder(getLevelGroup(b.class_name)) || safeNumber(a.desk_number,999999)-safeNumber(b.desk_number,999999) || String(a.full_name).localeCompare(String(b.full_name),'km'));
+        document.getElementById('monthlyStudentCount').innerText = rows.length;
+        if(!rows.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty-state">មិនទាន់មានបញ្ជីសិស្សសម្រាប់ខែនេះទេ</td></tr>'; return; }
+        tbody.innerHTML = rows.map((s,i) => {
+            const q = `${s.room_number} ${s.desk_number} ${s.student_id} ${s.full_name} ${s.gender||''} ${s.class_name||''}`.toLowerCase();
+            return `<tr class="monthly-student-row" data-search="${esc(q)}"><td>${i+1}</td><td>${esc(s.room_number)}</td><td>${esc(s.desk_number)}</td><td style="mso-number-format:'\@';">${esc(s.student_id)}</td><td class="text-start fw-bold" style="color:#24507a;">${esc(s.full_name)}</td><td>${esc(s.gender||'')}</td><td style="mso-number-format:'\@';">${s.dob ? String(s.dob).split('-').reverse().join('/') : ''}</td><td style="mso-number-format:'\@';">${esc(s.class_name||'')}</td><td class="no-export"><button type="button" class="btn btn-outline-primary btn-sm py-0 px-2" onclick="editMonthlyStudent('${String(s.student_id).replace(/'/g, '&amp;#39;')}')"><i class="fa-solid fa-pen"></i></button> <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" onclick="deleteMonthlyStudent('${String(s.student_id).replace(/'/g, '&amp;#39;')}')"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+        }).join('');
+        filterMonthlyStudentRows();
+    }
+
+    function filterMonthlyStudentRows() {
+        const q = (document.getElementById('monthlyStudentSearch')?.value || '').toLowerCase().trim();
+        document.querySelectorAll('.monthly-student-row').forEach(r => r.style.display = !q || r.dataset.search.includes(q) ? '' : 'none');
+    }
+
+    function editMonthlyStudent(studentId) {
+        const s = allStudentsCache.find(x => String(x.student_id).trim() === String(studentId).trim());
+        if(!s) return Swal.fire('រកមិនឃើញ', 'សូម Refresh បញ្ជីសិន។', 'warning');
+        document.getElementById('stuManageId').value = s.student_id || '';
+        document.getElementById('stuManageName').value = s.full_name || '';
+        document.getElementById('stuManageGender').value = s.gender || '';
+        document.getElementById('stuManageDob').value = s.dob || '';
+        document.getElementById('stuManageClass').value = s.class_name || '';
+        document.getElementById('stuManageRoom').value = s.room_number || '';
+        document.getElementById('stuManageDesk').value = s.desk_number || '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function deleteMonthlyStudent(studentId) {
+        if(!isAdmin()) return;
+        const p = getCurrentStudentPeriod();
+        const res = await Swal.fire({ title:'លុបសិស្សពីខែនេះ?', text:'ប្រព័ន្ធនឹងលុបឈ្មោះសិស្សចេញពីបញ្ជីខែដែលកំពុងជ្រើស។ ពិន្ទុរបស់សិស្សក្នុងខែនេះក៏នឹងត្រូវលុបដើម្បីកុំឲ្យរបាយការណ៍ច្រឡំ។', icon:'warning', showCancelButton:true, confirmButtonColor:'#dc3545', confirmButtonText:'លុប', cancelButtonText:'បិទ' });
+        if(!res.isConfirmed) return;
+        updateSaveStatus('saving');
+        try {
+            const delScores = await _sb.from('scores').delete().eq('student_id', studentId).eq('academic_year', p.academic_year).eq('semester', p.semester).eq('month_name', p.month_name);
+            if(delScores.error) throw delScores.error;
+            const delStu = await _sb.from('students').delete().eq('student_id', studentId).eq('academic_year', p.academic_year).eq('semester', p.semester).eq('month_name', p.month_name);
+            if(delStu.error) throw delStu.error;
+            updateSaveStatus('saved');
+            await refreshData();
+            await loadMonthlyStudents();
+            Swal.fire({ toast:true, position:'top-end', icon:'success', title:'បានលុបរួចរាល់', showConfirmButton:false, timer:1800 });
+        } catch(err) {
+            console.error(err); updateSaveStatus('error'); Swal.fire('បរាជ័យ', 'លុបមិនបាន សូមពិនិត្យ Supabase policy។', 'error');
+        }
+    }
+
     async function switchTab(t) { 
-        if((t === 'missing' || t === 'absence') && !isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'ផ្ទាំងនេះប្រើបានតែ Admin។', 'warning');
+        if((t === 'missing' || t === 'absence' || t === 'students') && !isAdmin()) return Swal.fire('សម្រាប់ Admin ប៉ុណ្ណោះ', 'ផ្ទាំងនេះប្រើបានតែ Admin។', 'warning');
         if (t !== 'input' && document.querySelectorAll('.stu-row').length > 0 && !isSystemLocked) { triggerAutoSave(); }
         document.querySelectorAll('.tab-pane-custom').forEach(p => p.classList.add('hidden')); 
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
@@ -1815,6 +2090,7 @@
         if(t==='report') loadGlobalReport(); 
         if(t==='missing') loadMissingScoresReport();
         if(t==='abs-report') loadAbsenceHistoryReport(); 
+        if(t==='students') loadMonthlyStudents(); 
     }
     
     async function adminUnlock(sid, sub, val) { 
